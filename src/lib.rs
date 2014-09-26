@@ -9,36 +9,12 @@ use mutable_json::MutableJson;
 
 mod mutable_json;
 
-#[deriving(Show)]
-pub enum ValicoErrorKind {
-	PresenceError,
-	CoerceError,
-	ValidationError,
-    Other
-}
+pub type ValicoResult<T> = Result<T, JsonObject>;
 
-#[deriving(Show)]
-pub struct ValicoError {
-    pub kind: ValicoErrorKind,
-    pub message: String
-}
-
-pub type ValicoResult<T> = Result<T, TreeMap<String, ValicoError>>;
-
-fn single_error(err: ValicoError) -> TreeMap<String, ValicoError> {
+fn single_coerce_error(err: String) -> JsonObject {
 	let mut tree = TreeMap::new();
-	tree.insert("0".to_string(), err);
-
-	tree
-}
-
-fn singe_coerce_error(err_msg: String) -> TreeMap<String, ValicoError> {
-	let mut tree = TreeMap::new();
-	let error = ValicoError {
-		kind: CoerceError,
-		message: err_msg
-	};
-	tree.insert("0".to_string(), error);
+	tree.insert("type".to_string(), "coerce".to_string().to_json());
+	tree.insert("message".to_string(), err.to_json());
 
 	tree
 }
@@ -57,7 +33,7 @@ impl Coercer for StringCoercer {
 			Ok(Some(val.to_string().to_json()))
 		} else {
 			Err(
-				singe_coerce_error(format!("Can't coerce object {} to string", val))
+				single_coerce_error(format!("Can't coerce object {} to string", val))
 			)
 		}
 	}
@@ -80,10 +56,10 @@ impl Coercer for I64Coercer {
 			let converted: Option<i64> = from_str(val);
 			match converted {
 				Some(num) => Ok(Some(num.to_json())),
-				None => Err(singe_coerce_error(format!("Can't string value {} to i64", val)))
+				None => Err(single_coerce_error(format!("Can't coerce string value {} to i64", val)))
 			}
 		} else {
-			Err(singe_coerce_error(format!("Can't coerce object {} to i64", val)))
+			Err(single_coerce_error(format!("Can't coerce object {} to i64", val)))
 		}
 	}
 }
@@ -105,10 +81,10 @@ impl Coercer for U64Coercer {
 			let converted: Option<u64> = from_str(val);
 			match converted {
 				Some(num) => Ok(Some(num.to_json())),
-				None => Err(singe_coerce_error(format!("Can't string value {} to u64", val)))
+				None => Err(single_coerce_error(format!("Can't coerce string value {} to u64", val)))
 			}
 		} else {
-			Err(singe_coerce_error(format!("Can't coerce object {} to u64", val)))
+			Err(single_coerce_error(format!("Can't coerce object {} to u64", val)))
 		}
 	}
 }
@@ -130,10 +106,10 @@ impl Coercer for F64Coercer {
 			let converted: Option<f64> = from_str(val);
 			match converted {
 				Some(num) => Ok(Some(num.to_json())),
-				None => Err(singe_coerce_error(format!("Can't coerce string value {} to f64", val)))
+				None => Err(single_coerce_error(format!("Can't coerce string value {} to f64", val)))
 			}
 		} else {
-			Err(singe_coerce_error(format!("Can't coerce object {} to f64", val)))
+			Err(single_coerce_error(format!("Can't coerce object {} to f64", val)))
 		}
 	}
 }
@@ -151,10 +127,10 @@ impl Coercer for BooleanCoercer {
 			} else if val == "false" {
 				Ok(Some(false.to_json()))
 			} else {
-				Err(singe_coerce_error(format!("Can't coerce string value {} to boolean. Correct values is 'true' and 'false'", val)))
+				Err(single_coerce_error(format!("Can't coerce string value {} to boolean. Correct values is 'true' and 'false'", val)))
 			}
 		} else {
-			Err(singe_coerce_error(format!("Can't coerce object {} to boolean", val)))
+			Err(single_coerce_error(format!("Can't coerce object {} to boolean", val)))
 		}
 	}
 }
@@ -170,10 +146,10 @@ impl Coercer for NullCoercer {
 			if val == "" {
 				Ok(Some(json::Null))
 			} else {
-				Err(singe_coerce_error(format!("Can't coerce string value {} to null. Correct value is only empty string", val)))
+				Err(single_coerce_error(format!("Can't coerce string value {} to null. Correct value is only empty string", val)))
 			}
 		} else {
-			Err(singe_coerce_error(format!("Can't coerce object {} to null", val)))
+			Err(single_coerce_error(format!("Can't coerce object {} to null", val)))
 		}
 	}
 }
@@ -205,11 +181,12 @@ impl Coercer for ListCoercer {
 				for (idx, item) in list.iter_mut().enumerate() {
 					if item.is_object() {
 						// todo match
-						extra.unwrap().process(item.as_object_mut().unwrap());
+						match extra.unwrap().process(item.as_object_mut().unwrap()) {
+							Ok(()) => (),
+							Err(err) => { errors.insert(idx.to_string(), err.to_json()); }
+						}
 					} else {
-						errors.insert(idx.to_string(), ValicoError {
-							kind: CoerceError, message: format!("List item {} is not and object", item)
-						});
+						errors.insert(idx.to_string(), format!("List item {} is not and object", item).to_json());
 					}
 				}
 
@@ -229,9 +206,7 @@ impl Coercer for ListCoercer {
 						},
 						Ok(None) => (),
 						Err(err) => {
-							errors.insert(i.to_string(), ValicoError {
-								kind: CoerceError, message: err.to_string()
-							});
+							errors.insert(i.to_string(), err.to_json());
 						}
 					}
 				}
@@ -245,7 +220,7 @@ impl Coercer for ListCoercer {
 				Ok(None)
 			}
 		} else {
-			Err(singe_coerce_error(format!("Can't coerce object {} to null", val)))
+			Err(single_coerce_error(format!("Can't coerce object {} to null", val)))
 		}
 	}
 }
@@ -259,22 +234,30 @@ impl Coercer for ObjectCoercer {
 			extra.unwrap().process(val.as_object_mut().unwrap());
 			Ok(None)
 		} else {
-			Err(singe_coerce_error(format!("Can't coerce non-object value {} to object", val)))
+			Err(single_coerce_error(format!("Can't coerce non-object value {} to object", val)))
 		}
 	}
 }
 
 struct Param {
 	pub name: String,
-	pub coercer: Box<Coercer>,
+	pub coercer: Option<Box<Coercer>>,
 	pub extra: Option<Builder>
 }
 
 impl Param {
-	pub fn new(name: &str, coercer: Box<Coercer>) -> Param {
+	pub fn new(name: &str) -> Param {
 		Param {
 			name: name.to_string(),
-			coercer: coercer,
+			coercer: None,
+			extra: None
+		}
+	}
+
+	pub fn new_with_coercer(name: &str, coercer: Box<Coercer>) -> Param {
+		Param {
+			name: name.to_string(),
+			coercer: Some(coercer),
 			extra: None
 		}
 	}
@@ -282,13 +265,16 @@ impl Param {
 	pub fn new_with_extra(name: &str, coercer: Box<Coercer>, extra: Builder) -> Param {
 		Param {
 			name: name.to_string(),
-			coercer: coercer,
+			coercer: Some(coercer),
 			extra: Some(extra)
 		}
 	}
 
 	pub fn process(&self, val: &mut Json) -> ValicoResult<Option<Json>> {
-		return (*self.coercer).coerce(val, self.extra.as_ref())
+		match self.coercer.as_ref() {
+			Some(coercer) => coercer.coerce(val, self.extra.as_ref()),
+			None => Ok(None)
+		}
 	}
 }
 
@@ -321,12 +307,12 @@ impl Builder {
 	}
 
 	fn req(&mut self, name: &str) {
-		let params = Param::new(name, box StringCoercer);
+		let params = Param::new(name);
 		self.requires.push(params);
 	}
 
 	fn req_type(&mut self, name: &str, coercer: Box<Coercer>) {
-		let params = Param::new(name, coercer);
+		let params = Param::new_with_coercer(name, coercer);
 		self.requires.push(params);
 	}
 
@@ -336,8 +322,10 @@ impl Builder {
 		self.requires.push(params);
 	}
 
-	fn process(&self, tree: &mut JsonObject)  {
+	fn process(&self, tree: &mut JsonObject) -> ValicoResult<()>  {
 		
+		let mut errors = TreeMap::new();
+
 		for param in self.requires.iter() {
 			let ref name = param.name;
 			let present = has_value(tree, name);
@@ -349,14 +337,20 @@ impl Builder {
 							None => ()
 						}
 					},
-					Err(_) => ()
+					Err(err) => {
+						errors.insert(name.to_string(), err.to_json());
+					}
 				}
 			} else {
-				// required error!
+				errors.insert(name.to_string(), "Field is required but missing".to_string().to_json());
 			}
-
 		}
 
+		if errors.len() == 0 {
+			Ok(())
+		} else {
+			Err(errors)
+		}
 	}
 
 	// pub fn optional(name: &str, kind: Coeletrcer);
@@ -364,18 +358,52 @@ impl Builder {
 	// pub fn mutually_exclusive();
 }
 
+fn test_result(params: &Builder, body: &str, result: &str) {
+	let mut obj = json::from_str(body);
+	match obj {
+		Ok(mut json) => { 
+			match params.process(json.as_object_mut().unwrap()) {
+				Ok(()) => {
+					return assert_eq!(json.to_string(), result.to_string());
+				},
+				Err(err) => {
+					fail!("Error during process: {}", err.to_json().to_pretty_str());
+				}
+			}
+		},
+		Err(_) => {
+			fail!("Invalid JSON");
+		}
+	}
+}
+
+fn test_get_error(params: &Builder, body: &str) -> JsonObject {
+	let mut obj = json::from_str(body);
+	match obj {
+		Ok(mut json) => { 
+			match params.process(json.as_object_mut().unwrap()) {
+				Ok(()) => {
+					fail!("Success responce when we await some errors");
+				},
+				Err(err) => {
+					return err;
+				}
+			}
+		},
+		Err(_) => {
+			fail!("Invalid JSON");
+		}
+	}
+}
+
 #[test]
-fn it_works() {
-	use serialize::json;
+fn is_process_simple_require() {
 
 	let params = Builder::from_function(|params: &mut Builder| {
 		params.req("name");
-		params.req_type("test", box StringCoercer);
-		params.req_nest("test", box StringCoercer, |params: &mut Builder| {
-			params.req("type");
-		});
 	});
 
-	let mut json = json::from_str(r#"{"name": 1}"#).unwrap();
-	params.process(json.as_object_mut().unwrap());
+	test_result(&params, r#"{"name":1}"#, r#"{"name":1}"#);
+	println!("{}", test_get_error(&params, r#"{}"#));
+	fail!("");
 }
