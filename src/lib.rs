@@ -25,10 +25,6 @@ pub struct ValicoError {
 
 pub type ValicoResult<T> = Result<T, TreeMap<String, ValicoError>>;
 
-trait Coercer: Send + Sync {
-	fn coerce(&self, &Json, &Option<Builder>) -> ValicoResult<Option<Json>>;
-}
-
 fn single_error(err: ValicoError) -> TreeMap<String, ValicoError> {
 	let mut tree = TreeMap::new();
 	tree.insert("0".to_string(), err);
@@ -47,11 +43,14 @@ fn singe_coerce_error(err_msg: String) -> TreeMap<String, ValicoError> {
 	tree
 }
 
+trait Coercer: Send + Sync {
+	fn coerce(&self, &mut Json, Option<&Builder>) -> ValicoResult<Option<Json>>;
+}
 
 struct StringCoercer;
 
 impl Coercer for StringCoercer {
-	fn coerce(&self, val: &Json, _: &Option<Builder>) -> ValicoResult<Option<Json>> {
+	fn coerce(&self, val: &mut Json, _: Option<&Builder>) -> ValicoResult<Option<Json>> {
 		if val.is_string() {
 			Ok(None)
 		} else if val.is_number() {
@@ -67,7 +66,7 @@ impl Coercer for StringCoercer {
 struct I64Coercer;
 
 impl Coercer for I64Coercer {
-	fn coerce(&self, val: &Json, _: &Option<Builder>) -> ValicoResult<Option<Json>> {
+	fn coerce(&self, val: &mut Json, _: Option<&Builder>) -> ValicoResult<Option<Json>> {
 		if val.is_i64() {
 			return Ok(None)
 		} else if val.is_u64() {
@@ -92,7 +91,7 @@ impl Coercer for I64Coercer {
 struct U64Coercer;
 
 impl Coercer for U64Coercer {
-	fn coerce(&self, val: &Json, _: &Option<Builder>) -> ValicoResult<Option<Json>> {
+	fn coerce(&self, val: &mut Json, _: Option<&Builder>) -> ValicoResult<Option<Json>> {
 		if val.is_u64() {
 			return Ok(None)
 		} else if val.is_i64() {
@@ -117,7 +116,7 @@ impl Coercer for U64Coercer {
 struct F64Coercer;
 
 impl Coercer for F64Coercer {
-	fn coerce(&self, val: &Json, _: &Option<Builder>) -> ValicoResult<Option<Json>> {
+	fn coerce(&self, val: &mut Json, _: Option<&Builder>) -> ValicoResult<Option<Json>> {
 		if val.is_f64() {
 			return Ok(None)
 		} else if val.is_i64() {
@@ -142,7 +141,7 @@ impl Coercer for F64Coercer {
 struct BooleanCoercer;
 
 impl Coercer for BooleanCoercer {
-	fn coerce(&self, val: &Json, _: &Option<Builder>) -> ValicoResult<Option<Json>> {
+	fn coerce(&self, val: &mut Json, _: Option<&Builder>) -> ValicoResult<Option<Json>> {
 		if val.is_boolean() {
 			Ok(None)
 		} else if val.is_string() {
@@ -163,7 +162,7 @@ impl Coercer for BooleanCoercer {
 struct NullCoercer;
 
 impl Coercer for NullCoercer {
-	fn coerce(&self, val: &Json, _: &Option<Builder>) -> ValicoResult<Option<Json>> {
+	fn coerce(&self, val: &mut Json, _: Option<&Builder>) -> ValicoResult<Option<Json>> {
 		if val.is_null() {
 			Ok(None)
 		} else if val.is_string() {
@@ -174,13 +173,13 @@ impl Coercer for NullCoercer {
 				Err(singe_coerce_error(format!("Can't coerce string value {} to null. Correct value is only empty string", val)))
 			}
 		} else {
-			Err(singe_coerce_error(format!("Can't object {} to null", val)))
+			Err(singe_coerce_error(format!("Can't coerce object {} to null", val)))
 		}
 	}
 }
 
 struct ListCoercer {
-	sub_coercer: Option<Box<Coercer>>
+	sub_coercer: Option<Box<Coercer + Send + Sync>>
 }
 
 impl ListCoercer {
@@ -190,22 +189,80 @@ impl ListCoercer {
 		}
 	}
 
-	pub fn with_type(sub_coercer: Box<Coercer>) -> ListCoercer {
+	pub fn with_type(sub_coercer: Box<Coercer + Send + Sync>) -> ListCoercer {
 		ListCoercer {
 			sub_coercer: Some(sub_coercer)
 		}
 	}
 }
 
-// impl Coercer for ListCoercer {
-// 	fn coerce(&self, val: &Json, _: &Option<Builder>) -> ValicoResult<Option<Json>> {
-// 		if val.is_list() {
+impl Coercer for ListCoercer {
+	fn coerce(&self, val: &mut Json, extra: Option<&Builder>) -> ValicoResult<Option<Json>> {
+		if val.is_list() {
+			let list = val.as_list_mut().unwrap();
+			let mut errors = TreeMap::new();
+			if extra.is_some() {
+				for (idx, item) in list.iter_mut().enumerate() {
+					if item.is_object() {
+						// todo match
+						extra.unwrap().process(item.as_object_mut().unwrap());
+					} else {
+						errors.insert(idx.to_string(), ValicoError {
+							kind: CoerceError, message: format!("List item {} is not and object", item)
+						});
+					}
+				}
 
-// 		} else {
-// 			Err(singe_coerce_error(format!("Can't object {} to null", val)))
-// 		}
-// 	}
-// }
+				if errors.len() == 0 {
+					Ok(None)
+				} else {
+					Err(errors)
+				}
+			} else if self.sub_coercer.is_some() {
+				let sub_coercer = self.sub_coercer.as_ref().unwrap();
+				let mut errors = TreeMap::new();
+				for i in range(0, list.len() - 1) {
+					match sub_coercer.coerce(list.get_mut(i), None) {
+						Ok(Some(value)) => {
+							list.remove(i);
+							list.insert(i, value);
+						},
+						Ok(None) => (),
+						Err(err) => {
+							errors.insert(i.to_string(), ValicoError {
+								kind: CoerceError, message: err.to_string()
+							});
+						}
+					}
+				}
+
+				if errors.len() == 0 {
+					Ok(None)
+				} else {
+					Err(errors)
+				}
+			} else {
+				Ok(None)
+			}
+		} else {
+			Err(singe_coerce_error(format!("Can't coerce object {} to null", val)))
+		}
+	}
+}
+
+struct ObjectCoercer;
+
+impl Coercer for ObjectCoercer {
+	fn coerce(&self, val: &mut Json, extra: Option<&Builder>) -> ValicoResult<Option<Json>> {
+		if val.is_object() {
+			// todo match
+			extra.unwrap().process(val.as_object_mut().unwrap());
+			Ok(None)
+		} else {
+			Err(singe_coerce_error(format!("Can't coerce non-object value {} to object", val)))
+		}
+	}
+}
 
 struct Param {
 	pub name: String,
@@ -231,7 +288,7 @@ impl Param {
 	}
 
 	pub fn process(&self, val: &mut Json) -> ValicoResult<Option<Json>> {
-		return (*self.coercer).coerce(val, &self.extra)
+		return (*self.coercer).coerce(val, self.extra.as_ref())
 	}
 }
 
