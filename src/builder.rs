@@ -4,7 +4,19 @@ use serialize::json::{JsonObject, ToJson};
 
 use helpers::{has_value, single_validation_error};
 use param::Param;
-use coercers::Coercer;
+
+pub use coercers::{
+	Coercer,
+	StringCoercer,
+	I64Coercer,
+	U64Coercer,
+	F64Coercer,
+	BooleanCoercer,
+	NullCoercer,
+	ListCoercer,
+	ObjectCoercer,
+};
+
 use ValicoResult;
 
 pub struct Builder {
@@ -74,6 +86,14 @@ impl Builder {
 			Err(errors)
 		}
 	}
+
+	pub fn i64() -> Box<Coercer> { box I64Coercer }
+	pub fn u64() -> Box<Coercer> { box I64Coercer }
+	pub fn f64() -> Box<Coercer> { box I64Coercer }
+	pub fn string() -> Box<Coercer> { box StringCoercer }
+	pub fn null() -> Box<Coercer> { box NullCoercer }
+	pub fn list() -> Box<Coercer> { box ListCoercer::new() }
+	pub fn object() -> Box<Coercer> { box ObjectCoercer }
 
 	// pub fn optional(name: &str, kind: Coeletrcer);
 	// pub fn group(name: &str);
