@@ -13,7 +13,7 @@ use valico::{
 	MutableJson
 };
 
-use helpers::{assert_str_eq, test_error};
+use helpers::{assert_str_eq, assert_result_path_str, assert_error_path_str};
 
 #[test]
 fn is_process_simple_require() {
@@ -23,5 +23,5 @@ fn is_process_simple_require() {
 	});
 
 	assert_str_eq(&params, r#"{"name":1}"#, r#"{"name":1}"#);
-	assert_eq!(test_error(&params, r#"{}"#).find_path([&"name".to_string(), &"type".to_string()]).unwrap().as_string().unwrap(), "validation");
+	assert_error_path_str(&params, r#"{}"#, vec!["name", "type"], "validation");
 }
