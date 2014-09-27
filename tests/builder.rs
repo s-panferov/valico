@@ -52,3 +52,36 @@ fn is_process_string_require() {
 	// error because a is null
 	assert_error_path_str(&params, r#"{"a": null}"#, ["a", "type"], "coercion");
 }
+
+#[test]
+fn is_process_simple_list_require() {
+
+	let params = Builder::from_function(|params: &mut Builder| {
+		params.req_type("a", Builder::list());
+	});
+
+	assert_str_eq(&params, r#"{"a":[1,"2",[3]]}"#, r#"{"a":[1,"2",[3]]}"#);
+
+	// error because a is object
+	assert_error_path_str(&params, r#"{"a": {}}"#, ["a", "type"], "coercion");
+
+	// error because a is string
+	assert_error_path_str(&params, r#"{"a": "test"}"#, ["a", "type"], "coercion");
+}
+
+#[test]
+fn is_process_typed_list_require() {
+
+	let params = Builder::from_function(|params: &mut Builder| {
+		params.req_type("a", Builder::list_of(Builder::string()));
+	});
+
+	// convert all to string
+	assert_str_eq(&params, r#"{"a":[1,"2",3.1]}"#, r#"{"a":["1","2","3.1"]}"#);
+
+	// // error because a is object
+	// assert_error_path_str(&params, r#"{"a": {}}"#, ["a", "type"], "coercion");
+
+	// // error because a is string
+	// assert_error_path_str(&params, r#"{"a": "test"}"#, ["a", "type"], "coercion");
+}

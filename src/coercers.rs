@@ -19,6 +19,7 @@ impl Coercer for StringCoercer {
 		if val.is_string() {
 			Ok(None)
 		} else if val.is_number() {
+			println!("{} is number", val);
 			Ok(Some(val.to_string().to_json()))
 		} else {
 			Err(
@@ -154,7 +155,7 @@ impl ListCoercer {
 		}
 	}
 
-	pub fn with_type(sub_coercer: Box<Coercer + Send + Sync>) -> ListCoercer {
+	pub fn of_type(sub_coercer: Box<Coercer + Send + Sync>) -> ListCoercer {
 		ListCoercer {
 			sub_coercer: Some(sub_coercer)
 		}
@@ -187,7 +188,7 @@ impl Coercer for ListCoercer {
 			} else if self.sub_coercer.is_some() {
 				let sub_coercer = self.sub_coercer.as_ref().unwrap();
 				let mut errors = TreeMap::new();
-				for i in range(0, list.len() - 1) {
+				for i in range(0, list.len()) {
 					match sub_coercer.coerce(list.get_mut(i), None) {
 						Ok(Some(value)) => {
 							list.remove(i);
