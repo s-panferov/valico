@@ -19,7 +19,6 @@ impl Coercer for StringCoercer {
 		if val.is_string() {
 			Ok(None)
 		} else if val.is_number() {
-			println!("{} is number", val);
 			Ok(Some(val.to_string().to_json()))
 		} else {
 			Err(
@@ -210,7 +209,7 @@ impl Coercer for ListCoercer {
 				Ok(None)
 			}
 		} else {
-			Err(single_coerce_error(format!("Can't coerce object {} to null", val)))
+			Err(single_coerce_error(format!("Can't coerce object {} to list", val)))
 		}
 	}
 }

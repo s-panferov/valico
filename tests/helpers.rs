@@ -8,7 +8,7 @@ use valico::{
 };
 
 pub fn test_result(params: &Builder, body: &str) -> Json {
-	let mut obj = json::from_str(body);
+	let obj = json::from_str(body);
 	match obj {
 		Ok(mut json) => { 
 			match params.process(json.as_object_mut().unwrap()) {
@@ -27,7 +27,7 @@ pub fn test_result(params: &Builder, body: &str) -> Json {
 }
 
 pub fn test_error(params: &Builder, body: &str) -> Json {
-	let mut obj = json::from_str(body);
+	let obj = json::from_str(body);
 	match obj {
 		Ok(mut json) => { 
 			match params.process(json.as_object_mut().unwrap()) {
