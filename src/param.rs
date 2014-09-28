@@ -1,8 +1,10 @@
 
 use serialize::json;
 use serialize::json::{Json, ToJson};
+use std::collections::TreeMap;
 use regex::Regex;
 
+use mutable_json::MutableJson;
 use builder::Builder;
 use coercers::Coercer;
 use validation::{
@@ -13,6 +15,8 @@ use validation::{
 	RegexValidator
 };
 use ValicoResult;
+
+use helpers::{single_validation_error};
 
 pub struct Param {
 	pub name: String,
@@ -109,19 +113,63 @@ impl Param {
 		if val.is_null() && self.allow_null {
 			Ok(None)
 		} else {
-			let result = match self.coercer.as_ref() {
-				Some(coercer) => coercer.coerce(val, self.nest.as_ref()),
-				None => Ok(None)
-			};
+			
+			let mut need_return = false;
+			let mut return_value = None;
 
+			let result = {
+				let mut val = if self.coercer.is_some() {
+					match self.coercer.as_ref().unwrap().coerce(val) {
+						Ok(Some(new_value)) => { 
+							need_return = true; 
+							return_value = Some(new_value); 
+							return_value.as_mut().unwrap() 
+						},
+						Ok(None) => val,
+						Err(err) => return Err(err)
+					}
+				} else {
+					val
+				};
+
+				let ref nest = self.nest;
+
+				if nest.is_some() {
+					if val.is_list() {
+						let mut errors = TreeMap::new();
+						let list = val.as_list_mut().unwrap();
+						for (idx, item) in list.iter_mut().enumerate() {
+							if item.is_object() {
+								match nest.as_ref().unwrap().process(item.as_object_mut().unwrap()) {
+									Ok(()) => (),
+									Err(err) => { errors.insert(idx.to_string(), err.to_json()); }
+								}
+							} else {
+								errors.insert(idx.to_string(), 
+									single_validation_error(format!("List item {} is not and object", item)).to_json()
+								);
+							}
+						}
+
+						if errors.len() > 0 {
+							return Err(errors);
+						}
+					} else if val.is_object() {
+						match nest.as_ref().unwrap().process(val.as_object_mut().unwrap()) {
+							Ok(()) => (),
+							Err(err) => return Err(err)
+						};
+					}
+				}
+
+				self.process_validations(val)
+			};
+			
 			match result {
-				Ok(None) => { 
-					self.process_validations(val).and(Ok(None))
+				Ok(()) => {
+					if need_return { Ok(return_value) } else { Ok(None) }
 				},
-				Ok(Some(val)) => {
-					self.process_validations(&val).and(Ok(Some(val)))
-				},
-				Err(val) => Err(val)
+				Err(err) => Err(err)
 			}
 		}
 	}

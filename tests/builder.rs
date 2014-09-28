@@ -148,6 +148,9 @@ fn is_process_object_with_nested_require() {
 	// error because "a":"c":"1" is object and can't be coerced to string
 	assert_error_key(&params, r#"{"a":{"b":"1.22","c":[1.112,{}]}}"#, ["a", "c", "1", "coercion"]);
 
+	println!("{}", test_error(&params, r#"{"a":{"b":"1.22","c":[1.112,{}]}}"#).to_pretty_str());
+	// fail!("")
+
 }
 
 #[test]
