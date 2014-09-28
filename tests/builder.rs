@@ -170,3 +170,40 @@ fn is_process_require_allows_null() {
 	// ok because "a" allows null explicitly
 	assert_str_eq(&params, r#"{"a":null}"#, r#"{"a":null}"#);
 }
+
+
+#[test]
+fn is_validate_allow_values() {
+
+	let params = Builder::build(|params| {
+		params.req("a", |a| {
+			a.coerce(Builder::string());
+			a.allow_values(["allowed1".to_string(), "allowed2".to_string()])
+		})
+	});
+
+	assert_str_eq(&params, r#"{"a":"allowed1"}"#, r#"{"a":"allowed1"}"#);
+	assert_str_eq(&params, r#"{"a":"allowed2"}"#, r#"{"a":"allowed2"}"#);
+
+	// error because "a" is not in allowed list
+	assert_error_path_str(&params, r#"{"a":"not in allowed"}"#, ["a", "type"], "validation");
+
+}
+
+#[test]
+fn is_validate_reject_values() {
+
+	let params = Builder::build(|params| {
+		params.req("a", |a| {
+			a.coerce(Builder::string());
+			a.reject_values(["rejected1".to_string(), "rejected2".to_string()])
+		})
+	});
+
+	assert_str_eq(&params, r#"{"a":"some"}"#, r#"{"a":"some"}"#);
+
+	// errors because "a" is in reject list
+	assert_error_path_str(&params, r#"{"a":"rejected1"}"#, ["a", "type"], "validation");
+	assert_error_path_str(&params, r#"{"a":"rejected2"}"#, ["a", "type"], "validation");
+
+}

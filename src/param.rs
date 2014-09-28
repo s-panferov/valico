@@ -1,8 +1,14 @@
 
 use serialize::json;
+use serialize::json::{Json, ToJson};
 
 use builder::Builder;
 use coercers::Coercer;
+use validation::{
+	SingleParamValidator,
+	AllowedValuesValidator,
+	RejectedValuesValidator
+};
 use ValicoResult;
 
 pub struct Param {
@@ -10,7 +16,8 @@ pub struct Param {
 	pub coercer: Option<Box<Coercer>>,
 	pub nest: Option<Builder>,
 	pub description: Option<String>,
-	pub allow_null: bool
+	pub allow_null: bool,
+	pub validators: Vec<Box<SingleParamValidator + Send + Sync>>
 	// pub validators
 	// pub allow_nul
 }
@@ -23,7 +30,8 @@ impl Param {
 			description: None,
 			coercer: None,
 			nest: None,
-			allow_null: false
+			allow_null: false,
+			validators: vec![]
 		}
 	}
 
@@ -33,7 +41,8 @@ impl Param {
 			description: None,
 			coercer: Some(coercer),
 			nest: None,
-			allow_null: false
+			allow_null: false,
+			validators: vec![]
 		}
 	}
 
@@ -43,7 +52,8 @@ impl Param {
 			description: None,
 			coercer: Some(coercer),
 			nest: Some(nest),
-			allow_null: false
+			allow_null: false,
+			validators: vec![]
 		}
 	}
 
@@ -70,14 +80,52 @@ impl Param {
 		self.allow_null = true;
 	}
 
-	pub fn process(&self, val: &mut json::Json) -> ValicoResult<Option<json::Json>> {
+	pub fn validate(&mut self, validator: Box<SingleParamValidator + Send + Sync>) {
+		self.validators.push(validator);
+	}
+
+
+
+	fn process_validations(&self, val: &Json) -> ValicoResult<()> {
+		for validator in self.validators.iter() {
+			try!(validator.validate(val));
+		};
+
+		Ok(())
+	}
+
+	pub fn process(&self, val: &mut Json) -> ValicoResult<Option<Json>> {
 		if val.is_null() && self.allow_null {
 			Ok(None)
 		} else {
-			match self.coercer.as_ref() {
+			let result = match self.coercer.as_ref() {
 				Some(coercer) => coercer.coerce(val, self.nest.as_ref()),
 				None => Ok(None)
-			}	
+			};
+
+			match result {
+				Ok(None) => { 
+					self.process_validations(val).and(Ok(None))
+				},
+				Ok(Some(val)) => {
+					self.process_validations(&val).and(Ok(Some(val)))
+				},
+				Err(val) => Err(val)
+			}
 		}
+	}
+}
+
+impl<T: ToJson> Param {
+	pub fn allow_values(&mut self, values: &[T]) {
+		self.validators.push(box AllowedValuesValidator::new(
+			values.iter().map(|v| v.to_json()).collect()
+		));
+	}
+
+	pub fn reject_values(&mut self, values: &[T]) {
+		self.validators.push(box RejectedValuesValidator::new(
+			values.iter().map(|v| v.to_json()).collect()
+		));
 	}
 }

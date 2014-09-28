@@ -25,4 +25,5 @@ mod builder;
 mod coercers;
 mod helpers;
 mod param;
+mod validation;
 mod mutable_json;
