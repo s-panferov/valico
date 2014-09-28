@@ -3,6 +3,7 @@ extern crate serialize;
 
 use serialize::json;
 
+pub use param::Param;
 pub use builder::Builder;
 pub use coercers::{
 	Coercer,

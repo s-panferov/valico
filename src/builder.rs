@@ -40,19 +40,24 @@ impl Builder {
 		builder
 	}
 
-	pub fn req(&mut self, name: &str) {
+	pub fn req_defined(&mut self, name: &str) {
 		let params = Param::new(name);
 		self.requires.push(params);
 	}
 
-	pub fn req_type(&mut self, name: &str, coercer: Box<Coercer>) {
+	pub fn req_typed(&mut self, name: &str, coercer: Box<Coercer>) {
 		let params = Param::new_with_coercer(name, coercer);
 		self.requires.push(params);
 	}
 
-	pub fn req_nest(&mut self, name: &str, coercer: Box<Coercer>, nest_def: |params: &mut Builder|) {
+	pub fn req_nested(&mut self, name: &str, coercer: Box<Coercer>, nest_def: |&mut Builder|) {
 		let nest_builder = Builder::build(nest_def);
 		let params = Param::new_with_nest(name, coercer, nest_builder);
+		self.requires.push(params);
+	}
+
+	pub fn req(&mut self, name: &str, param_builder: |&mut Param|) {
+		let params = Param::build(name, param_builder);
 		self.requires.push(params);
 	}
 
