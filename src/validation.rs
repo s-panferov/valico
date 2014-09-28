@@ -60,3 +60,25 @@ impl SingleParamValidator for RejectedValuesValidator {
 		}
 	}
 }
+
+pub struct FunctionValidator {
+	validator: fn(&Json) -> Result<(), String>
+}
+
+impl FunctionValidator {
+	pub fn new(validator: fn(&Json) -> Result<(), String>) -> FunctionValidator {
+		FunctionValidator {
+			validator: validator
+		}
+	}
+}
+
+impl SingleParamValidator for FunctionValidator {
+	fn validate(&self, val: &Json) -> ValicoResult<()> {
+		let validator = self.validator;
+		match validator(val) {
+			Ok(()) => Ok(()),
+			Err(err) => Err(single_validation_error(err))
+		}
+	}
+}

@@ -7,7 +7,8 @@ use coercers::Coercer;
 use validation::{
 	SingleParamValidator,
 	AllowedValuesValidator,
-	RejectedValuesValidator
+	RejectedValuesValidator,
+	FunctionValidator
 };
 use ValicoResult;
 
@@ -84,10 +85,12 @@ impl Param {
 		self.validators.push(validator);
 	}
 
-
+	pub fn validate_with(&mut self, validator: fn(&Json) -> Result<(), String>) {
+		self.validators.push(box FunctionValidator::new(validator));
+	}
 
 	fn process_validations(&self, val: &Json) -> ValicoResult<()> {
-		for validator in self.validators.iter() {
+		for mut validator in self.validators.iter() {
 			try!(validator.validate(val));
 		};
 

@@ -1,4 +1,6 @@
 
+use serialize::json::{Json, ToJson};
+
 use valico::{
 	Builder,
 	Coercer
@@ -205,5 +207,30 @@ fn is_validate_reject_values() {
 	// errors because "a" is in reject list
 	assert_error_path_str(&params, r#"{"a":"rejected1"}"#, ["a", "type"], "validation");
 	assert_error_path_str(&params, r#"{"a":"rejected2"}"#, ["a", "type"], "validation");
+
+}
+
+#[test]
+fn is_validate_with_function_validator() {
+
+	let params = Builder::build(|params| {
+		params.req("a", |a| {
+			a.coerce(Builder::u64());
+
+			fn validate(val: &Json) -> Result<(), String> {
+				if *val == 2u.to_json() {
+					Ok(())
+				} else {
+					Err("Value is not exactly 2".to_string())
+				}
+			}
+
+			a.validate_with(validate);
+		})
+	});
+
+	assert_str_eq(&params, r#"{"a":"2"}"#, r#"{"a":2}"#);
+	assert_error_path_str(&params, r#"{"a":3}"#, ["a", "type"], "validation");
+	assert_error_path_str(&params, r#"{"a":"3"}"#, ["a", "type"], "validation");
 
 }
