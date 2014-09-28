@@ -9,8 +9,8 @@ use valico::{
 use helpers::{
 	test_error,
 	assert_str_eq, 
-	assert_result_path_str, 
-	assert_error_path_str};
+	assert_result_key, 
+	assert_error_key};
 
 #[test]
 fn is_process_simple_require() {
@@ -20,7 +20,7 @@ fn is_process_simple_require() {
 	});
 
 	assert_str_eq(&params, r#"{"a":1}"#, r#"{"a":1}"#);
-	assert_error_path_str(&params, r#"{}"#, ["a", "type"], "validation");
+	assert_error_key(&params, r#"{}"#, ["a", "validation"]);
 }
 
 #[test]
@@ -36,9 +36,9 @@ fn is_process_i64_require() {
 	assert_str_eq(&params, r#"{"a": 1.112}"#, r#"{"a":1}"#);
 
 	// error because "a" is string that we can't convert
-	assert_error_path_str(&params, r#"{"a": "not-int"}"#, ["a", "type"], "coercion");
+	assert_error_key(&params, r#"{"a": "not-int"}"#, ["a", "coercion"]);
 	// error because "a" is object
-	assert_error_path_str(&params, r#"{"a": {"a": 1}}"#, ["a", "type"], "coercion");
+	assert_error_key(&params, r#"{"a": {"a": 1}}"#, ["a", "coercion"]);
 }
 
 #[test]
@@ -53,10 +53,10 @@ fn is_process_string_require() {
 	assert_str_eq(&params, r#"{"a":1.112}"#, r#"{"a":"1.112"}"#);
 	
 	// error because "a" is object
-	assert_error_path_str(&params, r#"{"a": {}}"#, ["a", "type"], "coercion");
+	assert_error_key(&params, r#"{"a": {}}"#, ["a", "coercion"]);
 	
 	// error because "a" is null
-	assert_error_path_str(&params, r#"{"a": null}"#, ["a", "type"], "coercion");
+	assert_error_key(&params, r#"{"a": null}"#, ["a", "coercion"]);
 }
 
 #[test]
@@ -69,10 +69,10 @@ fn is_process_simple_list_require() {
 	assert_str_eq(&params, r#"{"a":[1,"2",[3]]}"#, r#"{"a":[1,"2",[3]]}"#);
 
 	// error because "a" is object
-	assert_error_path_str(&params, r#"{"a": {}}"#, ["a", "type"], "coercion");
+	assert_error_key(&params, r#"{"a": {}}"#, ["a", "coercion"]);
 
 	// error because "a" is string
-	assert_error_path_str(&params, r#"{"a": "test"}"#, ["a", "type"], "coercion");
+	assert_error_key(&params, r#"{"a": "test"}"#, ["a", "coercion"]);
 }
 
 #[test]
@@ -86,10 +86,10 @@ fn is_process_typed_list_require() {
 	assert_str_eq(&params, r#"{"a":[1,"2",3.1]}"#, r#"{"a":["1","2","3.1"]}"#);
 
 	// error because "a" is object
-	assert_error_path_str(&params, r#"{"a": {}}"#, ["a", "type"], "coercion");
+	assert_error_key(&params, r#"{"a": {}}"#, ["a", "coercion"]);
 
 	// error because element at index(2) is not coersible to string
-	assert_error_path_str(&params, r#"{"a": [1,2,{}]}"#, ["a", "2", "type"], "coercion");
+	assert_error_key(&params, r#"{"a": [1,2,{}]}"#, ["a", "2", "coercion"]);
 
 }
 
@@ -106,10 +106,10 @@ fn is_process_list_with_nested_require() {
 	assert_str_eq(&params, r#"{"a":[{"b":1,"c":["1"]}]}"#, r#"{"a":[{"b":"1","c":[1]}]}"#);
 
 	// error because element in "a" at index(0) is not coersible to string
-	assert_error_path_str(&params, r#"{"a":[{"b":{},"c":["1"]}]}"#, ["a", "0", "b", "type"], "coercion");
+	assert_error_key(&params, r#"{"a":[{"b":{},"c":["1"]}]}"#, ["a", "0", "b", "coercion"]);
 
 	// error because element in "a":0:"c":0 is not coersible to string
-	assert_error_path_str(&params, r#"{"a":[{"b":1,"c":[{}]}]}"#, ["a", "0", "c", "0", "type"], "coercion");
+	assert_error_key(&params, r#"{"a":[{"b":1,"c":[{}]}]}"#, ["a", "0", "c", "0", "coercion"]);
 
 }
 
@@ -123,10 +123,10 @@ fn is_process_object_require() {
 	assert_str_eq(&params, r#"{"a":{}}"#, r#"{"a":{}}"#);
 
 	// error because "a" is array, not object
-	assert_error_path_str(&params, r#"{"a":[]}"#, ["a", "type"], "coercion");
+	assert_error_key(&params, r#"{"a":[]}"#, ["a", "coercion"]);
 
 	// error because "a" is string, not object
-	assert_error_path_str(&params, r#"{"a":""}"#, ["a", "type"], "coercion");
+	assert_error_key(&params, r#"{"a":""}"#, ["a", "coercion"]);
 
 }
 
@@ -143,10 +143,10 @@ fn is_process_object_with_nested_require() {
 	assert_str_eq(&params, r#"{"a":{"b":"1.22","c":[1.112,""]}}"#, r#"{"a":{"b":1.22,"c":["1.112",""]}}"#);
 
 	// error because "a":"b" is not a f64
-	assert_error_path_str(&params, r#"{"a":{"b":"not-f64"},"c":[1.112,""]}"#, ["a", "b", "type"], "coercion");
+	assert_error_key(&params, r#"{"a":{"b":"not-f64"},"c":[1.112,""]}"#, ["a", "b", "coercion"]);
 
 	// error because "a":"c":"1" is object and can't be coerced to string
-	assert_error_path_str(&params, r#"{"a":{"b":"1.22","c":[1.112,{}]}}"#, ["a", "c", "1", "type"], "coercion");
+	assert_error_key(&params, r#"{"a":{"b":"1.22","c":[1.112,{}]}}"#, ["a", "c", "1", "coercion"]);
 
 }
 
@@ -160,7 +160,7 @@ fn is_process_require_allows_null() {
 	});
 
 	// error because a is not allow null explicitly
-	assert_error_path_str(&params, r#"{"a":null}"#, ["a", "type"], "coercion");
+	assert_error_key(&params, r#"{"a":null}"#, ["a", "coercion"]);
 
 	let params = Builder::build(|params| {
 		params.req("a", |a| {
@@ -188,7 +188,7 @@ fn is_validate_allow_values() {
 	assert_str_eq(&params, r#"{"a":"allowed2"}"#, r#"{"a":"allowed2"}"#);
 
 	// error because "a" is not in allowed list
-	assert_error_path_str(&params, r#"{"a":"not in allowed"}"#, ["a", "type"], "validation");
+	assert_error_key(&params, r#"{"a":"not in allowed"}"#, ["a", "validation"]);
 
 }
 
@@ -205,8 +205,8 @@ fn is_validate_reject_values() {
 	assert_str_eq(&params, r#"{"a":"some"}"#, r#"{"a":"some"}"#);
 
 	// errors because "a" is in reject list
-	assert_error_path_str(&params, r#"{"a":"rejected1"}"#, ["a", "type"], "validation");
-	assert_error_path_str(&params, r#"{"a":"rejected2"}"#, ["a", "type"], "validation");
+	assert_error_key(&params, r#"{"a":"rejected1"}"#, ["a", "validation"]);
+	assert_error_key(&params, r#"{"a":"rejected2"}"#, ["a", "validation"]);
 
 }
 
@@ -230,8 +230,8 @@ fn is_validate_with_function_validator() {
 	});
 
 	assert_str_eq(&params, r#"{"a":"2"}"#, r#"{"a":2}"#);
-	assert_error_path_str(&params, r#"{"a":3}"#, ["a", "type"], "validation");
-	assert_error_path_str(&params, r#"{"a":"3"}"#, ["a", "type"], "validation");
+	assert_error_key(&params, r#"{"a":3}"#, ["a", "validation"]);
+	assert_error_key(&params, r#"{"a":"3"}"#, ["a", "validation"]);
 
 }
 
@@ -248,8 +248,8 @@ fn is_validate_with_regex() {
 	assert_str_eq(&params, r#"{"a":"test"}"#, r#"{"a":"test"}"#);
 
 	// error because "a" is not match regex
-	assert_error_path_str(&params, r#"{"a":"2"}"#, ["a", "type"], "validation");
-	assert_error_path_str(&params, r#"{"a":"test "}"#, ["a", "type"], "validation");
+	assert_error_key(&params, r#"{"a":"2"}"#, ["a", "validation"]);
+	assert_error_key(&params, r#"{"a":"test "}"#, ["a", "validation"]);
 
 	let params = Builder::build(|params| {
 		params.req("a", |a| {
@@ -260,7 +260,7 @@ fn is_validate_with_regex() {
 	});
 
 	// "a" is valid list but it can't pass regex validation
-	assert_error_path_str(&params, r#"{"a":[]}"#, ["a", "type"], "validation");
+	assert_error_key(&params, r#"{"a":[]}"#, ["a", "validation"]);
 
 }
 
@@ -287,8 +287,8 @@ fn is_validate_opt_with_default() {
 		});
 	});
 
-	assert_result_path_str(&params, r#"{}"#, ["a"], "default");
-	assert_result_path_str(&params, r#"{"a":"test"}"#, ["a"], "test");
+	assert_str_eq(&params, r#"{"a":"test"}"#, r#"{"a":"test"}"#);
+	assert_str_eq(&params, r#"{}"#, r#"{"a":"default"}"#);
 
 }
 
