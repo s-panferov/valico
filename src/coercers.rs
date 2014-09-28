@@ -174,7 +174,9 @@ impl Coercer for ListCoercer {
 							Err(err) => { errors.insert(idx.to_string(), err.to_json()); }
 						}
 					} else {
-						errors.insert(idx.to_string(), format!("List item {} is not and object", item).to_json());
+						errors.insert(idx.to_string(), 
+							single_coerce_error(format!("List item {} is not and object", item)).to_json()
+						);
 					}
 				}
 
