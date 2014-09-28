@@ -169,7 +169,6 @@ impl Coercer for ListCoercer {
 			if extra.is_some() {
 				for (idx, item) in list.iter_mut().enumerate() {
 					if item.is_object() {
-						// todo match
 						match extra.unwrap().process(item.as_object_mut().unwrap()) {
 							Ok(()) => (),
 							Err(err) => { errors.insert(idx.to_string(), err.to_json()); }
@@ -219,9 +218,11 @@ pub struct ObjectCoercer;
 impl Coercer for ObjectCoercer {
 	fn coerce(&self, val: &mut Json, extra: Option<&Builder>) -> ValicoResult<Option<Json>> {
 		if val.is_object() {
-			// todo match
-			extra.unwrap().process(val.as_object_mut().unwrap());
-			Ok(None)
+			if (extra.is_some()) {
+				extra.unwrap().process(val.as_object_mut().unwrap()).map(|()| None)
+			} else {
+				Ok(None)	
+			}
 		} else {
 			Err(single_coerce_error(format!("Can't coerce non-object value {} to object", val)))
 		}

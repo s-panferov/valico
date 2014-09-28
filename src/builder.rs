@@ -88,8 +88,8 @@ impl Builder {
 	}
 
 	pub fn i64() -> Box<Coercer + Send + Sync> { box I64Coercer }
-	pub fn u64() -> Box<Coercer + Send + Sync> { box I64Coercer }
-	pub fn f64() -> Box<Coercer + Send + Sync> { box I64Coercer }
+	pub fn u64() -> Box<Coercer + Send + Sync> { box U64Coercer }
+	pub fn f64() -> Box<Coercer + Send + Sync> { box F64Coercer }
 	pub fn string() -> Box<Coercer + Send + Sync> { box StringCoercer }
 	pub fn null() -> Box<Coercer + Send + Sync> { box NullCoercer }
 	pub fn list() -> Box<Coercer + Send + Sync> { box ListCoercer::new() }

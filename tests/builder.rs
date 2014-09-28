@@ -92,7 +92,7 @@ fn is_process_typed_list_require() {
 }
 
 #[test]
-fn is_process_list_with_extra_require() {
+fn is_process_list_with_nested_require() {
 
 	let params = Builder::from_function(|params| {
 		params.req_nest("a", Builder::list(), |params| {
@@ -109,6 +109,41 @@ fn is_process_list_with_extra_require() {
 	// error because element in "a":0:"c":0 is not coersible to string
 	assert_error_path_str(&params, r#"{"a":[{"b":1,"c":[{}]}]}"#, ["a", "0", "c", "0", "type"], "coercion");
 
-	// println!("{}", test_error(&params, r#"{"a": [1,2,{}]}"#).to_pretty_str());
-	// fail!("");
+}
+
+#[test]
+fn is_process_object_require() {
+
+	let params = Builder::from_function(|params| {
+		params.req_type("a", Builder::object());
+	});
+
+	assert_str_eq(&params, r#"{"a":{}}"#, r#"{"a":{}}"#);
+
+	// error because "a" is array, not object
+	assert_error_path_str(&params, r#"{"a":[]}"#, ["a", "type"], "coercion");
+
+	// error because "a" is string, not object
+	assert_error_path_str(&params, r#"{"a":""}"#, ["a", "type"], "coercion");
+
+}
+
+#[test]
+fn is_process_object_with_nested_require() {
+
+	let params = Builder::from_function(|params| {
+		params.req_nest("a", Builder::object(), |params| {
+			params.req_type("b", Builder::f64());
+			params.req_type("c", Builder::list_of(Builder::string()));
+		});
+	});
+
+	assert_str_eq(&params, r#"{"a":{"b":"1.22","c":[1.112,""]}}"#, r#"{"a":{"b":1.22,"c":["1.112",""]}}"#);
+
+	// error because "a":"b" is not a f64
+	assert_error_path_str(&params, r#"{"a":{"b":"not-f64"},"c":[1.112,""]}"#, ["a", "b", "type"], "coercion");
+
+	// error because "a":"c":"1" is object and can't be coerced to string
+	assert_error_path_str(&params, r#"{"a":{"b":"1.22","c":[1.112,{}]}}"#, ["a", "c", "1", "type"], "coercion");
+
 }
