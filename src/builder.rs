@@ -33,7 +33,7 @@ impl Builder {
 		}
 	}
 
-	pub fn from_function(rules: |params: &mut Builder|) -> Builder {
+	pub fn build(rules: |params: &mut Builder|) -> Builder {
 		let mut builder = Builder::new();
 		rules(&mut builder);
 
@@ -50,9 +50,9 @@ impl Builder {
 		self.requires.push(params);
 	}
 
-	pub fn req_nest(&mut self, name: &str, coercer: Box<Coercer>, extra: |params: &mut Builder|) {
-		let extra_builder = Builder::from_function(extra);
-		let params = Param::new_with_extra(name, coercer, extra_builder);
+	pub fn req_nest(&mut self, name: &str, coercer: Box<Coercer>, nest_def: |params: &mut Builder|) {
+		let nest_builder = Builder::build(nest_def);
+		let params = Param::new_with_nest(name, coercer, nest_builder);
 		self.requires.push(params);
 	}
 

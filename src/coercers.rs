@@ -162,14 +162,14 @@ impl ListCoercer {
 }
 
 impl Coercer for ListCoercer {
-	fn coerce(&self, val: &mut Json, extra: Option<&Builder>) -> ValicoResult<Option<Json>> {
+	fn coerce(&self, val: &mut Json, nest: Option<&Builder>) -> ValicoResult<Option<Json>> {
 		if val.is_list() {
 			let list = val.as_list_mut().unwrap();
 			let mut errors = TreeMap::new();
-			if extra.is_some() {
+			if nest.is_some() {
 				for (idx, item) in list.iter_mut().enumerate() {
 					if item.is_object() {
-						match extra.unwrap().process(item.as_object_mut().unwrap()) {
+						match nest.unwrap().process(item.as_object_mut().unwrap()) {
 							Ok(()) => (),
 							Err(err) => { errors.insert(idx.to_string(), err.to_json()); }
 						}
@@ -216,10 +216,10 @@ impl Coercer for ListCoercer {
 pub struct ObjectCoercer;
 
 impl Coercer for ObjectCoercer {
-	fn coerce(&self, val: &mut Json, extra: Option<&Builder>) -> ValicoResult<Option<Json>> {
+	fn coerce(&self, val: &mut Json, nest: Option<&Builder>) -> ValicoResult<Option<Json>> {
 		if val.is_object() {
-			if (extra.is_some()) {
-				extra.unwrap().process(val.as_object_mut().unwrap()).map(|()| None)
+			if (nest.is_some()) {
+				nest.unwrap().process(val.as_object_mut().unwrap()).map(|()| None)
 			} else {
 				Ok(None)	
 			}
