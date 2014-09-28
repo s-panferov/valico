@@ -20,7 +20,8 @@ pub struct Param {
 	pub nest: Option<Builder>,
 	pub description: Option<String>,
 	pub allow_null: bool,
-	pub validators: Vec<Box<SingleParamValidator + Send + Sync>>
+	pub validators: Vec<Box<SingleParamValidator + Send + Sync>>,
+	pub default: Option<Json>
 }
 
 impl Param {
@@ -32,7 +33,8 @@ impl Param {
 			coercer: None,
 			nest: None,
 			allow_null: false,
-			validators: vec![]
+			validators: vec![],
+			default: None
 		}
 	}
 
@@ -43,7 +45,8 @@ impl Param {
 			coercer: Some(coercer),
 			nest: None,
 			allow_null: false,
-			validators: vec![]
+			validators: vec![],
+			default: None
 		}
 	}
 
@@ -54,7 +57,8 @@ impl Param {
 			coercer: Some(coercer),
 			nest: Some(nest),
 			allow_null: false,
-			validators: vec![]
+			validators: vec![],
+			default: None
 		}
 	}
 
@@ -134,5 +138,9 @@ impl<T: ToJson> Param {
 		self.validators.push(box RejectedValuesValidator::new(
 			values.iter().map(|v| v.to_json()).collect()
 		));
+	}
+
+	pub fn default(&mut self, default: T) {
+		self.default = Some(default.to_json());
 	}
 }

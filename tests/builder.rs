@@ -1,6 +1,5 @@
 
 use serialize::json::{Json, ToJson};
-use regex::{Regex};
 
 use valico::{
 	Builder,
@@ -264,4 +263,34 @@ fn is_validate_with_regex() {
 	assert_error_path_str(&params, r#"{"a":[]}"#, ["a", "type"], "validation");
 
 }
+
+#[test]
+fn is_validate_opt() {
+
+	let params = Builder::build(|params| {
+		params.req_defined("a");
+		params.opt_typed("b", Builder::u64());
+	});
+
+	// ok because a is optional
+	assert_str_eq(&params, r#"{"a":"test"}"#, r#"{"a":"test"}"#);
+	assert_str_eq(&params, r#"{"a":"test","b":"1"}"#, r#"{"a":"test","b":1}"#);
+
+}
+
+#[test]
+fn is_validate_opt_with_default() {
+
+	let params = Builder::build(|params| {
+		params.opt("a", |a| {
+			a.default("default".to_string());
+		});
+	});
+
+	assert_result_path_str(&params, r#"{}"#, ["a"], "default");
+	assert_result_path_str(&params, r#"{"a":"test"}"#, ["a"], "test");
+
+}
+
+
 

@@ -9,6 +9,10 @@ pub trait SingleParamValidator {
 	fn validate(&self, &Json) -> ValicoResult<()>;
 }
 
+pub trait MultipleParamValidator {
+	fn validate(&self, &Json) -> ValicoResult<()>;
+}
+
 pub struct AllowedValuesValidator {
 	allowed_values: Vec<Json>
 }
