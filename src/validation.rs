@@ -1,5 +1,7 @@
 
+use regex::Regex;
 use serialize::json::{Json, ToJson};
+
 use helpers::{single_validation_error};
 use ValicoResult;
 
@@ -23,7 +25,7 @@ impl SingleParamValidator for AllowedValuesValidator {
 	fn validate(&self, val: &Json) -> ValicoResult<()> {
 		let mut matched = false;
 		for allowed_value in self.allowed_values.iter() {
-			if (val == allowed_value) { matched = true; }
+			if val == allowed_value { matched = true; }
 		}
 
 		if matched {
@@ -50,7 +52,7 @@ impl SingleParamValidator for RejectedValuesValidator {
 	fn validate(&self, val: &Json) -> ValicoResult<()> {
 		let mut matched = false;
 		for rejected_value in self.rejected_values.iter() {
-			if (val == rejected_value) { matched = true; }
+			if val == rejected_value { matched = true; }
 		}
 
 		if matched {
@@ -79,6 +81,32 @@ impl SingleParamValidator for FunctionValidator {
 		match validator(val) {
 			Ok(()) => Ok(()),
 			Err(err) => Err(single_validation_error(err))
+		}
+	}
+}
+
+pub struct RegexValidator {
+	regex: Regex
+}
+
+impl RegexValidator {
+	pub fn new(regex: Regex) -> RegexValidator {
+		RegexValidator {
+			regex: regex
+		}
+	}
+}
+
+impl SingleParamValidator for RegexValidator {
+	fn validate(&self, val: &Json) -> ValicoResult<()> {
+		if val.is_string() {
+			if self.regex.is_match(val.as_string().unwrap()) {
+				Ok(())
+			} else {
+				Err(single_validation_error(format!("Value {} is not match required pattern", val)))
+			}
+		} else {
+			Err(single_validation_error(format!("Value {} can't be compared with pattern", val)))
 		}
 	}
 }

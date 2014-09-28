@@ -1,6 +1,7 @@
 
 use serialize::json;
 use serialize::json::{Json, ToJson};
+use regex::Regex;
 
 use builder::Builder;
 use coercers::Coercer;
@@ -8,7 +9,8 @@ use validation::{
 	SingleParamValidator,
 	AllowedValuesValidator,
 	RejectedValuesValidator,
-	FunctionValidator
+	FunctionValidator,
+	RegexValidator
 };
 use ValicoResult;
 
@@ -19,8 +21,6 @@ pub struct Param {
 	pub description: Option<String>,
 	pub allow_null: bool,
 	pub validators: Vec<Box<SingleParamValidator + Send + Sync>>
-	// pub validators
-	// pub allow_nul
 }
 
 impl Param {
@@ -79,6 +79,10 @@ impl Param {
 
 	pub fn allow_null(&mut self) {
 		self.allow_null = true;
+	}
+
+	pub fn regex(&mut self, regex: Regex) {
+		self.validators.push(box RegexValidator::new(regex));
 	}
 
 	pub fn validate(&mut self, validator: Box<SingleParamValidator + Send + Sync>) {

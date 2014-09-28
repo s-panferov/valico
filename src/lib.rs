@@ -1,5 +1,6 @@
 
 extern crate serialize;
+extern crate regex;
 
 use serialize::json;
 

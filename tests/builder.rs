@@ -1,5 +1,6 @@
 
 use serialize::json::{Json, ToJson};
+use regex::{Regex};
 
 use valico::{
 	Builder,
@@ -234,3 +235,33 @@ fn is_validate_with_function_validator() {
 	assert_error_path_str(&params, r#"{"a":"3"}"#, ["a", "type"], "validation");
 
 }
+
+#[test]
+fn is_validate_with_regex() {
+
+	let params = Builder::build(|params| {
+		params.req("a", |a| {
+			a.coerce(Builder::string());
+			a.regex(regex!("^test$"));
+		})
+	});
+
+	assert_str_eq(&params, r#"{"a":"test"}"#, r#"{"a":"test"}"#);
+
+	// error because "a" is not match regex
+	assert_error_path_str(&params, r#"{"a":"2"}"#, ["a", "type"], "validation");
+	assert_error_path_str(&params, r#"{"a":"test "}"#, ["a", "type"], "validation");
+
+	let params = Builder::build(|params| {
+		params.req("a", |a| {
+			// regex can't be applied to list, so it will never be valid
+			a.coerce(Builder::list());
+			a.regex(regex!("^test$"));
+		})
+	});
+
+	// "a" is valid list but it can't pass regex validation
+	assert_error_path_str(&params, r#"{"a":[]}"#, ["a", "type"], "validation");
+
+}
+

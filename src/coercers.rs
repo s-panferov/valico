@@ -218,7 +218,7 @@ pub struct ObjectCoercer;
 impl Coercer for ObjectCoercer {
 	fn coerce(&self, val: &mut Json, nest: Option<&Builder>) -> ValicoResult<Option<Json>> {
 		if val.is_object() {
-			if (nest.is_some()) {
+			if nest.is_some() {
 				nest.unwrap().process(val.as_object_mut().unwrap()).map(|()| None)
 			} else {
 				Ok(None)	
