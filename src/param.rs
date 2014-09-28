@@ -9,7 +9,8 @@ pub struct Param {
 	pub name: String,
 	pub coercer: Option<Box<Coercer>>,
 	pub nest: Option<Builder>,
-	pub description: Option<String>
+	pub description: Option<String>,
+	pub allow_null: bool
 	// pub validators
 	// pub allow_nul
 }
@@ -21,7 +22,8 @@ impl Param {
 			name: name.to_string(),
 			description: None,
 			coercer: None,
-			nest: None
+			nest: None,
+			allow_null: false
 		}
 	}
 
@@ -30,7 +32,8 @@ impl Param {
 			name: name.to_string(),
 			description: None,
 			coercer: Some(coercer),
-			nest: None
+			nest: None,
+			allow_null: false
 		}
 	}
 
@@ -39,7 +42,8 @@ impl Param {
 			name: name.to_string(),
 			description: None,
 			coercer: Some(coercer),
-			nest: Some(nest)
+			nest: Some(nest),
+			allow_null: false
 		}
 	}
 
@@ -62,10 +66,18 @@ impl Param {
 		self.nest = Some(Builder::build(nest_def));
 	}
 
+	pub fn allow_null(&mut self) {
+		self.allow_null = true;
+	}
+
 	pub fn process(&self, val: &mut json::Json) -> ValicoResult<Option<json::Json>> {
-		match self.coercer.as_ref() {
-			Some(coercer) => coercer.coerce(val, self.nest.as_ref()),
-			None => Ok(None)
+		if val.is_null() && self.allow_null {
+			Ok(None)
+		} else {
+			match self.coercer.as_ref() {
+				Some(coercer) => coercer.coerce(val, self.nest.as_ref()),
+				None => Ok(None)
+			}	
 		}
 	}
 }

@@ -147,3 +147,26 @@ fn is_process_object_with_nested_require() {
 	assert_error_path_str(&params, r#"{"a":{"b":"1.22","c":[1.112,{}]}}"#, ["a", "c", "1", "type"], "coercion");
 
 }
+
+#[test]
+fn is_process_require_allows_null() {
+
+	let params = Builder::build(|params| {
+		params.req("a", |a| {
+			a.coerce(Builder::string());
+		})
+	});
+
+	// error because a is not allow null explicitly
+	assert_error_path_str(&params, r#"{"a":null}"#, ["a", "type"], "coercion");
+
+	let params = Builder::build(|params| {
+		params.req("a", |a| {
+			a.coerce(Builder::string());
+			a.allow_null();
+		})
+	});
+
+	// ok because "a" allows null explicitly
+	assert_str_eq(&params, r#"{"a":null}"#, r#"{"a":null}"#);
+}
