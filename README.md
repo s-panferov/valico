@@ -26,7 +26,9 @@ let params = Builder::build(|params| {
 });
 ~~~
 
-Later `params` instance can be used to process one or more JSON objects with it's `process` method with signature `fn process(&self, tree: &mut JsonObject) -> ValicoResult<()>`
+Later `params` instance can be used to process one or more JSON objects with it's `process` method with signature `fn process(&self, tree: &mut JsonObject) -> ValicoResult<()>`.
+
+**Note** that Valico will **mutate** borrowed JSON value if come coercion is needed.
 
 Example: 
 
@@ -63,6 +65,10 @@ fn main() {
 
 }
 ~~~
+
+Also you can look to the [specs] for more details and examples.
+
+[specs]: https://github.com/s-panferov/valico/blob/master/tests/builder.rs
 
 # Validation and coercion
 
