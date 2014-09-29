@@ -16,7 +16,7 @@ use validation::{
 };
 use ValicoResult;
 
-use helpers::{single_validation_error};
+use helpers::{validation_error};
 
 pub struct Param {
 	pub name: String,
@@ -123,7 +123,7 @@ impl Param {
 					}
 				} else {
 					errors.insert(idx.to_string(), 
-						single_validation_error(format!("List item {} is not and object", item)).to_json()
+						validation_error(format!("List item {} is not and object", item)).to_json()
 					);
 				}
 			}

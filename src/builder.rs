@@ -2,7 +2,7 @@
 use std::collections::TreeMap;
 use serialize::json::{Json, JsonObject, ToJson};
 
-use helpers::{has_value, single_validation_error};
+use helpers::{has_value, validation_error};
 use param::Param;
 
 use coercers::{
@@ -116,7 +116,7 @@ impl Builder {
 					}
 				}
 			} else {
-				errors.insert(name.to_string(), single_validation_error("Field is required".to_string()).to_json());
+				errors.insert(name.to_string(), validation_error("Field is required".to_string()).to_json());
 			}
 		}
 

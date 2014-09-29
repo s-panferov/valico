@@ -5,7 +5,7 @@ use std::collections::TreeMap;
 
 use mutable_json::MutableJson;
 use builder::Builder;
-use helpers::{single_coerce_error};
+use helpers::{coerce_error};
 use ValicoResult;
 
 pub trait Coercer: Send + Sync {
@@ -22,7 +22,7 @@ impl Coercer for StringCoercer {
 			Ok(Some(val.to_string().to_json()))
 		} else {
 			Err(
-				single_coerce_error(format!("Can't coerce object {} to string", val))
+				coerce_error(format!("Can't coerce object {} to string", val))
 			)
 		}
 	}
@@ -45,10 +45,10 @@ impl Coercer for I64Coercer {
 			let converted: Option<i64> = from_str(val);
 			match converted {
 				Some(num) => Ok(Some(num.to_json())),
-				None => Err(single_coerce_error(format!("Can't coerce string value {} to i64", val)))
+				None => Err(coerce_error(format!("Can't coerce string value {} to i64", val)))
 			}
 		} else {
-			Err(single_coerce_error(format!("Can't coerce object {} to i64", val)))
+			Err(coerce_error(format!("Can't coerce object {} to i64", val)))
 		}
 	}
 }
@@ -70,10 +70,10 @@ impl Coercer for U64Coercer {
 			let converted: Option<u64> = from_str(val);
 			match converted {
 				Some(num) => Ok(Some(num.to_json())),
-				None => Err(single_coerce_error(format!("Can't coerce string value {} to u64", val)))
+				None => Err(coerce_error(format!("Can't coerce string value {} to u64", val)))
 			}
 		} else {
-			Err(single_coerce_error(format!("Can't coerce object {} to u64", val)))
+			Err(coerce_error(format!("Can't coerce object {} to u64", val)))
 		}
 	}
 }
@@ -95,10 +95,10 @@ impl Coercer for F64Coercer {
 			let converted: Option<f64> = from_str(val);
 			match converted {
 				Some(num) => Ok(Some(num.to_json())),
-				None => Err(single_coerce_error(format!("Can't coerce string value {} to f64", val)))
+				None => Err(coerce_error(format!("Can't coerce string value {} to f64", val)))
 			}
 		} else {
-			Err(single_coerce_error(format!("Can't coerce object {} to f64", val)))
+			Err(coerce_error(format!("Can't coerce object {} to f64", val)))
 		}
 	}
 }
@@ -116,10 +116,10 @@ impl Coercer for BooleanCoercer {
 			} else if val == "false" {
 				Ok(Some(false.to_json()))
 			} else {
-				Err(single_coerce_error(format!("Can't coerce string value {} to boolean. Correct values is 'true' and 'false'", val)))
+				Err(coerce_error(format!("Can't coerce string value {} to boolean. Correct values is 'true' and 'false'", val)))
 			}
 		} else {
-			Err(single_coerce_error(format!("Can't coerce object {} to boolean", val)))
+			Err(coerce_error(format!("Can't coerce object {} to boolean", val)))
 		}
 	}
 }
@@ -135,10 +135,10 @@ impl Coercer for NullCoercer {
 			if val == "" {
 				Ok(Some(json::Null))
 			} else {
-				Err(single_coerce_error(format!("Can't coerce string value {} to null. Correct value is only empty string", val)))
+				Err(coerce_error(format!("Can't coerce string value {} to null. Correct value is only empty string", val)))
 			}
 		} else {
-			Err(single_coerce_error(format!("Can't coerce object {} to null", val)))
+			Err(coerce_error(format!("Can't coerce object {} to null", val)))
 		}
 	}
 }
@@ -190,7 +190,7 @@ impl Coercer for ListCoercer {
 				Ok(None)
 			}
 		} else {
-			Err(single_coerce_error(format!("Can't coerce object {} to list", val)))
+			Err(coerce_error(format!("Can't coerce object {} to list", val)))
 		}
 	}
 }
@@ -202,7 +202,7 @@ impl Coercer for ObjectCoercer {
 		if val.is_object() {
 			Ok(None)	
 		} else {
-			Err(single_coerce_error(format!("Can't coerce non-object value {} to object", val)))
+			Err(coerce_error(format!("Can't coerce non-object value {} to object", val)))
 		}
 	}
 }
