@@ -69,29 +69,29 @@ This functions are available in Builder to define parameters:
 
 ~~~rust
 
-    // Parameter is required, no coercion
-    fn req_defined(&mut self, name: &str);
+// Parameter is required, no coercion
+fn req_defined(&mut self, name: &str);
 
-    // Parameter is required, with coercion
-    fn req_typed(&mut self, name: &str, coercer: Box<Coercer>);
+// Parameter is required, with coercion
+fn req_typed(&mut self, name: &str, coercer: Box<Coercer>);
 
-    // Parameter is required, with coercion and nested checks
-    fn req_nested(&mut self, name: &str, coercer: Box<Coercer>, nest_def: |&mut Builder|);
+// Parameter is required, with coercion and nested checks
+fn req_nested(&mut self, name: &str, coercer: Box<Coercer>, nest_def: |&mut Builder|);
 
-    // Parameter is required, setup with Param DSL
-    fn req(&mut self, name: &str, param_builder: |&mut Param|);
+// Parameter is required, setup with Param DSL
+fn req(&mut self, name: &str, param_builder: |&mut Param|);
 
-    // Parameter is optional, no coercion
-    fn opt_defined(&mut self, name: &str);
+// Parameter is optional, no coercion
+fn opt_defined(&mut self, name: &str);
 
-    // Parameter is optional, with coercion
-    fn opt_typed(&mut self, name: &str, coercer: Box<Coercer>);
+// Parameter is optional, with coercion
+fn opt_typed(&mut self, name: &str, coercer: Box<Coercer>);
 
-    // Parameter is optional, with coercion and nested checks
-    fn opt_nested(&mut self, name: &str, coercer: Box<Coercer>, nest_def: |&mut Builder|);
+// Parameter is optional, with coercion and nested checks
+fn opt_nested(&mut self, name: &str, coercer: Box<Coercer>, nest_def: |&mut Builder|);
 
-    // Parameter is required, setup with Param DSL
-    fn opt(&mut self, name: &str, param_builder: |&mut Param|);
+// Parameter is required, setup with Param DSL
+fn opt(&mut self, name: &str, param_builder: |&mut Param|);
 
 ~~~
 
@@ -99,15 +99,15 @@ This functions are available in Builder to define parameters:
 
 Available list of coercers:
     
-# Builder::i64() 
-# Builder::u64() 
-# Builder::f64() 
-# Builder::string() 
-# Builder::boolean() 
-# Builder::null() 
-# Builder::list() 
-# Builder::list_of() 
-# Builder::object() 
+* Builder::i64() 
+* Builder::u64() 
+* Builder::f64() 
+* Builder::string() 
+* Builder::boolean() 
+* Builder::null() 
+* Builder::list() 
+* Builder::list_of() 
+* Builder::object() 
 
 Example of usage:
 
