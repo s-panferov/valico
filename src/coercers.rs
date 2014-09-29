@@ -4,7 +4,6 @@ use serialize::json::{Json, ToJson};
 use std::collections::TreeMap;
 
 use mutable_json::MutableJson;
-use builder::Builder;
 use helpers::{coerce_error};
 use ValicoResult;
 

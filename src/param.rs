@@ -1,5 +1,4 @@
 
-use serialize::json;
 use serialize::json::{Json, ToJson};
 use std::collections::TreeMap;
 use regex::Regex;
@@ -148,7 +147,7 @@ impl Param {
 		let mut return_value = None;
 
 		let result = {
-			let mut val = if self.coercer.is_some() {
+			let val = if self.coercer.is_some() {
 				match self.coercer.as_ref().unwrap().coerce(val) {
 					Ok(Some(new_value)) => { 
 						need_return = true; 

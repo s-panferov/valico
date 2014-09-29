@@ -1,6 +1,6 @@
 
 use regex::Regex;
-use serialize::json::{Json, ToJson, JsonObject};
+use serialize::json::{Json, JsonObject};
 
 use helpers::{validation_error};
 use ValicoResult;

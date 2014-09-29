@@ -1,9 +1,9 @@
 
 use std::collections::TreeMap;
-use serialize::json::{Json, JsonObject, ToJson};
+use serialize::json::{JsonObject, ToJson};
 
 use helpers::{has_value, validation_error};
-use param::Param;
+use param::Param; 
 
 use coercers::{
 	Coercer,
@@ -89,6 +89,10 @@ impl Builder {
 	pub fn opt(&mut self, name: &str, param_builder: |&mut Param|) {
 		let params = Param::build(name, param_builder);
 		self.optional.push(params);
+	}
+
+	pub fn validate(&mut self, validator: Box<MutuallyExclusiveValidator>) {
+		self.validators.push(validator);
 	}
 
 	pub fn mutually_exclusive(&mut self, params: &[&str]) {
@@ -182,6 +186,7 @@ impl Builder {
 	pub fn u64() -> Box<Coercer + Send + Sync> { box U64Coercer }
 	pub fn f64() -> Box<Coercer + Send + Sync> { box F64Coercer }
 	pub fn string() -> Box<Coercer + Send + Sync> { box StringCoercer }
+	pub fn boolean() -> Box<Coercer + Send + Sync> { box BooleanCoercer }
 	pub fn null() -> Box<Coercer + Send + Sync> { box NullCoercer }
 	pub fn list() -> Box<Coercer + Send + Sync> { box ListCoercer::new() }
 	pub fn list_of(coercer: Box<Coercer + Send + Sync>) -> Box<Coercer + Send + Sync> { box ListCoercer::of_type(coercer) }

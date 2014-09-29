@@ -10,7 +10,8 @@ use helpers::{
 	test_error,
 	assert_str_eq, 
 	assert_result_key, 
-	assert_error_key};
+	assert_error_key
+};
 
 #[test]
 fn is_process_simple_require() {
@@ -57,6 +58,23 @@ fn is_process_string_require() {
 	
 	// error because "a" is null
 	assert_error_key(&params, r#"{"a": null}"#, ["a", "coercion"]);
+}
+
+#[test]
+fn is_process_boolean_require() {
+
+	let params = Builder::build(|params| {
+		params.req_typed("a", Builder::boolean());
+	});
+
+	assert_str_eq(&params, r#"{"a":true}"#, r#"{"a":true}"#);
+	assert_str_eq(&params, r#"{"a":false}"#, r#"{"a":false}"#);
+	assert_str_eq(&params, r#"{"a":"true"}"#, r#"{"a":true}"#);
+	assert_str_eq(&params, r#"{"a":"false"}"#, r#"{"a":false}"#);
+
+	assert_error_key(&params, r#"{"a": null}"#, ["a", "coercion"]);
+	assert_error_key(&params, r#"{"a": 1}"#, ["a", "coercion"]);
+	assert_error_key(&params, r#"{"a": "not-bool"}"#, ["a", "coercion"]);
 }
 
 #[test]
