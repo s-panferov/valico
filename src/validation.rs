@@ -1,6 +1,6 @@
 
 use regex::Regex;
-use serialize::json::{Json, ToJson};
+use serialize::json::{Json, ToJson, JsonObject};
 
 use helpers::{validation_error};
 use ValicoResult;
@@ -10,7 +10,7 @@ pub trait SingleParamValidator {
 }
 
 pub trait MultipleParamValidator {
-	fn validate(&self, &Json) -> ValicoResult<()>;
+	fn validate(&self, &JsonObject) -> ValicoResult<()>;
 }
 
 pub struct AllowedValuesValidator {

@@ -88,14 +88,6 @@ impl Builder {
 		self.optional.push(params);
 	}
 
-	fn process_validations(&self, val: &Json) -> ValicoResult<()> {
-		for mut validator in self.validators.iter() {
-			try!(validator.validate(val));
-		};
-
-		Ok(())
-	}
-
 	pub fn process(&self, tree: &mut JsonObject) -> ValicoResult<()>  {
 		
 		let mut errors = TreeMap::new();
@@ -138,19 +130,30 @@ impl Builder {
 			}
 		}
 
-		// second pass to assign default values to optionals
-		for param in self.optional.iter() {
-			let ref name = param.name;
-			let present = has_value(tree, name);
-			if !present {
-				match param.default.as_ref() {
-					Some(val) => { tree.insert(name.clone(), val.clone()); },
-					None => ()
-				};
-			}
+		let mut i = 0u;
+		for validator in self.validators.iter() {
+			match validator.validate(tree) {
+				Ok(()) => (),
+				Err(err) => {
+					errors.insert(format!("$${}", i.to_string()), err.to_json());
+					i = i + 1;
+				}
+			};
 		}
-
+	
 		if errors.len() == 0 {
+			// second pass we need to validate without default values in optionals
+			for param in self.optional.iter() {
+				let ref name = param.name;
+				let present = has_value(tree, name);
+				if !present {
+					match param.default.as_ref() {
+						Some(val) => { tree.insert(name.clone(), val.clone()); },
+						None => ()
+					};
+				}
+			}
+
 			Ok(())
 		} else {
 			Err(errors)
