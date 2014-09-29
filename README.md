@@ -162,7 +162,7 @@ let params = Builder::build(|params| {
             params.opt("kind", |kind| {
                 kind.coerce(Builder::string());
 
-                // optional values can have default values
+                // optional parameters can have default values
                 kind.default("simeple_user".to_string())
             });
         });
@@ -241,3 +241,93 @@ let params = Builder::build(|params| {
 
 One can use custom validator. Docs in Progress.
 
+## Builder validations
+
+Some validators can be specified in Builder DSL block to validate a set of parameters.
+
+### mutually_exclusive
+
+Parameters can be defined as mutually_exclusive, ensuring that they aren't present at the same time in a request.
+
+~~~rust
+let params = Builder::build(|params| {
+    params.opt_defined("vodka");
+    params.opt_defined("beer");
+
+    params.mutually_exclusive(["vodka", "beer"]);
+});
+~~~
+
+### mutually_exclusive
+
+Parameters can be defined as mutually_exclusive, ensuring that they aren't present at the same time in a request.
+
+~~~rust
+let params = Builder::build(|params| {
+    params.opt_defined("vodka");
+    params.opt_defined("beer");
+
+    params.mutually_exclusive(["vodka", "beer"]);
+});
+~~~
+
+Multiple sets can be defined:
+
+~~~rust
+let params = Builder::build(|params| {
+    params.opt_defined("vodka");
+    params.opt_defined("beer");
+    params.mutually_exclusive(["vodka", "beer"]);
+
+    params.opt_defined("lard");
+    params.opt_defined("jamon");
+    params.mutually_exclusive(["lard", "jamon"]);
+});
+~~~
+
+**Warning**: Never define mutually exclusive sets with any required params. Two mutually exclusive required params will mean params are never valid. One required param mutually exclusive with an optional param will mean the latter is never valid.
+
+### exactly_one_of
+
+Parameters can be defined as 'exactly_one_of', ensuring that exactly one parameter gets selected.
+
+~~~rust
+let params = Builder::build(|params| {
+    params.opt_defined("vodka");
+    params.opt_defined("beer");
+    params.exactly_one_of(["vodka", "beer"]);
+});
+~~~
+
+### at_least_one_of
+
+Parameters can be defined as 'at_least_one_of', ensuring that at least one parameter gets selected.
+
+~~~rust
+let params = Builder::build(|params| {
+    params.opt_defined("vodka");
+    params.opt_defined("beer");
+    params.opt_defined("wine");
+    params.exactly_one_of(["vodka", "beer", "wine"]);
+});
+~~~
+
+### validate_with
+
+Sometimes it's usefull to use some custom function as validator:
+
+~~~rust
+let params = Builder::build(|params| {
+    params.req_defined("monster_name");
+
+    fn validate_params(_: &JsonObject) -> Result<(),String> {
+        Err("YOU SHALL NOT PASS".to_string())
+    }
+
+    params.validate_with(validate_params);
+});
+~~~
+
+### validate
+
+One can use custom validator. Docs in Progress.
