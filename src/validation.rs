@@ -114,3 +114,88 @@ impl SingleParamValidator for RegexValidator {
 		}
 	}
 }
+
+pub struct MutuallyExclusiveValidator {
+	params: Vec<String>
+}
+
+impl MutuallyExclusiveValidator {
+	pub fn new(params: &[&str]) -> MutuallyExclusiveValidator {
+		MutuallyExclusiveValidator {
+			params: params.iter().map(|s| s.to_string()).collect()
+		}
+	}
+}
+
+impl MultipleParamValidator for MutuallyExclusiveValidator {
+	fn validate(&self, tree: &JsonObject) -> ValicoResult<()> {
+		let mut matched = vec![];
+		for param in self.params.iter() {
+			if tree.contains_key(param) { matched.push(param.clone()); }
+		}
+
+		if matched.len() <= 1 {
+			Ok(())
+		} else {
+			Err(validation_error(format!("Fields {} are mutually exclusive", matched)))
+		}
+	}
+}
+
+pub struct ExactlyOneOfValidator {
+	params: Vec<String>
+}
+
+impl ExactlyOneOfValidator {
+	pub fn new(params: &[&str]) -> ExactlyOneOfValidator {
+		ExactlyOneOfValidator {
+			params: params.iter().map(|s| s.to_string()).collect()
+		}
+	}
+}
+
+impl MultipleParamValidator for ExactlyOneOfValidator {
+	fn validate(&self, tree: &JsonObject) -> ValicoResult<()> {
+		let mut matched = vec![];
+		for param in self.params.iter() {
+			if tree.contains_key(param) { matched.push(param.clone()); }
+		}
+
+		let len = matched.len();
+		if len == 1 {
+			Ok(())
+		} else if len > 1 {
+			Err(validation_error(format!("Exactly one of {} is allowed at one time", matched)))
+		} else {
+			Err(validation_error(format!("Exactly one of {} must be present", self.params)))
+		}
+	}
+}
+
+pub struct AtLeastOneOfValidator {
+	params: Vec<String>
+}
+
+impl AtLeastOneOfValidator {
+	pub fn new(params: &[&str]) -> AtLeastOneOfValidator {
+		AtLeastOneOfValidator {
+			params: params.iter().map(|s| s.to_string()).collect()
+		}
+	}
+}
+
+impl MultipleParamValidator for AtLeastOneOfValidator {
+	fn validate(&self, tree: &JsonObject) -> ValicoResult<()> {
+		let mut matched = vec![];
+		for param in self.params.iter() {
+			if tree.contains_key(param) { matched.push(param.clone()); }
+		}
+
+		let len = matched.len();
+		if len >= 1 {
+			Ok(())
+		} else {
+			Err(validation_error(format!("Al least one of {} must be present", self.params)))
+		}
+	}
+}

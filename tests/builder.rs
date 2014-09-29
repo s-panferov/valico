@@ -148,9 +148,6 @@ fn is_process_object_with_nested_require() {
 	// error because "a":"c":"1" is object and can't be coerced to string
 	assert_error_key(&params, r#"{"a":{"b":"1.22","c":[1.112,{}]}}"#, ["a", "c", "1", "coercion"]);
 
-	println!("{}", test_error(&params, r#"{"a":{"b":"1.22","c":[1.112,{}]}}"#).to_pretty_str());
-	// fail!("")
-
 }
 
 #[test]
@@ -295,5 +292,58 @@ fn is_validate_opt_with_default() {
 
 }
 
+#[test]
+fn is_validate_mutually_exclusive() {
+
+	let params = Builder::build(|params| {
+		params.opt_defined("a");
+		params.opt_defined("b");
+
+		params.mutually_exclusive(["a", "b"])
+	});
+
+	assert_str_eq(&params, r#"{"a":1}"#, r#"{"a":1}"#);
+	assert_str_eq(&params, r#"{"b":1}"#, r#"{"b":1}"#);
+	assert_str_eq(&params, r#"{}"#, r#"{}"#);
+
+	assert_error_key(&params, r#"{"a":1,"b":1}"#, ["$$0", "validation"]);
+
+}
+
+#[test]
+fn is_validate_exactly_one_of() {
+
+	let params = Builder::build(|params| {
+		params.opt_defined("a");
+		params.opt_defined("b");
+
+		params.exactly_one_of(["a", "b"])
+	});
+
+	assert_str_eq(&params, r#"{"a":1}"#, r#"{"a":1}"#);
+	assert_str_eq(&params, r#"{"b":1}"#, r#"{"b":1}"#);
+
+	assert_error_key(&params, r#"{}"#, ["$$0", "validation"]);
+	assert_error_key(&params, r#"{"a":1,"b":1}"#, ["$$0", "validation"]);
+
+}
+
+#[test]
+fn is_validate_at_least_one_of() {
+
+	let params = Builder::build(|params| {
+		params.opt_defined("a");
+		params.opt_defined("b");
+
+		params.at_least_one_of(["a", "b"])
+	});
+
+	assert_str_eq(&params, r#"{"a":1}"#, r#"{"a":1}"#);
+	assert_str_eq(&params, r#"{"b":1}"#, r#"{"b":1}"#);
+	assert_str_eq(&params, r#"{"a":1,"b":1}"#, r#"{"a":1,"b":1}"#);
+
+	assert_error_key(&params, r#"{}"#, ["$$0", "validation"]);
+
+}
 
 

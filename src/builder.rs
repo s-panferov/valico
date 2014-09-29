@@ -18,7 +18,10 @@ use coercers::{
 };
 
 use validation::{
-	MultipleParamValidator
+	MultipleParamValidator,
+	MutuallyExclusiveValidator,
+	ExactlyOneOfValidator,
+	AtLeastOneOfValidator
 };
 
 use ValicoResult;
@@ -86,6 +89,21 @@ impl Builder {
 	pub fn opt(&mut self, name: &str, param_builder: |&mut Param|) {
 		let params = Param::build(name, param_builder);
 		self.optional.push(params);
+	}
+
+	pub fn mutually_exclusive(&mut self, params: &[&str]) {
+		let validator = box MutuallyExclusiveValidator::new(params);
+		self.validators.push(validator);
+	}
+
+	pub fn exactly_one_of(&mut self, params: &[&str]) {
+		let validator = box ExactlyOneOfValidator::new(params);
+		self.validators.push(validator);
+	}
+
+	pub fn at_least_one_of(&mut self, params: &[&str]) {
+		let validator = box AtLeastOneOfValidator::new(params);
+		self.validators.push(validator);
 	}
 
 	pub fn process(&self, tree: &mut JsonObject) -> ValicoResult<()>  {
