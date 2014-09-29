@@ -41,7 +41,9 @@ fn main() {
         });
     });
 
-    let mut obj = json::from_str(r#"{"user": {"name": "Frodo", "friend_ids": ["1223"]}}"#).unwrap();
+    let mut obj = json::from_str(
+        r#"{"user": {"name": "Frodo", "friend_ids": ["1223"]}}"#
+    ).unwrap();
 
     match params.process(obj.as_object_mut().unwrap()) {
         Ok(()) => {
