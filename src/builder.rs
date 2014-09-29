@@ -21,7 +21,8 @@ use validation::{
 	MultipleParamValidator,
 	MutuallyExclusiveValidator,
 	ExactlyOneOfValidator,
-	AtLeastOneOfValidator
+	AtLeastOneOfValidator,
+	FunctionMultipleValidator
 };
 
 use ValicoResult;
@@ -93,6 +94,10 @@ impl Builder {
 
 	pub fn validate(&mut self, validator: Box<MutuallyExclusiveValidator>) {
 		self.validators.push(validator);
+	}
+
+	pub fn validate_with(&mut self, validator: fn(&JsonObject) -> Result<(), String>) {
+		self.validators.push(box FunctionMultipleValidator::new(validator));
 	}
 
 	pub fn mutually_exclusive(&mut self, params: &[&str]) {

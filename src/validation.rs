@@ -199,3 +199,25 @@ impl MultipleParamValidator for AtLeastOneOfValidator {
 		}
 	}
 }
+
+pub struct FunctionMultipleValidator {
+	validator: fn(&JsonObject) -> Result<(), String>
+}
+
+impl FunctionMultipleValidator {
+	pub fn new(validator: fn(&JsonObject) -> Result<(), String>) -> FunctionMultipleValidator {
+		FunctionMultipleValidator {
+			validator: validator
+		}
+	}
+}
+
+impl MultipleParamValidator for FunctionMultipleValidator {
+	fn validate(&self, val: &JsonObject) -> ValicoResult<()> {
+		let validator = self.validator;
+		match validator(val) {
+			Ok(()) => Ok(()),
+			Err(err) => Err(validation_error(err))
+		}
+	}
+}

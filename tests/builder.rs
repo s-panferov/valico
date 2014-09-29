@@ -1,5 +1,5 @@
 
-use serialize::json::{Json, ToJson};
+use serialize::json::{Json, JsonObject, ToJson};
 
 use valico::{
 	Builder,
@@ -363,5 +363,24 @@ fn is_validate_at_least_one_of() {
 	assert_error_key(&params, r#"{}"#, ["$$0", "validation"]);
 
 }
+
+#[test]
+fn is_validate_with_function() {
+
+	let params = Builder::build(|params| {
+		params.opt_defined("a");
+		params.opt_defined("b");
+
+		fn validate_params(_: &JsonObject) -> Result<(),String> {
+			Err("YOU SHALL NOT PASS".to_string())
+		}
+
+		params.validate_with(validate_params);
+	});
+
+	assert_error_key(&params, r#"{}"#, ["$$0", "validation"]);
+
+}
+
 
 
