@@ -109,68 +109,74 @@ impl Param {
 		Ok(())
 	}
 
-	pub fn process(&self, val: &mut Json) -> ValicoResult<Option<Json>> {
-		if val.is_null() && self.allow_null {
-			Ok(None)
-		} else {
-			
-			let mut need_return = false;
-			let mut return_value = None;
+	fn process_nest(&self, val: &mut Json) -> ValicoResult<()> {
+		let ref nest = self.nest.as_ref().unwrap();
 
-			let result = {
-				let mut val = if self.coercer.is_some() {
-					match self.coercer.as_ref().unwrap().coerce(val) {
-						Ok(Some(new_value)) => { 
-							need_return = true; 
-							return_value = Some(new_value); 
-							return_value.as_mut().unwrap() 
-						},
-						Ok(None) => val,
-						Err(err) => return Err(err)
+		if val.is_list() {
+			let mut errors = TreeMap::new();
+			let list = val.as_list_mut().unwrap();
+			for (idx, item) in list.iter_mut().enumerate() {
+				if item.is_object() {
+					match nest.process(item.as_object_mut().unwrap()) {
+						Ok(()) => (),
+						Err(err) => { errors.insert(idx.to_string(), err.to_json()); }
 					}
 				} else {
-					val
-				};
-
-				let ref nest = self.nest;
-
-				if nest.is_some() {
-					if val.is_list() {
-						let mut errors = TreeMap::new();
-						let list = val.as_list_mut().unwrap();
-						for (idx, item) in list.iter_mut().enumerate() {
-							if item.is_object() {
-								match nest.as_ref().unwrap().process(item.as_object_mut().unwrap()) {
-									Ok(()) => (),
-									Err(err) => { errors.insert(idx.to_string(), err.to_json()); }
-								}
-							} else {
-								errors.insert(idx.to_string(), 
-									single_validation_error(format!("List item {} is not and object", item)).to_json()
-								);
-							}
-						}
-
-						if errors.len() > 0 {
-							return Err(errors);
-						}
-					} else if val.is_object() {
-						match nest.as_ref().unwrap().process(val.as_object_mut().unwrap()) {
-							Ok(()) => (),
-							Err(err) => return Err(err)
-						};
-					}
+					errors.insert(idx.to_string(), 
+						single_validation_error(format!("List item {} is not and object", item)).to_json()
+					);
 				}
-
-				self.process_validations(val)
-			};
-			
-			match result {
-				Ok(()) => {
-					if need_return { Ok(return_value) } else { Ok(None) }
-				},
-				Err(err) => Err(err)
 			}
+
+			if errors.len() > 0 {
+				return Err(errors);
+			}
+		} else if val.is_object() {
+			match nest.process(val.as_object_mut().unwrap()) {
+				Ok(()) => (),
+				Err(err) => return Err(err)
+			};
+		}
+
+		Ok(())
+	}
+
+	pub fn process(&self, val: &mut Json) -> ValicoResult<Option<Json>> {
+		if val.is_null() && self.allow_null { return Ok(None) }
+
+		let mut need_return = false;
+		let mut return_value = None;
+
+		let result = {
+			let mut val = if self.coercer.is_some() {
+				match self.coercer.as_ref().unwrap().coerce(val) {
+					Ok(Some(new_value)) => { 
+						need_return = true; 
+						return_value = Some(new_value); 
+						return_value.as_mut().unwrap() 
+					},
+					Ok(None) => val,
+					Err(err) => return Err(err)
+				}
+			} else {
+				val
+			};
+
+			if self.nest.is_some() {
+				match self.process_nest(val) {
+					Ok(()) => (),
+					Err(err) => return Err(err)
+				};
+			}
+
+			self.process_validations(val)
+		};
+		
+		match result {
+			Ok(()) => {
+				if need_return { Ok(return_value) } else { Ok(None) }
+			},
+			Err(err) => Err(err)
 		}
 	}
 }
