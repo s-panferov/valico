@@ -2,9 +2,16 @@
 
 Valico is a validation and coercion tool for JSON objects, written in Rust and inspired by [Grape]. It designed to be a support library for the various REST-like frameworks or other tools that need to validate and coerce JSON input from outside world.
 
-[Grape]: https://github.com/intridea/grape
-
 It has built-in support for common coercers, validators and can return detailed error messages if something goes wrong.
+
+See also:
+
+* [Raisin] - REST-like API micro-framework for Rust that use Valico.
+* [rust-query] - Rust query string parser with nesting support can be used together with Valico to provide simple and safe toolchain for parsing query strings.
+
+[Raisin]: https://github.com/s-panferov/raisin
+[rust-query]: https://github.com/s-panferov/rust-query
+[Grape]: https://github.com/intridea/grape
 
 # Basic Usage
 
