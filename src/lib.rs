@@ -7,15 +7,15 @@ use serialize::json;
 pub use param::Param;
 pub use builder::Builder;
 pub use coercers::{
-	Coercer,
-	StringCoercer,
-	I64Coercer,
-	U64Coercer,
-	F64Coercer,
-	BooleanCoercer,
-	NullCoercer,
-	ListCoercer,
-	ObjectCoercer,
+    Coercer,
+    StringCoercer,
+    I64Coercer,
+    U64Coercer,
+    F64Coercer,
+    BooleanCoercer,
+    NullCoercer,
+    ListCoercer,
+    ObjectCoercer,
 };
 
 pub use mutable_json::MutableJson;
