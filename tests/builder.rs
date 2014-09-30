@@ -14,6 +14,14 @@ use helpers::{
 };
 
 #[test]
+fn is_process_empty_builder() {
+
+    let params = Builder::build(|params| { });
+
+    assert_str_eq(&params, r#"{"a":1}"#, r#"{"a":1}"#);
+}
+
+#[test]
 fn is_process_simple_require() {
 
     let params = Builder::build(|params| {
