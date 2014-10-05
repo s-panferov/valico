@@ -6,11 +6,11 @@ It has built-in support for common coercers, validators and can return detailed 
 
 See also:
 
-* [Raisin] - REST-like API micro-framework for Rust that use Valico.
+* [Rustless] - REST-like API micro-framework for Rust that use Valico.
 * [rust-query] - Rust query string parser with nesting support can be used together with Valico to provide simple and safe toolchain for parsing query strings.
 
-[Raisin]: https://github.com/s-panferov/raisin
-[rust-query]: https://github.com/s-panferov/rust-query
+[Rustless]: https://github.com/rustless/rustless
+[rust-query]: https://github.com/rustless/rust-query
 [Grape]: https://github.com/intridea/grape
 
 # Basic Usage
