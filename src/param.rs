@@ -17,9 +17,10 @@ use ValicoResult;
 
 use helpers::{validation_error};
 
+#[deriving(Send)]
 pub struct Param {
     pub name: String,
-    pub coercer: Option<Box<Coercer>>,
+    pub coercer: Option<Box<Coercer  + Send + Sync>>,
     pub nest: Option<Builder>,
     pub description: Option<String>,
     pub allow_null: bool,
@@ -41,7 +42,7 @@ impl Param {
         }
     }
 
-    pub fn new_with_coercer(name: &str, coercer: Box<Coercer>) -> Param {
+    pub fn new_with_coercer(name: &str, coercer: Box<Coercer  + Send + Sync>) -> Param {
         Param {
             name: name.to_string(),
             description: None,
@@ -53,7 +54,7 @@ impl Param {
         }
     }
 
-    pub fn new_with_nest(name: &str, coercer: Box<Coercer>, nest: Builder) -> Param {
+    pub fn new_with_nest(name: &str, coercer: Box<Coercer + Send + Sync>, nest: Builder) -> Param {
         Param {
             name: name.to_string(),
             description: None,
@@ -76,7 +77,7 @@ impl Param {
         self.description = Some(description.to_string());
     }
 
-    pub fn coerce(&mut self, coercer: Box<Coercer>) {
+    pub fn coerce(&mut self, coercer: Box<Coercer + Send + Sync>) {
         self.coercer = Some(coercer);
     }
 

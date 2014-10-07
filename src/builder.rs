@@ -27,6 +27,7 @@ use validation::{
 
 use ValicoResult;
 
+#[deriving(Send)]
 pub struct Builder {
     requires: Vec<Param>,
     optional: Vec<Param>,
@@ -55,12 +56,12 @@ impl Builder {
         self.requires.push(params);
     }
 
-    pub fn req_typed(&mut self, name: &str, coercer: Box<Coercer>) {
+    pub fn req_typed(&mut self, name: &str, coercer: Box<Coercer + Send + Sync>) {
         let params = Param::new_with_coercer(name, coercer);
         self.requires.push(params);
     }
 
-    pub fn req_nested(&mut self, name: &str, coercer: Box<Coercer>, nest_def: |&mut Builder|) {
+    pub fn req_nested(&mut self, name: &str, coercer: Box<Coercer + Send + Sync>, nest_def: |&mut Builder|) {
         let nest_builder = Builder::build(nest_def);
         let params = Param::new_with_nest(name, coercer, nest_builder);
         self.requires.push(params);
@@ -76,12 +77,12 @@ impl Builder {
         self.optional.push(params);
     }
 
-    pub fn opt_typed(&mut self, name: &str, coercer: Box<Coercer>) {
+    pub fn opt_typed(&mut self, name: &str, coercer: Box<Coercer + Send + Sync>) {
         let params = Param::new_with_coercer(name, coercer);
         self.optional.push(params);
     }
 
-    pub fn opt_nested(&mut self, name: &str, coercer: Box<Coercer>, nest_def: |&mut Builder|) {
+    pub fn opt_nested(&mut self, name: &str, coercer: Box<Coercer + Send + Sync>, nest_def: |&mut Builder|) {
         let nest_builder = Builder::build(nest_def);
         let params = Param::new_with_nest(name, coercer, nest_builder);
         self.optional.push(params);
