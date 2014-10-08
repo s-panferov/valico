@@ -13,6 +13,9 @@ See also:
 [rust-query]: https://github.com/rustless/rust-query
 [Grape]: https://github.com/intridea/grape
 
+### Status
+[![Build Status](https://travis-ci.org/rustless/valico.svg?branch=master)](https://travis-ci.org/rustless/valico)
+
 # Basic Usage
 
 All Valico stuff is making by Builder instance. Below is a simple example showing how one can create and setup Builder: 
