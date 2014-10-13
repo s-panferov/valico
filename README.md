@@ -12,7 +12,7 @@ It has built-in support for common coercers, validators and can return detailed 
 git = "https://github.com/rustless/valico"
 ```
 
-[API docs](http://valico.rustless.org/doc/valico/)
+[API docs](http://rustless.org/valico/doc/valico/)
 
 See also:
 
