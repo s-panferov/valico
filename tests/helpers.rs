@@ -16,12 +16,12 @@ pub fn test_result(params: &Builder, body: &str) -> Json {
                     return json;
                 },
                 Err(err) => {
-                    fail!("Error during process: {}", err.to_json().to_pretty_str());
+                    panic!("Error during process: {}", err.to_json().to_pretty_str());
                 }
             }
         },
         Err(_) => {
-            fail!("Invalid JSON");
+            panic!("Invalid JSON");
         }
     }
 }
@@ -32,7 +32,7 @@ pub fn test_error(params: &Builder, body: &str) -> Json {
         Ok(mut json) => { 
             match params.process(json.as_object_mut().unwrap()) {
                 Ok(()) => {
-                    fail!("Success responce when we await some errors");
+                    panic!("Success responce when we await some errors");
                 },
                 Err(err) => {
                     return err.to_json();
@@ -40,7 +40,7 @@ pub fn test_error(params: &Builder, body: &str) -> Json {
             }
         },
         Err(_) => {
-            fail!("Invalid JSON");
+            panic!("Invalid JSON");
         }
     }
 }

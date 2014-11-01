@@ -168,7 +168,7 @@ impl Coercer for ListCoercer {
                 let sub_coercer = self.sub_coercer.as_ref().unwrap();
                 let mut errors = TreeMap::new();
                 for i in range(0, list.len()) {
-                    match sub_coercer.coerce(list.get_mut(i)) {
+                    match sub_coercer.coerce(&mut list[i]) {
                         Ok(Some(value)) => {
                             list.remove(i);
                             list.insert(i, value);

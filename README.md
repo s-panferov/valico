@@ -69,7 +69,7 @@ fn main() {
             println!("Result object is {}", obj.to_pretty_str());
         },
         Err(err) => {
-            fail!("Error during process: {}", err.to_json().to_pretty_str());
+            panic!("Error during process: {}", err.to_json().to_pretty_str());
         }
     }
 
