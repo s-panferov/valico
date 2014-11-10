@@ -50,12 +50,7 @@ pub fn assert_str_eq(params: &Builder, body: &str, res: &str) {
 }
 
 pub fn assert_path(obj: &Json, path: &[&str]) {
-    let path: Vec<String> = path.iter().map(|s| s.to_string()).collect();
-    let mut ver_ref = vec![];
-    for p in path.iter() {
-        ver_ref.push(p);
-    }
-    assert!(obj.find_path(ver_ref.as_slice()).is_some());
+    assert!(obj.find_path(path).is_some());
 }
 
 pub fn assert_result_key(params: &Builder, body: &str, path: &[&str]) {
