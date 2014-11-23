@@ -124,7 +124,7 @@ impl Builder {
             let ref name = param.name;
             let present = has_value(tree, name);
             if present {
-                match param.process(tree.find_mut(name).unwrap()) {
+                match param.process(tree.get_mut(name).unwrap()) {
                     Ok(result) => { 
                         match result {
                             Some(new_value) => { tree.insert(name.clone(), new_value); },
@@ -144,7 +144,7 @@ impl Builder {
             let ref name = param.name;
             let present = has_value(tree, name);
             if present {
-                match param.process(tree.find_mut(name).unwrap()) {
+                match param.process(tree.get_mut(name).unwrap()) {
                     Ok(result) => { 
                         match result {
                             Some(new_value) => { tree.insert(name.clone(), new_value); },

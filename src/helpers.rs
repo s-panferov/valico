@@ -14,7 +14,7 @@ pub fn coerce_error(err: String) -> JsonObject {
 }
 
 pub fn has_value(obj: &JsonObject, key: &String) -> bool {
-    match obj.find(key) {
+    match obj.get(key) {
         Some(_) => true,
         None => false
     }

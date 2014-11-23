@@ -162,16 +162,16 @@ impl ListCoercer {
 
 impl Coercer for ListCoercer {
     fn coerce(&self, val: &mut Json) -> ValicoResult<Option<Json>> {
-        if val.is_list() {
-            let list = val.as_list_mut().unwrap();
+        if val.is_array() {
+            let array = val.as_array_mut().unwrap();
             if self.sub_coercer.is_some() {
                 let sub_coercer = self.sub_coercer.as_ref().unwrap();
                 let mut errors = TreeMap::new();
-                for i in range(0, list.len()) {
-                    match sub_coercer.coerce(&mut list[i]) {
+                for i in range(0, array.len()) {
+                    match sub_coercer.coerce(&mut array[i]) {
                         Ok(Some(value)) => {
-                            list.remove(i);
-                            list.insert(i, value);
+                            array.remove(i);
+                            array.insert(i, value);
                         },
                         Ok(None) => (),
                         Err(err) => {
@@ -189,7 +189,7 @@ impl Coercer for ListCoercer {
                 Ok(None)
             }
         } else {
-            Err(coerce_error(format!("Can't coerce object {} to list", val)))
+            Err(coerce_error(format!("Can't coerce object {} to array", val)))
         }
     }
 }

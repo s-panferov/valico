@@ -1,9 +1,9 @@
 use serialize::json;
-use serialize::json::{Json, JsonObject, JsonList};
+use serialize::json::{Json, JsonObject, JsonArray};
 
 pub trait MutableJson {
     fn as_object_mut<'a>(&'a mut self) -> Option<&'a mut JsonObject>;
-    fn as_list_mut<'a>(&'a mut self) -> Option<&'a mut JsonList>;
+    fn as_array_mut<'a>(&'a mut self) -> Option<&'a mut JsonArray>;
 }
 
 impl MutableJson for Json {
@@ -17,9 +17,9 @@ impl MutableJson for Json {
         }
     }
 
-    fn as_list_mut<'a>(&'a mut self) -> Option<&'a mut JsonList> {
+    fn as_array_mut<'a>(&'a mut self) -> Option<&'a mut JsonArray> {
         match self {
-            &json::List(ref mut list) => Some(&mut *list),
+            &json::Array(ref mut list) => Some(&mut *list),
             _ => None
         }
     }
