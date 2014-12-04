@@ -1,6 +1,6 @@
 
 use regex::Regex;
-use serialize::json::{Json, JsonObject};
+use serialize::json::{Json, Object};
 
 use helpers::{validation_error};
 use ValicoResult;
@@ -10,7 +10,7 @@ pub trait SingleParamValidator {
 }
 
 pub trait MultipleParamValidator {
-    fn validate(&self, &JsonObject) -> ValicoResult<()>;
+    fn validate(&self, &Object) -> ValicoResult<()>;
 }
 
 pub struct AllowedValuesValidator {
@@ -128,7 +128,7 @@ impl MutuallyExclusiveValidator {
 }
 
 impl MultipleParamValidator for MutuallyExclusiveValidator {
-    fn validate(&self, tree: &JsonObject) -> ValicoResult<()> {
+    fn validate(&self, tree: &Object) -> ValicoResult<()> {
         let mut matched = vec![];
         for param in self.params.iter() {
             if tree.contains_key(param) { matched.push(param.clone()); }
@@ -155,7 +155,7 @@ impl ExactlyOneOfValidator {
 }
 
 impl MultipleParamValidator for ExactlyOneOfValidator {
-    fn validate(&self, tree: &JsonObject) -> ValicoResult<()> {
+    fn validate(&self, tree: &Object) -> ValicoResult<()> {
         let mut matched = vec![];
         for param in self.params.iter() {
             if tree.contains_key(param) { matched.push(param.clone()); }
@@ -185,7 +185,7 @@ impl AtLeastOneOfValidator {
 }
 
 impl MultipleParamValidator for AtLeastOneOfValidator {
-    fn validate(&self, tree: &JsonObject) -> ValicoResult<()> {
+    fn validate(&self, tree: &Object) -> ValicoResult<()> {
         let mut matched = vec![];
         for param in self.params.iter() {
             if tree.contains_key(param) { matched.push(param.clone()); }
@@ -201,11 +201,11 @@ impl MultipleParamValidator for AtLeastOneOfValidator {
 }
 
 pub struct FunctionMultipleValidator {
-    validator: fn(&JsonObject) -> Result<(), String>
+    validator: fn(&Object) -> Result<(), String>
 }
 
 impl FunctionMultipleValidator {
-    pub fn new(validator: fn(&JsonObject) -> Result<(), String>) -> FunctionMultipleValidator {
+    pub fn new(validator: fn(&Object) -> Result<(), String>) -> FunctionMultipleValidator {
         FunctionMultipleValidator {
             validator: validator
         }
@@ -213,7 +213,7 @@ impl FunctionMultipleValidator {
 }
 
 impl MultipleParamValidator for FunctionMultipleValidator {
-    fn validate(&self, val: &JsonObject) -> ValicoResult<()> {
+    fn validate(&self, val: &Object) -> ValicoResult<()> {
         let validator = self.validator;
         match validator(val) {
             Ok(()) => Ok(()),

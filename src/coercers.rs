@@ -1,5 +1,4 @@
 
-use serialize::json;
 use serialize::json::{Json, ToJson};
 use std::collections::TreeMap;
 
@@ -132,7 +131,7 @@ impl Coercer for NullCoercer {
         } else if val.is_string() {
             let val = val.as_string().unwrap();
             if val == "" {
-                Ok(Some(json::Null))
+                Ok(Some(Json::Null))
             } else {
                 Err(coerce_error(format!("Can't coerce string value {} to null. Correct value is only empty string", val)))
             }

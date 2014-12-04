@@ -1,6 +1,6 @@
 
 use std::collections::TreeMap;
-use serialize::json::{JsonObject, ToJson};
+use serialize::json::{Object, ToJson};
 
 use helpers::{has_value, validation_error};
 use param::Param; 
@@ -97,7 +97,7 @@ impl Builder {
         self.validators.push(validator);
     }
 
-    pub fn validate_with(&mut self, validator: fn(&JsonObject) -> Result<(), String>) {
+    pub fn validate_with(&mut self, validator: fn(&Object) -> Result<(), String>) {
         self.validators.push(box FunctionMultipleValidator::new(validator));
     }
 
@@ -116,7 +116,7 @@ impl Builder {
         self.validators.push(validator);
     }
 
-    pub fn process(&self, tree: &mut JsonObject) -> ValicoResult<()>  {
+    pub fn process(&self, tree: &mut Object) -> ValicoResult<()>  {
         
         let mut errors = TreeMap::new();
 

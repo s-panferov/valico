@@ -20,7 +20,7 @@ pub use coercers::{
 
 pub use mutable_json::MutableJson;
 
-pub type ValicoResult<T> = Result<T, json::JsonObject>;
+pub type ValicoResult<T> = Result<T, json::Object>;
 
 mod builder;
 mod coercers;

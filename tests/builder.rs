@@ -1,5 +1,5 @@
 
-use serialize::json::{Json, JsonObject, ToJson};
+use serialize::json::{Json, Object, ToJson};
 
 use valico::{
     Builder,
@@ -379,7 +379,7 @@ fn is_validate_with_function() {
         params.opt_defined("a");
         params.opt_defined("b");
 
-        fn validate_params(_: &JsonObject) -> Result<(),String> {
+        fn validate_params(_: &Object) -> Result<(),String> {
             Err("YOU SHALL NOT PASS".to_string())
         }
 
