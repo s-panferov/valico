@@ -3,6 +3,9 @@
 name = "valico"
 version = "0.1.1"
 authors = ["Stanislav Panferov <fnight.m@gmail.com>"]
+description = "Rust JSON validator and coercer"
+keywords = ["json", "validator"]
+license = "MIT"
 
 [[test]]
 name = "tests"
