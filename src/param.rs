@@ -1,6 +1,6 @@
 
 use serialize::json::{Json, ToJson};
-use std::collections::TreeMap;
+use std::collections::BTreeMap;
 use regex::Regex;
 
 use mutable_json::MutableJson;
@@ -113,7 +113,7 @@ impl Param {
         let ref nest = self.nest.as_ref().unwrap();
 
         if val.is_array() {
-            let mut errors = TreeMap::new();
+            let mut errors = BTreeMap::new();
             let array = val.as_array_mut().unwrap();
             for (idx, item) in array.iter_mut().enumerate() {
                 if item.is_object() {

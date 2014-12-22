@@ -1,5 +1,5 @@
 
-use std::collections::TreeMap;
+use std::collections::BTreeMap;
 use serialize::json::{Object, ToJson};
 
 use helpers::{has_value, validation_error};
@@ -118,7 +118,7 @@ impl Builder {
 
     pub fn process(&self, tree: &mut Object) -> ValicoResult<()>  {
         
-        let mut errors = TreeMap::new();
+        let mut errors = BTreeMap::new();
 
         for param in self.requires.iter() {
             let ref name = param.name;

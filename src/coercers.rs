@@ -1,6 +1,6 @@
 
 use serialize::json::{Json, ToJson};
-use std::collections::TreeMap;
+use std::collections::BTreeMap;
 
 use mutable_json::MutableJson;
 use helpers::{coerce_error};
@@ -10,6 +10,7 @@ pub trait Coercer: Send + Sync {
     fn coerce(&self, &mut Json) -> ValicoResult<Option<Json>>;
 }
 
+#[deriving(Copy)]
 pub struct StringCoercer;
 
 impl Coercer for StringCoercer {
@@ -26,6 +27,7 @@ impl Coercer for StringCoercer {
     }
 }
 
+#[deriving(Copy)]
 pub struct I64Coercer;
 
 impl Coercer for I64Coercer {
@@ -51,6 +53,7 @@ impl Coercer for I64Coercer {
     }
 }
 
+#[deriving(Copy)]
 pub struct U64Coercer;
 
 impl Coercer for U64Coercer {
@@ -76,6 +79,7 @@ impl Coercer for U64Coercer {
     }
 }
 
+#[deriving(Copy)]
 pub struct F64Coercer;
 
 impl Coercer for F64Coercer {
@@ -101,6 +105,7 @@ impl Coercer for F64Coercer {
     }
 }
 
+#[deriving(Copy)]
 pub struct BooleanCoercer;
 
 impl Coercer for BooleanCoercer {
@@ -122,6 +127,7 @@ impl Coercer for BooleanCoercer {
     }
 }
 
+#[deriving(Copy)]
 pub struct NullCoercer;
 
 impl Coercer for NullCoercer {
@@ -165,7 +171,7 @@ impl Coercer for ListCoercer {
             let array = val.as_array_mut().unwrap();
             if self.sub_coercer.is_some() {
                 let sub_coercer = self.sub_coercer.as_ref().unwrap();
-                let mut errors = TreeMap::new();
+                let mut errors = BTreeMap::new();
                 for i in range(0, array.len()) {
                     match sub_coercer.coerce(&mut array[i]) {
                         Ok(Some(value)) => {
@@ -193,6 +199,7 @@ impl Coercer for ListCoercer {
     }
 }
 
+#[deriving(Copy)]
 pub struct ObjectCoercer;
 
 impl Coercer for ObjectCoercer {
