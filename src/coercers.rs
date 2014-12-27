@@ -42,7 +42,7 @@ impl Coercer for I64Coercer {
             return Ok(Some((val as i64).to_json()));
         } else if val.is_string() {
             let val = val.as_string().unwrap();
-            let converted: Option<i64> = from_str(val);
+            let converted: Option<i64> = val.parse();
             match converted {
                 Some(num) => Ok(Some(num.to_json())),
                 None => Err(coerce_error(format!("Can't coerce string value {} to i64", val)))
@@ -68,7 +68,7 @@ impl Coercer for U64Coercer {
             return Ok(Some((val as u64).to_json()));
         } else if val.is_string() {
             let val = val.as_string().unwrap();
-            let converted: Option<u64> = from_str(val);
+            let converted: Option<u64> = val.parse();
             match converted {
                 Some(num) => Ok(Some(num.to_json())),
                 None => Err(coerce_error(format!("Can't coerce string value {} to u64", val)))
@@ -94,7 +94,7 @@ impl Coercer for F64Coercer {
             return Ok(Some((val as f64).to_json()));
         } else if val.is_string() {
             let val = val.as_string().unwrap();
-            let converted: Option<f64> = from_str(val);
+            let converted: Option<f64> = val.parse();
             match converted {
                 Some(num) => Ok(Some(num.to_json())),
                 None => Err(coerce_error(format!("Can't coerce string value {} to f64", val)))
