@@ -27,12 +27,13 @@ use validation::{
 
 use ValicoResult;
 
-#[deriving(Send)]
 pub struct Builder {
     requires: Vec<Param>,
     optional: Vec<Param>,
     validators: Vec<Box<MultipleParamValidator + Send + Sync>>
 }
+
+unsafe impl Send for Builder { }
 
 impl Builder {
 

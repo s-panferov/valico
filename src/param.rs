@@ -17,7 +17,6 @@ use ValicoResult;
 
 use helpers::{validation_error};
 
-#[deriving(Send)]
 pub struct Param {
     pub name: String,
     pub coercer: Option<Box<Coercer  + Send + Sync>>,
@@ -27,6 +26,8 @@ pub struct Param {
     pub validators: Vec<Box<SingleParamValidator + Send + Sync>>,
     pub default: Option<Json>
 }
+
+unsafe impl Send for Param { }
 
 impl Param {
 

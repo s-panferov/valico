@@ -8,9 +8,9 @@ use valico::{
 };
 
 pub fn test_result(params: &Builder, body: &str) -> Json {
-    let obj = json::from_str(body);
+    let obj = body.parse::<Json>();
     match obj {
-        Ok(mut json) => { 
+        Some(mut json) => { 
             match params.process(json.as_object_mut().unwrap()) {
                 Ok(()) => {
                     return json;
@@ -20,16 +20,16 @@ pub fn test_result(params: &Builder, body: &str) -> Json {
                 }
             }
         },
-        Err(_) => {
+        None => {
             panic!("Invalid JSON");
         }
     }
 }
 
 pub fn test_error(params: &Builder, body: &str) -> Json {
-    let obj = json::from_str(body);
+    let obj = body.parse::<Json>();
     match obj {
-        Ok(mut json) => { 
+        Some(mut json) => { 
             match params.process(json.as_object_mut().unwrap()) {
                 Ok(()) => {
                     panic!("Success responce when we await some errors");
@@ -39,7 +39,7 @@ pub fn test_error(params: &Builder, body: &str) -> Json {
                 }
             }
         },
-        Err(_) => {
+        None => {
             panic!("Invalid JSON");
         }
     }

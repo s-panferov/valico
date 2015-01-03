@@ -1,8 +1,7 @@
 extern crate valico;
 extern crate "rustc-serialize" as serialize;
 
-use serialize::json;
-use serialize::json::{ToJson};
+use serialize::json::{Json, ToJson};
 use valico::{Builder, MutableJson};
 
 fn main() {
@@ -14,9 +13,7 @@ fn main() {
         });
     });
 
-    let mut obj = json::from_str(
-        r#"{"user": {"name": "Frodo", "friend_ids": ["1223"]}}"#
-    ).unwrap();
+    let mut obj = r#"{"user": {"name": "Frodo", "friend_ids": ["1223"]}}"#.parse::<Json>().unwrap();
 
     match params.process(obj.as_object_mut().unwrap()) {
         Ok(()) => {
