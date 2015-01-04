@@ -1,7 +1,7 @@
 extern crate valico;
 extern crate "rustc-serialize" as serialize;
 
-use serialize::json::{Json, ToJson};
+use serialize::json::{Json, ToJson, as_pretty_json};
 use valico::{Builder, MutableJson};
 
 fn main() {
@@ -17,10 +17,10 @@ fn main() {
 
     match params.process(obj.as_object_mut().unwrap()) {
         Ok(()) => {
-            println!("Result object is {}", obj.to_pretty_str());
+            println!("Result object is {}", as_pretty_json(&obj).to_string());
         },
         Err(err) => {
-            panic!("Error during process: {}", err.to_json().to_pretty_str());
+            panic!("Error during process: {}", as_pretty_json(&err.to_json()).to_string());
         }
     }
 

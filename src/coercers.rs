@@ -10,7 +10,7 @@ pub trait Coercer: Send + Sync {
     fn coerce(&self, &mut Json) -> ValicoResult<Option<Json>>;
 }
 
-#[deriving(Copy)]
+#[derive(Copy)]
 pub struct StringCoercer;
 
 impl Coercer for StringCoercer {
@@ -27,7 +27,7 @@ impl Coercer for StringCoercer {
     }
 }
 
-#[deriving(Copy)]
+#[derive(Copy)]
 pub struct I64Coercer;
 
 impl Coercer for I64Coercer {
@@ -53,7 +53,7 @@ impl Coercer for I64Coercer {
     }
 }
 
-#[deriving(Copy)]
+#[derive(Copy)]
 pub struct U64Coercer;
 
 impl Coercer for U64Coercer {
@@ -79,7 +79,7 @@ impl Coercer for U64Coercer {
     }
 }
 
-#[deriving(Copy)]
+#[derive(Copy)]
 pub struct F64Coercer;
 
 impl Coercer for F64Coercer {
@@ -105,7 +105,7 @@ impl Coercer for F64Coercer {
     }
 }
 
-#[deriving(Copy)]
+#[derive(Copy)]
 pub struct BooleanCoercer;
 
 impl Coercer for BooleanCoercer {
@@ -127,7 +127,7 @@ impl Coercer for BooleanCoercer {
     }
 }
 
-#[deriving(Copy)]
+#[derive(Copy)]
 pub struct NullCoercer;
 
 impl Coercer for NullCoercer {
@@ -199,7 +199,7 @@ impl Coercer for ListCoercer {
     }
 }
 
-#[deriving(Copy)]
+#[derive(Copy)]
 pub struct ObjectCoercer;
 
 impl Coercer for ObjectCoercer {

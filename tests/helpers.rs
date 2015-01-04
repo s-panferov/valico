@@ -1,6 +1,6 @@
 
 use serialize::json;
-use serialize::json::{Json, ToJson};
+use serialize::json::{Json, ToJson, as_pretty_json};
 
 use valico::{
     Builder,
@@ -16,7 +16,7 @@ pub fn test_result(params: &Builder, body: &str) -> Json {
                     return json;
                 },
                 Err(err) => {
-                    panic!("Error during process: {}", err.to_json().to_pretty_str());
+                    panic!("Error during process: {}", as_pretty_json(&err.to_json()).to_string());
                 }
             }
         },
