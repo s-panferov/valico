@@ -1,9 +1,9 @@
-#![feature(phase)]
+#![feature(plugin)]
 
 extern crate valico;
 extern crate "rustc-serialize" as serialize;
 
-#[phase(plugin)]
+#[plugin]
 extern crate regex_macros;
 extern crate regex;
 
