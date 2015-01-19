@@ -1,3 +1,4 @@
+#![allow(unstable)]
 
 extern crate "rustc-serialize" as serialize;
 extern crate regex;

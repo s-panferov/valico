@@ -1,3 +1,5 @@
+#![allow(unstable)]
+
 extern crate valico;
 extern crate "rustc-serialize" as serialize;
 

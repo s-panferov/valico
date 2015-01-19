@@ -244,7 +244,7 @@ fn is_validate_with_function_validator() {
             a.coerce(Builder::u64());
 
             fn validate(val: &Json) -> Result<(), String> {
-                if *val == 2u.to_json() {
+                if *val == 2us.to_json() {
                     Ok(())
                 } else {
                     Err("Value is not exactly 2".to_string())

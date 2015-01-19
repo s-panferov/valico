@@ -137,7 +137,7 @@ impl MultipleParamValidator for MutuallyExclusiveValidator {
         if matched.len() <= 1 {
             Ok(())
         } else {
-            Err(validation_error(format!("Fields {} are mutually exclusive", matched)))
+            Err(validation_error(format!("Fields {:?} are mutually exclusive", matched)))
         }
     }
 }
@@ -165,9 +165,9 @@ impl MultipleParamValidator for ExactlyOneOfValidator {
         if len == 1 {
             Ok(())
         } else if len > 1 {
-            Err(validation_error(format!("Exactly one of {} is allowed at one time", matched)))
+            Err(validation_error(format!("Exactly one of {:?} is allowed at one time", matched)))
         } else {
-            Err(validation_error(format!("Exactly one of {} must be present", self.params)))
+            Err(validation_error(format!("Exactly one of {:?} must be present", self.params)))
         }
     }
 }
@@ -195,7 +195,7 @@ impl MultipleParamValidator for AtLeastOneOfValidator {
         if len >= 1 {
             Ok(())
         } else {
-            Err(validation_error(format!("Al least one of {} must be present", self.params)))
+            Err(validation_error(format!("Al least one of {:?} must be present", self.params)))
         }
     }
 }

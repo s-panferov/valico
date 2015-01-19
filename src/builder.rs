@@ -99,21 +99,21 @@ impl Builder {
     }
 
     pub fn validate_with(&mut self, validator: fn(&Object) -> Result<(), String>) {
-        self.validators.push(box FunctionMultipleValidator::new(validator));
+        self.validators.push(Box::new(FunctionMultipleValidator::new(validator)));
     }
 
     pub fn mutually_exclusive(&mut self, params: &[&str]) {
-        let validator = box MutuallyExclusiveValidator::new(params);
+        let validator = Box::new(MutuallyExclusiveValidator::new(params));
         self.validators.push(validator);
     }
 
     pub fn exactly_one_of(&mut self, params: &[&str]) {
-        let validator = box ExactlyOneOfValidator::new(params);
+        let validator = Box::new(ExactlyOneOfValidator::new(params));
         self.validators.push(validator);
     }
 
     pub fn at_least_one_of(&mut self, params: &[&str]) {
-        let validator = box AtLeastOneOfValidator::new(params);
+        let validator = Box::new(AtLeastOneOfValidator::new(params));
         self.validators.push(validator);
     }
 
@@ -159,7 +159,7 @@ impl Builder {
             }
         }
 
-        let mut i = 0u;
+        let mut i = 0us;
         for validator in self.validators.iter() {
             match validator.validate(tree) {
                 Ok(()) => (),
@@ -189,15 +189,15 @@ impl Builder {
         }
     }
 
-    pub fn i64() -> Box<Coercer + Send + Sync> { box I64Coercer }
-    pub fn u64() -> Box<Coercer + Send + Sync> { box U64Coercer }
-    pub fn f64() -> Box<Coercer + Send + Sync> { box F64Coercer }
-    pub fn string() -> Box<Coercer + Send + Sync> { box StringCoercer }
-    pub fn boolean() -> Box<Coercer + Send + Sync> { box BooleanCoercer }
-    pub fn null() -> Box<Coercer + Send + Sync> { box NullCoercer }
-    pub fn list() -> Box<Coercer + Send + Sync> { box ListCoercer::new() }
-    pub fn list_of(coercer: Box<Coercer + Send + Sync>) -> Box<Coercer + Send + Sync> { box ListCoercer::of_type(coercer) }
-    pub fn object() -> Box<Coercer + Send + Sync> { box ObjectCoercer }
+    pub fn i64() -> Box<Coercer + Send + Sync> { Box::new(I64Coercer) }
+    pub fn u64() -> Box<Coercer + Send + Sync> { Box::new(U64Coercer) }
+    pub fn f64() -> Box<Coercer + Send + Sync> { Box::new(F64Coercer) }
+    pub fn string() -> Box<Coercer + Send + Sync> { Box::new(StringCoercer) }
+    pub fn boolean() -> Box<Coercer + Send + Sync> { Box::new(BooleanCoercer) }
+    pub fn null() -> Box<Coercer + Send + Sync> { Box::new(NullCoercer) }
+    pub fn list() -> Box<Coercer + Send + Sync> { Box::new(ListCoercer::new()) }
+    pub fn list_of(coercer: Box<Coercer + Send + Sync>) -> Box<Coercer + Send + Sync> { Box::new(ListCoercer::of_type(coercer)) }
+    pub fn object() -> Box<Coercer + Send + Sync> { Box::new(ObjectCoercer) }
 
 }
 

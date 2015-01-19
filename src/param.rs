@@ -91,7 +91,7 @@ impl Param {
     }
 
     pub fn regex(&mut self, regex: Regex) {
-        self.validators.push(box RegexValidator::new(regex));
+        self.validators.push(Box::new(RegexValidator::new(regex)));
     }
 
     pub fn validate(&mut self, validator: Box<SingleParamValidator + Send + Sync>) {
@@ -99,7 +99,7 @@ impl Param {
     }
 
     pub fn validate_with(&mut self, validator: fn(&Json) -> Result<(), String>) {
-        self.validators.push(box FunctionValidator::new(validator));
+        self.validators.push(Box::new(FunctionValidator::new(validator)));
     }
 
     fn process_validations(&self, val: &Json) -> ValicoResult<()> {
@@ -182,20 +182,20 @@ impl Param {
     }
 }
 
-impl<T: ToJson> Param {
-    pub fn allow_values(&mut self, values: &[T]) {
-        self.validators.push(box AllowedValuesValidator::new(
+impl Param {
+    pub fn allow_values<T: ToJson>(&mut self, values: &[T]) {
+        self.validators.push(Box::new(AllowedValuesValidator::new(
             values.iter().map(|v| v.to_json()).collect()
-        ));
+        )));
     }
 
-    pub fn reject_values(&mut self, values: &[T]) {
-        self.validators.push(box RejectedValuesValidator::new(
+    pub fn reject_values<T: ToJson>(&mut self, values: &[T]) {
+        self.validators.push(Box::new(RejectedValuesValidator::new(
             values.iter().map(|v| v.to_json()).collect()
-        ));
+        )));
     }
 
-    pub fn default(&mut self, default: T) {
+    pub fn default<T: ToJson>(&mut self, default: T) {
         self.default = Some(default.to_json());
     }
 }

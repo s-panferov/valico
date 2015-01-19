@@ -1,5 +1,4 @@
 
-use serialize::json;
 use serialize::json::{Json, ToJson, as_pretty_json};
 
 use valico::{
