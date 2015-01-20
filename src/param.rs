@@ -1,30 +1,22 @@
 
-use serialize::json::{Json, ToJson};
-use std::collections::BTreeMap;
-use regex::Regex;
+use serialize::json::{self, ToJson};
+use std::collections;
+use regex;
 
 use mutable_json::MutableJson;
-use builder::Builder;
-use coercers::Coercer;
-use validation::{
-    SingleParamValidator,
-    AllowedValuesValidator,
-    RejectedValuesValidator,
-    FunctionValidator,
-    RegexValidator
-};
-use ValicoResult;
-
-use helpers::{validation_error};
+use builder;
+use coercers;
+use validation;
+use helpers;
 
 pub struct Param {
     pub name: String,
-    pub coercer: Option<Box<Coercer  + Send + Sync>>,
-    pub nest: Option<Builder>,
+    pub coercer: Option<Box<coercers::Coercer  + Send + Sync>>,
+    pub nest: Option<builder::Builder>,
     pub description: Option<String>,
     pub allow_null: bool,
-    pub validators: Vec<Box<SingleParamValidator + Send + Sync>>,
-    pub default: Option<Json>
+    pub validators: Vec<Box<validation::SingleParamValidator + Send + Sync>>,
+    pub default: Option<json::Json>
 }
 
 unsafe impl Send for Param { }
@@ -43,7 +35,7 @@ impl Param {
         }
     }
 
-    pub fn new_with_coercer(name: &str, coercer: Box<Coercer  + Send + Sync>) -> Param {
+    pub fn new_with_coercer(name: &str, coercer: Box<coercers::Coercer  + Send + Sync>) -> Param {
         Param {
             name: name.to_string(),
             description: None,
@@ -55,7 +47,7 @@ impl Param {
         }
     }
 
-    pub fn new_with_nest(name: &str, coercer: Box<Coercer + Send + Sync>, nest: Builder) -> Param {
+    pub fn new_with_nest(name: &str, coercer: Box<coercers::Coercer + Send + Sync>, nest: builder::Builder) -> Param {
         Param {
             name: name.to_string(),
             description: None,
@@ -78,31 +70,31 @@ impl Param {
         self.description = Some(description.to_string());
     }
 
-    pub fn coerce(&mut self, coercer: Box<Coercer + Send + Sync>) {
+    pub fn coerce(&mut self, coercer: Box<coercers::Coercer + Send + Sync>) {
         self.coercer = Some(coercer);
     }
 
-    pub fn nest<F>(&mut self, nest_def: F) where F: Fn(&mut Builder) -> () {
-        self.nest = Some(Builder::build(nest_def));
+    pub fn nest<F>(&mut self, nest_def: F) where F: Fn(&mut builder::Builder) -> () {
+        self.nest = Some(builder::Builder::build(nest_def));
     }
 
     pub fn allow_null(&mut self) {
         self.allow_null = true;
     }
 
-    pub fn regex(&mut self, regex: Regex) {
-        self.validators.push(Box::new(RegexValidator::new(regex)));
+    pub fn regex(&mut self, regex: regex::Regex) {
+        self.validators.push(Box::new(validation::RegexValidator::new(regex)));
     }
 
-    pub fn validate(&mut self, validator: Box<SingleParamValidator + Send + Sync>) {
+    pub fn validate(&mut self, validator: Box<validation::SingleParamValidator + Send + Sync>) {
         self.validators.push(validator);
     }
 
-    pub fn validate_with(&mut self, validator: fn(&Json) -> Result<(), String>) {
-        self.validators.push(Box::new(FunctionValidator::new(validator)));
+    pub fn validate_with(&mut self, validator: fn(&json::Json) -> Result<(), String>) {
+        self.validators.push(Box::new(validation::FunctionValidator::new(validator)));
     }
 
-    fn process_validations(&self, val: &Json) -> ValicoResult<()> {
+    fn process_validations(&self, val: &json::Json) -> ::ValicoResult<()> {
         for mut validator in self.validators.iter() {
             try!(validator.validate(val));
         };
@@ -110,11 +102,11 @@ impl Param {
         Ok(())
     }
 
-    fn process_nest(&self, val: &mut Json) -> ValicoResult<()> {
+    fn process_nest(&self, val: &mut json::Json) -> ::ValicoResult<()> {
         let ref nest = self.nest.as_ref().unwrap();
 
         if val.is_array() {
-            let mut errors = BTreeMap::new();
+            let mut errors = collections::BTreeMap::new();
             let array = val.as_array_mut().unwrap();
             for (idx, item) in array.iter_mut().enumerate() {
                 if item.is_object() {
@@ -124,7 +116,7 @@ impl Param {
                     }
                 } else {
                     errors.insert(idx.to_string(), 
-                        validation_error(format!("List item {} is not and object", item)).to_json()
+                        helpers::validation_error(format!("List item {} is not and object", item)).to_json()
                     );
                 }
             }
@@ -142,7 +134,7 @@ impl Param {
         Ok(())
     }
 
-    pub fn process(&self, val: &mut Json) -> ValicoResult<Option<Json>> {
+    pub fn process(&self, val: &mut json::Json) -> ::ValicoResult<Option<json::Json>> {
         if val.is_null() && self.allow_null { return Ok(None) }
 
         let mut need_return = false;
@@ -183,19 +175,19 @@ impl Param {
 }
 
 impl Param {
-    pub fn allow_values<T: ToJson>(&mut self, values: &[T]) {
-        self.validators.push(Box::new(AllowedValuesValidator::new(
+    pub fn allow_values<T: json::ToJson>(&mut self, values: &[T]) {
+        self.validators.push(Box::new(validation::AllowedValuesValidator::new(
             values.iter().map(|v| v.to_json()).collect()
         )));
     }
 
-    pub fn reject_values<T: ToJson>(&mut self, values: &[T]) {
-        self.validators.push(Box::new(RejectedValuesValidator::new(
+    pub fn reject_values<T: json::ToJson>(&mut self, values: &[T]) {
+        self.validators.push(Box::new(validation::RejectedValuesValidator::new(
             values.iter().map(|v| v.to_json()).collect()
         )));
     }
 
-    pub fn default<T: ToJson>(&mut self, default: T) {
+    pub fn default<T: json::ToJson>(&mut self, default: T) {
         self.default = Some(default.to_json());
     }
 }

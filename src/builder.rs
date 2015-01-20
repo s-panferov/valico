@@ -1,36 +1,19 @@
 
-use std::collections::BTreeMap;
-use serialize::json::{Object, ToJson};
+use std::collections;
+use serialize::json::{self, ToJson};
 
-use helpers::{has_value, validation_error};
-use param::Param; 
+use helpers;
+use param;
 
-use coercers::{
-    Coercer,
-    StringCoercer,
-    I64Coercer,
-    U64Coercer,
-    F64Coercer,
-    BooleanCoercer,
-    NullCoercer,
-    ListCoercer,
-    ObjectCoercer,
-};
-
-use validation::{
-    MultipleParamValidator,
-    MutuallyExclusiveValidator,
-    ExactlyOneOfValidator,
-    AtLeastOneOfValidator,
-    FunctionMultipleValidator
-};
+use coercers;
+use validation;
 
 use ValicoResult;
 
 pub struct Builder {
-    requires: Vec<Param>,
-    optional: Vec<Param>,
-    validators: Vec<Box<MultipleParamValidator + Send + Sync>>
+    requires: Vec<param::Param>,
+    optional: Vec<param::Param>,
+    validators: Vec<Box<validation::MultipleParamValidator + Send + Sync>>
 }
 
 unsafe impl Send for Builder { }
@@ -53,77 +36,77 @@ impl Builder {
     }
 
     pub fn req_defined(&mut self, name: &str) {
-        let params = Param::new(name);
+        let params = param::Param::new(name);
         self.requires.push(params);
     }
 
-    pub fn req_typed(&mut self, name: &str, coercer: Box<Coercer + Send + Sync>) {
-        let params = Param::new_with_coercer(name, coercer);
+    pub fn req_typed(&mut self, name: &str, coercer: Box<coercers::Coercer + Send + Sync>) {
+        let params = param::Param::new_with_coercer(name, coercer);
         self.requires.push(params);
     }
 
-    pub fn req_nested<F>(&mut self, name: &str, coercer: Box<Coercer + Send + Sync>, nest_def: F) where F: Fn(&mut Builder) {
+    pub fn req_nested<F>(&mut self, name: &str, coercer: Box<coercers::Coercer + Send + Sync>, nest_def: F) where F: Fn(&mut Builder) {
         let nest_builder = Builder::build(nest_def);
-        let params = Param::new_with_nest(name, coercer, nest_builder);
+        let params = param::Param::new_with_nest(name, coercer, nest_builder);
         self.requires.push(params);
     }
 
-    pub fn req<F>(&mut self, name: &str, param_builder: F) where F: Fn(&mut Param) {
-        let params = Param::build(name, param_builder);
+    pub fn req<F>(&mut self, name: &str, param_builder: F) where F: Fn(&mut param::Param) {
+        let params = param::Param::build(name, param_builder);
         self.requires.push(params);
     }
 
     pub fn opt_defined(&mut self, name: &str) {
-        let params = Param::new(name);
+        let params = param::Param::new(name);
         self.optional.push(params);
     }
 
-    pub fn opt_typed(&mut self, name: &str, coercer: Box<Coercer + Send + Sync>) {
-        let params = Param::new_with_coercer(name, coercer);
+    pub fn opt_typed(&mut self, name: &str, coercer: Box<coercers::Coercer + Send + Sync>) {
+        let params = param::Param::new_with_coercer(name, coercer);
         self.optional.push(params);
     }
 
-    pub fn opt_nested<F>(&mut self, name: &str, coercer: Box<Coercer + Send + Sync>, nest_def: F) where F: Fn(&mut Builder) {
+    pub fn opt_nested<F>(&mut self, name: &str, coercer: Box<coercers::Coercer + Send + Sync>, nest_def: F) where F: Fn(&mut Builder) {
         let nest_builder = Builder::build(nest_def);
-        let params = Param::new_with_nest(name, coercer, nest_builder);
+        let params = param::Param::new_with_nest(name, coercer, nest_builder);
         self.optional.push(params);
     }
 
-    pub fn opt<F>(&mut self, name: &str, param_builder: F) where F: Fn(&mut Param) {
-        let params = Param::build(name, param_builder);
+    pub fn opt<F>(&mut self, name: &str, param_builder: F) where F: Fn(&mut param::Param) {
+        let params = param::Param::build(name, param_builder);
         self.optional.push(params);
     }
 
-    pub fn validate(&mut self, validator: Box<MutuallyExclusiveValidator>) {
+    pub fn validate(&mut self, validator: Box<validation::MutuallyExclusiveValidator>) {
         self.validators.push(validator);
     }
 
-    pub fn validate_with(&mut self, validator: fn(&Object) -> Result<(), String>) {
-        self.validators.push(Box::new(FunctionMultipleValidator::new(validator)));
+    pub fn validate_with(&mut self, validator: fn(&json::Object) -> Result<(), String>) {
+        self.validators.push(Box::new(validation::FunctionMultipleValidator::new(validator)));
     }
 
     pub fn mutually_exclusive(&mut self, params: &[&str]) {
-        let validator = Box::new(MutuallyExclusiveValidator::new(params));
+        let validator = Box::new(validation::MutuallyExclusiveValidator::new(params));
         self.validators.push(validator);
     }
 
     pub fn exactly_one_of(&mut self, params: &[&str]) {
-        let validator = Box::new(ExactlyOneOfValidator::new(params));
+        let validator = Box::new(validation::ExactlyOneOfValidator::new(params));
         self.validators.push(validator);
     }
 
     pub fn at_least_one_of(&mut self, params: &[&str]) {
-        let validator = Box::new(AtLeastOneOfValidator::new(params));
+        let validator = Box::new(validation::AtLeastOneOfValidator::new(params));
         self.validators.push(validator);
     }
 
-    pub fn process(&self, tree: &mut Object) -> ValicoResult<()>  {
+    pub fn process(&self, tree: &mut json::Object) -> ValicoResult<()>  {
         
-        let mut errors = BTreeMap::new();
+        let mut errors = collections::BTreeMap::new();
 
         for param in self.requires.iter() {
             let ref name = param.name;
-            let present = has_value(tree, name);
+            let present = helpers::has_value(tree, name);
             if present {
                 match param.process(tree.get_mut(name).unwrap()) {
                     Ok(result) => { 
@@ -137,13 +120,13 @@ impl Builder {
                     }
                 }
             } else {
-                errors.insert(name.to_string(), validation_error("Field is required".to_string()).to_json());
+                errors.insert(name.to_string(), helpers::validation_error("Field is required".to_string()).to_json());
             }
         }
 
         for param in self.optional.iter() {
             let ref name = param.name;
-            let present = has_value(tree, name);
+            let present = helpers::has_value(tree, name);
             if present {
                 match param.process(tree.get_mut(name).unwrap()) {
                     Ok(result) => { 
@@ -174,7 +157,7 @@ impl Builder {
             // second pass we need to validate without default values in optionals
             for param in self.optional.iter() {
                 let ref name = param.name;
-                let present = has_value(tree, name);
+                let present = helpers::has_value(tree, name);
                 if !present {
                     match param.default.as_ref() {
                         Some(val) => { tree.insert(name.clone(), val.clone()); },
@@ -188,17 +171,6 @@ impl Builder {
             Err(errors)
         }
     }
-
-    pub fn i64() -> Box<Coercer + Send + Sync> { Box::new(I64Coercer) }
-    pub fn u64() -> Box<Coercer + Send + Sync> { Box::new(U64Coercer) }
-    pub fn f64() -> Box<Coercer + Send + Sync> { Box::new(F64Coercer) }
-    pub fn string() -> Box<Coercer + Send + Sync> { Box::new(StringCoercer) }
-    pub fn boolean() -> Box<Coercer + Send + Sync> { Box::new(BooleanCoercer) }
-    pub fn null() -> Box<Coercer + Send + Sync> { Box::new(NullCoercer) }
-    pub fn list() -> Box<Coercer + Send + Sync> { Box::new(ListCoercer::new()) }
-    pub fn list_of(coercer: Box<Coercer + Send + Sync>) -> Box<Coercer + Send + Sync> { Box::new(ListCoercer::of_type(coercer)) }
-    pub fn object() -> Box<Coercer + Send + Sync> { Box::new(ObjectCoercer) }
-
 }
 
 

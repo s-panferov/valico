@@ -1,24 +1,24 @@
-use serialize::json::{Json, Object, Array};
+use serialize::json;
 
 pub trait MutableJson {
-    fn as_object_mut<'a>(&'a mut self) -> Option<&'a mut Object>;
-    fn as_array_mut<'a>(&'a mut self) -> Option<&'a mut Array>;
+    fn as_object_mut<'a>(&'a mut self) -> Option<&'a mut json::Object>;
+    fn as_array_mut<'a>(&'a mut self) -> Option<&'a mut json::Array>;
 }
 
-impl MutableJson for Json {
+impl MutableJson for json::Json {
     
     /// If the Json value is an Object, returns the associated BTreeMap.
     /// Returns None otherwise.
-    fn as_object_mut<'a>(&'a mut self) -> Option<&'a mut Object> {
+    fn as_object_mut<'a>(&'a mut self) -> Option<&'a mut json::Object> {
         match self {
-            &mut Json::Object(ref mut map) => Some(&mut*map),
+            &mut json::Json::Object(ref mut map) => Some(&mut*map),
             _ => None
         }
     }
 
-    fn as_array_mut<'a>(&'a mut self) -> Option<&'a mut Array> {
+    fn as_array_mut<'a>(&'a mut self) -> Option<&'a mut json::Array> {
         match self {
-            &mut Json::Array(ref mut list) => Some(&mut *list),
+            &mut json::Json::Array(ref mut list) => Some(&mut *list),
             _ => None
         }
     }

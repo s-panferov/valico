@@ -1,22 +1,17 @@
 
-use serialize::json::{Json, Object, ToJson};
+use serialize::json::{self, ToJson};
 
-use valico::{
-    Builder,
-    Coercer
-};
+use valico;
 
 use helpers::{
-    test_error,
     assert_str_eq, 
-    assert_result_key, 
     assert_error_key
 };
 
 #[test]
 fn is_process_empty_builder() {
 
-    let params = Builder::build(|params| { });
+    let params = valico::Builder::build(|_params| { });
 
     assert_str_eq(&params, r#"{"a":1}"#, r#"{"a":1}"#);
 }
@@ -24,7 +19,7 @@ fn is_process_empty_builder() {
 #[test]
 fn is_process_simple_require() {
 
-    let params = Builder::build(|params| {
+    let params = valico::Builder::build(|params| {
         params.req_defined("a");
     });
 
@@ -35,8 +30,8 @@ fn is_process_simple_require() {
 #[test]
 fn is_process_i64_require() {
 
-    let params = Builder::build(|params| {
-        params.req_typed("a", Builder::i64());
+    let params = valico::Builder::build(|params| {
+        params.req_typed("a", valico::i64());
     });
 
     assert_str_eq(&params, r#"{"a":"1"}"#, r#"{"a":1}"#);
@@ -53,8 +48,8 @@ fn is_process_i64_require() {
 #[test]
 fn is_process_string_require() {
 
-    let params = Builder::build(|params| {
-        params.req_typed("a", Builder::string());
+    let params = valico::Builder::build(|params| {
+        params.req_typed("a", valico::string());
     });
 
     assert_str_eq(&params, r#"{"a":"1"}"#, r#"{"a":"1"}"#);
@@ -71,8 +66,8 @@ fn is_process_string_require() {
 #[test]
 fn is_process_boolean_require() {
 
-    let params = Builder::build(|params| {
-        params.req_typed("a", Builder::boolean());
+    let params = valico::Builder::build(|params| {
+        params.req_typed("a", valico::boolean());
     });
 
     assert_str_eq(&params, r#"{"a":true}"#, r#"{"a":true}"#);
@@ -88,8 +83,8 @@ fn is_process_boolean_require() {
 #[test]
 fn is_process_simple_list_require() {
 
-    let params = Builder::build(|params| {
-        params.req_typed("a", Builder::list());
+    let params = valico::Builder::build(|params| {
+        params.req_typed("a", valico::list());
     });
 
     assert_str_eq(&params, r#"{"a":[1,"2",[3]]}"#, r#"{"a":[1,"2",[3]]}"#);
@@ -104,8 +99,8 @@ fn is_process_simple_list_require() {
 #[test]
 fn is_process_typed_list_require() {
 
-    let params = Builder::build(|params| {
-        params.req_typed("a", Builder::list_of(Builder::string()));
+    let params = valico::Builder::build(|params| {
+        params.req_typed("a", valico::list_of(valico::string()));
     });
 
     // convert all to string
@@ -122,10 +117,10 @@ fn is_process_typed_list_require() {
 #[test]
 fn is_process_list_with_nested_require() {
 
-    let params = Builder::build(|params| {
-        params.req_nested("a", Builder::list(), |params| {
-            params.req_typed("b", Builder::string());
-            params.req_typed("c", Builder::list_of(Builder::u64()))
+    let params = valico::Builder::build(|params| {
+        params.req_nested("a", valico::list(), |params| {
+            params.req_typed("b", valico::string());
+            params.req_typed("c", valico::list_of(valico::u64()))
         });
     });
 
@@ -142,8 +137,8 @@ fn is_process_list_with_nested_require() {
 #[test]
 fn is_process_object_require() {
 
-    let params = Builder::build(|params| {
-        params.req_typed("a", Builder::object());
+    let params = valico::Builder::build(|params| {
+        params.req_typed("a", valico::object());
     });
 
     assert_str_eq(&params, r#"{"a":{}}"#, r#"{"a":{}}"#);
@@ -159,10 +154,10 @@ fn is_process_object_require() {
 #[test]
 fn is_process_object_with_nested_require() {
 
-    let params = Builder::build(|params| {
-        params.req_nested("a", Builder::object(), |params| {
-            params.req_typed("b", Builder::f64());
-            params.req_typed("c", Builder::list_of(Builder::string()));
+    let params = valico::Builder::build(|params| {
+        params.req_nested("a", valico::object(), |params| {
+            params.req_typed("b", valico::f64());
+            params.req_typed("c", valico::list_of(valico::string()));
         });
     });
 
@@ -179,18 +174,18 @@ fn is_process_object_with_nested_require() {
 #[test]
 fn is_process_require_allows_null() {
 
-    let params = Builder::build(|params| {
+    let params = valico::Builder::build(|params| {
         params.req("a", |a| {
-            a.coerce(Builder::string());
+            a.coerce(valico::string());
         })
     });
 
     // error because a is not allow null explicitly
     assert_error_key(&params, r#"{"a":null}"#, &["a", "coercion"]);
 
-    let params = Builder::build(|params| {
+    let params = valico::Builder::build(|params| {
         params.req("a", |a| {
-            a.coerce(Builder::string());
+            a.coerce(valico::string());
             a.allow_null();
         })
     });
@@ -203,9 +198,9 @@ fn is_process_require_allows_null() {
 #[test]
 fn is_validate_allow_values() {
 
-    let params = Builder::build(|params| {
+    let params = valico::Builder::build(|params| {
         params.req("a", |a| {
-            a.coerce(Builder::string());
+            a.coerce(valico::string());
             a.allow_values(&["allowed1".to_string(), "allowed2".to_string()])
         })
     });
@@ -221,9 +216,9 @@ fn is_validate_allow_values() {
 #[test]
 fn is_validate_reject_values() {
 
-    let params = Builder::build(|params| {
+    let params = valico::Builder::build(|params| {
         params.req("a", |a| {
-            a.coerce(Builder::string());
+            a.coerce(valico::string());
             a.reject_values(&["rejected1".to_string(), "rejected2".to_string()])
         })
     });
@@ -239,11 +234,11 @@ fn is_validate_reject_values() {
 #[test]
 fn is_validate_with_function_validator() {
 
-    let params = Builder::build(|params| {
+    let params = valico::Builder::build(|params| {
         params.req("a", |a| {
-            a.coerce(Builder::u64());
+            a.coerce(valico::u64());
 
-            fn validate(val: &Json) -> Result<(), String> {
+            fn validate(val: &json::Json) -> Result<(), String> {
                 if *val == 2us.to_json() {
                     Ok(())
                 } else {
@@ -264,9 +259,9 @@ fn is_validate_with_function_validator() {
 #[test]
 fn is_validate_with_regex() {
 
-    let params = Builder::build(|params| {
+    let params = valico::Builder::build(|params| {
         params.req("a", |a| {
-            a.coerce(Builder::string());
+            a.coerce(valico::string());
             a.regex(regex!("^test$"));
         })
     });
@@ -277,10 +272,10 @@ fn is_validate_with_regex() {
     assert_error_key(&params, r#"{"a":"2"}"#, &["a", "validation"]);
     assert_error_key(&params, r#"{"a":"test "}"#, &["a", "validation"]);
 
-    let params = Builder::build(|params| {
+    let params = valico::Builder::build(|params| {
         params.req("a", |a| {
             // regex can't be applied to list, so it will never be valid
-            a.coerce(Builder::list());
+            a.coerce(valico::list());
             a.regex(regex!("^test$"));
         })
     });
@@ -293,9 +288,9 @@ fn is_validate_with_regex() {
 #[test]
 fn is_validate_opt() {
 
-    let params = Builder::build(|params| {
+    let params = valico::Builder::build(|params| {
         params.req_defined("a");
-        params.opt_typed("b", Builder::u64());
+        params.opt_typed("b", valico::u64());
     });
 
     // ok because a is optional
@@ -307,7 +302,7 @@ fn is_validate_opt() {
 #[test]
 fn is_validate_opt_with_default() {
 
-    let params = Builder::build(|params| {
+    let params = valico::Builder::build(|params| {
         params.opt("a", |a| {
             a.default("default".to_string());
         });
@@ -321,7 +316,7 @@ fn is_validate_opt_with_default() {
 #[test]
 fn is_validate_mutually_exclusive() {
 
-    let params = Builder::build(|params| {
+    let params = valico::Builder::build(|params| {
         params.opt_defined("a");
         params.opt_defined("b");
 
@@ -339,7 +334,7 @@ fn is_validate_mutually_exclusive() {
 #[test]
 fn is_validate_exactly_one_of() {
 
-    let params = Builder::build(|params| {
+    let params = valico::Builder::build(|params| {
         params.opt_defined("a");
         params.opt_defined("b");
 
@@ -357,7 +352,7 @@ fn is_validate_exactly_one_of() {
 #[test]
 fn is_validate_at_least_one_of() {
 
-    let params = Builder::build(|params| {
+    let params = valico::Builder::build(|params| {
         params.opt_defined("a");
         params.opt_defined("b");
 
@@ -375,11 +370,11 @@ fn is_validate_at_least_one_of() {
 #[test]
 fn is_validate_with_function() {
 
-    let params = Builder::build(|params| {
+    let params = valico::Builder::build(|params| {
         params.opt_defined("a");
         params.opt_defined("b");
 
-        fn validate_params(_: &Object) -> Result<(),String> {
+        fn validate_params(_: &json::Object) -> Result<(),String> {
             Err("YOU SHALL NOT PASS".to_string())
         }
 

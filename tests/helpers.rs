@@ -52,6 +52,7 @@ pub fn assert_path(obj: &Json, path: &[&str]) {
     assert!(obj.find_path(path).is_some());
 }
 
+#[allow(dead_code)]
 pub fn assert_result_key(params: &Builder, body: &str, path: &[&str]) {
     assert_path(&test_result(params, body), path);
 }
