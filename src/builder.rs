@@ -28,7 +28,7 @@ impl Builder {
         }
     }
 
-    pub fn build<F>(rules: F) -> Builder where F: Fn(&mut Builder) {
+    pub fn build<F>(rules: F) -> Builder where F: FnOnce(&mut Builder) {
         let mut builder = Builder::new();
         rules(&mut builder);
 
@@ -45,13 +45,13 @@ impl Builder {
         self.requires.push(params);
     }
 
-    pub fn req_nested<F>(&mut self, name: &str, coercer: Box<coercers::Coercer + Send + Sync>, nest_def: F) where F: Fn(&mut Builder) {
+    pub fn req_nested<F>(&mut self, name: &str, coercer: Box<coercers::Coercer + Send + Sync>, nest_def: F) where F: FnOnce(&mut Builder) {
         let nest_builder = Builder::build(nest_def);
         let params = param::Param::new_with_nest(name, coercer, nest_builder);
         self.requires.push(params);
     }
 
-    pub fn req<F>(&mut self, name: &str, param_builder: F) where F: Fn(&mut param::Param) {
+    pub fn req<F>(&mut self, name: &str, param_builder: F) where F: FnOnce(&mut param::Param) {
         let params = param::Param::build(name, param_builder);
         self.requires.push(params);
     }
@@ -66,13 +66,13 @@ impl Builder {
         self.optional.push(params);
     }
 
-    pub fn opt_nested<F>(&mut self, name: &str, coercer: Box<coercers::Coercer + Send + Sync>, nest_def: F) where F: Fn(&mut Builder) {
+    pub fn opt_nested<F>(&mut self, name: &str, coercer: Box<coercers::Coercer + Send + Sync>, nest_def: F) where F: FnOnce(&mut Builder) {
         let nest_builder = Builder::build(nest_def);
         let params = param::Param::new_with_nest(name, coercer, nest_builder);
         self.optional.push(params);
     }
 
-    pub fn opt<F>(&mut self, name: &str, param_builder: F) where F: Fn(&mut param::Param) {
+    pub fn opt<F>(&mut self, name: &str, param_builder: F) where F: FnOnce(&mut param::Param) {
         let params = param::Param::build(name, param_builder);
         self.optional.push(params);
     }

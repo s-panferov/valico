@@ -59,7 +59,7 @@ impl Param {
         }
     }
 
-    pub fn build<F>(name: &str, build_def: F) -> Param where F: Fn(&mut Param) {
+    pub fn build<F>(name: &str, build_def: F) -> Param where F: FnOnce(&mut Param) {
         let mut param = Param::new(name);
         build_def(&mut param);
 
@@ -74,7 +74,7 @@ impl Param {
         self.coercer = Some(coercer);
     }
 
-    pub fn nest<F>(&mut self, nest_def: F) where F: Fn(&mut builder::Builder) -> () {
+    pub fn nest<F>(&mut self, nest_def: F) where F: FnOnce(&mut builder::Builder) -> () {
         self.nest = Some(builder::Builder::build(nest_def));
     }
 
