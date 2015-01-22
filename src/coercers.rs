@@ -5,7 +5,23 @@ use std::collections;
 use mutable_json::MutableJson;
 use helpers;
 
+#[allow(dead_code)]
+#[derive(Copy)]
+pub enum PrimitiveType {
+    String, 
+    I64, 
+    U64,
+    F64,
+    Boolean,
+    Null,
+    Array,
+    Object,
+    // Reserved for future use in Rustless
+    File
+}
+
 pub trait Coercer: Send + Sync {
+    fn get_primitive_type(&self) -> PrimitiveType;
     fn coerce(&self, &mut json::Json) -> ::ValicoResult<Option<json::Json>>;
 }
 
@@ -13,6 +29,7 @@ pub trait Coercer: Send + Sync {
 pub struct StringCoercer;
 
 impl Coercer for StringCoercer {
+    fn get_primitive_type(&self) -> PrimitiveType { PrimitiveType::String }
     fn coerce(&self, val: &mut json::Json) -> ::ValicoResult<Option<json::Json>> {
         if val.is_string() {
             Ok(None)
@@ -30,6 +47,7 @@ impl Coercer for StringCoercer {
 pub struct I64Coercer;
 
 impl Coercer for I64Coercer {
+    fn get_primitive_type(&self) -> PrimitiveType { PrimitiveType::I64 }
     fn coerce(&self, val: &mut json::Json) -> ::ValicoResult<Option<json::Json>> {
         if val.is_i64() {
             return Ok(None)
@@ -56,6 +74,7 @@ impl Coercer for I64Coercer {
 pub struct U64Coercer;
 
 impl Coercer for U64Coercer {
+    fn get_primitive_type(&self) -> PrimitiveType { PrimitiveType::U64 }
     fn coerce(&self, val: &mut json::Json) -> ::ValicoResult<Option<json::Json>> {
         if val.is_u64() {
             return Ok(None)
@@ -82,6 +101,7 @@ impl Coercer for U64Coercer {
 pub struct F64Coercer;
 
 impl Coercer for F64Coercer {
+    fn get_primitive_type(&self) -> PrimitiveType { PrimitiveType::F64 }
     fn coerce(&self, val: &mut json::Json) -> ::ValicoResult<Option<json::Json>> {
         if val.is_f64() {
             return Ok(None)
@@ -108,6 +128,7 @@ impl Coercer for F64Coercer {
 pub struct BooleanCoercer;
 
 impl Coercer for BooleanCoercer {
+    fn get_primitive_type(&self) -> PrimitiveType { PrimitiveType::Boolean }
     fn coerce(&self, val: &mut json::Json) -> ::ValicoResult<Option<json::Json>> {
         if val.is_boolean() {
             Ok(None)
@@ -130,6 +151,7 @@ impl Coercer for BooleanCoercer {
 pub struct NullCoercer;
 
 impl Coercer for NullCoercer {
+    fn get_primitive_type(&self) -> PrimitiveType { PrimitiveType::Null }
     fn coerce(&self, val: &mut json::Json) -> ::ValicoResult<Option<json::Json>> {
         if val.is_null() {
             Ok(None)
@@ -146,25 +168,26 @@ impl Coercer for NullCoercer {
     }
 }
 
-pub struct ListCoercer {
+pub struct ArrayCoercer {
     sub_coercer: Option<Box<Coercer + Send + Sync>>
 }
 
-impl ListCoercer {
-    pub fn new() -> ListCoercer {
-        ListCoercer {
+impl ArrayCoercer {
+    pub fn new() -> ArrayCoercer {
+        ArrayCoercer {
             sub_coercer: None
         }
     }
 
-    pub fn of_type(sub_coercer: Box<Coercer + Send + Sync>) -> ListCoercer {
-        ListCoercer {
+    pub fn of_type(sub_coercer: Box<Coercer + Send + Sync>) -> ArrayCoercer {
+        ArrayCoercer {
             sub_coercer: Some(sub_coercer)
         }
     }
 }
 
-impl Coercer for ListCoercer {
+impl Coercer for ArrayCoercer {
+    fn get_primitive_type(&self) -> PrimitiveType { PrimitiveType::Array }
     fn coerce(&self, val: &mut json::Json) -> ::ValicoResult<Option<json::Json>> {
         if val.is_array() {
             let array = val.as_array_mut().unwrap();
@@ -202,6 +225,7 @@ impl Coercer for ListCoercer {
 pub struct ObjectCoercer;
 
 impl Coercer for ObjectCoercer {
+    fn get_primitive_type(&self) -> PrimitiveType { PrimitiveType::Object }
     fn coerce(&self, val: &mut json::Json) -> ::ValicoResult<Option<json::Json>> {
         if val.is_object() {
             Ok(None)    

@@ -81,10 +81,10 @@ fn is_process_boolean_require() {
 }
 
 #[test]
-fn is_process_simple_list_require() {
+fn is_process_simple_array_require() {
 
     let params = valico::Builder::build(|params| {
-        params.req_typed("a", valico::list());
+        params.req_typed("a", valico::array());
     });
 
     assert_str_eq(&params, r#"{"a":[1,"2",[3]]}"#, r#"{"a":[1,"2",[3]]}"#);
@@ -97,10 +97,10 @@ fn is_process_simple_list_require() {
 }
 
 #[test]
-fn is_process_typed_list_require() {
+fn is_process_typed_array_require() {
 
     let params = valico::Builder::build(|params| {
-        params.req_typed("a", valico::list_of(valico::string()));
+        params.req_typed("a", valico::array_of(valico::string()));
     });
 
     // convert all to string
@@ -115,12 +115,12 @@ fn is_process_typed_list_require() {
 }
 
 #[test]
-fn is_process_list_with_nested_require() {
+fn is_process_array_with_nested_require() {
 
     let params = valico::Builder::build(|params| {
-        params.req_nested("a", valico::list(), |params| {
+        params.req_nested("a", valico::array(), |params| {
             params.req_typed("b", valico::string());
-            params.req_typed("c", valico::list_of(valico::u64()))
+            params.req_typed("c", valico::array_of(valico::u64()))
         });
     });
 
@@ -157,7 +157,7 @@ fn is_process_object_with_nested_require() {
     let params = valico::Builder::build(|params| {
         params.req_nested("a", valico::object(), |params| {
             params.req_typed("b", valico::f64());
-            params.req_typed("c", valico::list_of(valico::string()));
+            params.req_typed("c", valico::array_of(valico::string()));
         });
     });
 
@@ -275,7 +275,7 @@ fn is_validate_with_regex() {
     let params = valico::Builder::build(|params| {
         params.req("a", |a| {
             // regex can't be applied to list, so it will never be valid
-            a.coerce(valico::list());
+            a.coerce(valico::array());
             a.regex(regex!("^test$"));
         })
     });

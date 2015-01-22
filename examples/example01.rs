@@ -9,9 +9,9 @@ use valico::{Builder, MutableJson};
 fn main() {
 
     let params = Builder::build(|params| {
-        params.req_nested("user", valico::list(), |params| {
+        params.req_nested("user", valico::array(), |params| {
             params.req_typed("name", valico::string());
-            params.req_typed("friend_ids", valico::list_of(valico::u64()))
+            params.req_typed("friend_ids", valico::array_of(valico::u64()))
         });
     });
 
