@@ -35,6 +35,18 @@ impl Builder {
         builder
     }
 
+    pub fn get_required(&self) -> &Vec<param::Param> {
+        return &self.requires;
+    }
+
+    pub fn get_optional(&self) -> &Vec<param::Param> {
+        return &self.optional;
+    }
+
+    pub fn get_validators(&self) -> &Vec<Box<validation::MultipleParamValidator + Send + Sync>> {
+        return &self.validators;
+    }
+
     pub fn req_defined(&mut self, name: &str) {
         let params = param::Param::new(name);
         self.requires.push(params);
