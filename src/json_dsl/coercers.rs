@@ -1,9 +1,7 @@
-
 use serialize::json::{self, ToJson};
-use std::collections;
 
 use mutable_json::MutableJson;
-use helpers;
+use super::errors;
 
 #[allow(dead_code)]
 #[derive(Copy)]
@@ -22,7 +20,7 @@ pub enum PrimitiveType {
 
 pub trait Coercer: Send + Sync {
     fn get_primitive_type(&self) -> PrimitiveType;
-    fn coerce(&self, &mut json::Json) -> ::ValicoResult<Option<json::Json>>;
+    fn coerce(&self, &mut json::Json, &str) -> super::DslResult<Option<json::Json>>;
 }
 
 #[derive(Copy)]
@@ -30,15 +28,18 @@ pub struct StringCoercer;
 
 impl Coercer for StringCoercer {
     fn get_primitive_type(&self) -> PrimitiveType { PrimitiveType::String }
-    fn coerce(&self, val: &mut json::Json) -> ::ValicoResult<Option<json::Json>> {
+    fn coerce(&self, val: &mut json::Json, path: &str) -> super::DslResult<Option<json::Json>> {
         if val.is_string() {
             Ok(None)
         } else if val.is_number() {
             Ok(Some(val.to_string().to_json()))
         } else {
-            Err(
-                helpers::coerce_error(format!("Can't coerce object {} to string", val))
-            )
+            Err(vec![
+                Box::new(errors::WrongType {
+                    path: path.to_string(),
+                    detail: "Can't coerce value to string".to_string()
+                })
+            ])
         }
     }
 }
@@ -48,7 +49,7 @@ pub struct I64Coercer;
 
 impl Coercer for I64Coercer {
     fn get_primitive_type(&self) -> PrimitiveType { PrimitiveType::I64 }
-    fn coerce(&self, val: &mut json::Json) -> ::ValicoResult<Option<json::Json>> {
+    fn coerce(&self, val: &mut json::Json, path: &str) -> super::DslResult<Option<json::Json>> {
         if val.is_i64() {
             return Ok(None)
         } else if val.is_u64() {
@@ -62,10 +63,20 @@ impl Coercer for I64Coercer {
             let converted: Option<i64> = val.parse();
             match converted {
                 Some(num) => Ok(Some(num.to_json())),
-                None => Err(helpers::coerce_error(format!("Can't coerce string value {} to i64", val)))
+                None => Err(vec![
+                    Box::new(errors::WrongType {
+                        path: path.to_string(),
+                        detail: "Can't coerce string value to i64".to_string()
+                    })
+                ])
             }
         } else {
-            Err(helpers::coerce_error(format!("Can't coerce object {} to i64", val)))
+            Err(vec![
+                Box::new(errors::WrongType {
+                    path: path.to_string(),
+                    detail: "Can't coerce object value to i64".to_string()
+                })
+            ])
         }
     }
 }
@@ -75,7 +86,7 @@ pub struct U64Coercer;
 
 impl Coercer for U64Coercer {
     fn get_primitive_type(&self) -> PrimitiveType { PrimitiveType::U64 }
-    fn coerce(&self, val: &mut json::Json) -> ::ValicoResult<Option<json::Json>> {
+    fn coerce(&self, val: &mut json::Json, path: &str) -> super::DslResult<Option<json::Json>> {
         if val.is_u64() {
             return Ok(None)
         } else if val.is_i64() {
@@ -89,10 +100,20 @@ impl Coercer for U64Coercer {
             let converted: Option<u64> = val.parse();
             match converted {
                 Some(num) => Ok(Some(num.to_json())),
-                None => Err(helpers::coerce_error(format!("Can't coerce string value {} to u64", val)))
+                None => Err(vec![
+                    Box::new(errors::WrongType {
+                        path: path.to_string(),
+                        detail: "Can't coerce string value to u64".to_string()
+                    })
+                ])
             }
         } else {
-            Err(helpers::coerce_error(format!("Can't coerce object {} to u64", val)))
+            Err(vec![
+                Box::new(errors::WrongType {
+                    path: path.to_string(),
+                    detail: "Can't coerce object value to u64".to_string()
+                })
+            ])
         }
     }
 }
@@ -102,7 +123,7 @@ pub struct F64Coercer;
 
 impl Coercer for F64Coercer {
     fn get_primitive_type(&self) -> PrimitiveType { PrimitiveType::F64 }
-    fn coerce(&self, val: &mut json::Json) -> ::ValicoResult<Option<json::Json>> {
+    fn coerce(&self, val: &mut json::Json, path: &str) -> super::DslResult<Option<json::Json>> {
         if val.is_f64() {
             return Ok(None)
         } else if val.is_i64() {
@@ -116,10 +137,20 @@ impl Coercer for F64Coercer {
             let converted: Option<f64> = val.parse();
             match converted {
                 Some(num) => Ok(Some(num.to_json())),
-                None => Err(helpers::coerce_error(format!("Can't coerce string value {} to f64", val)))
+                None => Err(vec![
+                    Box::new(errors::WrongType {
+                        path: path.to_string(),
+                        detail: "Can't coerce string value to f64".to_string()
+                    })
+                ])
             }
         } else {
-            Err(helpers::coerce_error(format!("Can't coerce object {} to f64", val)))
+            Err(vec![
+                Box::new(errors::WrongType {
+                    path: path.to_string(),
+                    detail: "Can't coerce object value to f64".to_string()
+                })
+            ])
         }
     }
 }
@@ -129,7 +160,7 @@ pub struct BooleanCoercer;
 
 impl Coercer for BooleanCoercer {
     fn get_primitive_type(&self) -> PrimitiveType { PrimitiveType::Boolean }
-    fn coerce(&self, val: &mut json::Json) -> ::ValicoResult<Option<json::Json>> {
+    fn coerce(&self, val: &mut json::Json, path: &str) -> super::DslResult<Option<json::Json>> {
         if val.is_boolean() {
             Ok(None)
         } else if val.is_string() {
@@ -139,10 +170,20 @@ impl Coercer for BooleanCoercer {
             } else if val == "false" {
                 Ok(Some(false.to_json()))
             } else {
-                Err(helpers::coerce_error(format!("Can't coerce string value {} to boolean. Correct values is 'true' and 'false'", val)))
+                Err(vec![
+                    Box::new(errors::WrongType {
+                        path: path.to_string(),
+                        detail: "Can't coerce this string value to boolean. Correct values are 'true' and 'false'".to_string()
+                    })
+                ])
             }
         } else {
-            Err(helpers::coerce_error(format!("Can't coerce object {} to boolean", val)))
+            Err(vec![
+                Box::new(errors::WrongType {
+                    path: path.to_string(),
+                    detail: "Can't coerce object to boolean".to_string()
+                })
+            ])
         }
     }
 }
@@ -152,7 +193,7 @@ pub struct NullCoercer;
 
 impl Coercer for NullCoercer {
     fn get_primitive_type(&self) -> PrimitiveType { PrimitiveType::Null }
-    fn coerce(&self, val: &mut json::Json) -> ::ValicoResult<Option<json::Json>> {
+    fn coerce(&self, val: &mut json::Json, path: &str) -> super::DslResult<Option<json::Json>> {
         if val.is_null() {
             Ok(None)
         } else if val.is_string() {
@@ -160,10 +201,20 @@ impl Coercer for NullCoercer {
             if val == "" {
                 Ok(Some(json::Json::Null))
             } else {
-                Err(helpers::coerce_error(format!("Can't coerce string value {} to null. Correct value is only empty string", val)))
+                Err(vec![
+                    Box::new(errors::WrongType {
+                        path: path.to_string(),
+                        detail: "Can't coerce this string value to null. Correct value is only empty string".to_string()
+                    })
+                ])
             }
         } else {
-            Err(helpers::coerce_error(format!("Can't coerce object {} to null", val)))
+            Err(vec![
+                Box::new(errors::WrongType {
+                    path: path.to_string(),
+                    detail: "Can't coerce object to null".to_string()
+                })
+            ])
         }
     }
 }
@@ -188,21 +239,22 @@ impl ArrayCoercer {
 
 impl Coercer for ArrayCoercer {
     fn get_primitive_type(&self) -> PrimitiveType { PrimitiveType::Array }
-    fn coerce(&self, val: &mut json::Json) -> ::ValicoResult<Option<json::Json>> {
+    fn coerce(&self, val: &mut json::Json, path: &str) -> super::DslResult<Option<json::Json>> {
         if val.is_array() {
             let array = val.as_array_mut().unwrap();
             if self.sub_coercer.is_some() {
                 let sub_coercer = self.sub_coercer.as_ref().unwrap();
-                let mut errors = collections::BTreeMap::new();
+                let mut errors = vec![];
                 for i in range(0, array.len()) {
-                    match sub_coercer.coerce(&mut array[i]) {
+                    let item_path = [path, i.to_string().as_slice()].connect("/");
+                    match sub_coercer.coerce(&mut array[i], item_path.as_slice()) {
                         Ok(Some(value)) => {
                             array.remove(i);
                             array.insert(i, value);
                         },
                         Ok(None) => (),
-                        Err(err) => {
-                            errors.insert(i.to_string(), err.to_json());
+                        Err(mut err) => {
+                            errors.append(&mut err)
                         }
                     }
                 }
@@ -216,7 +268,12 @@ impl Coercer for ArrayCoercer {
                 Ok(None)
             }
         } else {
-            Err(helpers::coerce_error(format!("Can't coerce object {} to array", val)))
+            Err(vec![
+                Box::new(errors::WrongType {
+                    path: path.to_string(),
+                    detail: "Can't coerce object to array".to_string()
+                })
+            ])
         }
     }
 }
@@ -226,11 +283,16 @@ pub struct ObjectCoercer;
 
 impl Coercer for ObjectCoercer {
     fn get_primitive_type(&self) -> PrimitiveType { PrimitiveType::Object }
-    fn coerce(&self, val: &mut json::Json) -> ::ValicoResult<Option<json::Json>> {
+    fn coerce(&self, val: &mut json::Json, path: &str) -> super::DslResult<Option<json::Json>> {
         if val.is_object() {
             Ok(None)    
         } else {
-            Err(helpers::coerce_error(format!("Can't coerce non-object value {} to object", val)))
+            Err(vec![
+                Box::new(errors::WrongType {
+                    path: path.to_string(),
+                    detail: "Can't coerce non-object value to the object type".to_string()
+                })
+            ])
         }
     }
 }

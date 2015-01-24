@@ -1,13 +1,11 @@
-
 use serialize::json::{self, ToJson};
-use std::collections;
 use regex;
 
 use mutable_json::MutableJson;
-use builder;
-use coercers;
-use validation;
-use helpers;
+use super::builder;
+use super::coercers;
+use super::validators;
+use super::errors;
 
 pub struct Param {
     pub name: String,
@@ -15,7 +13,7 @@ pub struct Param {
     pub nest: Option<builder::Builder>,
     pub description: Option<String>,
     pub allow_null: bool,
-    pub validators: Vec<Box<validation::SingleParamValidator + Send + Sync>>,
+    pub validators: validators::Validators,
     pub default: Option<json::Json>
 }
 
@@ -83,41 +81,45 @@ impl Param {
     }
 
     pub fn regex(&mut self, regex: regex::Regex) {
-        self.validators.push(Box::new(validation::RegexValidator::new(regex)));
+        self.validators.push(Box::new(regex));
     }
 
-    pub fn validate(&mut self, validator: Box<validation::SingleParamValidator + Send + Sync>) {
+    pub fn validate(&mut self, validator: Box<validators::Validator + 'static>) {
         self.validators.push(validator);
     }
 
-    pub fn validate_with(&mut self, validator: fn(&json::Json) -> Result<(), String>) {
-        self.validators.push(Box::new(validation::FunctionValidator::new(validator)));
+    pub fn validate_with<F>(&mut self, validator: F) where F: Fn(&json::Json, &str, bool) -> super::DslResult<()> + Send+Sync {
+        self.validators.push(Box::new(validator));
     }
 
-    fn process_validations(&self, val: &json::Json) -> ::ValicoResult<()> {
+    fn process_validatorss(&self, val: &json::Json, path: &str) -> super::DslResult<()> {
         for mut validator in self.validators.iter() {
-            try!(validator.validate(val));
+            try!(validator.validate(val, path, true));
         };
 
         Ok(())
     }
 
-    fn process_nest(&self, val: &mut json::Json) -> ::ValicoResult<()> {
+    fn process_nest(&self, val: &mut json::Json, path: &str) -> super::DslResult<()> {
         let ref nest = self.nest.as_ref().unwrap();
 
         if val.is_array() {
-            let mut errors = collections::BTreeMap::new();
+            let mut errors = vec![];
             let array = val.as_array_mut().unwrap();
             for (idx, item) in array.iter_mut().enumerate() {
+                let item_path = [path, idx.to_string().as_slice()].connect("/");
                 if item.is_object() {
-                    match nest.process(item.as_object_mut().unwrap()) {
+                    match nest.process_path(item, item_path.as_slice()) {
                         Ok(()) => (),
-                        Err(err) => { errors.insert(idx.to_string(), err.to_json()); }
+                        Err(mut err) => errors.append(&mut err)
                     }
                 } else {
-                    errors.insert(idx.to_string(), 
-                        helpers::validation_error(format!("List item {} is not and object", item)).to_json()
-                    );
+                    errors.push(
+                        Box::new(errors::WrongType {
+                            path: item_path.to_string(),
+                            detail: "List value is not and object".to_string()
+                        })
+                    )
                 }
             }
 
@@ -125,7 +127,7 @@ impl Param {
                 return Err(errors);
             }
         } else if val.is_object() {
-            match nest.process(val.as_object_mut().unwrap()) {
+            match nest.process_path(val, path) {
                 Ok(()) => (),
                 Err(err) => return Err(err)
             };
@@ -134,7 +136,7 @@ impl Param {
         Ok(())
     }
 
-    pub fn process(&self, val: &mut json::Json) -> ::ValicoResult<Option<json::Json>> {
+    pub fn process(&self, val: &mut json::Json, path: &str) -> super::DslResult<Option<json::Json>> {
         if val.is_null() && self.allow_null { return Ok(None) }
 
         let mut need_return = false;
@@ -142,7 +144,7 @@ impl Param {
 
         let result = {
             let val = if self.coercer.is_some() {
-                match self.coercer.as_ref().unwrap().coerce(val) {
+                match self.coercer.as_ref().unwrap().coerce(val, path) {
                     Ok(Some(new_value)) => { 
                         need_return = true; 
                         return_value = Some(new_value); 
@@ -156,13 +158,13 @@ impl Param {
             };
 
             if self.nest.is_some() {
-                match self.process_nest(val) {
+                match self.process_nest(val, path) {
                     Ok(()) => (),
                     Err(err) => return Err(err)
                 };
             }
 
-            self.process_validations(val)
+            self.process_validatorss(val, path)
         };
         
         match result {
@@ -176,13 +178,13 @@ impl Param {
 
 impl Param {
     pub fn allow_values<T: json::ToJson>(&mut self, values: &[T]) {
-        self.validators.push(Box::new(validation::AllowedValuesValidator::new(
+        self.validators.push(Box::new(validators::AllowedValues::new(
             values.iter().map(|v| v.to_json()).collect()
         )));
     }
 
     pub fn reject_values<T: json::ToJson>(&mut self, values: &[T]) {
-        self.validators.push(Box::new(validation::RejectedValuesValidator::new(
+        self.validators.push(Box::new(validators::RejectedValues::new(
             values.iter().map(|v| v.to_json()).collect()
         )));
     }
