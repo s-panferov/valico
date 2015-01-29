@@ -31,6 +31,7 @@ macro_rules! keyword_key_exists {
 pub mod multiple_of;
 pub mod maxmin;
 pub mod maxmin_length;
+pub mod pattern;
 
 pub fn default() -> Keywords {
     let mut default = vec![];
@@ -39,5 +40,6 @@ pub fn default() -> Keywords {
     default.push(Box::new(maxmin::Minimum) as Box<Keyword>);
     default.push(Box::new(maxmin_length::MaxLength) as Box<Keyword>);
     default.push(Box::new(maxmin_length::MinLength) as Box<Keyword>);
+    default.push(Box::new(pattern::Pattern) as Box<Keyword>);
     default
 }

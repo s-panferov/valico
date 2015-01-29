@@ -40,10 +40,12 @@ pub use self::maxmin::{Maximum};
 pub use self::maxmin::{Minimum};
 pub use self::maxmin_length::{MaxLength};
 pub use self::maxmin_length::{MinLength};
+pub use self::pattern::{Pattern};
 
 mod multiple_of;
 mod maxmin;
 mod maxmin_length;
+mod pattern;
 
 pub struct ValidatorError {
     pub errors: super::super::common::error::ValicoErrors,

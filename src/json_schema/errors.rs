@@ -42,3 +42,10 @@ pub struct MinLength {
     pub path: String
 }
 impl_err!(MinLength, "min_length", "MinLength condition is not met");
+
+#[derive(Debug)]
+#[allow(missing_copy_implementations)]
+pub struct Pattern {
+    pub path: String
+}
+impl_err!(Pattern, "pattern", "Pattern condition is not met");
