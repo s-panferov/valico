@@ -46,3 +46,24 @@ fn validate() {
     assert_eq!(schema.validate(&7.to_json()).valid, true);
     assert_eq!(schema.validate(&6.to_json()).valid, false);
 }
+
+#[test]
+fn should_not_compile_with_string() {
+    let mut scope = scope::Scope::new();
+    assert!(scope.compile_and_return(jsonway::object(|schema| {
+        schema.set("multipleOf", "".to_string());
+    }).unwrap()).is_err())
+}
+
+#[test]
+fn should_not_compile_with_zero_or_negative() {
+    let mut scope = scope::Scope::new();
+
+    assert!(scope.compile_and_return(jsonway::object(|schema| {
+        schema.set("multipleOf", 0.to_json());
+    }).unwrap()).is_err());
+    
+    assert!(scope.compile_and_return(jsonway::object(|schema| {
+        schema.set("multipleOf", (-1).to_json());
+    }).unwrap()).is_err());
+}
