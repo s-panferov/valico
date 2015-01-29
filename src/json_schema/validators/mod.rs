@@ -36,14 +36,14 @@ macro_rules! val_error{
 }
 
 pub use self::multiple_of::{MultipleOf};
-pub use self::maximum::{Maximum};
-pub use self::minimum::{Minimum};
-pub use self::max_length::{MaxLength};
+pub use self::maxmin::{Maximum};
+pub use self::maxmin::{Minimum};
+pub use self::maxmin_length::{MaxLength};
+pub use self::maxmin_length::{MinLength};
 
 mod multiple_of;
-mod maximum;
-mod minimum;
-mod max_length;
+mod maxmin;
+mod maxmin_length;
 
 pub struct ValidatorError {
     pub errors: super::super::common::error::ValicoErrors,

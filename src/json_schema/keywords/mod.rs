@@ -29,15 +29,15 @@ macro_rules! keyword_key_exists {
 }
 
 pub mod multiple_of;
-pub mod maximum;
-pub mod minimum;
-pub mod max_length;
+pub mod maxmin;
+pub mod maxmin_length;
 
 pub fn default() -> Keywords {
     let mut default = vec![];
     default.push(Box::new(multiple_of::MultipleOf) as Box<Keyword>);
-    default.push(Box::new(maximum::Maximum) as Box<Keyword>);
-    default.push(Box::new(minimum::Minimum) as Box<Keyword>);
-    default.push(Box::new(max_length::MaxLength) as Box<Keyword>);
+    default.push(Box::new(maxmin::Maximum) as Box<Keyword>);
+    default.push(Box::new(maxmin::Minimum) as Box<Keyword>);
+    default.push(Box::new(maxmin_length::MaxLength) as Box<Keyword>);
+    default.push(Box::new(maxmin_length::MinLength) as Box<Keyword>);
     default
 }

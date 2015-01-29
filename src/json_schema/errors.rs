@@ -35,3 +35,10 @@ pub struct MaxLength {
     pub path: String
 }
 impl_err!(MaxLength, "max_length", "MaxLength condition is not met");
+
+#[derive(Debug)]
+#[allow(missing_copy_implementations)]
+pub struct MinLength {
+    pub path: String
+}
+impl_err!(MinLength, "min_length", "MinLength condition is not met");
