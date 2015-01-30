@@ -49,3 +49,24 @@ pub struct Pattern {
     pub path: String
 }
 impl_err!(Pattern, "pattern", "Pattern condition is not met");
+
+#[derive(Debug)]
+#[allow(missing_copy_implementations)]
+pub struct MaxItems {
+    pub path: String
+}
+impl_err!(MaxItems, "max_items", "MaxItems condition is not met");
+
+#[derive(Debug)]
+#[allow(missing_copy_implementations)]
+pub struct MinItems {
+    pub path: String
+}
+impl_err!(MinItems, "min_items", "MinItems condition is not met");
+
+#[derive(Debug)]
+#[allow(missing_copy_implementations)]
+pub struct UniqueItems {
+    pub path: String
+}
+impl_err!(UniqueItems, "unique_items", "UniqueItems condition is not met");

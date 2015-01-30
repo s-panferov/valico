@@ -62,8 +62,8 @@ impl Scope {
         }
     }
 
-    pub fn resolve(&self, id: &url::Url) -> Option<&schema::Schema> {
-        self.schemes.get(id).or_else(|:| {
+    pub fn resolve(&self, id: &url::Url) -> Option<schema::ScopedSchema<'a>> {
+        let schema = self.schemes.get(id).or_else(|:| {
             // Searching for inline schema in O(N)
             for (_, schema) in self.schemes.iter() {
                 let internal_schema = schema.resolve(id);
@@ -73,6 +73,14 @@ impl Scope {
             }
 
             None
-        })
+        });
+
+        match id.fragment {
+            Some(fragment) => {
+                
+            },
+            None => Some(schema::ScopedSchema::new(self, schema)
+        }
+        schema.resolve_fragment()
     }
 }

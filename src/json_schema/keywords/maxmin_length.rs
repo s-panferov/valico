@@ -4,7 +4,7 @@ use std::num::{Float};
 use super::super::schema;
 use super::super::validators;
 
-macro_rules! kw_minmax_length{
+macro_rules! kw_minmax_integer{
     ($name:ident, $keyword:expr) => {
         #[allow(missing_copy_implementations)]
         pub struct $name;
@@ -35,8 +35,8 @@ macro_rules! kw_minmax_length{
     }
 }
 
-kw_minmax_length!(MaxLength, "maxLength");
-kw_minmax_length!(MinLength, "minLength");
+kw_minmax_integer!(MaxLength, "maxLength");
+kw_minmax_integer!(MinLength, "minLength");
 
 #[cfg(test)] use super::super::scope;
 #[cfg(test)] use jsonway;

@@ -13,7 +13,7 @@ pub fn is_default_id(id: &url::Url) -> bool {
 } 
 
 macro_rules! url_parser(
-    () => (url::UrlParser::new().scheme_type_mapper($crate::json_schema::helpers::whatwg_extended_scheme_type_mapper))
+    () => (::url::UrlParser::new().scheme_type_mapper($crate::json_schema::helpers::whatwg_extended_scheme_type_mapper))
 );
 
 pub fn parse_url_key(key: &str, obj: &json::Json) -> Result<Option<url::Url>, schema::SchemaError> {

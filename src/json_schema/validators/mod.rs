@@ -41,11 +41,18 @@ pub use self::maxmin::{Minimum};
 pub use self::maxmin_length::{MaxLength};
 pub use self::maxmin_length::{MinLength};
 pub use self::pattern::{Pattern};
+pub use self::maxmin_items::{MaxItems};
+pub use self::maxmin_items::{MinItems};
+pub use self::unique_items::{UniqueItems};
+pub use self::items::{Items};
 
 mod multiple_of;
 mod maxmin;
 mod maxmin_length;
 mod pattern;
+mod maxmin_items;
+mod unique_items;
+pub mod items;
 
 pub struct ValidatorError {
     pub errors: super::super::common::error::ValicoErrors,
