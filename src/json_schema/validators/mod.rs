@@ -36,15 +36,14 @@ macro_rules! val_error{
 }
 
 pub use self::multiple_of::{MultipleOf};
-pub use self::maxmin::{Maximum};
-pub use self::maxmin::{Minimum};
-pub use self::maxmin_length::{MaxLength};
-pub use self::maxmin_length::{MinLength};
+pub use self::maxmin::{Maximum, Minimum};
+pub use self::maxmin_length::{MaxLength, MinLength};
 pub use self::pattern::{Pattern};
-pub use self::maxmin_items::{MaxItems};
-pub use self::maxmin_items::{MinItems};
+pub use self::maxmin_items::{MaxItems, MinItems};
 pub use self::unique_items::{UniqueItems};
 pub use self::items::{Items};
+pub use self::maxmin_properties::{MaxProperties, MinProperties};
+pub use self::required::{Required};
 
 mod multiple_of;
 mod maxmin;
@@ -53,6 +52,8 @@ mod pattern;
 mod maxmin_items;
 mod unique_items;
 pub mod items;
+mod maxmin_properties;
+mod required;
 
 pub struct ValidationState {
     pub errors: super::super::common::error::ValicoErrors,

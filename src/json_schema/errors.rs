@@ -78,3 +78,25 @@ pub struct Items {
     pub detail: String
 }
 impl_err!(Items, "items", "Items condition is not met", +detail);
+
+#[derive(Debug)]
+#[allow(missing_copy_implementations)]
+pub struct MaxProperties {
+    pub path: String
+}
+impl_err!(MaxProperties, "max_properties", "MaxProperties condition is not met");
+
+#[derive(Debug)]
+#[allow(missing_copy_implementations)]
+pub struct MinProperties {
+    pub path: String
+}
+impl_err!(MinProperties, "min_properties", "MinProperties condition is not met");
+
+#[derive(Debug)]
+#[allow(missing_copy_implementations)]
+pub struct Required {
+    pub path: String
+}
+impl_err!(Required, "required", "This property is required");
+
