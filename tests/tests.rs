@@ -1,5 +1,5 @@
 #![feature(plugin)]
-#![allow(unstable)]
+#![feature(collections)]
 
 extern crate valico;
 extern crate "rustc-serialize" as serialize;

@@ -17,10 +17,3 @@ pub enum PrimitiveType {
     Object,
     String,
 }
-
-#[derive(Debug)]
-pub struct ValidationResult {
-    valid: bool,
-    errors: Vec<Box<super::common::error::ValicoError>>,
-    missing: Vec<url::Url>
-}

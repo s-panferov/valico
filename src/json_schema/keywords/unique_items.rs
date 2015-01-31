@@ -35,6 +35,6 @@ fn validate_unique_items() {
         schema.set("uniqueItems", true);
     }).unwrap()).ok().unwrap();;
 
-    assert_eq!(schema.validate(&[1,2,3,4].to_json()).valid, true);
-    assert_eq!(schema.validate(&[1,1,3,4].to_json()).valid, false);
+    assert_eq!(schema.validate(&[1,2,3,4].to_json()).is_valid(), true);
+    assert_eq!(schema.validate(&[1,1,3,4].to_json()).is_valid(), false);
 }

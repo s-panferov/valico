@@ -10,7 +10,7 @@ use super::helpers;
 #[derive(Debug)]
 pub struct Scope {
     pub keywords: keywords::Keywords,
-    schemes: collections::HashMap<url::Url, schema::Schema>,
+    schemes: collections::HashMap<String, schema::Schema>,
 }
 
 #[allow(dead_code)]
@@ -39,8 +39,10 @@ impl Scope {
             url_parser!().parse(helpers::DEFAULT_SCHEMA_ID).ok().unwrap()
         };
 
-        if !self.schemes.contains_key(&id) {
-            self.schemes.insert(id, schema);
+        let id_str = id.serialize();
+
+        if !self.schemes.contains_key(&id_str) {
+            self.schemes.insert(id_str, schema);
             Ok(())
         } else {
             Err(schema::SchemaError::IdConflicts)
@@ -54,19 +56,25 @@ impl Scope {
             url_parser!().parse(helpers::DEFAULT_SCHEMA_ID).ok().unwrap()
         };
 
-        if !self.schemes.contains_key(&id) {
-            self.schemes.insert(id.clone(), schema);
-            Ok(schema::ScopedSchema::new(self, self.schemes.get(&id).unwrap()))
+        let id_str = id.serialize();
+
+        if !self.schemes.contains_key(&id_str) {
+            self.schemes.insert(id_str.clone(), schema);
+            Ok(schema::ScopedSchema::new(self, self.schemes.get(&id_str).unwrap()))
         } else {
             Err(schema::SchemaError::IdConflicts)
         }
     }
 
-    pub fn resolve(&self, id: &url::Url) -> Option<schema::ScopedSchema<'a>> {
-        let schema = self.schemes.get(id).or_else(|:| {
+    pub fn resolve<'a>(&'a self, id: &url::Url) -> Option<schema::ScopedSchema<'a>> {
+
+        let (schema_path, fragment) = helpers::serialize_schema_path(id);
+        println!("Resolve schema in scope: {} => {} + {:?}", id, schema_path, fragment);
+
+        let schema = self.schemes.get(&schema_path).or_else(|:| {
             // Searching for inline schema in O(N)
             for (_, schema) in self.schemes.iter() {
-                let internal_schema = schema.resolve(id);
+                let internal_schema = schema.resolve(schema_path.as_slice());
                 if internal_schema.is_some() {
                     return internal_schema
                 }
@@ -75,12 +83,42 @@ impl Scope {
             None
         });
 
-        match id.fragment {
-            Some(fragment) => {
-                
-            },
-            None => Some(schema::ScopedSchema::new(self, schema)
-        }
-        schema.resolve_fragment()
+        println!("Schema resolved: {:?}", schema);
+
+        schema.and_then(|schema| {
+            match fragment {
+                Some(ref fragment) => {
+                    println!("Resolve fragment: {:?}", fragment);
+                    schema.resolve_fragment(fragment.as_slice()).map(|schema| {
+                        schema::ScopedSchema::new(self, schema)
+                    })
+                },
+                None => Some(schema::ScopedSchema::new(self, schema))
+            }
+        })        
     }
+}
+
+#[cfg(test)]
+use jsonway;
+
+#[test]
+fn lookup() {
+    let mut scope = Scope::new();
+    
+    scope.compile(jsonway::object(|schema| {
+        schema.set("id", "http://example.com/schema".to_string())
+    }).unwrap()).ok();
+
+    scope.compile(jsonway::object(|schema| {
+        schema.set("id", "http://example.com/schema#sub".to_string());
+        schema.object("subschema", |subschema| {
+            subschema.set("id", "#subschema".to_string());
+        })
+    }).unwrap()).ok();
+
+    assert!(scope.resolve(&url::Url::parse("http://example.com/schema").ok().unwrap()).is_some());
+    assert!(scope.resolve(&url::Url::parse("http://example.com/schema#sub").ok().unwrap()).is_some());
+    assert!(scope.resolve(&url::Url::parse("http://example.com/schema#sub/subschema").ok().unwrap()).is_some());
+    assert!(scope.resolve(&url::Url::parse("http://example.com/schema#subschema").ok().unwrap()).is_some());
 }

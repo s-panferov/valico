@@ -47,6 +47,34 @@ pub fn parse_url_key_with_base(key: &str, obj: &json::Json, base: &url::Url) -> 
     }
 }
 
+pub fn alter_fragment(mut url: url::Url, fragment: String) -> url::Url {
+    url.fragment = Some(fragment);
+    url
+}
+
+pub fn serialize_schema_path(url: &url::Url) -> (String, Option<String>) {
+    match url.fragment.as_ref() {
+        Some(fragment) => {
+            let mut url_str = url.serialize_no_fragment();
+            if !fragment.starts_with("/") {
+                let fragment_parts = fragment.split_str("/").map(|s| s.to_string()).collect::<Vec<String>>();
+                url_str.push_str("#");
+                url_str.push_str(fragment_parts[0].as_slice());
+                let fragment = if fragment_parts.len() > 1 {
+                    Some("/".to_string() + fragment_parts[1..].connect("/").as_slice())
+                } else {
+                    None
+                };
+                (url_str, fragment)
+            } else {
+                (url_str, Some(fragment.clone()))
+            }
+
+        },
+        None => (url.serialize_no_fragment(), None)
+    }
+}
+
 /// Stub function to add our "json-schema" to the url::UrlParser
 pub fn whatwg_extended_scheme_type_mapper(scheme: &str) -> url::SchemeType {
     match scheme {

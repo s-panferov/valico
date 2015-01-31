@@ -49,9 +49,9 @@ fn validate_max_length() {
         schema.set("maxLength", 5);
     }).unwrap()).ok().unwrap();;
 
-    assert_eq!(schema.validate(&"1234".to_json()).valid, true);
-    assert_eq!(schema.validate(&"12345".to_json()).valid, true);
-    assert_eq!(schema.validate(&"123456".to_json()).valid, false);
+    assert_eq!(schema.validate(&"1234".to_json()).is_valid(), true);
+    assert_eq!(schema.validate(&"12345".to_json()).is_valid(), true);
+    assert_eq!(schema.validate(&"123456".to_json()).is_valid(), false);
 }
 
 #[test]
@@ -78,9 +78,9 @@ fn validate_min_length() {
         schema.set("minLength", 5);
     }).unwrap()).ok().unwrap();;
 
-    assert_eq!(schema.validate(&"1234".to_json()).valid, false);
-    assert_eq!(schema.validate(&"12345".to_json()).valid, true);
-    assert_eq!(schema.validate(&"123456".to_json()).valid, true);
+    assert_eq!(schema.validate(&"1234".to_json()).is_valid(), false);
+    assert_eq!(schema.validate(&"12345".to_json()).is_valid(), true);
+    assert_eq!(schema.validate(&"123456".to_json()).is_valid(), true);
 }
 
 #[test]

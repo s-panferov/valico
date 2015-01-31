@@ -18,9 +18,9 @@ fn validate_max_items() {
         schema.set("maxItems", 5);
     }).unwrap()).ok().unwrap();;
 
-    assert_eq!(schema.validate(&[1,2,3,4].to_json()).valid, true);
-    assert_eq!(schema.validate(&[1,2,3,4,5].to_json()).valid, true);
-    assert_eq!(schema.validate(&[1,2,3,4,5,6].to_json()).valid, false);
+    assert_eq!(schema.validate(&[1,2,3,4].to_json()).is_valid(), true);
+    assert_eq!(schema.validate(&[1,2,3,4,5].to_json()).is_valid(), true);
+    assert_eq!(schema.validate(&[1,2,3,4,5,6].to_json()).is_valid(), false);
 }
 
 #[test]
@@ -47,9 +47,9 @@ fn validate_min_items() {
         schema.set("minItems", 5);
     }).unwrap()).ok().unwrap();;
 
-    assert_eq!(schema.validate(&[1,2,3,4].to_json()).valid, false);
-    assert_eq!(schema.validate(&[1,2,3,4,5].to_json()).valid, true);
-    assert_eq!(schema.validate(&[1,2,3,4,5,6].to_json()).valid, true);
+    assert_eq!(schema.validate(&[1,2,3,4].to_json()).is_valid(), false);
+    assert_eq!(schema.validate(&[1,2,3,4,5].to_json()).is_valid(), true);
+    assert_eq!(schema.validate(&[1,2,3,4,5,6].to_json()).is_valid(), true);
 }
 
 #[test]

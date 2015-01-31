@@ -1,4 +1,5 @@
 use serialize::json;
+use std::cmp;
 use url;
 
 use super::super::errors;
@@ -23,18 +24,72 @@ pub struct Items {
 }
 
 impl super::Validator for Items {
-    fn validate(&self, val: &json::Json, path: &str, strict: bool, scope: &scope::Scope) -> super::ValidatorResult {
+    fn validate(&self, val: &json::Json, path: &str, strict: bool, scope: &scope::Scope) -> super::ValidationState {
         let array = strict_process!(val.as_array(), path, strict, "The value must be an array");
+
+        let mut state = super::ValidationState::new();
 
         match self.items {
             Some(ItemsKind::Schema(ref url)) => {
+                // Just validate all items against the schema
+
                 let schema = scope.resolve(url);
-                println!("{:?}", url);
-                panic!("{:?}", schema)
+                if schema.is_some() {
+                    let schema = schema.unwrap();
+                    for (idx, item) in array.iter().enumerate() {
+                        let item_path = [path, idx.to_string().as_slice()].connect("/");
+                        state.append(&mut schema.validate_in(item, item_path.as_slice()));
+                    }
+                } else {
+                    state.missing.push(url.clone());
+                }
             },
+            Some(ItemsKind::Array(ref urls)) => {
+                let min = cmp::min(urls.len(), array.len());
+
+                // Validate against schemas
+                for idx in range(0, min) {
+                    let schema = scope.resolve(&urls[idx]);
+                    let item = &array[idx];
+
+                    if schema.is_some() {
+                        let item_path = [path, idx.to_string().as_slice()].connect("/");
+                        state.append(&mut schema.unwrap().validate_in(item, item_path.as_slice()))
+                    } else {
+                        state.missing.push(urls[idx].clone())
+                    }
+                }
+
+                // Validate agains additional items
+                if array.len() > urls.len() {
+                    match self.additional {
+                        Some(AdditionalKind::Boolean(allow)) if allow == false => {
+                            state.errors.push(Box::new(
+                                errors::Items {
+                                    path: path.to_string(),
+                                    detail: "Additional items are not allowed".to_string()
+                                }
+                            ))
+                        },
+                        Some(AdditionalKind::Schema(ref url)) => {
+                            let schema = scope.resolve(url);
+                            if schema.is_some() {
+                                let schema = schema.unwrap();
+                                for (idx, item) in array[urls.len()..].iter().enumerate() {
+                                    let item_path = [path, idx.to_string().as_slice()].connect("/");
+                                    state.append(&mut schema.validate_in(item, item_path.as_slice()))
+                                }
+                            } else {
+                                state.missing.push(url.clone())
+                            }
+                        },
+                        _ => ()
+                    }
+                }
+            }
             _ => ()
         }
 
-        Ok(())
+        state
     }
 }

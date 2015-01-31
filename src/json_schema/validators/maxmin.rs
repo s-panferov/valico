@@ -10,7 +10,7 @@ pub struct Maximum {
 }
 
 impl super::Validator for Maximum {
-    fn validate(&self, val: &json::Json, path: &str, strict: bool, _scope: &scope::Scope) -> super::ValidatorResult {
+    fn validate(&self, val: &json::Json, path: &str, strict: bool, _scope: &scope::Scope) -> super::ValidationState {
         let number = strict_process!(val.as_f64(), path, strict, "The value must be a number");
 
         let valid = if self.exclusive {
@@ -20,13 +20,13 @@ impl super::Validator for Maximum {
         };
 
         if valid {
-            Ok(())
+            super::ValidationState::new()
         } else {
-            Err(val_error!(
+            val_error!(
                 errors::Maximum {
                     path: path.to_string()
                 }
-            ))
+            )
         }
     }
 }
@@ -38,7 +38,7 @@ pub struct Minimum {
 }
 
 impl super::Validator for Minimum {
-    fn validate(&self, val: &json::Json, path: &str, strict: bool, _scope: &scope::Scope) -> super::ValidatorResult {
+    fn validate(&self, val: &json::Json, path: &str, strict: bool, _scope: &scope::Scope) -> super::ValidationState {
         let number = strict_process!(val.as_f64(), path, strict, "The value must be a number");
 
         let valid = if self.exclusive {
@@ -48,13 +48,13 @@ impl super::Validator for Minimum {
         };
 
         if valid {
-            Ok(())
+            super::ValidationState::new()
         } else {
-            Err(val_error!(
+            val_error!(
                 errors::Minimum {
                     path: path.to_string()
                 }
-            ))
+            )
         }
     }
 }

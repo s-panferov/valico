@@ -42,9 +42,9 @@ fn validate() {
         schema.set("multipleOf", 3.5);
     }).unwrap()).ok().unwrap();
 
-    assert_eq!(schema.validate(&"".to_json()).valid, true);
-    assert_eq!(schema.validate(&7.to_json()).valid, true);
-    assert_eq!(schema.validate(&6.to_json()).valid, false);
+    assert_eq!(schema.validate(&"".to_json()).is_valid(), true);
+    assert_eq!(schema.validate(&7.to_json()).is_valid(), true);
+    assert_eq!(schema.validate(&6.to_json()).is_valid(), false);
 }
 
 #[test]

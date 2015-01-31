@@ -41,9 +41,9 @@ fn validate() {
         schema.set("pattern", r"abb.*".to_string());
     }).unwrap()).ok().unwrap();
 
-    assert_eq!(schema.validate(&"abb".to_json()).valid, true);
-    assert_eq!(schema.validate(&"abbd".to_json()).valid, true);
-    assert_eq!(schema.validate(&"abd".to_json()).valid, false);
+    assert_eq!(schema.validate(&"abb".to_json()).is_valid(), true);
+    assert_eq!(schema.validate(&"abbd".to_json()).is_valid(), true);
+    assert_eq!(schema.validate(&"abd".to_json()).is_valid(), false);
 }
 
 #[test]

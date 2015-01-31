@@ -65,9 +65,9 @@ fn validate_maximum() {
         schema.set("maximum", 10);
     }).unwrap()).ok().unwrap();
 
-    assert_eq!(schema.validate(&9.to_json()).valid, true);
-    assert_eq!(schema.validate(&10.to_json()).valid, true);
-    assert_eq!(schema.validate(&11.to_json()).valid, false);
+    assert_eq!(schema.validate(&9.to_json()).is_valid(), true);
+    assert_eq!(schema.validate(&10.to_json()).is_valid(), true);
+    assert_eq!(schema.validate(&11.to_json()).is_valid(), false);
 }
 
 #[test]
@@ -78,9 +78,9 @@ fn validate_exclusive_maximum() {
         schema.set("exclusiveMaximum", true);
     }).unwrap()).ok().unwrap();
 
-    assert_eq!(schema.validate(&9.to_json()).valid, true);
-    assert_eq!(schema.validate(&10.to_json()).valid, false);
-    assert_eq!(schema.validate(&11.to_json()).valid, false);
+    assert_eq!(schema.validate(&9.to_json()).is_valid(), true);
+    assert_eq!(schema.validate(&10.to_json()).is_valid(), false);
+    assert_eq!(schema.validate(&11.to_json()).is_valid(), false);
 }
 
 #[test]
@@ -113,9 +113,9 @@ fn validate_minumum() {
         schema.set("minimum", 10);
     }).unwrap()).ok().unwrap();
 
-    assert_eq!(schema.validate(&9.to_json()).valid, false);
-    assert_eq!(schema.validate(&10.to_json()).valid, true);
-    assert_eq!(schema.validate(&11.to_json()).valid, true);
+    assert_eq!(schema.validate(&9.to_json()).is_valid(), false);
+    assert_eq!(schema.validate(&10.to_json()).is_valid(), true);
+    assert_eq!(schema.validate(&11.to_json()).is_valid(), true);
 }
 
 #[test]
@@ -126,9 +126,9 @@ fn validate_exclusive_minimum() {
         schema.set("exclusiveMinimum", true);
     }).unwrap()).ok().unwrap();
 
-    assert_eq!(schema.validate(&9.to_json()).valid, false);
-    assert_eq!(schema.validate(&10.to_json()).valid, false);
-    assert_eq!(schema.validate(&11.to_json()).valid, true);
+    assert_eq!(schema.validate(&9.to_json()).is_valid(), false);
+    assert_eq!(schema.validate(&10.to_json()).is_valid(), false);
+    assert_eq!(schema.validate(&11.to_json()).is_valid(), true);
 }
 
 #[test]

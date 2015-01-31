@@ -9,17 +9,17 @@ pub struct MultipleOf {
 }
 
 impl super::Validator for MultipleOf {
-    fn validate(&self, val: &json::Json, path: &str, strict: bool, _scope: &scope::Scope) -> super::ValidatorResult {
+    fn validate(&self, val: &json::Json, path: &str, strict: bool, _scope: &scope::Scope) -> super::ValidationState {
         let number = strict_process!(val.as_f64(), path, strict, "The value must be a number");
 
         if number % self.number == 0f64 {
-            Ok(())
+            super::ValidationState::new()
         } else {
-            Err(val_error!(
+            val_error!(
                 errors::MultipleOf {
                     path: path.to_string()
                 }
-            ))
+            )
         }
     }
 }

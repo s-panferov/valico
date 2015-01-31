@@ -1,4 +1,5 @@
-#![allow(unstable)]
+#![feature(core)]
+#![feature(collections)]
 #![feature(plugin)]
 
 extern crate "rustc-serialize" as serialize;
@@ -8,6 +9,8 @@ extern crate url;
 extern crate jsonway;
 #[macro_use] #[no_link]
 extern crate mopa;
+
+#[macro_use] extern crate log;
 
 pub use mutable_json::MutableJson;
 

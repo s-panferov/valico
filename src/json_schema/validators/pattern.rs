@@ -10,17 +10,17 @@ pub struct Pattern {
 }
 
 impl super::Validator for Pattern {
-    fn validate(&self, val: &json::Json, path: &str, strict: bool, _scope: &scope::Scope) -> super::ValidatorResult {
+    fn validate(&self, val: &json::Json, path: &str, strict: bool, _scope: &scope::Scope) -> super::ValidationState {
         let string = strict_process!(val.as_string(), path, strict, "The value must be a string");
 
         if self.regex.is_match(string) {
-            Ok(())
+            super::ValidationState::new()
         } else {
-            Err(val_error!(
+            val_error!(
                 errors::Pattern {
                     path: path.to_string()
                 }
-            ))
+            )
         }
     }
 }

@@ -70,3 +70,11 @@ pub struct UniqueItems {
     pub path: String
 }
 impl_err!(UniqueItems, "unique_items", "UniqueItems condition is not met");
+
+#[derive(Debug)]
+#[allow(missing_copy_implementations)]
+pub struct Items {
+    pub path: String,
+    pub detail: String
+}
+impl_err!(Items, "items", "Items condition is not met", +detail);

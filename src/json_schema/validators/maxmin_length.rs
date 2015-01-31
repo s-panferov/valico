@@ -9,17 +9,17 @@ pub struct MaxLength {
 }
 
 impl super::Validator for MaxLength {
-    fn validate(&self, val: &json::Json, path: &str, strict: bool, _scope: &scope::Scope) -> super::ValidatorResult {
+    fn validate(&self, val: &json::Json, path: &str, strict: bool, _scope: &scope::Scope) -> super::ValidationState {
         let string = strict_process!(val.as_string(), path, strict, "The value must be a string");
 
         if (string.len() as u64) <= self.length {
-            Ok(())
+            super::ValidationState::new()
         } else {
-            Err(val_error!(
+            val_error!(
                 errors::MaxLength {
                     path: path.to_string()
                 }
-            ))
+            )
         }
     }
 }
@@ -30,17 +30,17 @@ pub struct MinLength {
 }
 
 impl super::Validator for MinLength {
-    fn validate(&self, val: &json::Json, path: &str, strict: bool, _scope: &scope::Scope) -> super::ValidatorResult {
+    fn validate(&self, val: &json::Json, path: &str, strict: bool, _scope: &scope::Scope) -> super::ValidationState {
         let string = strict_process!(val.as_string(), path, strict, "The value must be a string");
 
         if (string.len() as u64) >= self.length {
-            Ok(())
+            super::ValidationState::new()
         } else {
-            Err(val_error!(
+            val_error!(
                 errors::MinLength {
                     path: path.to_string()
                 }
-            ))
+            )
         }
     }
 }

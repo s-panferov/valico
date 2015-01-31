@@ -9,14 +9,14 @@ macro_rules! strict_process {
         let maybe_val = $val;
         if maybe_val.is_none() {
             return if !$strict {
-                Ok(())
+                $crate::json_schema::validators::ValidationState::new()
             } else {
-                Err(val_error!(
+                val_error!(
                     $crate::json_schema::errors::WrongType {
                         path: $path.to_string(),
                         detail: $err.to_string()
                     }
-                ))
+                )
             }
         }
 
@@ -26,7 +26,7 @@ macro_rules! strict_process {
 
 macro_rules! val_error{
     ($err:expr) => (
-        $crate::json_schema::validators::ValidatorError{
+        $crate::json_schema::validators::ValidationState{
             errors: vec![
                 Box::new($err)
             ],
@@ -54,22 +54,31 @@ mod maxmin_items;
 mod unique_items;
 pub mod items;
 
-pub struct ValidatorError {
+pub struct ValidationState {
     pub errors: super::super::common::error::ValicoErrors,
     pub missing: Vec<url::Url>
 }
 
-impl ValidatorError {
-    pub fn append(&mut self, second: &mut ValidatorError) {
+impl ValidationState {
+    pub fn new() -> ValidationState {
+        ValidationState {
+            errors: vec![],
+            missing: vec![]
+        }
+    }
+
+    pub fn is_valid(&self) -> bool {
+        self.errors.len() == 0
+    }
+
+    pub fn append(&mut self, second: &mut ValidationState) {
         self.errors.append(&mut second.errors);
         self.missing.append(&mut second.missing);
     }
 }
 
-pub type ValidatorResult = Result<(), ValidatorError>;
-
 pub trait Validator {
-    fn validate(&self, item: &json::Json, &str, bool, &scope::Scope) -> ValidatorResult;
+    fn validate(&self, item: &json::Json, &str, bool, &scope::Scope) -> ValidationState;
 }
 
 impl fmt::Debug for Validator + 'static {
@@ -81,8 +90,8 @@ impl fmt::Debug for Validator + 'static {
 pub type BoxedValidator = Box<Validator + 'static>;
 pub type Validators = Vec<BoxedValidator>;
 
-impl<T> Validator for T where T: Fn(&json::Json, &str, bool, &scope::Scope) -> ValidatorResult {
-    fn validate(&self, val: &json::Json, path: &str, strict: bool, scope: &scope::Scope) -> ValidatorResult {
+impl<T> Validator for T where T: Fn(&json::Json, &str, bool, &scope::Scope) -> ValidationState {
+    fn validate(&self, val: &json::Json, path: &str, strict: bool, scope: &scope::Scope) -> ValidationState {
         self(val, path, strict, scope)
     }
 }
