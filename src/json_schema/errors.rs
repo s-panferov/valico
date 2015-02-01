@@ -100,7 +100,6 @@ pub struct Required {
 }
 impl_err!(Required, "required", "This property is required");
 
-
 #[derive(Debug)]
 #[allow(missing_copy_implementations)]
 pub struct Properties {
@@ -108,4 +107,11 @@ pub struct Properties {
     pub detail: String
 }
 impl_err!(Properties, "properties", "Property conditions are not met", +detail);
+
+#[derive(Debug)]
+#[allow(missing_copy_implementations)]
+pub struct Enum {
+    pub path: String
+}
+impl_err!(Enum, "enum", "Enum conditions are not met");
 

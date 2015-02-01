@@ -12,7 +12,7 @@ impl super::Keyword for Required {
         if required.is_array() {
             let required = required.as_array().unwrap();
 
-            if required.len() < 1 {
+            if required.len() == 0 {
                 return Err(schema::SchemaError::Malformed {
                     path: ctx.fragment.connect("/"),
                     detail: "This array MUST have at least one element.".to_string()
