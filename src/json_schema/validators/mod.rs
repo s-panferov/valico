@@ -47,6 +47,7 @@ pub use self::required::{Required};
 pub use self::properties::{Properties};
 pub use self::dependencies::{Dependencies};
 pub use self::enum_::{Enum};
+pub use self::type_::{Type};
 
 mod multiple_of;
 mod maxmin;
@@ -60,6 +61,7 @@ mod required;
 pub mod properties;
 pub mod dependencies;
 mod enum_;
+pub mod type_;
 
 #[derive(Debug)]
 pub struct ValidationState {

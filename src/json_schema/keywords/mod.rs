@@ -41,6 +41,7 @@ pub mod required;
 pub mod properties;
 pub mod dependencies;
 pub mod enum_;
+pub mod type_;
 
 pub fn default() -> Keywords {
     let mut default = vec![];
@@ -60,5 +61,6 @@ pub fn default() -> Keywords {
     default.push(Box::new(properties::Properties) as Box<Keyword>);
     default.push(Box::new(dependencies::Dependencies) as Box<Keyword>);
     default.push(Box::new(enum_::Enum) as Box<Keyword>);
+    default.push(Box::new(type_::Type) as Box<Keyword>);
     default
 }
