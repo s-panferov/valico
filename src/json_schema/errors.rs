@@ -115,3 +115,19 @@ pub struct Enum {
 }
 impl_err!(Enum, "enum", "Enum conditions are not met");
 
+#[derive(Debug)]
+#[allow(missing_copy_implementations)]
+pub struct AnyOf {
+    pub path: String,
+    pub states: Vec<super::validators::ValidationState>
+}
+impl_err!(AnyOf, "any_of", "AnyOf conditions are not met");
+
+#[derive(Debug)]
+#[allow(missing_copy_implementations)]
+pub struct OneOf {
+    pub path: String,
+    pub states: Vec<super::validators::ValidationState>
+}
+impl_err!(OneOf, "one_of", "OneOf conditions are not met");
+
