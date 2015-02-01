@@ -38,6 +38,7 @@ pub mod unique_items;
 pub mod items;
 pub mod maxmin_properties;
 pub mod required;
+pub mod properties;
 
 pub fn default() -> Keywords {
     let mut default = vec![];
@@ -54,5 +55,6 @@ pub fn default() -> Keywords {
     default.push(Box::new(maxmin_properties::MaxProperties) as Box<Keyword>);
     default.push(Box::new(maxmin_properties::MinProperties) as Box<Keyword>);
     default.push(Box::new(required::Required) as Box<Keyword>);
+    default.push(Box::new(properties::Properties) as Box<Keyword>);
     default
 }

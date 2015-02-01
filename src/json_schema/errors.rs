@@ -100,3 +100,12 @@ pub struct Required {
 }
 impl_err!(Required, "required", "This property is required");
 
+
+#[derive(Debug)]
+#[allow(missing_copy_implementations)]
+pub struct Properties {
+    pub path: String,
+    pub detail: String
+}
+impl_err!(Properties, "properties", "Property conditions are not met", +detail);
+

@@ -44,6 +44,7 @@ pub use self::unique_items::{UniqueItems};
 pub use self::items::{Items};
 pub use self::maxmin_properties::{MaxProperties, MinProperties};
 pub use self::required::{Required};
+pub use self::properties::{Properties};
 
 mod multiple_of;
 mod maxmin;
@@ -54,6 +55,7 @@ mod unique_items;
 pub mod items;
 mod maxmin_properties;
 mod required;
+pub mod properties;
 
 pub struct ValidationState {
     pub errors: super::super::common::error::ValicoErrors,

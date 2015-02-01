@@ -12,63 +12,77 @@ impl super::Keyword for Items {
         let maybe_items = def.find("items");
         let maybe_additional = def.find("additionalItems");
 
-        if maybe_items.is_some() || maybe_additional.is_some() {
-            let items = if maybe_items.is_some() {
-                let items_val = maybe_items.unwrap();
-                
-                Some(if items_val.is_object() {
-
-                    validators::items::ItemsKind::Schema(
-                        helpers::alter_fragment(ctx.url.clone(), ctx.fragment.connect("/") + "/items")
-                    )
-
-                } else if items_val.is_array() {
-
-                    let schemas = range(0, items_val.as_array().unwrap().len()).map(|idx| {
-                        helpers::alter_fragment(ctx.url.clone(), ctx.fragment.connect("/") + "/items/" + idx.to_string().as_slice())
-                    }).collect::<Vec<url::Url>>();
-
-                    validators::items::ItemsKind::Array(schemas)
-
-                } else {
-
-                    return Err(schema::SchemaError::Malformed {
-                        path: ctx.fragment.connect("/"),
-                        detail: "`items` must be an object or an array".to_string()
-                    }) 
-
-                })
-            } else { None };
-
-            let additional_items = if maybe_additional.is_some() {
-                let additional_val = maybe_additional.unwrap();
-                Some(if additional_val.is_boolean() {
-
-                    validators::items::AdditionalKind::Boolean(additional_val.as_boolean().unwrap())
-
-                } else if additional_val.is_object() {
-
-                    validators::items::AdditionalKind::Schema(
-                        helpers::alter_fragment(ctx.url.clone(), ctx.fragment.connect("/") + "/additionalItems")
-                    )
-
-                } else {
-
-                    return Err(schema::SchemaError::Malformed {
-                        path: ctx.fragment.connect("/"),
-                        detail: "`additionalItems` must be a boolean or an object".to_string()
-                    }) 
-
-                })
-            } else { None };
-
-            Ok(Some(Box::new(validators::Items {
-                items: items,
-                additional: additional_items
-            })))
-        } else {
-            Ok(None)
+        if !(maybe_items.is_some() || maybe_additional.is_some()) {
+            return Ok(None)
         }
+
+        let items = if maybe_items.is_some() {
+            let items_val = maybe_items.unwrap();
+            Some(if items_val.is_object() {
+
+                validators::items::ItemsKind::Schema(
+                    helpers::alter_fragment(ctx.url.clone(), ctx.fragment.connect("/") + "/items")
+                )
+
+            } else if items_val.is_array() {
+
+                let mut schemas = vec![];
+                for (idx, item) in items_val.as_array().unwrap().iter().enumerate() {
+                    if item.is_object() {
+                        schemas.push(
+                            helpers::alter_fragment(ctx.url.clone(), ctx.fragment.connect("/") + "/items/" + idx.to_string().as_slice())
+                        )
+                    } else {
+                        return Err(schema::SchemaError::Malformed {
+                            path: ctx.fragment.connect("/"),
+                            detail: "Items of this array MUST be objects".to_string()
+                        })
+                    }
+                }
+
+                validators::items::ItemsKind::Array(schemas)
+
+            } else {
+
+                return Err(schema::SchemaError::Malformed {
+                    path: ctx.fragment.connect("/"),
+                    detail: "`items` must be an object or an array".to_string()
+                }) 
+
+            })
+        } else {
+            None
+        };
+
+        let additional_items = if maybe_additional.is_some() {
+            let additional_val = maybe_additional.unwrap();
+            Some(if additional_val.is_boolean() {
+
+                validators::items::AdditionalKind::Boolean(additional_val.as_boolean().unwrap())
+
+            } else if additional_val.is_object() {
+
+                validators::items::AdditionalKind::Schema(
+                    helpers::alter_fragment(ctx.url.clone(), ctx.fragment.connect("/") + "/additionalItems")
+                )
+
+            } else {
+
+                return Err(schema::SchemaError::Malformed {
+                    path: ctx.fragment.connect("/"),
+                    detail: "`additionalItems` must be a boolean or an object".to_string()
+                }) 
+
+            })
+        } else {
+            None
+        };
+
+        Ok(Some(Box::new(validators::Items {
+            items: items,
+            additional: additional_items
+        })))
+        
     }
 }
 
