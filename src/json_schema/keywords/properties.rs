@@ -27,7 +27,7 @@ impl super::Keyword for Properties {
                 for (key, value) in properties.iter() {
                     if value.is_object() {
                         schemes.insert(key.to_string(), 
-                            helpers::alter_fragment(ctx.url.clone(), [ctx.fragment.connect("/").as_slice(), "properties", key.as_slice()].connect("/"))
+                            helpers::alter_fragment_path(ctx.url.clone(), [ctx.fragment.connect("/").as_slice(), "properties", key.as_slice()].connect("/"))
                         );
                     } else {
                         return Err(schema::SchemaError::Malformed {
@@ -56,7 +56,7 @@ impl super::Keyword for Properties {
             } else if additional_val.is_object() {
 
                 validators::properties::AdditionalKind::Schema(
-                    helpers::alter_fragment(ctx.url.clone(), ctx.fragment.connect("/") + "/additionalProperties")
+                    helpers::alter_fragment_path(ctx.url.clone(), [ctx.fragment.connect("/").as_slice(), "additionalProperties"].connect("/"))
                 )
 
             } else {
@@ -82,7 +82,7 @@ impl super::Keyword for Properties {
 
                         match regex::Regex::new(key.as_slice()) {
                             Ok(regex) => {
-                                let url = helpers::alter_fragment(ctx.url.clone(), [
+                                let url = helpers::alter_fragment_path(ctx.url.clone(), [
                                     ctx.fragment.connect("/").as_slice(), 
                                     "patternProperties", 
                                     key.as_slice()
@@ -256,3 +256,31 @@ fn validate_additional_properties_schema() {
     }).unwrap()).is_valid(), false);
 }
 
+#[test]
+fn malformed() {
+    let mut scope = scope::Scope::new();
+
+    assert!(scope.compile_and_return(jsonway::object(|schema| {
+        schema.set("properties", false);
+    }).unwrap()).is_err());
+
+    assert!(scope.compile_and_return(jsonway::object(|schema| {
+        schema.set("patternProperties", false);
+    }).unwrap()).is_err());
+
+    assert!(scope.compile_and_return(jsonway::object(|schema| {
+        schema.object("patternProperties", |pattern| {
+            pattern.set("test", 1)
+        });
+    }).unwrap()).is_err());
+
+    assert!(scope.compile_and_return(jsonway::object(|schema| {
+        schema.object("patternProperties", |pattern| {
+            pattern.object("((", |malformed| {})
+        });
+    }).unwrap()).is_err());
+
+    assert!(scope.compile_and_return(jsonway::object(|schema| {
+        schema.set("additionalProperties", 10);
+    }).unwrap()).is_err());
+}

@@ -47,8 +47,32 @@ pub fn parse_url_key_with_base(key: &str, obj: &json::Json, base: &url::Url) -> 
     }
 }
 
-pub fn alter_fragment(mut url: url::Url, fragment: String) -> url::Url {
-    url.fragment = Some(fragment);
+pub fn alter_fragment_path(mut url: url::Url, new_fragment: String) -> url::Url {
+
+    let normalized_fragment = if new_fragment.starts_with("/") {
+        &new_fragment[1..]
+    } else {
+        new_fragment.as_slice()
+    };
+
+    let result_fragment = match url.fragment {
+        Some(ref fragment) if fragment.len() > 0 => {
+            if !fragment.starts_with("/") {
+                let mut result_fragment = "".to_string();
+                let mut fragment_parts = fragment.split_str("/").map(|s| s.to_string());
+                result_fragment.push_str("#");
+                result_fragment.push_str(fragment_parts.next().unwrap().as_slice());
+                result_fragment.push_str("/");
+                result_fragment.push_str(normalized_fragment.as_slice());
+                result_fragment
+            } else {
+                "/".to_string() + normalized_fragment
+            }
+        },
+        _ => "/".to_string() + normalized_fragment
+    };
+    
+    url.fragment = Some(result_fragment);
     url
 }
 
