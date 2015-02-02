@@ -60,6 +60,15 @@ pub struct Schema {
     scopes: collections::HashMap<String, Vec<String>>
 }
 
+const NON_SCHEMA_KEYS: [&'static str; 6] = [
+    "properties", 
+    "patternProperties",
+    "dependencies",
+    "anyOf",
+    "allOf",
+    "oneOf",
+];
+
 impl Schema {
     fn compile(def: json::Json, keywords: &keywords::Keywords) -> Result<Schema, SchemaError> {
         if !def.is_object() {
@@ -87,7 +96,8 @@ impl Schema {
                 let scheme = try!(Schema::compile_sub(
                     value.clone(),
                     &mut context,
-                    keywords
+                    keywords,
+                    !NON_SCHEMA_KEYS.iter().any(|k| k == key)
                 ));
 
                 tree.insert(key.clone(), scheme);
@@ -127,10 +137,15 @@ impl Schema {
         Ok(validators)
     }
 
-    fn compile_sub(def: json::Json, context: &mut WalkContext, keywords: &keywords::Keywords) -> Result<Schema, SchemaError> {
+    fn compile_sub(def: json::Json, context: &mut WalkContext, keywords: &keywords::Keywords, is_schema: bool) -> Result<Schema, SchemaError> {
 
-        let id = try!(helpers::parse_url_key_with_base("id", &def, context.url));
-        let schema = try!(helpers::parse_url_key("$schema", &def));
+        let mut id = None; 
+        let mut schema = None; 
+
+        if is_schema {
+            id = try!(helpers::parse_url_key_with_base("id", &def, context.url));
+            schema = try!(helpers::parse_url_key("$schema", &def));
+        }
 
         let tree = {
             let mut tree = collections::BTreeMap::new();
@@ -151,7 +166,8 @@ impl Schema {
                     let scheme = try!(Schema::compile_sub(
                         value.clone(),
                         &mut context,
-                        keywords
+                        keywords,
+                        !NON_SCHEMA_KEYS.iter().any(|k| k == key)
                     ));
 
                     tree.insert(key.clone(), scheme);
@@ -172,7 +188,8 @@ impl Schema {
                     let scheme = try!(Schema::compile_sub(
                         value.clone(),
                         &mut context,
-                        keywords
+                        keywords,
+                        true
                     ));
 
                     tree.insert(key.to_string().clone(), scheme);
@@ -186,7 +203,11 @@ impl Schema {
             context.scopes.insert(id.clone().unwrap().serialize(), context.fragment.clone());
         }
 
-        let validators = try!(Schema::compile_keywords(&def, context, keywords));
+        let validators = if is_schema {
+            try!(Schema::compile_keywords(&def, context, keywords))
+        } else {
+            vec![]
+        };
 
         let schema = Schema {
             id: id,

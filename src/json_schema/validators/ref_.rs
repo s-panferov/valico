@@ -1,7 +1,6 @@
 use serialize::json;
 use url;
 
-use super::super::errors;
 use super::super::scope;
 
 #[allow(missing_copy_implementations)]
@@ -10,7 +9,7 @@ pub struct Ref {
 }
 
 impl super::Validator for Ref {
-    fn validate(&self, val: &json::Json, path: &str, strict: bool, scope: &scope::Scope) -> super::ValidationState {
+    fn validate(&self, val: &json::Json, path: &str, _strict: bool, scope: &scope::Scope) -> super::ValidationState {
         let schema = scope.resolve(&self.url);
 
         if schema.is_some() {

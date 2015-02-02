@@ -1,7 +1,6 @@
 use serialize::json;
 use regex;
 use std::collections;
-use std::cmp;
 use url;
 
 use super::super::errors;

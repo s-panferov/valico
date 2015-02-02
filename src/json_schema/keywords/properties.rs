@@ -1,7 +1,6 @@
 use std::collections;
 use regex;
 use serialize::json;
-use url;
 
 use super::super::schema;
 use super::super::validators;
@@ -126,7 +125,6 @@ impl super::Keyword for Properties {
 
 #[cfg(test)] use super::super::scope;
 #[cfg(test)] use jsonway;
-#[cfg(test)] use serialize::json::{ToJson};
 
 #[test]
 fn validate_properties() {
@@ -162,6 +160,32 @@ fn validate_properties() {
         obj.set("prop2", 11);
         obj.set("prop3", 1000); // not validated
     }).unwrap()).is_valid(), true);
+}
+
+#[test]
+fn validate_kw_properties() {
+    let mut scope = scope::Scope::new();
+    let schema = scope.compile_and_return(jsonway::object(|schema| {
+        schema.object("properties", |properties| {
+            properties.object("id", |prop1| {
+                prop1.set("maximum", 10);
+            });
+            properties.object("items", |prop2| {
+                prop2.set("minimum", 11);
+            });
+        });
+    }).unwrap()).ok().unwrap();
+
+    assert_eq!(schema.validate(&jsonway::object(|obj| {
+        obj.set("id", 10);
+        obj.set("items", 11);
+    }).unwrap()).is_valid(), true);
+
+    assert_eq!(schema.validate(&jsonway::object(|obj| {
+        obj.set("id", 11);
+        obj.set("items", 11);
+    }).unwrap()).is_valid(), false);
+
 }
 
 #[test]
@@ -276,7 +300,7 @@ fn malformed() {
 
     assert!(scope.compile_and_return(jsonway::object(|schema| {
         schema.object("patternProperties", |pattern| {
-            pattern.object("((", |malformed| {})
+            pattern.object("((", |_malformed| {})
         });
     }).unwrap()).is_err());
 

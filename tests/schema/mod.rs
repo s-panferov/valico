@@ -1,4 +1,3 @@
-use std::old_io;
 use std::old_io::fs;
 use std::old_io::fs::PathExtensions;
 use serialize::json;
@@ -23,7 +22,6 @@ fn test_suite() {
         let spec_set = spec_set.as_array().unwrap();
         for spec in spec_set.iter() {
             let spec = spec.as_object().unwrap();
-            let description = spec.get("description").unwrap().as_string().unwrap();
             let mut scope = json_schema::Scope::new();
             let schema = scope.compile_and_return(spec.get("schema").unwrap().clone()).ok().unwrap();
             let tests = spec.get("tests").unwrap().as_array().unwrap();

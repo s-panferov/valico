@@ -45,7 +45,6 @@ impl super::Keyword for Required {
 
 #[cfg(test)] use super::super::scope;
 #[cfg(test)] use jsonway;
-#[cfg(test)] use serialize::json::{ToJson};
 
 #[test]
 fn validate() {

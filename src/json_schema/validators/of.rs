@@ -1,5 +1,4 @@
 use serialize::json;
-use std::cmp;
 use url;
 
 use super::super::errors;

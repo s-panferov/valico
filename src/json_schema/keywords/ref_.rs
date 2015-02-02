@@ -17,7 +17,7 @@ impl super::Keyword for Ref {
                         url: url
                     })))
                 },
-                Err(err) => {
+                Err(_) => {
                     Err(schema::SchemaError::Malformed {
                         path: ctx.fragment.connect("/"),
                         detail: "The value of $ref MUST be an URI-encoded JSON Pointer".to_string()

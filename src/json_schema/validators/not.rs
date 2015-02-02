@@ -10,7 +10,7 @@ pub struct Not {
 }
 
 impl super::Validator for Not {
-    fn validate(&self, val: &json::Json, path: &str, strict: bool, scope: &scope::Scope) -> super::ValidationState {
+    fn validate(&self, val: &json::Json, path: &str, _strict: bool, scope: &scope::Scope) -> super::ValidationState {
         let schema = scope.resolve(&self.url);
         let mut state = super::ValidationState::new();
 

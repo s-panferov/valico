@@ -1,5 +1,4 @@
 use serialize::json;
-use url;
 
 use super::super::schema;
 use super::super::validators;

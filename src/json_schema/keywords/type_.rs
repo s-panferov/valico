@@ -86,7 +86,7 @@ fn validate_array() {
         schema.set("type", "array".to_string());
     }).unwrap()).ok().unwrap();
 
-    assert_eq!(schema.validate(&jsonway::array(|arr| {}).unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&jsonway::array(|_arr| {}).unwrap()).is_valid(), true);
     assert_eq!(schema.validate(&"string".to_json()).is_valid(), false);
 }
 
@@ -146,7 +146,7 @@ fn validate_object() {
         schema.set("type", "object".to_string());
     }).unwrap()).ok().unwrap();
 
-    assert_eq!(schema.validate(&jsonway::object(|arr| {}).unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&jsonway::object(|_arr| {}).unwrap()).is_valid(), true);
     assert_eq!(schema.validate(&"string".to_json()).is_valid(), false);
 }
 
@@ -158,7 +158,7 @@ fn validate_string() {
     }).unwrap()).ok().unwrap();
 
     assert_eq!(schema.validate(&"string".to_json()).is_valid(), true);
-    assert_eq!(schema.validate(&jsonway::object(|arr| {}).unwrap()).is_valid(), false);
+    assert_eq!(schema.validate(&jsonway::object(|_arr| {}).unwrap()).is_valid(), false);
 }
 
 #[test]
@@ -175,7 +175,7 @@ fn validate_set() {
     assert_eq!(schema.validate(&(-11).to_json()).is_valid(), true);
     assert_eq!(schema.validate(&"string".to_json()).is_valid(), true);
     assert_eq!(schema.validate(&(11.5).to_json()).is_valid(), false);
-    assert_eq!(schema.validate(&jsonway::object(|arr| {}).unwrap()).is_valid(), false);
+    assert_eq!(schema.validate(&jsonway::object(|_arr| {}).unwrap()).is_valid(), false);
 }
 
 #[test]
@@ -187,7 +187,7 @@ fn malformed() {
     }).unwrap()).is_err());
 
     assert!(scope.compile_and_return(jsonway::object(|schema| {
-        schema.object("type", |type_| {});
+        schema.object("type", |_type| {});
     }).unwrap()).is_err());
 
     assert!(scope.compile_and_return(jsonway::object(|schema| {

@@ -73,7 +73,6 @@ impl super::Keyword for Dependencies {
 
 #[cfg(test)] use super::super::scope;
 #[cfg(test)] use jsonway;
-#[cfg(test)] use serialize::json::{ToJson};
 
 #[test]
 fn validate_dependencies() {
