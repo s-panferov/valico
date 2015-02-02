@@ -11,6 +11,10 @@ license = "MIT"
 regex = "*"
 regex_macros = "*"
 rustc-serialize = "*"
+url = "*"
+mopa = "*"
+jsonway = "*"
+log = "*"
 
 [[test]]
 name = "tests"

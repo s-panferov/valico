@@ -1,5 +1,8 @@
 #![feature(plugin)]
 #![feature(collections)]
+#![feature(io)]
+#![feature(path)]
+#![feature(core)]
 
 extern crate valico;
 extern crate "rustc-serialize" as serialize;
@@ -8,5 +11,5 @@ extern crate "rustc-serialize" as serialize;
 extern crate regex_macros;
 extern crate regex;
 
-mod builder;
-mod helpers;
+mod dsl;
+mod schema;

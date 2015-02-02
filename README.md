@@ -2,9 +2,18 @@
 
 [![Build Status](https://travis-ci.org/rustless/valico.svg?branch=master)](https://travis-ci.org/rustless/valico)
 
-Valico is a validation and coercion tool for JSON objects, written in Rust and inspired by [Grape]. It designed to be a support library for the various REST-like frameworks or other tools that need to validate and coerce JSON input from outside world.
+Valico is a validation and coercion tool for JSON objects, written in Rust. It designed to be a support library for the various REST-like frameworks or other tools that need to validate and coerce JSON input from outside world.
 
-It has built-in support for common coercers, validators and can return detailed error messages if something goes wrong.
+Valico has two features:
+
+* **DSL** — a set of simple validators and coercers inspired by [Grape]. It has built-in support for common coercers, validators and can return detailed error messages if something goes wrong.
+* **JSON Schema** — An implementation of JSON Schema, based on IETF's draft v4.
+
+References:
+
+* http://json-schema.org
+* http://json-schema.org/latest/json-schema-core.html
+* http://json-schema.org/latest/json-schema-validation.html
 
 ```toml
 # Cargo.toml
@@ -23,7 +32,33 @@ See also:
 [queryst]: https://github.com/rustless/queryst
 [Grape]: https://github.com/intridea/grape
 
-## Basic Usage
+## JSON Schema
+
+It passes the entire JSONSchema v4 test suite except for remoteRefs and maxLength/minLength when using unicode surrogate pairs. It also can validate your schema and give you an explanation about what is wrong in it.
+
+### Example
+
+~~~rust
+use serialize::json;
+use valico::json_schema;
+use std::old_io::fs;
+
+fn main() {
+    let json_v4_schema: json::Json = fs::File::open(&Path::new("tests/schema/schema.json")).ok().unwrap()
+        .read_to_string().ok().unwrap().parse().unwrap();
+
+    let mut scope = json_schema::Scope::new();
+    let schema = scope.compile_and_return(json_v4_schema.clone()).ok().unwrap();
+
+    println!("Is valid: {}", schema.validate(&json_v4_schema).is_valid())
+}
+~~~
+
+TODO more docs about JSON Schema here
+
+## DSL
+
+### Basic Usage
 
 All Valico stuff is making by Builder instance. Below is a simple example showing how one can create and setup Builder: 
 
@@ -80,13 +115,13 @@ Also you can look to the [specs] for more details and examples.
 
 [specs]: https://github.com/s-panferov/valico/blob/master/tests/builder.rs
 
-## Validation and coercion
+### Validation and coercion
 
 You can define validations and coercion options for your parameters using a `Builder::build` block. Parameters can be **optional** and **required**. Requires parameters must be always present. Optional parameters can be omitted.
 
 When parameter is present in JSON all validation and coercions will be applied and error fired if something goes wrong.
 
-### Builder
+#### Builder
 
 This functions are available in Builder to define parameters:
 
@@ -118,7 +153,7 @@ fn opt(&mut self, name: &str, param_builder: |&mut Param|);
 
 ~~~
 
-### Built-in Coercers
+#### Built-in Coercers
 
 Available list of coercers:
     
@@ -143,7 +178,7 @@ let params = Builder::build(|params| {
 });
 ~~~
 
-### Nested processing
+#### Nested processing
 
 You can specify rules to nesting processing for **lists** and **objects**:
 
@@ -167,7 +202,7 @@ let params = Builder::build(|params| {
 
 Nesting level is not limited in Valico.
 
-### Parameters DSL
+#### Parameters DSL
 
 You can use DSL block to setup parameters with more flexible way:
 
@@ -193,11 +228,11 @@ let params = Builder::build(|params| {
 });
 ~~~
 
-### Parameter validations
+#### Parameter validations
 
 Parameter validations available only in DSL block.
 
-#### allow_values
+##### allow_values
 
 Parameters can be restricted to a specific set of values with **allow_values**:
 
@@ -210,7 +245,7 @@ let params = Builder::build(|params| {
 })
 ~~~
 
-#### reject_values
+##### reject_values
 
 Some values can be rejected with **reject_values**:
 
@@ -223,7 +258,7 @@ let params = Builder::build(|params| {
 })
 ~~~
 
-#### regex
+##### regex
 
 String values can be tested with Regex:
 
@@ -238,7 +273,7 @@ let params = Builder::build(|params| {
 });
 ~~~
 
-#### validate_with
+##### validate_with
 
 Sometimes it's usefull to use some custom function as validator:
 
@@ -260,15 +295,15 @@ let params = Builder::build(|params| {
 });
 ~~~
 
-#### validate
+##### validate
 
 One can use custom validator. Docs in Progress.
 
-### Builder validations
+#### Builder validations
 
 Some validators can be specified in Builder DSL block to validate a set of parameters.
 
-#### mutually_exclusive
+##### mutually_exclusive
 
 Parameters can be defined as mutually_exclusive, ensuring that they aren't present at the same time in a request.
 
@@ -281,7 +316,7 @@ let params = Builder::build(|params| {
 });
 ~~~
 
-#### mutually_exclusive
+##### mutually_exclusive
 
 Parameters can be defined as mutually_exclusive, ensuring that they aren't present at the same time in a request.
 
@@ -310,7 +345,7 @@ let params = Builder::build(|params| {
 
 **Warning**: Never define mutually exclusive sets with any required params. Two mutually exclusive required params will mean params are never valid. One required param mutually exclusive with an optional param will mean the latter is never valid.
 
-#### exactly_one_of
+##### exactly_one_of
 
 Parameters can be defined as 'exactly_one_of', ensuring that exactly one parameter gets selected.
 
@@ -322,7 +357,7 @@ let params = Builder::build(|params| {
 });
 ~~~
 
-#### at_least_one_of
+##### at_least_one_of
 
 Parameters can be defined as 'at_least_one_of', ensuring that at least one parameter gets selected.
 
@@ -335,7 +370,7 @@ let params = Builder::build(|params| {
 });
 ~~~
 
-#### validate_with
+##### validate_with
 
 Sometimes it's usefull to use some custom function as validator:
 
@@ -351,6 +386,6 @@ let params = Builder::build(|params| {
 });
 ~~~
 
-#### validate
+##### validate
 
 One can use custom validator. Docs in Progress.
