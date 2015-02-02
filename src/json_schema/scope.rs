@@ -74,7 +74,6 @@ impl Scope {
     pub fn resolve<'a>(&'a self, id: &url::Url) -> Option<schema::ScopedSchema<'a>> {
 
         let (schema_path, fragment) = helpers::serialize_schema_path(id);
-        println!("Resolve schema in scope: {} => {} + {:?}", id, schema_path, fragment);
 
         let schema = self.schemes.get(&schema_path).or_else(|:| {
             // Searching for inline schema in O(N)
@@ -88,12 +87,9 @@ impl Scope {
             None
         });
 
-        println!("Schema resolved: {:?}", schema);
-
         schema.and_then(|schema| {
             match fragment {
                 Some(ref fragment) => {
-                    println!("Resolve fragment: {:?}", fragment);
                     schema.resolve_fragment(fragment.as_slice()).map(|schema| {
                         schema::ScopedSchema::new(self, schema)
                     })

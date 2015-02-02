@@ -8,7 +8,6 @@ pub struct MultipleOf;
 impl super::Keyword for MultipleOf {
     fn compile(&self, def: &json::Json, ctx: &schema::WalkContext) -> super::KeywordResult {
         let multiple_of = keyword_key_exists!(def, "multipleOf");
-        println!("multiple_of, {}", multiple_of);
 
         if multiple_of.is_number() {
             let multiple_of = multiple_of.as_f64().unwrap();

@@ -40,9 +40,7 @@ fn test_suite() {
 
                 let state = schema.validate(&data);
 
-                if state.is_valid() == valid {
-                    println!("Spec OK in {:?}: {}", path, description);
-                } else {
+                if state.is_valid() != valid {
                     failures.push((path.filename_str().unwrap().to_string(), description.to_string()))
                 }
             }

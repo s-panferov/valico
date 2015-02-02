@@ -91,7 +91,6 @@ pub fn alter_fragment_path(mut url: url::Url, new_fragment: String) -> url::Url 
 }
 
 pub fn serialize_schema_path(url: &url::Url) -> (String, Option<String>) {
-    println!("URL: {:?}", url);
     match url.fragment.as_ref() {
         Some(fragment) if fragment.len() > 0 => {
             let mut url_str = url.serialize_no_fragment();
