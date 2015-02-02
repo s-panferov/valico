@@ -1,5 +1,6 @@
 use serialize::json;
 use url;
+use url::percent_encoding;
 
 use super::schema;
 
@@ -10,7 +11,20 @@ pub fn is_default_id(id: &url::Url) -> bool {
         None => true,
         _ => false
     }
-} 
+}
+
+/// http://tools.ietf.org/html/draft-ietf-appsawg-json-pointer-07
+pub fn encode(string: &str) -> String {
+    percent_encoding::percent_encode(
+        string.replace("~", "~0").replace("/", "~1").as_bytes(), 
+        percent_encoding::FORM_URLENCODED_ENCODE_SET
+    )
+}
+
+/// Encode and connect
+pub fn connect(strings: &[&str]) -> String {
+    strings.iter().map(|s| encode(s)).collect::<Vec<String>>().connect("/")
+}
 
 macro_rules! url_parser(
     () => (::url::UrlParser::new().scheme_type_mapper($crate::json_schema::helpers::whatwg_extended_scheme_type_mapper))

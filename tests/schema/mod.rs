@@ -51,9 +51,6 @@ fn test_suite() {
         let exceptions: Vec<(String, String)> = vec![
             ("maxLength.json".to_string(), "two supplementary Unicode code points is long enough".to_string()),
             ("minLength.json".to_string(), "one supplementary Unicode code point is not long enough".to_string()),
-            ("ref.json".to_string(), "slash".to_string()),
-            ("ref.json".to_string(), "tilda".to_string()),
-            ("ref.json".to_string(), "percent".to_string()),
             ("refRemote.json".to_string(), "remote ref invalid".to_string()),
             ("refRemote.json".to_string(), "remote fragment invalid".to_string()),
             ("refRemote.json".to_string(), "ref within ref invalid".to_string()),

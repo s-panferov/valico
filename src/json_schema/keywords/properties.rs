@@ -26,7 +26,11 @@ impl super::Keyword for Properties {
                 for (key, value) in properties.iter() {
                     if value.is_object() {
                         schemes.insert(key.to_string(), 
-                            helpers::alter_fragment_path(ctx.url.clone(), [ctx.fragment.connect("/").as_slice(), "properties", key.as_slice()].connect("/"))
+                            helpers::alter_fragment_path(ctx.url.clone(), [
+                                ctx.escaped_fragment().as_slice().as_slice(), 
+                                "properties", 
+                                helpers::encode(key).as_slice()
+                            ].connect("/"))
                         );
                     } else {
                         return Err(schema::SchemaError::Malformed {
@@ -55,7 +59,10 @@ impl super::Keyword for Properties {
             } else if additional_val.is_object() {
 
                 validators::properties::AdditionalKind::Schema(
-                    helpers::alter_fragment_path(ctx.url.clone(), [ctx.fragment.connect("/").as_slice(), "additionalProperties"].connect("/"))
+                    helpers::alter_fragment_path(ctx.url.clone(), [
+                        ctx.escaped_fragment().as_slice().as_slice(), 
+                        "additionalProperties"
+                    ].connect("/"))
                 )
 
             } else {
@@ -82,9 +89,9 @@ impl super::Keyword for Properties {
                         match regex::Regex::new(key.as_slice()) {
                             Ok(regex) => {
                                 let url = helpers::alter_fragment_path(ctx.url.clone(), [
-                                    ctx.fragment.connect("/").as_slice(), 
+                                    ctx.escaped_fragment().as_slice().as_slice(), 
                                     "patternProperties", 
-                                    key.as_slice()
+                                    helpers::encode(key).as_slice()
                                 ].connect("/"));
                                 patterns.push((regex, url));
                             },

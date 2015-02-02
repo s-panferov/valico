@@ -20,7 +20,10 @@ impl super::Keyword for Items {
             Some(if items_val.is_object() {
 
                 validators::items::ItemsKind::Schema(
-                    helpers::alter_fragment_path(ctx.url.clone(), ctx.fragment.connect("/") + "/items")
+                    helpers::alter_fragment_path(ctx.url.clone(), [
+                        ctx.escaped_fragment().as_slice().as_slice(), 
+                        "items"
+                    ].connect("/"))
                 )
 
             } else if items_val.is_array() {
@@ -29,7 +32,11 @@ impl super::Keyword for Items {
                 for (idx, item) in items_val.as_array().unwrap().iter().enumerate() {
                     if item.is_object() {
                         schemas.push(
-                            helpers::alter_fragment_path(ctx.url.clone(), ctx.fragment.connect("/") + "/items/" + idx.to_string().as_slice())
+                            helpers::alter_fragment_path(ctx.url.clone(), [
+                                ctx.escaped_fragment().as_slice().as_slice(),
+                                "items",
+                                idx.to_string().as_slice()
+                            ].connect("/"))
                         )
                     } else {
                         return Err(schema::SchemaError::Malformed {
@@ -62,7 +69,10 @@ impl super::Keyword for Items {
             } else if additional_val.is_object() {
 
                 validators::items::AdditionalKind::Schema(
-                    helpers::alter_fragment_path(ctx.url.clone(), ctx.fragment.connect("/") + "/additionalItems")
+                    helpers::alter_fragment_path(ctx.url.clone(), [
+                        ctx.escaped_fragment().as_slice().as_slice(), 
+                        "additionalItems"
+                    ].connect("/"))
                 )
 
             } else {

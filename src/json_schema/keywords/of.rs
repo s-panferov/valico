@@ -28,7 +28,7 @@ macro_rules! of_keyword{
                         if scheme.is_object() {
                             schemes.push(
                                 helpers::alter_fragment_path(ctx.url.clone(), [
-                                    ctx.fragment.connect("/").as_slice(), 
+                                    ctx.escaped_fragment().as_slice().as_slice(), 
                                     $kw,
                                     idx.to_string().as_slice()
                                 ].connect("/"))

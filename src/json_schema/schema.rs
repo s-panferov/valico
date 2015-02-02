@@ -14,6 +14,12 @@ pub struct WalkContext<'a> {
     pub scopes: &'a mut collections::HashMap<String, Vec<String>>
 }
 
+impl<'a> WalkContext<'a> {
+    pub fn escaped_fragment(&self) -> String {
+        helpers::connect(self.fragment.iter().map(|s| s.as_slice()).collect::<Vec<&str>>().as_slice())
+    }
+}
+
 #[derive(Debug)]
 #[allow(missing_copy_implementations)]
 pub enum SchemaError {
@@ -101,7 +107,7 @@ impl Schema {
                     !NON_SCHEMA_KEYS.iter().any(|k| k == key)
                 ));
 
-                tree.insert(key.clone(), scheme);
+                tree.insert(helpers::encode(key), scheme);
             }
 
             (tree, scopes)
@@ -171,14 +177,14 @@ impl Schema {
                         !NON_SCHEMA_KEYS.iter().any(|k| k == key)
                     ));
 
-                    tree.insert(key.clone(), scheme);
+                    tree.insert(helpers::encode(key), scheme);
                 }
             } else if def.is_array() {
                 let array = def.as_array().unwrap();
 
-                for (key, value) in array.iter().enumerate() {
+                for (idx, value) in array.iter().enumerate() {
                     let mut current_fragment = context.fragment.clone();
-                    current_fragment.push(key.to_string().clone());
+                    current_fragment.push(idx.to_string().clone());
 
                     let mut context = WalkContext {
                         url: id.as_ref().unwrap_or(context.url),
@@ -193,7 +199,7 @@ impl Schema {
                         true
                     ));
 
-                    tree.insert(key.to_string().clone(), scheme);
+                    tree.insert(idx.to_string().clone(), scheme);
                 }
             }
 
