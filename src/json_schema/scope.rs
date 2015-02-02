@@ -39,7 +39,12 @@ impl Scope {
             url_parser!().parse(helpers::DEFAULT_SCHEMA_ID).ok().unwrap()
         };
 
-        let id_str = id.serialize();
+        let (id_str, fragment) = helpers::serialize_schema_path(&id);
+
+        match fragment {
+            Some(_) => return Err(schema::SchemaError::WrongId),
+            None => ()
+        }
 
         if !self.schemes.contains_key(&id_str) {
             self.schemes.insert(id_str, schema);

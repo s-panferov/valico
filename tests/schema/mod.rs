@@ -16,6 +16,9 @@ fn visit_specs<F>(dir: &Path, cb: F) where F: Fn(&Path, json::Json) {
 
 #[test]
 fn test_suite() {
+    let json_v4_schema: json::Json = fs::File::open(&Path::new("tests/schema/schema.json")).ok().unwrap()
+        .read_to_string().ok().unwrap().parse().unwrap();
+
     visit_specs(&Path::new("tests/schema/JSON-Schema-Test-Suite/tests/draft4"), |&: path, spec_set: json::Json| {
         let mut failures: Vec<(String, String)> = vec![];
 
@@ -23,6 +26,9 @@ fn test_suite() {
         for spec in spec_set.iter() {
             let spec = spec.as_object().unwrap();
             let mut scope = json_schema::Scope::new();
+
+            scope.compile(json_v4_schema.clone()).ok().unwrap();
+
             let schema = scope.compile_and_return(spec.get("schema").unwrap().clone()).ok().unwrap();
             let tests = spec.get("tests").unwrap().as_array().unwrap();
             
@@ -43,13 +49,11 @@ fn test_suite() {
         }
 
         let exceptions: Vec<(String, String)> = vec![
-            ("definitions.json".to_string(), "invalid definition schema".to_string()),
             ("maxLength.json".to_string(), "two supplementary Unicode code points is long enough".to_string()),
             ("minLength.json".to_string(), "one supplementary Unicode code point is not long enough".to_string()),
             ("ref.json".to_string(), "slash".to_string()),
             ("ref.json".to_string(), "tilda".to_string()),
             ("ref.json".to_string(), "percent".to_string()),
-            ("ref.json".to_string(), "remote ref invalid".to_string()),
             ("refRemote.json".to_string(), "remote ref invalid".to_string()),
             ("refRemote.json".to_string(), "remote fragment invalid".to_string()),
             ("refRemote.json".to_string(), "ref within ref invalid".to_string()),

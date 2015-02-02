@@ -17,6 +17,7 @@ pub struct WalkContext<'a> {
 #[derive(Debug)]
 #[allow(missing_copy_implementations)]
 pub enum SchemaError {
+    WrongId,
     IdConflicts,
     NotAnObject,
     UrlParseError(url::ParseError),
