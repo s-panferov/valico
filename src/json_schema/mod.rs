@@ -8,6 +8,8 @@ pub mod scope;
 pub mod validators;
 pub mod errors;
 
+pub use self::scope::{Scope};
+
 #[derive(Copy, Debug)]
 pub enum PrimitiveType {
     Array,

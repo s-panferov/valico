@@ -131,3 +131,10 @@ pub struct OneOf {
 }
 impl_err!(OneOf, "one_of", "OneOf conditions are not met");
 
+#[derive(Debug)]
+#[allow(missing_copy_implementations)]
+pub struct Not {
+    pub path: String
+}
+impl_err!(Not, "not", "Not condition is not met");
+

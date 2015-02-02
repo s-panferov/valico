@@ -20,7 +20,7 @@ impl super::Validator for Dependencies {
     fn validate(&self, object: &json::Json, path: &str, strict: bool, scope: &scope::Scope) -> super::ValidationState {
 
         if !object.is_object() {
-            return if strict {
+            return if !strict {
                 super::ValidationState::new()
             } else {
                 val_error!(

@@ -26,6 +26,7 @@ impl super::Validator for Properties {
         let mut state = super::ValidationState::new();
 
         'main: for (key, value) in object.iter() {
+            let mut is_property_passed = false;
             if self.properties.contains_key(key) {
                 let url = self.properties.get(key).unwrap();
                 let schema = scope.resolve(url);
@@ -36,21 +37,25 @@ impl super::Validator for Properties {
                     state.missing.push(url.clone())
                 }
 
-                continue 'main;
+               is_property_passed = true;
             }
 
+            let mut is_pattern_passed = false;
             for &(ref regex, ref url) in self.patterns.iter() {
                 if regex.is_match(key.as_slice()) {
                     let schema = scope.resolve(url);
                     if schema.is_some() {
                         let value_path = [path, key.as_slice()].connect("/");
-                        state.append(&mut schema.unwrap().validate_in(value, value_path.as_slice()))
+                        state.append(&mut schema.unwrap().validate_in(value, value_path.as_slice()));
+                        is_pattern_passed = true;
                     } else {
                         state.missing.push(url.clone())
                     }
-
-                    continue 'main;
                 }
+            }
+
+            if is_property_passed || is_pattern_passed {
+                continue 'main;
             }
 
             match self.additional {

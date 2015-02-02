@@ -3,10 +3,12 @@ use serialize::json::{self, ToJson};
 use valico::json_dsl;
 use valico::json_dsl::errors;
 
-use helpers::{
+use self::helpers::{
     assert_str_eq, 
     assert_error
 };
+
+mod helpers;
 
 #[test]
 fn is_process_empty_builder() {

@@ -43,6 +43,8 @@ pub mod dependencies;
 pub mod enum_;
 pub mod type_;
 pub mod of;
+pub mod ref_;
+pub mod not;
 
 pub fn default() -> Keywords {
     let mut default = vec![];
@@ -66,5 +68,7 @@ pub fn default() -> Keywords {
     default.push(Box::new(of::AllOf) as Box<Keyword>);
     default.push(Box::new(of::AnyOf) as Box<Keyword>);
     default.push(Box::new(of::OneOf) as Box<Keyword>);
+    default.push(Box::new(ref_::Ref) as Box<Keyword>);
+    default.push(Box::new(not::Not) as Box<Keyword>);
     default
 }

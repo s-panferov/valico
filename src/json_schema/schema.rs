@@ -53,7 +53,6 @@ impl<'a> ScopedSchema<'a> {
 #[allow(dead_code)]
 pub struct Schema {
     pub id: Option<url::Url>,
-    ref_: Option<url::Url>,
     schema: Option<url::Url>,
     original: json::Json,
     tree: collections::BTreeMap<String, Schema>,
@@ -68,7 +67,6 @@ impl Schema {
         }
 
         let id = try!(helpers::parse_url_key("id", &def));
-        let ref_ = try!(helpers::parse_url_key("$ref", &def));
         let schema = try!(helpers::parse_url_key("$schema", &def));
 
         let context_url = id.clone().unwrap_or_else(|| url_parser!().parse("json-schema://schema#").ok().unwrap());
@@ -106,7 +104,6 @@ impl Schema {
 
         let schema = Schema {
             id: id,
-            ref_: ref_,
             schema: schema,
             original: def,
             tree: tree,
@@ -133,7 +130,6 @@ impl Schema {
     fn compile_sub(def: json::Json, context: &mut WalkContext, keywords: &keywords::Keywords) -> Result<Schema, SchemaError> {
 
         let id = try!(helpers::parse_url_key_with_base("id", &def, context.url));
-        let ref_ = try!(helpers::parse_url_key_with_base("$ref", &def, context.url));
         let schema = try!(helpers::parse_url_key("$schema", &def));
 
         let tree = {
@@ -194,7 +190,6 @@ impl Schema {
 
         let schema = Schema {
             id: id,
-            ref_: ref_,
             schema: schema,
             original: def,
             tree: tree,

@@ -8,5 +8,5 @@ extern crate "rustc-serialize" as serialize;
 extern crate regex_macros;
 extern crate regex;
 
-mod builder;
-mod helpers;
+mod dsl;
+mod schema;
