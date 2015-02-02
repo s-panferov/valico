@@ -1,11 +1,13 @@
 [package]
 
 name = "valico"
-version = "0.4.1"
+version = "0.5.0"
 authors = ["Stanislav Panferov <fnight.m@gmail.com>"]
-description = "Rust JSON validator and coercer"
-keywords = ["json", "validator"]
+description = "JSON Schema validator and JSON coercer"
+keywords = ["json", "validator", "json-schema"]
 license = "MIT"
+documentation = "http://rustless.org/valico/doc/valico/"
+homepage = "https://github.com/rustless/valico"
 
 [dependencies]
 regex = "*"
