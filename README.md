@@ -27,10 +27,12 @@ See also:
 
 * [Rustless] - REST-like API micro-framework for Rust that use Valico.
 * [queryst] - Rust query string parser with nesting support can be used together with Valico to provide simple and safe toolchain for parsing query strings.
+* [jsonway] — JSON building DSL and configurable serializers for Rust
 
 [Rustless]: https://github.com/rustless/rustless
 [queryst]: https://github.com/rustless/queryst
 [Grape]: https://github.com/intridea/grape
+[jsonway]: https://github.com/rustless/jsonway
 
 ## JSON Schema
 
