@@ -48,7 +48,7 @@ impl fmt::Debug for Validator + 'static {
     }
 }
 
-pub type BoxedValidator = Box<Validator + 'static>;
+pub type BoxedValidator = Box<Validator + 'static + Send + Sync>;
 pub type Validators = Vec<BoxedValidator>;
 
 impl<T> Validator for T where T: Fn(&json::Json, &str, bool) -> ValidatorResult {

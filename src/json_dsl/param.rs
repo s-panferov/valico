@@ -84,7 +84,7 @@ impl Param {
         self.validators.push(Box::new(regex));
     }
 
-    pub fn validate(&mut self, validator: Box<validators::Validator + 'static>) {
+    pub fn validate(&mut self, validator: Box<validators::Validator + 'static + Send + Sync>) {
         self.validators.push(validator);
     }
 

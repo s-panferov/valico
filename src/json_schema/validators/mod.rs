@@ -110,13 +110,13 @@ pub trait Validator {
     fn validate(&self, item: &json::Json, &str, bool, &scope::Scope) -> ValidationState;
 }
 
-impl fmt::Debug for Validator + 'static {
+impl fmt::Debug for Validator + 'static + Send + Sync {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
         fmt.write_str("<validator>")
     }
 }
 
-pub type BoxedValidator = Box<Validator + 'static>;
+pub type BoxedValidator = Box<Validator + 'static + Send + Sync>;
 pub type Validators = Vec<BoxedValidator>;
 
 impl<T> Validator for T where T: Fn(&json::Json, &str, bool, &scope::Scope) -> ValidationState {

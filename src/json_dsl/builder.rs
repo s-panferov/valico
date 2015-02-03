@@ -86,7 +86,7 @@ impl Builder {
         self.optional.push(params);
     }
 
-    pub fn validate(&mut self, validator: Box<validators::Validator + 'static>) {
+    pub fn validate(&mut self, validator: Box<validators::Validator + 'static + Send + Sync>) {
         self.validators.push(validator);
     }
 
