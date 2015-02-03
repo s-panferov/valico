@@ -1,4 +1,4 @@
-use serialize::json;
+use rustc_serialize::json;
 
 pub trait MutableJson {
     fn as_object_mut<'a>(&'a mut self) -> Option<&'a mut json::Object>;

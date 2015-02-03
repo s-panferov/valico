@@ -1,4 +1,4 @@
-use serialize::json;
+use rustc_serialize::json;
 use url;
 
 use super::super::errors;

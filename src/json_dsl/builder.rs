@@ -1,4 +1,4 @@
-use serialize::json::{self};
+use rustc_serialize::json::{self};
 
 use mutable_json::{MutableJson};
 use super::helpers;

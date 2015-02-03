@@ -1,4 +1,4 @@
-use serialize::json;
+use rustc_serialize::json;
 
 use super::super::schema;
 use super::super::validators;
@@ -33,7 +33,7 @@ impl super::Keyword for Enum {
 
 #[cfg(test)] use super::super::scope;
 #[cfg(test)] use jsonway;
-#[cfg(test)] use serialize::json::{ToJson};
+#[cfg(test)] use rustc_serialize::json::{ToJson};
 
 #[test]
 fn validate() {

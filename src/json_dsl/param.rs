@@ -1,4 +1,4 @@
-use serialize::json::{self, ToJson};
+use rustc_serialize::json::{self, ToJson};
 use regex;
 
 use mutable_json::MutableJson;

@@ -1,4 +1,4 @@
-use serialize::json;
+use rustc_serialize::json;
 use std::num::{Float};
 
 use super::super::schema;
@@ -40,7 +40,7 @@ kw_minmax_integer!(MinLength, "minLength");
 
 #[cfg(test)] use super::super::scope;
 #[cfg(test)] use jsonway;
-#[cfg(test)] use serialize::json::{ToJson};
+#[cfg(test)] use rustc_serialize::json::{ToJson};
 
 #[test]
 fn validate_max_length() {

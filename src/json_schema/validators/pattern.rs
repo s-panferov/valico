@@ -1,5 +1,5 @@
 use regex;
-use serialize::json;
+use rustc_serialize::json;
 
 use super::super::errors;
 use super::super::scope;

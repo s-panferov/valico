@@ -1,8 +1,9 @@
 use std::error::{self, Error};
 use std::fmt;
 use std::any;
+use rustc_serialize::json;
 
-pub trait ValicoError: error::Error + fmt::Debug + Send + any::Any {
+pub trait ValicoError: error::Error + fmt::Debug + Send + any::Any + json::ToJson {
     fn get_code(&self) -> &str;
     fn get_path(&self) -> &str;
     fn get_title(&self) -> &str;
@@ -59,6 +60,43 @@ macro_rules! impl_err {
             fn get_title(&self) -> &str { $title }
             fn get_path(&self) -> &str { self.path.as_slice() }
             fn get_detail(&self) -> Option<&str> { self.detail.as_ref().map(|s| s.as_slice()) }
+        }
+    }
+}
+
+macro_rules! impl_to_json{
+    ($err:ty) => {
+        impl json::ToJson for $err {
+            fn to_json(&self) -> json::Json {
+                let mut map = ::std::collections::BTreeMap::new();
+                map.insert("code".to_string(), self.get_code().to_json());
+                map.insert("title".to_string(), self.get_title().to_json());
+                map.insert("path".to_string(), self.get_path().to_json());
+                match self.get_detail() {
+                    Some(ref detail) => { map.insert("detail".to_string(), detail.to_json()); },
+                    None => ()
+                }
+                json::Json::Object(map)
+            }
+        }
+    };
+    ($err:ty, $($sp:expr),+) => {
+        impl json::ToJson for $err {
+            fn to_json(&self) -> json::Json {
+                let mut map = ::std::collections::BTreeMap::new();
+                map.insert("code".to_string(), self.get_code().to_json());
+                map.insert("title".to_string(), self.get_title().to_json());
+                map.insert("path".to_string(), self.get_path().to_json());
+                match self.get_detail() {
+                    Some(ref detail) => { map.insert("detail".to_string(), detail.to_json()); },
+                    None => ()
+                }
+                $({
+                    let closure = $sp;
+                    closure(self, &mut map);
+                })+
+                json::Json::Object(map)
+            }
         }
     }
 }

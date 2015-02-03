@@ -1,6 +1,6 @@
 use std::collections;
 use regex;
-use serialize::json;
+use rustc_serialize::json;
 
 use super::super::schema;
 use super::super::validators;

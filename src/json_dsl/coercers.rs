@@ -1,4 +1,4 @@
-use serialize::json::{self, ToJson};
+use rustc_serialize::json::{self, ToJson};
 
 use mutable_json::MutableJson;
 use super::errors;

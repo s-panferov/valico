@@ -1,6 +1,6 @@
 use url;
 use std::collections;
-use serialize::json::{self};
+use rustc_serialize::json::{self};
 
 use super::helpers;
 use super::scope;
@@ -240,7 +240,6 @@ impl Schema {
     }
 
     pub fn resolve_fragment(&self, fragment: &str) -> Option<&Schema> {
-        debug!("Resolve fragment: {}", fragment);
         assert!(fragment.starts_with("/"), "Can't resolve id fragments");
 
         let mut parts = fragment[1..].split_str("/");

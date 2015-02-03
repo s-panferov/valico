@@ -1,4 +1,4 @@
-use serialize::json;
+use rustc_serialize::json;
 use std::fmt;
 
 use super::schema;

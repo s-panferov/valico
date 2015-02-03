@@ -1,6 +1,6 @@
 use url;
 use std::collections;
-use serialize::json;
+use rustc_serialize::json;
 
 use super::schema;
 use super::keywords;
@@ -9,7 +9,7 @@ use super::helpers;
 #[allow(dead_code)]
 #[derive(Debug)]
 pub struct Scope {
-    pub keywords: keywords::Keywords,
+    keywords: keywords::Keywords,
     schemes: collections::HashMap<String, schema::Schema>,
 }
 
@@ -24,22 +24,48 @@ impl Scope {
 
     pub fn compile(&mut self, def: json::Json) -> Result<(), schema::SchemaError> {
         let schema = try!(schema::compile(def, &self.keywords));
-        self.add(schema)
-    }
-
-    pub fn compile_and_return<'a>(&'a mut self, def: json::Json) -> Result<schema::ScopedSchema<'a>, schema::SchemaError> {
-        let schema = try!(schema::compile(def, &self.keywords));
-        self.add_and_return(schema)
-    }
-
-    fn add(&mut self, schema: schema::Schema) -> Result<(), schema::SchemaError> {
+        
         let id = if schema.id.is_some() {
             schema.id.clone().unwrap()
         } else {
             url_parser!().parse(helpers::DEFAULT_SCHEMA_ID).ok().unwrap()
         };
 
-        let (id_str, fragment) = helpers::serialize_schema_path(&id);
+        self.add(&id, schema)
+    }
+
+    pub fn compile_with_id(&mut self, id: &url::Url, def: json::Json) -> Result<(), schema::SchemaError> {
+        let schema = try!(schema::compile(def, &self.keywords));
+        self.add(id, schema)
+    }
+
+    pub fn compile_and_return<'a>(&'a mut self, def: json::Json) -> Result<schema::ScopedSchema<'a>, schema::SchemaError> {
+        let schema = try!(schema::compile(def, &self.keywords));
+
+        let id = if schema.id.is_some() {
+            schema.id.clone().unwrap()
+        } else {
+            url_parser!().parse(helpers::DEFAULT_SCHEMA_ID).ok().unwrap()
+        };
+
+        self.add_and_return(&id, schema)
+    }
+
+    pub fn compile_and_return_with_id<'a>(&'a mut self, id: &url::Url, def: json::Json) -> Result<schema::ScopedSchema<'a>, schema::SchemaError> {
+        let schema = try!(schema::compile(def, &self.keywords));
+        self.add_and_return(id, schema)
+    }
+
+    fn keywords(&self) -> &keywords::Keywords {
+        &self.keywords
+    }
+
+    fn add_keyword<T>(&mut self, keyword: T) where T: keywords::Keyword + 'static {
+        self.keywords.push(Box::new(keyword));
+    }
+
+    fn add(&mut self, id: &url::Url, schema: schema::Schema) -> Result<(), schema::SchemaError> {
+        let (id_str, fragment) = helpers::serialize_schema_path(id);
 
         match fragment {
             Some(_) => return Err(schema::SchemaError::WrongId),
@@ -54,14 +80,13 @@ impl Scope {
         }
     }
 
-    fn add_and_return<'a>(&'a mut self, schema: schema::Schema) -> Result<schema::ScopedSchema<'a>, schema::SchemaError> {
-        let id = if schema.id.is_some() {
-            schema.id.clone().unwrap()
-        } else {
-            url_parser!().parse(helpers::DEFAULT_SCHEMA_ID).ok().unwrap()
-        };
+    fn add_and_return<'a>(&'a mut self, id: &url::Url, schema: schema::Schema) -> Result<schema::ScopedSchema<'a>, schema::SchemaError> {
+        let (id_str, fragment) = helpers::serialize_schema_path(id);
 
-        let id_str = id.serialize();
+        match fragment {
+            Some(_) => return Err(schema::SchemaError::WrongId),
+            None => ()
+        }
 
         if !self.schemes.contains_key(&id_str) {
             self.schemes.insert(id_str.clone(), schema);
@@ -72,7 +97,6 @@ impl Scope {
     }
 
     pub fn resolve<'a>(&'a self, id: &url::Url) -> Option<schema::ScopedSchema<'a>> {
-
         let (schema_path, fragment) = helpers::serialize_schema_path(id);
 
         let schema = self.schemes.get(&schema_path).or_else(|:| {

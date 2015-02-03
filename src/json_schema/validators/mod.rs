@@ -1,4 +1,4 @@
-use serialize::json;
+use rustc_serialize::json;
 use std::fmt;
 use url;
 
@@ -90,6 +90,19 @@ impl ValidationState {
     pub fn append(&mut self, second: &mut ValidationState) {
         self.errors.append(&mut second.errors);
         self.missing.append(&mut second.missing);
+    }
+}
+
+impl json::ToJson for ValidationState {
+    fn to_json(&self) -> json::Json {
+        let mut map = ::std::collections::BTreeMap::new();
+        map.insert("errors".to_string(), json::Json::Array(
+            self.errors.iter().map(|err| err.to_json()).collect::<Vec<json::Json>>()
+        ));
+        map.insert("missing".to_string(), json::Json::Array(
+            self.missing.iter().map(|url| url.serialize().to_json()).collect::<Vec<json::Json>>()
+        ));
+        json::Json::Object(map)
     }
 }
 
