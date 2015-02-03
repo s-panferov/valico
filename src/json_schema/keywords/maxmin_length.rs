@@ -40,14 +40,15 @@ kw_minmax_integer!(MinLength, "minLength");
 
 #[cfg(test)] use super::super::scope;
 #[cfg(test)] use jsonway;
+#[cfg(test)] use super::super::builder;
 #[cfg(test)] use rustc_serialize::json::{ToJson};
 
 #[test]
 fn validate_max_length() {
     let mut scope = scope::Scope::new();
-    let schema = scope.compile_and_return(jsonway::object(|schema| {
-        schema.set("maxLength", 5);
-    }).unwrap()).ok().unwrap();;
+    let schema = scope.compile_and_return(builder::schema(|s| {
+        s.max_length(5u64);
+    }).into_json()).ok().unwrap();;
 
     assert_eq!(schema.validate(&"1234".to_json()).is_valid(), true);
     assert_eq!(schema.validate(&"12345".to_json()).is_valid(), true);
@@ -74,9 +75,9 @@ fn malformed_max_length() {
 #[test]
 fn validate_min_length() {
     let mut scope = scope::Scope::new();
-    let schema = scope.compile_and_return(jsonway::object(|schema| {
-        schema.set("minLength", 5);
-    }).unwrap()).ok().unwrap();;
+    let schema = scope.compile_and_return(builder::schema(|s| {
+        s.min_length(5u64);
+    }).into_json()).ok().unwrap();;
 
     assert_eq!(schema.validate(&"1234".to_json()).is_valid(), false);
     assert_eq!(schema.validate(&"12345".to_json()).is_valid(), true);

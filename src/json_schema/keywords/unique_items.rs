@@ -25,15 +25,15 @@ impl super::Keyword for UniqueItems {
 }
 
 #[cfg(test)] use super::super::scope;
-#[cfg(test)] use jsonway;
+#[cfg(test)] use super::super::builder;
 #[cfg(test)] use rustc_serialize::json::{ToJson};
 
 #[test]
 fn validate_unique_items() {
     let mut scope = scope::Scope::new();
-    let schema = scope.compile_and_return(jsonway::object(|schema| {
-        schema.set("uniqueItems", true);
-    }).unwrap()).ok().unwrap();;
+    let schema = scope.compile_and_return(builder::schema(|s| {
+        s.unique_items(true)
+    }).into_json()).ok().unwrap();;
 
     assert_eq!(schema.validate(&[1,2,3,4].to_json()).is_valid(), true);
     assert_eq!(schema.validate(&[1,1,3,4].to_json()).is_valid(), false);

@@ -9,14 +9,15 @@ kw_minmax_integer!(MinProperties, "minProperties");
 
 #[cfg(test)] use super::super::scope;
 #[cfg(test)] use jsonway;
+#[cfg(test)] use super::super::builder;
 #[cfg(test)] use rustc_serialize::json::{ToJson};
 
 #[test]
 fn validate_max_properties() {
     let mut scope = scope::Scope::new();
-    let schema = scope.compile_and_return(jsonway::object(|schema| {
-        schema.set("maxProperties", 2);
-    }).unwrap()).ok().unwrap();
+    let schema = scope.compile_and_return(builder::schema(|s| {
+        s.max_properties(2u64);
+    }).into_json()).ok().unwrap();
 
     assert_eq!(schema.validate(&jsonway::object(|obj| {
         obj.set("p1", 0);
@@ -54,9 +55,9 @@ fn malformed_max_properties() {
 #[test]
 fn validate_min_properties() {
     let mut scope = scope::Scope::new();
-    let schema = scope.compile_and_return(jsonway::object(|schema| {
-        schema.set("minProperties", 2);
-    }).unwrap()).ok().unwrap();;
+    let schema = scope.compile_and_return(builder::schema(|s| {
+        s.min_properties(2u64);
+    }).into_json()).ok().unwrap();;
 
     assert_eq!(schema.validate(&jsonway::object(|obj| {
         obj.set("p1", 0);

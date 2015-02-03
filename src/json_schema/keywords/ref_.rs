@@ -35,18 +35,19 @@ impl super::Keyword for Ref {
 
 #[cfg(test)] use super::super::scope;
 #[cfg(test)] use jsonway;
+#[cfg(test)] use super::super::builder;
 #[cfg(test)] use rustc_serialize::json::{ToJson};
 
 #[test]
 fn validate() {
     let mut scope = scope::Scope::new();
-    let schema = scope.compile_and_return(jsonway::object(|schema| {
-        schema.set("type", "array".to_string());
-        schema.set("maxItems", 2);
-        schema.object("items", |items| {
-            items.set("$ref", "#".to_string());
+    let schema = scope.compile_and_return(builder::schema(|s| {
+        s.array();
+        s.max_items(2u64);
+        s.items_schema(|items| {
+            items.ref_("#");
         })
-    }).unwrap()).ok().unwrap();
+    }).into_json()).ok().unwrap();
 
     let array: Vec<String> = vec![];
     let array2: Vec<Vec<String>> = vec![vec![], vec![]];

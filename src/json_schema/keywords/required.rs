@@ -45,16 +45,14 @@ impl super::Keyword for Required {
 
 #[cfg(test)] use super::super::scope;
 #[cfg(test)] use jsonway;
+#[cfg(test)] use super::super::builder;
 
 #[test]
 fn validate() {
     let mut scope = scope::Scope::new();
-    let schema = scope.compile_and_return(jsonway::object(|schema| {
-        schema.array("required", |required| {
-            required.push("prop1".to_string());
-            required.push("prop2".to_string());
-        });
-    }).unwrap()).ok().unwrap();
+    let schema = scope.compile_and_return(builder::schema(|s| {
+        s.required(vec!["prop1".to_string(), "prop2".to_string()]);
+    }).into_json()).ok().unwrap();
 
     assert_eq!(schema.validate(&jsonway::object(|obj| {
         obj.set("prop1", 0);

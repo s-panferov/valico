@@ -131,21 +131,22 @@ impl super::Keyword for Properties {
 }
 
 #[cfg(test)] use super::super::scope;
+#[cfg(test)] use super::super::builder;
 #[cfg(test)] use jsonway;
 
 #[test]
 fn validate_properties() {
     let mut scope = scope::Scope::new();
-    let schema = scope.compile_and_return(jsonway::object(|schema| {
-        schema.object("properties", |properties| {
-            properties.object("prop1", |prop1| {
-                prop1.set("maximum", 10);
+    let schema = scope.compile_and_return(builder::schema(|s| {
+        s.properties(|props| {
+            props.insert("prop1", |prop1| {
+                prop1.maximum(10f64, false);
             });
-            properties.object("prop2", |prop2| {
-                prop2.set("minimum", 11);
+            props.insert("prop2", |prop2| {
+                prop2.minimum(11f64, false);
             });
         });
-    }).unwrap()).ok().unwrap();
+    }).into_json()).ok().unwrap();
 
     assert_eq!(schema.validate(&jsonway::object(|obj| {
         obj.set("prop1", 10);
@@ -172,16 +173,16 @@ fn validate_properties() {
 #[test]
 fn validate_kw_properties() {
     let mut scope = scope::Scope::new();
-    let schema = scope.compile_and_return(jsonway::object(|schema| {
-        schema.object("properties", |properties| {
-            properties.object("id", |prop1| {
-                prop1.set("maximum", 10);
+    let schema = scope.compile_and_return(builder::schema(|s| {
+        s.properties(|props| {
+            props.insert("id", |prop1| {
+                prop1.maximum(10f64, false);
             });
-            properties.object("items", |prop2| {
-                prop2.set("minimum", 11);
+            props.insert("items", |prop2| {
+                prop2.minimum(11f64, false);
             });
         });
-    }).unwrap()).ok().unwrap();
+    }).into_json()).ok().unwrap();
 
     assert_eq!(schema.validate(&jsonway::object(|obj| {
         obj.set("id", 10);
@@ -198,18 +199,18 @@ fn validate_kw_properties() {
 #[test]
 fn validate_pattern_properties() {
     let mut scope = scope::Scope::new();
-    let schema = scope.compile_and_return(jsonway::object(|schema| {
-        schema.object("properties", |properties| {
-            properties.object("prop1", |prop1| {
-                prop1.set("maximum", 10);
+    let schema = scope.compile_and_return(builder::schema(|s| {
+        s.properties(|properties| {
+            properties.insert("prop1", |prop1| {
+                prop1.maximum(10f64, false);
             });
         });
-        schema.object("patternProperties", |properties| {
-            properties.object("prop.*", |prop| {
-                prop.set("maximum", 1000);
+        s.pattern_properties(|properties| {
+            properties.insert("prop.*", |prop| {
+                prop.maximum(1000f64, false);
             });
         });
-    }).unwrap()).ok().unwrap();
+    }).into_json()).ok().unwrap();
 
     assert_eq!(schema.validate(&jsonway::object(|obj| {
         obj.set("prop1", 11);
@@ -229,19 +230,19 @@ fn validate_pattern_properties() {
 #[test]
 fn validate_additional_properties_false() {
     let mut scope = scope::Scope::new();
-    let schema = scope.compile_and_return(jsonway::object(|schema| {
-        schema.object("properties", |properties| {
-            properties.object("prop1", |prop1| {
-                prop1.set("maximum", 10);
+    let schema = scope.compile_and_return(builder::schema(|s| {
+        s.properties(|properties| {
+            properties.insert("prop1", |prop1| {
+                prop1.maximum(10f64, false);
             });
         });
-        schema.object("patternProperties", |properties| {
-            properties.object("prop.*", |prop| {
-                prop.set("maximum", 1000);
+        s.pattern_properties(|properties| {
+            properties.insert("prop.*", |prop| {
+                prop.maximum(1000f64, false);
             });
         });
-        schema.set("additionalProperties", false);
-    }).unwrap()).ok().unwrap();
+        s.additional_properties(false);
+    }).into_json()).ok().unwrap();
 
     assert_eq!(schema.validate(&jsonway::object(|obj| {
         obj.set("prop1", 10);
@@ -258,21 +259,21 @@ fn validate_additional_properties_false() {
 #[test]
 fn validate_additional_properties_schema() {
     let mut scope = scope::Scope::new();
-    let schema = scope.compile_and_return(jsonway::object(|schema| {
-        schema.object("properties", |properties| {
-            properties.object("prop1", |prop1| {
-                prop1.set("maximum", 10);
+    let schema = scope.compile_and_return(builder::schema(|s| {
+        s.properties(|properties| {
+            properties.insert("prop1", |prop1| {
+                prop1.maximum(10f64, false);
             });
         });
-        schema.object("patternProperties", |properties| {
-            properties.object("prop.*", |prop| {
-                prop.set("maximum", 1000);
+        s.pattern_properties(|properties| {
+            properties.insert("prop.*", |prop| {
+                prop.maximum(1000f64, false);
             });
         });
-        schema.object("additionalProperties", |additional| {
-            additional.set("maximum", 5)
+        s.additional_properties_schema(|additional| {
+            additional.maximum(5f64, false)
         });
-    }).unwrap()).ok().unwrap();
+    }).into_json()).ok().unwrap();
 
     assert_eq!(schema.validate(&jsonway::object(|obj| {
         obj.set("prop1", 10);

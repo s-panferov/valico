@@ -61,22 +61,22 @@ of_keyword!(AnyOf, "anyOf");
 of_keyword!(OneOf, "oneOf");
 
 #[cfg(test)] use super::super::scope;
-#[cfg(test)] use jsonway;
+#[cfg(test)] use super::super::builder;
 #[cfg(test)] use rustc_serialize::json::{ToJson};
 
 #[test]
 fn validate_all_of() {
     let mut scope = scope::Scope::new();
-    let schema = scope.compile_and_return(jsonway::object(|schema| {
-        schema.array("allOf", |all_of| {
-            all_of.object(|schema| {
-                schema.set("minimum", 5);
+    let schema = scope.compile_and_return(builder::schema(|s| {
+        s.all_of(|all_of| {
+            all_of.push(|schema| {
+                schema.minimum(5f64, false);
             });
-            all_of.object(|schema| {
-                schema.set("maximum", 10);
+            all_of.push(|schema| {
+                schema.maximum(10f64, false);
             });
         });
-    }).unwrap()).ok().unwrap();
+    }).into_json()).ok().unwrap();
 
     assert_eq!(schema.validate(&7.to_json()).is_valid(), true);
     assert_eq!(schema.validate(&4.to_json()).is_valid(), false);
@@ -86,16 +86,16 @@ fn validate_all_of() {
 #[test]
 fn validate_any_of() {
     let mut scope = scope::Scope::new();
-    let schema = scope.compile_and_return(jsonway::object(|schema| {
-        schema.array("anyOf", |all_of| {
-            all_of.object(|schema| {
-                schema.set("maximum", 5);
+    let schema = scope.compile_and_return(builder::schema(|s| {
+        s.any_of(|all_of| {
+            all_of.push(|schema| {
+                schema.maximum(5f64, false);
             });
-            all_of.object(|schema| {
-                schema.set("maximum", 10);
+            all_of.push(|schema| {
+                schema.maximum(10f64, false);
             });
         });
-    }).unwrap()).ok().unwrap();
+    }).into_json()).ok().unwrap();
 
     assert_eq!(schema.validate(&5.to_json()).is_valid(), true);
     assert_eq!(schema.validate(&10.to_json()).is_valid(), true);
@@ -105,16 +105,16 @@ fn validate_any_of() {
 #[test]
 fn validate_one_of() {
     let mut scope = scope::Scope::new();
-    let schema = scope.compile_and_return(jsonway::object(|schema| {
-        schema.array("oneOf", |all_of| {
-            all_of.object(|schema| {
-                schema.set("maximum", 5);
+    let schema = scope.compile_and_return(builder::schema(|s| {
+        s.one_of(|all_of| {
+            all_of.push(|schema| {
+                schema.maximum(5f64, false);
             });
-            all_of.object(|schema| {
-                schema.set("maximum", 10);
+            all_of.push(|schema| {
+                schema.maximum(10f64, false);
             });
         });
-    }).unwrap()).ok().unwrap();
+    }).into_json()).ok().unwrap();
 
     assert_eq!(schema.validate(&5.to_json()).is_valid(), false);
     assert_eq!(schema.validate(&6.to_json()).is_valid(), true);

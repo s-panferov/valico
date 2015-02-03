@@ -32,14 +32,15 @@ impl super::Keyword for MultipleOf {
 
 #[cfg(test)] use super::super::scope;
 #[cfg(test)] use jsonway;
+#[cfg(test)] use super::super::builder;
 #[cfg(test)] use rustc_serialize::json::{ToJson};
 
 #[test]
 fn validate() {
     let mut scope = scope::Scope::new();
-    let schema = scope.compile_and_return(jsonway::object(|schema| {
-        schema.set("multipleOf", 3.5);
-    }).unwrap()).ok().unwrap();
+    let schema = scope.compile_and_return(builder::schema(|s| {
+        s.multiple_of(3.5f64);
+    }).into_json()).ok().unwrap();
 
     assert_eq!(schema.validate(&"".to_json()).is_valid(), true);
     assert_eq!(schema.validate(&7.to_json()).is_valid(), true);
@@ -47,16 +48,12 @@ fn validate() {
 }
 
 #[test]
-fn should_not_compile_with_string() {
+fn malformed() {
     let mut scope = scope::Scope::new();
+    
     assert!(scope.compile_and_return(jsonway::object(|schema| {
         schema.set("multipleOf", "".to_string());
-    }).unwrap()).is_err())
-}
-
-#[test]
-fn should_not_compile_with_zero_or_negative() {
-    let mut scope = scope::Scope::new();
+    }).unwrap()).is_err());
 
     assert!(scope.compile_and_return(jsonway::object(|schema| {
         schema.set("multipleOf", 0.to_json());

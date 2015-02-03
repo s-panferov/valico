@@ -96,18 +96,18 @@ impl super::Keyword for Items {
 }
 
 #[cfg(test)] use super::super::scope;
-#[cfg(test)] use jsonway;
+#[cfg(test)] use super::super::builder;
 #[cfg(test)] use rustc_serialize::json::{ToJson};
 
 #[test]
 fn validate_items_with_schema() {
     let mut scope = scope::Scope::new();
-    let schema = scope.compile_and_return(jsonway::object(|schema| {
-        schema.object("items", |items| {
-            items.set("minimum", 5);
-            items.set("maximum", 10);
+    let schema = scope.compile_and_return(builder::schema(|s| {
+        s.items_schema(|items| {
+            items.minimum(5f64, false);
+            items.maximum(10f64, false);
         });
-    }).unwrap()).ok().unwrap();
+    }).into_json()).ok().unwrap();
 
     assert_eq!(schema.validate(&[5,6,7,8,9,10].to_json()).is_valid(), true);
     assert_eq!(schema.validate(&[4,5,6,7,8,9,10].to_json()).is_valid(), false);
@@ -117,18 +117,18 @@ fn validate_items_with_schema() {
 #[test]
 fn validate_items_with_array_of_schemes() {
     let mut scope = scope::Scope::new();
-    let schema = scope.compile_and_return(jsonway::object(|schema| {
-        schema.array("items", |items| {
-            items.object(|item0| {
-                item0.set("minimum", 1);  
-                item0.set("maximum", 3);
+    let schema = scope.compile_and_return(builder::schema(|s| {
+        s.items_array(|items| {
+            items.push(|item| {
+                item.minimum(1f64, false);  
+                item.maximum(3f64, false);
             });
-            items.object(|item1| {
-                item1.set("minimum", 3);
-                item1.set("maximum", 6);  
-            })
-        });
-    }).unwrap()).ok().unwrap();
+            items.push(|item| {
+                item.minimum(3f64, false);  
+                item.maximum(6f64, false);
+            });
+        })
+    }).into_json()).ok().unwrap();
 
     assert_eq!(schema.validate(&[1].to_json()).is_valid(), true);
     assert_eq!(schema.validate(&[1,3].to_json()).is_valid(), true);
@@ -141,19 +141,19 @@ fn validate_items_with_array_of_schemes() {
 #[test]
 fn validate_items_with_array_of_schemes_with_additional_bool() {
     let mut scope = scope::Scope::new();
-    let schema = scope.compile_and_return(jsonway::object(|schema| {
-        schema.array("items", |items| {
-            items.object(|item0| {
-                item0.set("minimum", 1);  
-                item0.set("maximum", 3);
+    let schema = scope.compile_and_return(builder::schema(|s| {
+        s.items_array(|items| {
+            items.push(|item| {
+                item.minimum(1f64, false);  
+                item.maximum(3f64, false);
             });
-            items.object(|item1| {
-                item1.set("minimum", 3);
-                item1.set("maximum", 6);  
-            })
+            items.push(|item| {
+                item.minimum(3f64, false);  
+                item.maximum(6f64, false);
+            });
         });
-        schema.set("additionalItems", false);
-    }).unwrap()).ok().unwrap();
+        s.additional_items(false);
+    }).into_json()).ok().unwrap();
 
     assert_eq!(schema.validate(&[1,3,100].to_json()).is_valid(), false);
 }
@@ -161,21 +161,21 @@ fn validate_items_with_array_of_schemes_with_additional_bool() {
 #[test]
 fn validate_items_with_array_of_schemes_with_additional_schema() {
     let mut scope = scope::Scope::new();
-    let schema = scope.compile_and_return(jsonway::object(|schema| {
-        schema.array("items", |items| {
-            items.object(|item0| {
-                item0.set("minimum", 1);  
-                item0.set("maximum", 3);
+    let schema = scope.compile_and_return(builder::schema(|s| {
+        s.items_array(|items| {
+            items.push(|item| {
+                item.minimum(1f64, false);  
+                item.maximum(3f64, false);
             });
-            items.object(|item1| {
-                item1.set("minimum", 3);
-                item1.set("maximum", 6);  
-            })
+            items.push(|item| {
+                item.minimum(3f64, false);  
+                item.maximum(6f64, false);
+            });
         });
-        schema.object("additionalItems", |add| {
-           add.set("maximum", 100) 
+        s.additional_items_schema(|add| {
+           add.maximum(100f64, false) 
         });
-    }).unwrap()).ok().unwrap();
+    }).into_json()).ok().unwrap();
 
     assert_eq!(schema.validate(&[1,3,100].to_json()).is_valid(), true);
     assert_eq!(schema.validate(&[1,3,101].to_json()).is_valid(), false);

@@ -7,6 +7,7 @@ pub mod schema;
 pub mod scope;
 pub mod validators;
 pub mod errors;
+pub mod builder;
 
 pub use self::scope::{Scope};
 

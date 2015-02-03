@@ -32,14 +32,15 @@ impl super::Keyword for Pattern {
 
 #[cfg(test)] use super::super::scope;
 #[cfg(test)] use jsonway;
+#[cfg(test)] use super::super::builder;
 #[cfg(test)] use rustc_serialize::json::{ToJson};
 
 #[test]
 fn validate() {
     let mut scope = scope::Scope::new();
-    let schema = scope.compile_and_return(jsonway::object(|schema| {
-        schema.set("pattern", r"abb.*".to_string());
-    }).unwrap()).ok().unwrap();
+    let schema = scope.compile_and_return(builder::schema(|s| {
+        s.pattern(r"abb.*");
+    }).into_json()).ok().unwrap();
 
     assert_eq!(schema.validate(&"abb".to_json()).is_valid(), true);
     assert_eq!(schema.validate(&"abbd".to_json()).is_valid(), true);

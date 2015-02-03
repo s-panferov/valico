@@ -76,28 +76,26 @@ impl super::Keyword for Dependencies {
 }
 
 #[cfg(test)] use super::super::scope;
+#[cfg(test)] use super::super::builder;
+#[cfg(test)] use rustc_serialize::json::ToJson;
 #[cfg(test)] use jsonway;
 
 #[test]
 fn validate_dependencies() {
     let mut scope = scope::Scope::new();
-    let schema = scope.compile_and_return(jsonway::object(|schema| {
-        schema.object("dependencies", |deps| {
-            deps.object("isbn", |isbn| {
-                isbn.array("required", |required| {
-                    required.push("price".to_string())
-                });
-                isbn.object("properties", |props| {
-                    props.object("price", |price| {
-                        price.set("multipleOf", 5);
+    let schema = scope.compile_and_return(builder::schema(|: s| {
+        s.dependencies(|: deps| {
+            deps.schema("isbn", |: isbn| {
+                isbn.required(vec!["price".to_string()]);
+                isbn.properties(|props| {
+                    props.insert("price", |price| {
+                        price.multiple_of(5f64);
                     })
                 })
             });
-            deps.array("item_id", |item_id| {
-                item_id.push("item_name".to_string())
-            });
+            deps.property("item_id", vec!["item_name".to_string()]);
         });
-    }).unwrap()).ok().unwrap();
+    }).to_json()).ok().unwrap();
 
     assert_eq!(schema.validate(&jsonway::object(|obj| {
         obj.set("isbn", "some_isbn".to_string());
