@@ -54,6 +54,28 @@ fn main() {
 }
 ~~~
 
+### JSON Schema builder
+
+Valico goes with `valico::json_schema::schema(|scheme| { /* .. */ }) -> json::Json` function that allows to use simple DSL to generate your schemes. It allows you not to use strings and raw JSON manipulation. It also prevent some kinds of spelling and type errors. 
+
+~~~rust
+builder::schema(|s| {
+    s.properties(|properties| {
+        properties.insert("prop1", |prop1| {
+            prop1.maximum(10f64, false);
+        });
+    });
+    s.pattern_properties(|properties| {
+        properties.insert("prop.*", |prop| {
+            prop.maximum(1000f64, false);
+        });
+    });
+    s.additional_properties_schema(|additional| {
+        additional.maximum(5f64, false)
+    });
+})
+~~~
+
 TODO more docs about JSON Schema here
 
 ## DSL
