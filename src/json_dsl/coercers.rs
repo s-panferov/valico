@@ -60,7 +60,7 @@ impl Coercer for I64Coercer {
             return Ok(Some((val as i64).to_json()));
         } else if val.is_string() {
             let val = val.as_string().unwrap();
-            let converted: Option<i64> = val.parse();
+            let converted: Option<i64> = val.parse().ok();
             match converted {
                 Some(num) => Ok(Some(num.to_json())),
                 None => Err(vec![
@@ -97,7 +97,7 @@ impl Coercer for U64Coercer {
             return Ok(Some((val as u64).to_json()));
         } else if val.is_string() {
             let val = val.as_string().unwrap();
-            let converted: Option<u64> = val.parse();
+            let converted: Option<u64> = val.parse().ok();
             match converted {
                 Some(num) => Ok(Some(num.to_json())),
                 None => Err(vec![
@@ -134,7 +134,7 @@ impl Coercer for F64Coercer {
             return Ok(Some((val as f64).to_json()));
         } else if val.is_string() {
             let val = val.as_string().unwrap();
-            let converted: Option<f64> = val.parse();
+            let converted: Option<f64> = val.parse().ok();
             match converted {
                 Some(num) => Ok(Some(num.to_json())),
                 None => Err(vec![

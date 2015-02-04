@@ -7,7 +7,7 @@ use valico::common::error;
 pub fn test_result(params: &json_dsl::Builder, body: &str) -> json::Json {
     let obj = body.parse::<json::Json>();
     match obj {
-        Some(mut json) => { 
+        Ok(mut json) => { 
             match params.process(&mut json) {
                 Ok(()) => {
                     return json;
@@ -17,7 +17,7 @@ pub fn test_result(params: &json_dsl::Builder, body: &str) -> json::Json {
                 }
             }
         },
-        None => {
+        Err(_) => {
             panic!("Invalid JSON");
         }
     }
@@ -26,7 +26,7 @@ pub fn test_result(params: &json_dsl::Builder, body: &str) -> json::Json {
 pub fn get_errors(params: &json_dsl::Builder, body: &str) -> Vec<Box<error::ValicoError>> {
     let obj = body.parse::<json::Json>();
     match obj {
-        Some(mut json) => { 
+        Ok(mut json) => { 
             match params.process(&mut json) {
                 Ok(()) => {
                     panic!("Success responce when we await some errors");
@@ -36,7 +36,7 @@ pub fn get_errors(params: &json_dsl::Builder, body: &str) -> Vec<Box<error::Vali
                 }
             }
         },
-        None => {
+        Err(_) => {
             panic!("Invalid JSON");
         }
     }
