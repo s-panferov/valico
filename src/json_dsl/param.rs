@@ -93,7 +93,7 @@ impl Param {
     }
 
     fn process_validatorss(&self, val: &json::Json, path: &str) -> super::DslResult<()> {
-        for mut validator in self.validators.iter() {
+        for validator in self.validators.iter() {
             try!(validator.validate(val, path, true));
         };
 

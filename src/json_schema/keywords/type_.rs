@@ -10,7 +10,7 @@ impl super::Keyword for Type {
         let type_ = keyword_key_exists!(def, "type");
 
         if type_.is_string() {
-            let ty = type_.as_string().unwrap().parse();
+            let ty = type_.as_string().unwrap().parse().ok();
 
             if ty.is_some() {
                 Ok(Some(Box::new(validators::Type {
@@ -36,7 +36,7 @@ impl super::Keyword for Type {
             let mut converted_types = vec![];
             for ty in types.iter() {
                 if ty.is_string() {
-                    let converted_ty = ty.as_string().unwrap().parse();
+                    let converted_ty = ty.as_string().unwrap().parse().ok();
                     if converted_ty.is_some() {
                         converted_types.push(converted_ty.unwrap());
                     } else {

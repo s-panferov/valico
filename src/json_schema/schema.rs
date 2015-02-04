@@ -242,7 +242,7 @@ impl Schema {
     pub fn resolve_fragment(&self, fragment: &str) -> Option<&Schema> {
         assert!(fragment.starts_with("/"), "Can't resolve id fragments");
 
-        let mut parts = fragment[1..].split_str("/");
+        let parts = fragment[1..].split_str("/");
         let mut schema = self;
         for part in parts {
             match schema.tree.get(part) {

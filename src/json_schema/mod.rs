@@ -23,16 +23,17 @@ pub enum PrimitiveType {
 }
 
 impl str::FromStr for PrimitiveType {
-    fn from_str(s: &str) -> Option<PrimitiveType> {
+    type Err = ();
+    fn from_str(s: &str) -> Result<PrimitiveType, ()> {
         match s {
-            "array" => Some(PrimitiveType::Array),
-            "boolean" => Some(PrimitiveType::Boolean),
-            "integer" => Some(PrimitiveType::Integer),
-            "number" => Some(PrimitiveType::Number),
-            "null" => Some(PrimitiveType::Null),
-            "object" => Some(PrimitiveType::Object),
-            "string" => Some(PrimitiveType::String),
-            _ => None
+            "array" => Ok(PrimitiveType::Array),
+            "boolean" => Ok(PrimitiveType::Boolean),
+            "integer" => Ok(PrimitiveType::Integer),
+            "number" => Ok(PrimitiveType::Number),
+            "null" => Ok(PrimitiveType::Null),
+            "object" => Ok(PrimitiveType::Object),
+            "string" => Ok(PrimitiveType::String),
+            _ => Err(())
         }
     }
 }

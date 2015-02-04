@@ -1,5 +1,4 @@
 #![feature(plugin)]
-#![feature(collections)]
 #![feature(io)]
 #![feature(path)]
 #![feature(core)]
