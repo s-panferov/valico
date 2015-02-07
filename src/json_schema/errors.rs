@@ -142,7 +142,7 @@ pub struct AnyOf {
     pub states: Vec<super::validators::ValidationState>
 }
 impl_err!(AnyOf, "any_of", "AnyOf conditions are not met");
-impl_to_json!(AnyOf, |: err: &AnyOf, map: &mut collections::BTreeMap<String, json::Json>| {
+impl_to_json!(AnyOf, |err: &AnyOf, map: &mut collections::BTreeMap<String, json::Json>| {
     map.insert("states".to_string(), err.states.to_json())
 });
 
@@ -153,7 +153,7 @@ pub struct OneOf {
     pub states: Vec<super::validators::ValidationState>
 }
 impl_err!(OneOf, "one_of", "OneOf conditions are not met");
-impl_to_json!(OneOf, |: err: &OneOf, map: &mut collections::BTreeMap<String, json::Json>| {
+impl_to_json!(OneOf, |err: &OneOf, map: &mut collections::BTreeMap<String, json::Json>| {
     map.insert("states".to_string(), err.states.to_json())
 });
 

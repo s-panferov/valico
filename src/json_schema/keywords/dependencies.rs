@@ -83,9 +83,9 @@ impl super::Keyword for Dependencies {
 #[test]
 fn validate_dependencies() {
     let mut scope = scope::Scope::new();
-    let schema = scope.compile_and_return(builder::schema(|: s| {
-        s.dependencies(|: deps| {
-            deps.schema("isbn", |: isbn| {
+    let schema = scope.compile_and_return(builder::schema(|s| {
+        s.dependencies(|deps| {
+            deps.schema("isbn", |isbn| {
                 isbn.required(vec!["price".to_string()]);
                 isbn.properties(|props| {
                     props.insert("price", |price| {

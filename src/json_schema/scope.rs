@@ -99,7 +99,7 @@ impl Scope {
     pub fn resolve<'a>(&'a self, id: &url::Url) -> Option<schema::ScopedSchema<'a>> {
         let (schema_path, fragment) = helpers::serialize_schema_path(id);
 
-        let schema = self.schemes.get(&schema_path).or_else(|:| {
+        let schema = self.schemes.get(&schema_path).or_else(|| {
             // Searching for inline schema in O(N)
             for (_, schema) in self.schemes.iter() {
                 let internal_schema = schema.resolve(schema_path.as_slice());

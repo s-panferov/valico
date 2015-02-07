@@ -39,7 +39,7 @@ pub struct MutuallyExclusive {
     pub params: Vec<String>
 }
 impl_err!(MutuallyExclusive, "mutually_exclusive", "The values are mutually exclusive", +opt_detail);
-impl_to_json!(MutuallyExclusive, |: err: &MutuallyExclusive, map: &mut collections::BTreeMap<String, json::Json>| {
+impl_to_json!(MutuallyExclusive, |err: &MutuallyExclusive, map: &mut collections::BTreeMap<String, json::Json>| {
     map.insert("params".to_string(), err.params.to_json());
 });
 
@@ -51,7 +51,7 @@ pub struct ExactlyOne {
     pub params: Vec<String>
 }
 impl_err!(ExactlyOne, "exactly_one", "Exacly one of the values must be present", +opt_detail);
-impl_to_json!(ExactlyOne, |: err: &ExactlyOne, map: &mut collections::BTreeMap<String, json::Json>| {
+impl_to_json!(ExactlyOne, |err: &ExactlyOne, map: &mut collections::BTreeMap<String, json::Json>| {
     map.insert("params".to_string(), err.params.to_json())
 });
 
@@ -64,6 +64,6 @@ pub struct AtLeastOne {
     pub params: Vec<String>
 }
 impl_err!(AtLeastOne, "at_least_one", "At least one of the values must be present", +opt_detail);
-impl_to_json!(AtLeastOne, |: err: &AtLeastOne, map: &mut collections::BTreeMap<String, json::Json>| {
+impl_to_json!(AtLeastOne, |err: &AtLeastOne, map: &mut collections::BTreeMap<String, json::Json>| {
     map.insert("params".to_string(), err.params.to_json())
 });
