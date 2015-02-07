@@ -36,7 +36,7 @@ See also:
 
 ## JSON Schema
 
-It passes the entire JSONSchema v4 test suite except for remoteRefs and maxLength/minLength when using unicode surrogate pairs. It also can validate your schema and give you an explanation about what is wrong in it.
+It passes the entire [JSON-Schema-Test-Suite](https://github.com/json-schema/JSON-Schema-Test-Suite/tree/develop/tests/draft4) except for remoteRefs and maxLength/minLength when using unicode surrogate pairs. It also can validate your schema and give you an explanation about what is wrong in it.
 
 ### Example
 
