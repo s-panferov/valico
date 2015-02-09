@@ -9,13 +9,13 @@ use super::validators;
 
 pub struct Param {
     pub name: String,
-    pub coercer: Option<Box<coercers::Coercer  + Send + Sync>>,
+    pub coercer: Option<Box<coercers::Coercer + Send + Sync>>,
     pub nest: Option<builder::Builder>,
     pub description: Option<String>,
     pub allow_null: bool,
     pub validators: validators::Validators,
     pub default: Option<json::Json>,
-    pub schema_builder: Option<Box<Fn(&mut json_schema::Builder) + Send>>,
+    pub schema_builder: Option<Box<Fn(&mut json_schema::Builder) + Send + Sync>>,
     pub schema_ref: Option<url::Url>
 }
 
@@ -76,7 +76,7 @@ impl Param {
         self.description = Some(description.to_string());
     }
 
-    pub fn schema<F>(&mut self, build: F) where F: Fn(&mut json_schema::Builder,) + Send {
+    pub fn schema<F>(&mut self, build: F) where F: Fn(&mut json_schema::Builder,) + Send + Sync {
         self.schema_builder = Some(Box::new(build));
     }
 

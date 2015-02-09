@@ -13,7 +13,7 @@ pub struct Builder {
     requires: Vec<param::Param>,
     optional: Vec<param::Param>,
     validators: validators::Validators,
-    schema_builder: Option<Box<Fn(&mut json_schema::Builder) + Send>>,
+    schema_builder: Option<Box<Fn(&mut json_schema::Builder) + Send + Sync>>,
     schema_ref: Option<url::Url>
 }
 
@@ -115,7 +115,7 @@ impl Builder {
         self.validators.push(validator);
     }
 
-    pub fn schema<F>(&mut self, build: F) where F: Fn(&mut json_schema::Builder,) + Send {
+    pub fn schema<F>(&mut self, build: F) where F: Fn(&mut json_schema::Builder,) + Send + Sync {
         self.schema_builder = Some(Box::new(build));
     }
 
