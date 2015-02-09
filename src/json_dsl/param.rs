@@ -154,7 +154,7 @@ impl Param {
                 let id = self.schema_id.as_ref().unwrap();
                 let schema = scope.as_ref().unwrap().resolve(id);
                 match schema {
-                    Some(schema) => result.append(&mut schema.validate(&val)),
+                    Some(schema) => result.append(&mut schema.validate_in(val, path)),
                     None => result.state.missing.push(id.clone())
                 }
             }

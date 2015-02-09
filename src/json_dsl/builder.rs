@@ -183,7 +183,7 @@ impl Builder {
             let id = self.schema_id.as_ref().unwrap();
             let schema = scope.as_ref().unwrap().resolve(id);
             match schema {
-                Some(schema) => state.append(&mut schema.validate(&val)),
+                Some(schema) => state.append(&mut schema.validate_in(val, path)),
                 None => state.missing.push(id.clone())
             }
         }
