@@ -16,7 +16,7 @@ pub struct Param {
     pub validators: validators::Validators,
     pub default: Option<json::Json>,
     pub schema_builder: Option<Box<Fn(&mut json_schema::Builder) + Send + Sync>>,
-    pub schema_ref: Option<url::Url>
+    pub schema_id: Option<url::Url>
 }
 
 unsafe impl Send for Param { }
@@ -33,7 +33,7 @@ impl Param {
             validators: vec![],
             default: None,
             schema_builder: None,
-            schema_ref: None
+            schema_id: None
         }
     }
 
@@ -47,7 +47,7 @@ impl Param {
             validators: vec![],
             default: None,
             schema_builder: None,
-            schema_ref: None
+            schema_id: None
         }
     }
 
@@ -61,7 +61,7 @@ impl Param {
             validators: vec![],
             default: None,
             schema_builder: None,
-            schema_ref: None
+            schema_id: None
         }
     }
 
@@ -150,6 +150,14 @@ impl Param {
             let mut validation_errors = self.process_validators(val, path);
             result.state.errors.append(&mut validation_errors);
 
+            if self.schema_id.is_some() && scope.is_some() {
+                let id = self.schema_id.as_ref().unwrap();
+                let schema = scope.as_ref().unwrap().resolve(id);
+                match schema {
+                    Some(schema) => result.append(&mut schema.validate(&val)),
+                    None => result.state.missing.push(id.clone())
+                }
+            }
         }
 
         if return_value.is_some() {

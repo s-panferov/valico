@@ -14,7 +14,7 @@ pub struct Builder {
     optional: Vec<param::Param>,
     validators: validators::Validators,
     schema_builder: Option<Box<Fn(&mut json_schema::Builder) + Send + Sync>>,
-    schema_ref: Option<url::Url>
+    schema_id: Option<url::Url>
 }
 
 unsafe impl Send for Builder { }
@@ -27,7 +27,7 @@ impl Builder {
             optional: vec![],
             validators: vec![],
             schema_builder: None,
-            schema_ref: None
+            schema_id: None
         }
     }
 
@@ -124,7 +124,7 @@ impl Builder {
             if param.schema_builder.is_some() {
                 let json_schema = json_schema::builder::schema_box(param.schema_builder.take().unwrap());
                 let id = try!(scope.compile(json_schema.to_json()));
-                param.schema_ref = Some(id);
+                param.schema_id = Some(id);
             }
 
             if param.nest.is_some() {
@@ -135,7 +135,7 @@ impl Builder {
         if self.schema_builder.is_some() {
             let json_schema = json_schema::builder::schema_box(self.schema_builder.take().unwrap());
             let id = try!(scope.compile(json_schema.to_json()));
-            self.schema_ref = Some(id);
+            self.schema_id = Some(id);
         }
 
         Ok(())
@@ -146,7 +146,7 @@ impl Builder {
     }
 
     pub fn process_nest(&self, val: &mut json::Json, path: &str, scope: &Option<&json_schema::Scope>) -> json_schema::ValidationState {
-        if val.is_array() {
+        let mut state = if val.is_array() {
             let mut state = json_schema::ValidationState::new();
             let array = val.as_array_mut().unwrap();
             for (idx, item) in array.iter_mut().enumerate() {
@@ -177,7 +177,18 @@ impl Builder {
             );
 
             state
+        };
+
+        if self.schema_id.is_some() && scope.is_some() {
+            let id = self.schema_id.as_ref().unwrap();
+            let schema = scope.as_ref().unwrap().resolve(id);
+            match schema {
+                Some(schema) => state.append(&mut schema.validate(&val)),
+                None => state.missing.push(id.clone())
+            }
         }
+
+        state
     }
 
     fn process_object(&self, val: &mut json::Json, path: &str, scope: &Option<&json_schema::Scope>) -> json_schema::ValidationState  {
