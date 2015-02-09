@@ -76,6 +76,10 @@ impl Param {
         self.description = Some(description.to_string());
     }
 
+    pub fn schema_id(&mut self, id: url::Url) {
+        self.schema_id = Some(id);
+    }
+
     pub fn schema<F>(&mut self, build: F) where F: Fn(&mut json_schema::Builder,) + Send + Sync {
         self.schema_builder = Some(Box::new(build));
     }
