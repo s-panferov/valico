@@ -276,3 +276,9 @@ impl json::ToJson for Builder {
 pub fn schema<F>(build: F) -> Builder where F: FnOnce(&mut Builder) {
     Builder::build(build)
 }
+
+pub fn schema_box(build: Box<Fn(&mut Builder) + Send>) -> Builder {
+    let mut builder = Builder::new();
+    build(&mut builder);
+    builder
+}

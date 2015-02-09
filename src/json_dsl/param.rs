@@ -1,11 +1,11 @@
 use rustc_serialize::json::{self, ToJson};
 use regex;
+use url;
 
-use mutable_json::MutableJson;
+use super::super::json_schema;
 use super::builder;
 use super::coercers;
 use super::validators;
-use super::errors;
 
 pub struct Param {
     pub name: String,
@@ -14,7 +14,9 @@ pub struct Param {
     pub description: Option<String>,
     pub allow_null: bool,
     pub validators: validators::Validators,
-    pub default: Option<json::Json>
+    pub default: Option<json::Json>,
+    pub schema_builder: Option<Box<Fn(&mut json_schema::Builder) + Send>>,
+    pub schema_ref: Option<url::Url>
 }
 
 unsafe impl Send for Param { }
@@ -29,7 +31,9 @@ impl Param {
             nest: None,
             allow_null: false,
             validators: vec![],
-            default: None
+            default: None,
+            schema_builder: None,
+            schema_ref: None
         }
     }
 
@@ -41,7 +45,9 @@ impl Param {
             nest: None,
             allow_null: false,
             validators: vec![],
-            default: None
+            default: None,
+            schema_builder: None,
+            schema_ref: None
         }
     }
 
@@ -53,7 +59,9 @@ impl Param {
             nest: Some(nest),
             allow_null: false,
             validators: vec![],
-            default: None
+            default: None,
+            schema_builder: None,
+            schema_ref: None
         }
     }
 
@@ -66,6 +74,10 @@ impl Param {
 
     pub fn desc(&mut self, description: &str) {
         self.description = Some(description.to_string());
+    }
+
+    pub fn schema<F>(&mut self, build: F) where F: Fn(&mut json_schema::Builder,) + Send {
+        self.schema_builder = Some(Box::new(build));
     }
 
     pub fn coerce(&mut self, coercer: Box<coercers::Coercer + Send + Sync>) {
@@ -92,46 +104,10 @@ impl Param {
         self.validators.push(Box::new(validator));
     }
 
-    fn process_validatorss(&self, val: &json::Json, path: &str) -> super::DslResult<()> {
+    fn process_validators(&self, val: &json::Json, path: &str) -> super::DslResult<()> {
         for validator in self.validators.iter() {
             try!(validator.validate(val, path, true));
         };
-
-        Ok(())
-    }
-
-    fn process_nest(&self, val: &mut json::Json, path: &str) -> super::DslResult<()> {
-        let ref nest = self.nest.as_ref().unwrap();
-
-        if val.is_array() {
-            let mut errors = vec![];
-            let array = val.as_array_mut().unwrap();
-            for (idx, item) in array.iter_mut().enumerate() {
-                let item_path = [path, idx.to_string().as_slice()].connect("/");
-                if item.is_object() {
-                    match nest.process_path(item, item_path.as_slice()) {
-                        Ok(()) => (),
-                        Err(mut err) => errors.append(&mut err)
-                    }
-                } else {
-                    errors.push(
-                        Box::new(errors::WrongType {
-                            path: item_path.to_string(),
-                            detail: "List value is not and object".to_string()
-                        })
-                    )
-                }
-            }
-
-            if errors.len() > 0 {
-                return Err(errors);
-            }
-        } else if val.is_object() {
-            match nest.process_path(val, path) {
-                Ok(()) => (),
-                Err(err) => return Err(err)
-            };
-        }
 
         Ok(())
     }
@@ -158,13 +134,13 @@ impl Param {
             };
 
             if self.nest.is_some() {
-                match self.process_nest(val, path) {
+                match self.nest.as_ref().unwrap().process_nest(val, path) {
                     Ok(()) => (),
                     Err(err) => return Err(err)
                 };
             }
 
-            self.process_validatorss(val, path)
+            self.process_validators(val, path)
         };
         
         match result {

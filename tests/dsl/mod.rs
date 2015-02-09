@@ -136,6 +136,24 @@ fn is_process_array_with_nested_require() {
 }
 
 #[test]
+fn it_process_encoded_array() {
+    let params = json_dsl::Builder::build(|params| {
+        params.req_typed("a", json_dsl::encoded_array(","));
+    });
+
+    assert_str_eq(&params, r#"{"a":"a,b,c"}"#, r#"{"a":["a","b","c"]}"#);
+}
+
+#[test]
+fn it_process_encoded_array_of_type() {
+    let params = json_dsl::Builder::build(|params| {
+        params.req_typed("a", json_dsl::encoded_array_of(",", json_dsl::u64()));
+    });
+
+    assert_str_eq(&params, r#"{"a":"1,2,3"}"#, r#"{"a":[1,2,3]}"#);
+}
+
+#[test]
 fn is_process_object_require() {
 
     let params = json_dsl::Builder::build(|params| {
