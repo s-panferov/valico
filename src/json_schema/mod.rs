@@ -12,6 +12,7 @@ pub mod builder;
 pub use self::scope::{Scope};
 pub use self::schema::{Schema, SchemaError};
 pub use self::builder::{Builder, schema};
+pub use self::validators::{ValidationState};
 
 #[derive(Copy, Debug)]
 pub enum PrimitiveType {

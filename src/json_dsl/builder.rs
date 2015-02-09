@@ -115,12 +115,12 @@ impl Builder {
         self.validators.push(validator);
     }
 
-    pub fn process(&self, val: &mut json::Json) -> super::DslResult<()> {
-        self.process_nest(val, "")
-    }
-
     pub fn schema<F>(&mut self, build: F) where F: Fn(&mut json_schema::Builder,) + Send {
         self.schema_builder = Some(Box::new(build));
+    }
+
+    pub fn process(&self, val: &mut json::Json) -> super::DslResult<()> {
+        self.process_nest(val, "")
     }
 
     pub fn build_schemes(&mut self, scope: &mut json_schema::Scope) -> Result<(), json_schema::SchemaError> {
