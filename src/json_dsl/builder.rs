@@ -1,6 +1,8 @@
-use rustc_serialize::json::{self};
+use rustc_serialize::json::{self, ToJson};
+use url;
 
 use mutable_json::{MutableJson};
+use super::super::json_schema;
 use super::helpers;
 use super::param;
 use super::coercers;
@@ -10,7 +12,9 @@ use super::errors;
 pub struct Builder {
     requires: Vec<param::Param>,
     optional: Vec<param::Param>,
-    validators: validators::Validators
+    validators: validators::Validators,
+    schema_builder: Option<Box<Fn(&mut json_schema::Builder) + Send>>,
+    schema_ref: Option<url::Url>
 }
 
 unsafe impl Send for Builder { }
@@ -21,7 +25,9 @@ impl Builder {
         Builder {
             requires: vec![],
             optional: vec![],
-            validators: vec![]
+            validators: vec![],
+            schema_builder: None,
+            schema_ref: None
         }
     }
 
@@ -109,16 +115,76 @@ impl Builder {
         self.validators.push(validator);
     }
 
-    pub fn process(&self, val: &mut json::Json) -> super::DslResult<()> {
-        self.process_path(val, "")
+    pub fn schema<F>(&mut self, build: F) where F: Fn(&mut json_schema::Builder,) + Send {
+        self.schema_builder = Some(Box::new(build));
     }
 
-    pub fn process_path(&self, val: &mut json::Json, path: &str) -> super::DslResult<()>  {
+    pub fn process(&self, val: &mut json::Json) -> super::DslResult<()> {
+        self.process_nest(val, "")
+    }
+
+    pub fn build_schemes(&mut self, scope: &mut json_schema::Scope) -> Result<(), json_schema::SchemaError> {
+        for param in self.requires.iter_mut().chain(self.optional.iter_mut()) {
+            if param.schema_builder.is_some() {
+                let json_schema = json_schema::builder::schema_box(param.schema_builder.take().unwrap());
+                let id = try!(scope.compile(json_schema.to_json()));
+                param.schema_ref = Some(id);
+            }
+
+            if param.nest.is_some() {
+                try!(param.nest.as_mut().unwrap().build_schemes(scope));
+            }
+        }
+
+        if self.schema_builder.is_some() {
+            let json_schema = json_schema::builder::schema_box(self.schema_builder.take().unwrap());
+            let id = try!(scope.compile(json_schema.to_json()));
+            self.schema_ref = Some(id);
+        }
+
+        Ok(())
+    }
+
+    pub fn process_nest(&self, val: &mut json::Json, path: &str) -> super::DslResult<()> {
+        if val.is_array() {
+            let mut errors = vec![];
+            let array = val.as_array_mut().unwrap();
+            for (idx, item) in array.iter_mut().enumerate() {
+                let item_path = [path, idx.to_string().as_slice()].connect("/");
+                if item.is_object() {
+                    match self.process_object(item, item_path.as_slice()) {
+                        Ok(()) => (),
+                        Err(mut err) => errors.append(&mut err)
+                    }
+                } else {
+                    errors.push(
+                        Box::new(errors::WrongType {
+                            path: item_path.to_string(),
+                            detail: "List value is not and object".to_string()
+                        })
+                    )
+                }
+            }
+
+            if errors.len() > 0 {
+                return Err(errors);
+            }
+        } else if val.is_object() {
+            match self.process_object(val, path) {
+                Ok(()) => (),
+                Err(err) => return Err(err)
+            };
+        }
+
+        Ok(())
+    }
+
+    fn process_object(&self, val: &mut json::Json, path: &str) -> super::DslResult<()>  {
         
         let mut errors = vec![];
 
         {
-            let object = val.as_object_mut().expect("DSL works only with objects now");
+            let object = val.as_object_mut().expect("We expect object here");
             for param in self.requires.iter() {
                 let ref name = param.name;
                 let present = helpers::has_value(object, name);
@@ -178,7 +244,7 @@ impl Builder {
         }
 
         {
-            let object = val.as_object_mut().expect("DSL works only with objects now");
+            let object = val.as_object_mut().expect("We expect object here");
             if errors.len() == 0 {
                 // second pass we need to validate without default values in optionals
                 for param in self.optional.iter() {

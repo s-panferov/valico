@@ -220,53 +220,86 @@ impl Coercer for NullCoercer {
 }
 
 pub struct ArrayCoercer {
-    sub_coercer: Option<Box<Coercer + Send + Sync>>
+    sub_coercer: Option<Box<Coercer + Send + Sync>>,
+    separator: Option<String>
 }
 
 impl ArrayCoercer {
     pub fn new() -> ArrayCoercer {
         ArrayCoercer {
+            sub_coercer: None,
+            separator: None
+        }
+    }
+
+    pub fn encoded(separator: String) -> ArrayCoercer {
+        ArrayCoercer {
+            separator: Some(separator),
             sub_coercer: None
+        }
+    }
+
+    pub fn encoded_of(separator: String, sub_coercer: Box<Coercer + Send + Sync>) -> ArrayCoercer {
+        ArrayCoercer {
+            separator: Some(separator),
+            sub_coercer: Some(sub_coercer)
         }
     }
 
     pub fn of_type(sub_coercer: Box<Coercer + Send + Sync>) -> ArrayCoercer {
         ArrayCoercer {
+            separator: None,
             sub_coercer: Some(sub_coercer)
+        }
+    }
+
+    fn coerce_array(&self, val: &mut json::Json, path: &str) -> super::DslResult<Option<json::Json>> {
+        let array = val.as_array_mut().unwrap();
+        if self.sub_coercer.is_some() {
+            let sub_coercer = self.sub_coercer.as_ref().unwrap();
+            let mut errors = vec![];
+            for i in range(0, array.len()) {
+                let item_path = [path, i.to_string().as_slice()].connect("/");
+                match sub_coercer.coerce(&mut array[i], item_path.as_slice()) {
+                    Ok(Some(value)) => {
+                        array.remove(i);
+                        array.insert(i, value);
+                    },
+                    Ok(None) => (),
+                    Err(mut err) => {
+                        errors.append(&mut err)
+                    }
+                }
+            }
+
+            if errors.len() == 0 {
+                Ok(None)
+            } else {
+                Err(errors)
+            }
+        } else {
+            Ok(None)
         }
     }
 }
 
 impl Coercer for ArrayCoercer {
     fn get_primitive_type(&self) -> PrimitiveType { PrimitiveType::Array }
+
     fn coerce(&self, val: &mut json::Json, path: &str) -> super::DslResult<Option<json::Json>> {
         if val.is_array() {
-            let array = val.as_array_mut().unwrap();
-            if self.sub_coercer.is_some() {
-                let sub_coercer = self.sub_coercer.as_ref().unwrap();
-                let mut errors = vec![];
-                for i in range(0, array.len()) {
-                    let item_path = [path, i.to_string().as_slice()].connect("/");
-                    match sub_coercer.coerce(&mut array[i], item_path.as_slice()) {
-                        Ok(Some(value)) => {
-                            array.remove(i);
-                            array.insert(i, value);
-                        },
-                        Ok(None) => (),
-                        Err(mut err) => {
-                            errors.append(&mut err)
-                        }
-                    }
-                }
-
-                if errors.len() == 0 {
-                    Ok(None)
-                } else {
-                    Err(errors)
-                }
-            } else {
-                Ok(None)
-            }
+            self.coerce_array(val, path)
+        } else if val.is_string() && self.separator.is_some() {
+            let separator = self.separator.as_ref().unwrap();
+            let string = val.as_string().unwrap();
+            let mut array = json::Json::Array(
+                string
+                    .split_str(separator.as_slice())
+                    .map(|s| s.to_string().to_json())
+                    .collect::<Vec<json::Json>>()
+            );
+            try!(self.coerce_array(&mut array, path));
+            Ok(Some(array))
         } else {
             Err(vec![
                 Box::new(errors::WrongType {

@@ -11,14 +11,14 @@ impl MutableJson for json::Json {
     /// Returns None otherwise.
     fn as_object_mut<'a>(&'a mut self) -> Option<&'a mut json::Object> {
         match self {
-            &mut json::Json::Object(ref mut map) => Some(&mut*map),
+            &mut json::Json::Object(ref mut map) => Some(map),
             _ => None
         }
     }
 
     fn as_array_mut<'a>(&'a mut self) -> Option<&'a mut json::Array> {
         match self {
-            &mut json::Json::Array(ref mut list) => Some(&mut *list),
+            &mut json::Json::Array(ref mut list) => Some(list),
             _ => None
         }
     }

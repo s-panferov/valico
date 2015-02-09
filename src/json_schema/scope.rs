@@ -22,7 +22,7 @@ impl Scope {
         }
     }
 
-    pub fn compile(&mut self, def: json::Json) -> Result<(), schema::SchemaError> {
+    pub fn compile(&mut self, def: json::Json) -> Result<url::Url, schema::SchemaError> {
         let schema = try!(schema::compile(def, &self.keywords));
         
         let id = if schema.id.is_some() {
@@ -31,7 +31,8 @@ impl Scope {
             url_parser!().parse(helpers::DEFAULT_SCHEMA_ID).ok().unwrap()
         };
 
-        self.add(&id, schema)
+        try!(self.add(&id, schema));
+        Ok(id)
     }
 
     pub fn compile_with_id(&mut self, id: &url::Url, def: json::Json) -> Result<(), schema::SchemaError> {
