@@ -89,8 +89,8 @@ All Valico stuff is making by Builder instance. Below is a simple example showin
 ~~~rust
 let params = Builder::build(|params| {
 	params.req_nested("user", Builder::list(), |params| {
-		params.req_typed("name", Builder::string());
-		params.req_typed("friend_ids", Builder::list_of(Builder::u64()))
+		params.req_typed("name", json_dsl::string());
+		params.req_typed("friend_ids", json_dsl::array_of(json_dsl::u64()))
 	});
 });
 ~~~
@@ -114,8 +114,8 @@ fn main() {
 
     let params = Builder::build(|params| {
         params.req_nested("user", Builder::list(), |params| {
-            params.req_typed("name", Builder::string());
-            params.req_typed("friend_ids", Builder::list_of(Builder::u64()))
+            params.req_typed("name", json_dsl::string());
+            params.req_typed("friend_ids", json_dsl::array_of(json_dsl::u64()))
         });
     });
 
@@ -181,24 +181,26 @@ fn opt(&mut self, name: &str, param_builder: |&mut Param|);
 
 Available list of coercers:
     
-* Builder::i64() 
-* Builder::u64() 
-* Builder::f64() 
-* Builder::string() 
-* Builder::boolean() 
-* Builder::null() 
-* Builder::list() 
-* Builder::list_of() 
-* Builder::object() 
+* json_dsl::i64() 
+* json_dsl::u64() 
+* json_dsl::f64() 
+* json_dsl::string() 
+* json_dsl::boolean() 
+* json_dsl::null() 
+* json_dsl::array() 
+* json_dsl::array_of() 
+* json_dsl::encoded_array() — use it for string-encoded arrays e.g. "red,green,blue" -> ["red", "green", "blue"]
+* json_dsl::encoded_array_of() — use it for string-encoded arrays of some type e.g. "1,2,3" -> [1, 2, 3]
+* json_dsl::object() 
 
 Example of usage:
 
 ~~~rust
 let params = Builder::build(|params| {
-    params.req_typed("id", Builder::u64());
-    params.req_typed("name", Builder::string());
-    params.opt_typed("is_active", Builder::boolean());
-    params.opt_typed("tags", Builder::list_of(Builder::strings()));
+    params.req_typed("id", json_dsl::u64());
+    params.req_typed("name", json_dsl::string());
+    params.opt_typed("is_active", json_dsl::boolean());
+    params.opt_typed("tags", json_dsl::array_of(json_dsl::strings()));
 });
 ~~~
 
@@ -208,23 +210,58 @@ You can specify rules to nesting processing for **lists** and **objects**:
 
 ~~~rust
 let params = Builder::build(|params| {
-    params.req_nested("user", Builder::object(), |params| {
-        params.req_typed("name", Builder::string());
-        params.opt_typed("is_active", Builder::boolean());
-        params.opt_typed("tags", Builder::list_of(Builder::strings()));
+    params.req_nested("user", json_dsl::object(), |params| {
+        params.req_typed("name", json_dsl::string());
+        params.opt_typed("is_active", json_dsl::boolean());
+        params.opt_typed("tags", json_dsl::array_of(json_dsl::strings()));
     });
 });
 
 let params = Builder::build(|params| {
     params.req_nested("users", Builder::list(), |params| {
-        params.req_typed("name", Builder::string());
-        params.opt_typed("is_active", Builder::boolean());
-        params.opt_typed("tags", Builder::list_of(Builder::strings()));
+        params.req_typed("name", json_dsl::string());
+        params.opt_typed("is_active", json_dsl::boolean());
+        params.opt_typed("tags", json_dsl::array_of(json_dsl::strings()));
     });
 });
 ~~~
 
 Nesting level is not limited in Valico.
+
+#### Validate with JSON Schema
+
+DSL allows to use JSON Schema validations to validate objects at the Builder level and the Param level:
+
+~~~rust
+let params = json_dsl::Builder::build(|params| {
+    params.req("a", |a| {
+        a.schema(|schema| {
+            schema.integer();
+            schema.maximum(10f64, false);
+        })
+    });
+});
+~~~
+
+Note that JSON Schema validates object AFTER coerce pass:
+
+~~~rust
+let mut params = json_dsl::Builder::build(|params| {
+    params.req("a", |a| {
+        a.coerce(json_dsl::u64());
+        a.schema(|schema| {
+            schema.maximum(10f64, false);
+        })
+    });
+});
+~~~
+
+Don't forget to create a `json_schema::Scope` BEFORE processing:
+
+~~~rust
+let mut scope = json_schema::Scope::new();
+params.build_schemes(&mut scope).unwrap();
+~~~
 
 #### Parameters DSL
 
@@ -234,15 +271,15 @@ You can use DSL block to setup parameters with more flexible way:
 let params = Builder::build(|params| {
     params.req("user", |user| {
         user.desc("Parameter is used to create new user");
-        user.coerce(Builder::object());
+        user.coerce(json_dsl::object());
 
         // this allows null to be a valid value
         user.allow_null();
         
         user.nest(|params| {
-            params.req_typed("name", Builder::string());
+            params.req_typed("name", json_dsl::string());
             params.opt("kind", |kind| {
-                kind.coerce(Builder::string());
+                kind.coerce(json_dsl::string());
 
                 // optional parameters can have default values
                 kind.default("simeple_user".to_string())
@@ -254,7 +291,7 @@ let params = Builder::build(|params| {
 
 #### Parameter validations
 
-Parameter validations available only in DSL block.
+DSL supports several parameter validations. They considered outdated and likely to be **removed** in the future in favour of JSON Schema validation.
 
 ##### allow_values
 
@@ -263,7 +300,7 @@ Parameters can be restricted to a specific set of values with **allow_values**:
 ~~~rust
 let params = Builder::build(|params| {
     params.req("kind", |kind| {
-        kind.coerce(Builder::string());
+        kind.coerce(json_dsl::string());
         kind.allow_values(["circle".to_string(), "square".to_string()]);
     })
 })
@@ -276,7 +313,7 @@ Some values can be rejected with **reject_values**:
 ~~~rust
 let params = Builder::build(|params| {
     params.req("user_role", |kind| {
-        kind.coerce(Builder::string());
+        kind.coerce(json_dsl::string());
         kind.reject_values(["admin".to_string(), "manager".to_string()]);
     })
 })
@@ -289,7 +326,7 @@ String values can be tested with Regex:
 ~~~rust
 let params = Builder::build(|params| {
     params.req("nickname", |a| {
-        a.coerce(Builder::string());
+        a.coerce(json_dsl::string());
 
         // force all nicknames to start with "Amazing"
         a.regex(regex!("^Amazing"));
@@ -304,7 +341,7 @@ Sometimes it's usefull to use some custom function as validator:
 ~~~rust
 let params = Builder::build(|params| {
     params.req("pushkin_birthday", |a| {
-        a.coerce(Builder::u64());
+        a.coerce(json_dsl::u64());
 
         fn guess(val: &Json) -> Result<(), String> {
             if *val == 1799u.to_json() {

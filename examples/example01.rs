@@ -15,13 +15,11 @@ fn main() {
 
     let mut obj = r#"{"user": {"name": "Frodo", "friend_ids": ["1223"]}}"#.parse::<Json>().unwrap();
 
-    match params.process(&mut obj) {
-        Ok(()) => {
-            println!("Result object is {}", obj.pretty().to_string());
-        },
-        Err(err) => {
-            panic!("Errors during process: {:?}", err);
-        }
+    let state = params.process(&mut obj, &None);
+    if state.is_valid() {
+        println!("Result object is {}", obj.pretty().to_string());
+    } else {
+        panic!("Errors during process: {:?}", state);
     }
 
 }

@@ -9,6 +9,7 @@ extern crate url;
 extern crate jsonway;
 #[macro_use] #[no_link]
 extern crate mopa;
+extern crate uuid;
 
 pub use mutable_json::MutableJson;
 

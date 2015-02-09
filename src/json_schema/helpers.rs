@@ -1,16 +1,16 @@
 use rustc_serialize::json;
 use url;
 use url::percent_encoding;
+use uuid;
 
 use super::schema;
 
-pub const DEFAULT_SCHEMA_ID: &'static str = "json-schema://schema";
+macro_rules! url_parser(
+    () => (::url::UrlParser::new().scheme_type_mapper($crate::json_schema::helpers::whatwg_extended_scheme_type_mapper))
+);
 
-pub fn is_default_id(id: &url::Url) -> bool {
-    id.scheme == "json-schema" && match id.fragment {
-        None => true,
-        _ => false
-    }
+pub fn generate_id() -> url::Url {
+    url_parser!().parse(&format!("json-schema://{}", uuid::Uuid::new_v4())).ok().unwrap()
 }
 
 /// http://tools.ietf.org/html/draft-ietf-appsawg-json-pointer-07
@@ -25,10 +25,6 @@ pub fn encode(string: &str) -> String {
 pub fn connect(strings: &[&str]) -> String {
     strings.iter().map(|s| encode(s)).collect::<Vec<String>>().connect("/")
 }
-
-macro_rules! url_parser(
-    () => (::url::UrlParser::new().scheme_type_mapper($crate::json_schema::helpers::whatwg_extended_scheme_type_mapper))
-);
 
 pub fn parse_url_key(key: &str, obj: &json::Json) -> Result<Option<url::Url>, schema::SchemaError> {
     match obj.find(key) {

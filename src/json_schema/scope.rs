@@ -23,37 +23,24 @@ impl Scope {
     }
 
     pub fn compile(&mut self, def: json::Json) -> Result<url::Url, schema::SchemaError> {
-        let schema = try!(schema::compile(def, &self.keywords));
-        
-        let id = if schema.id.is_some() {
-            schema.id.clone().unwrap()
-        } else {
-            url_parser!().parse(helpers::DEFAULT_SCHEMA_ID).ok().unwrap()
-        };
-
+        let schema = try!(schema::compile(def, None, &self.keywords));
+        let id = schema.id.clone().unwrap();
         try!(self.add(&id, schema));
         Ok(id)
     }
 
     pub fn compile_with_id(&mut self, id: &url::Url, def: json::Json) -> Result<(), schema::SchemaError> {
-        let schema = try!(schema::compile(def, &self.keywords));
+        let schema = try!(schema::compile(def, Some(id.clone()), &self.keywords));
         self.add(id, schema)
     }
 
     pub fn compile_and_return<'a>(&'a mut self, def: json::Json) -> Result<schema::ScopedSchema<'a>, schema::SchemaError> {
-        let schema = try!(schema::compile(def, &self.keywords));
-
-        let id = if schema.id.is_some() {
-            schema.id.clone().unwrap()
-        } else {
-            url_parser!().parse(helpers::DEFAULT_SCHEMA_ID).ok().unwrap()
-        };
-
-        self.add_and_return(&id, schema)
+        let schema = try!(schema::compile(def, None, &self.keywords));
+        self.add_and_return(schema.id.clone().as_ref().unwrap(), schema)
     }
 
     pub fn compile_and_return_with_id<'a>(&'a mut self, id: &url::Url, def: json::Json) -> Result<schema::ScopedSchema<'a>, schema::SchemaError> {
-        let schema = try!(schema::compile(def, &self.keywords));
+        let schema = try!(schema::compile(def, Some(id.clone()), &self.keywords));
         self.add_and_return(id, schema)
     }
 

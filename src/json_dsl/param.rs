@@ -16,7 +16,7 @@ pub struct Param {
     pub validators: validators::Validators,
     pub default: Option<json::Json>,
     pub schema_builder: Option<Box<Fn(&mut json_schema::Builder) + Send + Sync>>,
-    pub schema_ref: Option<url::Url>
+    pub schema_id: Option<url::Url>
 }
 
 unsafe impl Send for Param { }
@@ -33,7 +33,7 @@ impl Param {
             validators: vec![],
             default: None,
             schema_builder: None,
-            schema_ref: None
+            schema_id: None
         }
     }
 
@@ -47,7 +47,7 @@ impl Param {
             validators: vec![],
             default: None,
             schema_builder: None,
-            schema_ref: None
+            schema_id: None
         }
     }
 
@@ -61,7 +61,7 @@ impl Param {
             validators: vec![],
             default: None,
             schema_builder: None,
-            schema_ref: None
+            schema_id: None
         }
     }
 
@@ -74,6 +74,10 @@ impl Param {
 
     pub fn desc(&mut self, description: &str) {
         self.description = Some(description.to_string());
+    }
+
+    pub fn schema_id(&mut self, id: url::Url) {
+        self.schema_id = Some(id);
     }
 
     pub fn schema<F>(&mut self, build: F) where F: Fn(&mut json_schema::Builder,) + Send + Sync {
@@ -100,55 +104,71 @@ impl Param {
         self.validators.push(validator);
     }
 
-    pub fn validate_with<F>(&mut self, validator: F) where F: Fn(&json::Json, &str, bool) -> super::DslResult<()> + Send+Sync {
+    pub fn validate_with<F>(&mut self, validator: F) where F: Fn(&json::Json, &str, bool) -> super::validators::ValidatorResult + Send+Sync {
         self.validators.push(Box::new(validator));
     }
 
-    fn process_validators(&self, val: &json::Json, path: &str) -> super::DslResult<()> {
+    fn process_validators(&self, val: &json::Json, path: &str) -> super::super::ValicoErrors {
+        let mut errors = vec![];
         for validator in self.validators.iter() {
-            try!(validator.validate(val, path, true));
+            match validator.validate(val, path, true) {
+                Ok(()) => (),
+                Err(mut validation_errors) => errors.append(&mut validation_errors)
+            }
         };
 
-        Ok(())
+        errors
     }
 
-    pub fn process(&self, val: &mut json::Json, path: &str) -> super::DslResult<Option<json::Json>> {
-        if val.is_null() && self.allow_null { return Ok(None) }
+    pub fn process(&self, val: &mut json::Json, path: &str, scope: &Option<&json_schema::Scope>) -> super::ExtendedResult<Option<json::Json>> {
+        if val.is_null() && self.allow_null { 
+            return super::ExtendedResult::new(None) 
+        }
 
-        let mut need_return = false;
+        let mut result = super::ExtendedResult::new(None);
         let mut return_value = None;
 
-        let result = {
+        {
+
             let val = if self.coercer.is_some() {
                 match self.coercer.as_ref().unwrap().coerce(val, path) {
-                    Ok(Some(new_value)) => { 
-                        need_return = true; 
+                    Ok(None) => val,
+                    Ok(Some(new_value)) => {
                         return_value = Some(new_value); 
                         return_value.as_mut().unwrap() 
                     },
-                    Ok(None) => val,
-                    Err(err) => return Err(err)
+                    Err(mut errors) => {
+                        result.state.errors.append(&mut errors);
+                        return result;
+                    }
                 }
             } else {
                 val
             };
 
             if self.nest.is_some() {
-                match self.nest.as_ref().unwrap().process_nest(val, path) {
-                    Ok(()) => (),
-                    Err(err) => return Err(err)
-                };
+                let mut process_state = self.nest.as_ref().unwrap().process_nest(val, path, scope);
+                result.append(&mut process_state);
             }
 
-            self.process_validators(val, path)
-        };
-        
-        match result {
-            Ok(()) => {
-                if need_return { Ok(return_value) } else { Ok(None) }
-            },
-            Err(err) => Err(err)
+            let mut validation_errors = self.process_validators(val, path);
+            result.state.errors.append(&mut validation_errors);
+
+            if self.schema_id.is_some() && scope.is_some() {
+                let id = self.schema_id.as_ref().unwrap();
+                let schema = scope.as_ref().unwrap().resolve(id);
+                match schema {
+                    Some(schema) => result.append(&mut schema.validate_in(val, path)),
+                    None => result.state.missing.push(id.clone())
+                }
+            }
         }
+
+        if return_value.is_some() {
+            result.value = return_value;
+        }
+        
+        result
     }
 }
 

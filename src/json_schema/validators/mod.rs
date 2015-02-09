@@ -87,6 +87,10 @@ impl ValidationState {
         self.errors.len() == 0
     }
 
+    pub fn is_strictly_valid(&self) -> bool {
+        self.errors.len() == 0 && self.missing.len() == 0
+    }
+
     pub fn append(&mut self, second: &mut ValidationState) {
         self.errors.append(&mut second.errors);
         self.missing.append(&mut second.missing);

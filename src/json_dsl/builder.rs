@@ -14,7 +14,7 @@ pub struct Builder {
     optional: Vec<param::Param>,
     validators: validators::Validators,
     schema_builder: Option<Box<Fn(&mut json_schema::Builder) + Send + Sync>>,
-    schema_ref: Option<url::Url>
+    schema_id: Option<url::Url>
 }
 
 unsafe impl Send for Builder { }
@@ -27,7 +27,7 @@ impl Builder {
             optional: vec![],
             validators: vec![],
             schema_builder: None,
-            schema_ref: None
+            schema_id: None
         }
     }
 
@@ -115,12 +115,12 @@ impl Builder {
         self.validators.push(validator);
     }
 
-    pub fn schema<F>(&mut self, build: F) where F: Fn(&mut json_schema::Builder,) + Send + Sync {
-        self.schema_builder = Some(Box::new(build));
+    pub fn schema_id(&mut self, id: url::Url) {
+        self.schema_id = Some(id);
     }
 
-    pub fn process(&self, val: &mut json::Json) -> super::DslResult<()> {
-        self.process_nest(val, "")
+    pub fn schema<F>(&mut self, build: F) where F: Fn(&mut json_schema::Builder,) + Send + Sync {
+        self.schema_builder = Some(Box::new(build));
     }
 
     pub fn build_schemes(&mut self, scope: &mut json_schema::Scope) -> Result<(), json_schema::SchemaError> {
@@ -128,7 +128,7 @@ impl Builder {
             if param.schema_builder.is_some() {
                 let json_schema = json_schema::builder::schema_box(param.schema_builder.take().unwrap());
                 let id = try!(scope.compile(json_schema.to_json()));
-                param.schema_ref = Some(id);
+                param.schema_id = Some(id);
             }
 
             if param.nest.is_some() {
@@ -139,25 +139,27 @@ impl Builder {
         if self.schema_builder.is_some() {
             let json_schema = json_schema::builder::schema_box(self.schema_builder.take().unwrap());
             let id = try!(scope.compile(json_schema.to_json()));
-            self.schema_ref = Some(id);
+            self.schema_id = Some(id);
         }
 
         Ok(())
     }
 
-    pub fn process_nest(&self, val: &mut json::Json, path: &str) -> super::DslResult<()> {
-        if val.is_array() {
-            let mut errors = vec![];
+    pub fn process(&self, val: &mut json::Json, scope: &Option<&json_schema::Scope>) -> json_schema::ValidationState {
+        self.process_nest(val, "", scope)
+    }
+
+    pub fn process_nest(&self, val: &mut json::Json, path: &str, scope: &Option<&json_schema::Scope>) -> json_schema::ValidationState {
+        let mut state = if val.is_array() {
+            let mut state = json_schema::ValidationState::new();
             let array = val.as_array_mut().unwrap();
             for (idx, item) in array.iter_mut().enumerate() {
                 let item_path = [path, idx.to_string().as_slice()].connect("/");
                 if item.is_object() {
-                    match self.process_object(item, item_path.as_slice()) {
-                        Ok(()) => (),
-                        Err(mut err) => errors.append(&mut err)
-                    }
+                    let mut process_state = self.process_object(item, item_path.as_slice(), scope);
+                    state.append(&mut process_state);
                 } else {
-                    errors.push(
+                    state.errors.push(
                         Box::new(errors::WrongType {
                             path: item_path.to_string(),
                             detail: "List value is not and object".to_string()
@@ -166,22 +168,42 @@ impl Builder {
                 }
             }
 
-            if errors.len() > 0 {
-                return Err(errors);
-            }
+            state
         } else if val.is_object() {
-            match self.process_object(val, path) {
-                Ok(()) => (),
-                Err(err) => return Err(err)
-            };
+            self.process_object(val, path, scope)
+        } else {
+            let mut state = json_schema::ValidationState::new();
+            state.errors.push(
+                Box::new(errors::WrongType {
+                    path: path.to_string(),
+                    detail: "Value is not an object or an array".to_string()
+                }) as Box<super::super::common::error::ValicoError>
+            );
+
+            state
+        };
+
+        let path = if path == "" {
+            "/"
+        } else {
+            path
+        };
+
+        if self.schema_id.is_some() && scope.is_some() {
+            let id = self.schema_id.as_ref().unwrap();
+            let schema = scope.as_ref().unwrap().resolve(id);
+            match schema {
+                Some(schema) => state.append(&mut schema.validate_in(val, path)),
+                None => state.missing.push(id.clone())
+            }
         }
 
-        Ok(())
+        state
     }
 
-    fn process_object(&self, val: &mut json::Json, path: &str) -> super::DslResult<()>  {
+    fn process_object(&self, val: &mut json::Json, path: &str, scope: &Option<&json_schema::Scope>) -> json_schema::ValidationState  {
         
-        let mut errors = vec![];
+        let mut state = json_schema::ValidationState::new();
 
         {
             let object = val.as_object_mut().expect("We expect object here");
@@ -190,19 +212,15 @@ impl Builder {
                 let present = helpers::has_value(object, name);
                 let param_path = [path, name.as_slice()].connect("/");
                 if present {
-                    match param.process(object.get_mut(name).unwrap(), param_path.as_slice()) {
-                        Ok(result) => { 
-                            match result {
-                                Some(new_value) => { object.insert(name.clone(), new_value); },
-                                None => ()
-                            }
-                        },
-                        Err(mut err) => {
-                            errors.append(&mut err);
-                        }
+                    let mut process_result = param.process(object.get_mut(name).unwrap(), param_path.as_slice(), scope);
+                    match process_result.value  {
+                        Some(new_value) => { object.insert(name.clone(), new_value); },
+                        None => ()
                     }
+
+                    state.append(&mut process_result.state);
                 } else {
-                    errors.push(Box::new(errors::Required {
+                    state.errors.push(Box::new(errors::Required {
                         path: param_path.clone()
                     }))
                 }
@@ -213,17 +231,13 @@ impl Builder {
                 let present = helpers::has_value(object, name);
                 let param_path = [path, name.as_slice()].connect("/");
                 if present {
-                    match param.process(object.get_mut(name).unwrap(), param_path.as_slice()) {
-                        Ok(result) => { 
-                            match result {
-                                Some(new_value) => { object.insert(name.clone(), new_value); },
-                                None => ()
-                            }
-                        },
-                        Err(mut err) => {
-                            errors.append(&mut err)
-                        }
+                    let mut process_result = param.process(object.get_mut(name).unwrap(), param_path.as_slice(), scope);
+                    match process_result.value  {
+                        Some(new_value) => { object.insert(name.clone(), new_value); },
+                        None => ()
                     }
+
+                    state.append(&mut process_result.state);
                 }
             }
         }
@@ -238,14 +252,15 @@ impl Builder {
             match validator.validate(val, path, true) {
                 Ok(()) => (),
                 Err(mut err) => {
-                    errors.append(&mut err);
+                    state.errors.append(&mut err);
                 }
             };
         }
 
         {
-            let object = val.as_object_mut().expect("We expect object here");
-            if errors.len() == 0 {
+            if state.is_valid() {
+                let object = val.as_object_mut().expect("We expect object here");
+
                 // second pass we need to validate without default values in optionals
                 for param in self.optional.iter() {
                     let ref name = param.name;
@@ -257,12 +272,10 @@ impl Builder {
                         };
                     }
                 }
-
-                Ok(())
-            } else {
-                Err(errors)
             }
         }
+
+        state
     }
 }
 

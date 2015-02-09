@@ -2,19 +2,18 @@
 use serialize::json;
 
 use valico::json_dsl;
+use valico::json_schema;
 use valico::common::error;
 
-pub fn test_result(params: &json_dsl::Builder, body: &str) -> json::Json {
+pub fn test_result(params: &json_dsl::Builder, scope: Option<&json_schema::Scope>, body: &str) -> json::Json {
     let obj = body.parse::<json::Json>();
     match obj {
         Ok(mut json) => { 
-            match params.process(&mut json) {
-                Ok(()) => {
-                    return json;
-                },
-                Err(err) => {
-                    panic!("Errors during process: {:?}", err);
-                }
+            let state = params.process(&mut json, &scope);
+            if state.is_strictly_valid() {
+                return json;
+            } else {
+                panic!("Errors during process: {:?}", state);
             }
         },
         Err(_) => {
@@ -23,17 +22,15 @@ pub fn test_result(params: &json_dsl::Builder, body: &str) -> json::Json {
     }
 }
 
-pub fn get_errors(params: &json_dsl::Builder, body: &str) -> Vec<Box<error::ValicoError>> {
+pub fn get_errors(params: &json_dsl::Builder, scope: Option<&json_schema::Scope>, body: &str) -> Vec<Box<error::ValicoError>> {
     let obj = body.parse::<json::Json>();
     match obj {
         Ok(mut json) => { 
-            match params.process(&mut json) {
-                Ok(()) => {
-                    panic!("Success responce when we await some errors");
-                },
-                Err(errors) => {
-                    return errors;
-                }
+            let state = params.process(&mut json, &scope);
+            if state.is_strictly_valid() {
+                panic!("Success responce when we await some errors");
+            } else {
+                return state.errors;
             }
         },
         Err(_) => {
@@ -42,25 +39,24 @@ pub fn get_errors(params: &json_dsl::Builder, body: &str) -> Vec<Box<error::Vali
     }
 }
 
-pub fn assert_str_eq(params: &json_dsl::Builder, body: &str, res: &str) {
-    assert_eq!(test_result(params, body).to_string(), res.to_string());
+pub fn assert_str_eq_with_scope(params: &json_dsl::Builder, scope: Option<&json_schema::Scope>, body: &str, res: &str) {
+    assert_eq!(test_result(params, scope, body).to_string(), res.to_string());
 }
 
-pub fn assert_path(obj: &json::Json, path: &[&str]) {
-    assert!(obj.find_path(path).is_some());
-}
-
-#[allow(dead_code)]
-pub fn assert_result_key(params: &json_dsl::Builder, body: &str, path: &[&str]) {
-    assert_path(&test_result(params, body), path);
-}
-
-pub fn assert_error<T: error::ValicoError + Send>(params: &json_dsl::Builder, body: &str, path: &str) {
-    let errors = get_errors(params, body);
+pub fn assert_error_with_scope<T: error::ValicoError + Send>(params: &json_dsl::Builder, scope: Option<&json_schema::Scope>, body: &str, path: &str) {
+    let errors = get_errors(params, scope, body);
     let error = errors.iter().find(|&: error| {
         let err = error.downcast_ref::<T>();
         err.is_some() && err.unwrap().get_path() == path
     });
 
     assert!(error.is_some(), "Can't find error in {}. Errors: {:?}", path, errors)
+}
+
+pub fn assert_str_eq(params: &json_dsl::Builder, body: &str, res: &str) {
+    assert_str_eq_with_scope(params, None, body, res);
+}
+
+pub fn assert_error<T: error::ValicoError + Send>(params: &json_dsl::Builder, body: &str, path: &str) {
+    assert_error_with_scope::<T>(params, None, body, path);
 }

@@ -77,15 +77,18 @@ const NON_SCHEMA_KEYS: [&'static str; 6] = [
 ];
 
 impl Schema {
-    fn compile(def: json::Json, keywords: &keywords::Keywords) -> Result<Schema, SchemaError> {
+    fn compile(def: json::Json, external_id: Option<url::Url>, keywords: &keywords::Keywords) -> Result<Schema, SchemaError> {
         if !def.is_object() {
             return Err(SchemaError::NotAnObject)
         }
 
-        let id = try!(helpers::parse_url_key("id", &def));
-        let schema = try!(helpers::parse_url_key("$schema", &def));
+        let id = if external_id.is_some() {
+            external_id.unwrap()
+        } else {
+            try!(helpers::parse_url_key("id", &def)).clone().unwrap_or_else(|| helpers::generate_id())
+        };
 
-        let context_url = id.clone().unwrap_or_else(|| url_parser!().parse("json-schema://schema#").ok().unwrap());
+        let schema = try!(helpers::parse_url_key("$schema", &def));
 
         let (tree, mut scopes) = {
             let mut tree = collections::BTreeMap::new();
@@ -95,7 +98,7 @@ impl Schema {
 
             for (key, value) in obj.iter() {
                 let mut context = WalkContext {
-                    url: &context_url,
+                    url: &id,
                     fragment: vec![key.clone()],
                     scopes: &mut scopes
                 };
@@ -114,13 +117,13 @@ impl Schema {
         };
 
         let validators = try!(Schema::compile_keywords(&def, &WalkContext {
-            url: &context_url,
+            url: &id,
             fragment: vec![],
             scopes: &mut scopes,
         }, keywords));
 
         let schema = Schema {
-            id: id,
+            id: Some(id),
             schema: schema,
             original: def,
             tree: tree,
@@ -267,11 +270,11 @@ impl Schema {
     }
 }
 
-pub fn compile(def: json::Json, keywords: &keywords::Keywords) -> Result<Schema, SchemaError> {
-    Schema::compile(def, keywords)
+pub fn compile(def: json::Json, external_id: Option<url::Url>, keywords: &keywords::Keywords) -> Result<Schema, SchemaError> {
+    Schema::compile(def, external_id, keywords)
 }
 
 #[test]
 fn schema_doesnt_compile_not_object() {
-    assert!(Schema::compile(json::Json::Boolean(true), &keywords::default()).is_err());
+    assert!(Schema::compile(json::Json::Boolean(true), None, &keywords::default()).is_err());
 }

@@ -1,9 +1,13 @@
 
 use serialize::json::{self, ToJson};
 use valico::json_dsl;
+use valico::json_schema;
+use valico::json_schema::errors as schema_errors;
 use valico::json_dsl::errors;
 
 use self::helpers::{
+    assert_str_eq_with_scope, 
+    assert_error_with_scope,
     assert_str_eq, 
     assert_error
 };
@@ -215,7 +219,7 @@ fn is_process_require_allows_null() {
 
 
 #[test]
-fn is_validate_allow_values() {
+fn is_validates_allow_values() {
 
     let params = json_dsl::Builder::build(|params| {
         params.req("a", |a| {
@@ -233,7 +237,7 @@ fn is_validate_allow_values() {
 }
 
 #[test]
-fn is_validate_reject_values() {
+fn is_validates_reject_values() {
 
     let params = json_dsl::Builder::build(|params| {
         params.req("a", |a| {
@@ -251,7 +255,7 @@ fn is_validate_reject_values() {
 }
 
 #[test]
-fn is_validate_with_function_validator() {
+fn is_validates_with_function_validator() {
 
     let params = json_dsl::Builder::build(|params| {
         params.req("a", |a| {
@@ -278,7 +282,7 @@ fn is_validate_with_function_validator() {
 }
 
 #[test]
-fn is_validate_with_regex() {
+fn is_validates_with_regex() {
 
     let params = json_dsl::Builder::build(|params| {
         params.req("a", |a| {
@@ -307,7 +311,7 @@ fn is_validate_with_regex() {
 }
 
 #[test]
-fn is_validate_opt() {
+fn is_validates_opt() {
 
     let params = json_dsl::Builder::build(|params| {
         params.req_defined("a");
@@ -321,7 +325,7 @@ fn is_validate_opt() {
 }
 
 #[test]
-fn is_validate_opt_with_default() {
+fn is_validates_opt_with_default() {
 
     let params = json_dsl::Builder::build(|params| {
         params.opt("a", |a| {
@@ -335,7 +339,7 @@ fn is_validate_opt_with_default() {
 }
 
 #[test]
-fn is_validate_mutually_exclusive() {
+fn is_validates_mutually_exclusive() {
 
     let params = json_dsl::Builder::build(|params| {
         params.opt_defined("a");
@@ -353,7 +357,7 @@ fn is_validate_mutually_exclusive() {
 }
 
 #[test]
-fn is_validate_exactly_one_of() {
+fn is_validates_exactly_one_of() {
 
     let params = json_dsl::Builder::build(|params| {
         params.opt_defined("a");
@@ -371,7 +375,7 @@ fn is_validate_exactly_one_of() {
 }
 
 #[test]
-fn is_validate_at_least_one_of() {
+fn is_validates_at_least_one_of() {
 
     let params = json_dsl::Builder::build(|params| {
         params.opt_defined("a");
@@ -389,7 +393,7 @@ fn is_validate_at_least_one_of() {
 }
 
 #[test]
-fn is_validate_with_function() {
+fn is_validates_with_function() {
 
     let params = json_dsl::Builder::build(|params| {
         params.opt_defined("a");
@@ -407,6 +411,62 @@ fn is_validate_with_function() {
 
     assert_error::<errors::WrongType>(&params, r#"{}"#, "/");
 
+}
+
+#[test]
+fn it_validates_with_schema() {
+    let mut params = json_dsl::Builder::build(|params| {
+        params.opt_typed("a", json_dsl::u64());
+        params.opt_typed("b", json_dsl::u64());
+        params.schema(|schema| {
+            schema.max_properties(2);
+        })
+    });
+
+    let mut scope = json_schema::Scope::new();
+    params.build_schemes(&mut scope).unwrap();
+
+    assert_str_eq_with_scope(&params, Some(&scope), r#"{"a":1, "b": 1}"#, r#"{"a":1,"b":1}"#);
+    assert_error_with_scope::<schema_errors::MaxProperties>(&params, Some(&scope), r#"{"a":1, "b": 1, "c": 1}"#, "/");
+}
+
+#[test]
+fn it_validates_params_with_schema() {
+    let mut params = json_dsl::Builder::build(|params| {
+        params.req("a", |a| {
+            a.schema(|schema| {
+                schema.integer();
+                schema.maximum(10f64, false);
+            })
+        });
+    });
+
+    let mut scope = json_schema::Scope::new();
+    params.build_schemes(&mut scope).unwrap();
+
+    assert_str_eq_with_scope(&params, Some(&scope), r#"{"a":1}"#, r#"{"a":1}"#);
+    assert_error_with_scope::<schema_errors::Maximum>(&params, Some(&scope), r#"{"a":11}"#, "/a");
+    assert_error_with_scope::<schema_errors::WrongType>(&params, Some(&scope), r#"{"a":"test"}"#, "/a");
+}
+
+#[test]
+fn it_validates_params_with_schema_and_coercion() {
+    let mut params = json_dsl::Builder::build(|params| {
+        params.req("a", |a| {
+            a.coerce(json_dsl::u64());
+            a.schema(|schema| {
+                schema.maximum(10f64, false);
+            })
+        });
+    });
+
+    let mut scope = json_schema::Scope::new();
+    params.build_schemes(&mut scope).unwrap();
+
+    assert_str_eq_with_scope(&params, Some(&scope), r#"{"a":1}"#, r#"{"a":1}"#);
+    assert_str_eq_with_scope(&params, Some(&scope), r#"{"a":"10"}"#, r#"{"a":10}"#);
+    assert_error_with_scope::<schema_errors::Maximum>(&params, Some(&scope), r#"{"a":"11"}"#, "/a");
+    assert_error_with_scope::<errors::WrongType>(&params, Some(&scope), r#"{"a":"test"}"#, "/a");
 }
 
 
