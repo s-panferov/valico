@@ -16,6 +16,7 @@ rustc-serialize = "*"
 url = "*"
 mopa = "*"
 jsonway = "*"
+uuid = "*"
 
 [[test]]
 name = "tests"

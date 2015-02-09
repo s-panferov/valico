@@ -179,6 +179,12 @@ impl Builder {
             state
         };
 
+        let path = if path == "" {
+            "/"
+        } else {
+            path
+        };
+
         if self.schema_id.is_some() && scope.is_some() {
             let id = self.schema_id.as_ref().unwrap();
             let schema = scope.as_ref().unwrap().resolve(id);
