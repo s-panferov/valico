@@ -5,6 +5,8 @@ mod param;
 pub mod errors;
 #[macro_use] pub mod validators;
 
+use super::json_schema;
+
 pub use self::param::Param;
 pub use self::builder::Builder;
 pub use self::coercers::{
@@ -41,4 +43,34 @@ pub fn encoded_array_of(separator: &str, coercer: Box<coercers::Coercer + Send +
 
 pub fn object() -> Box<coercers::Coercer + Send + Sync> { Box::new(coercers::ObjectCoercer) }
 
-pub type DslResult<T> = Result<T, super::common::error::ValicoErrors>;
+pub struct ExtendedResult<T> {
+    value: T,
+    state: json_schema::ValidationState
+}
+
+impl<T> ExtendedResult<T> {
+    pub fn new(value: T) -> ExtendedResult<T> {
+        ExtendedResult {
+            value: value,
+            state: json_schema::ValidationState::new()
+        }
+    }
+
+    pub fn with_errors(value: T, errors: super::ValicoErrors) -> ExtendedResult<T> {
+        ExtendedResult {
+            value: value,
+            state: json_schema::ValidationState {
+                errors: errors,
+                missing: vec![]
+            }
+        }
+    }
+
+    pub fn is_valid(&self) -> bool {
+        self.state.is_valid()
+    }
+
+    pub fn append(&mut self, second: &mut json_schema::ValidationState) {
+        self.state.append(second);
+    }
+}

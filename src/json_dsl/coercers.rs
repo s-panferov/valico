@@ -18,9 +18,11 @@ pub enum PrimitiveType {
     File
 }
 
+pub type CoercerResult<T> = Result<T, super::super::ValicoErrors>;
+
 pub trait Coercer: Send + Sync {
     fn get_primitive_type(&self) -> PrimitiveType;
-    fn coerce(&self, &mut json::Json, &str) -> super::DslResult<Option<json::Json>>;
+    fn coerce(&self, &mut json::Json, &str) -> CoercerResult<Option<json::Json>>;
 }
 
 #[derive(Copy)]
@@ -28,7 +30,7 @@ pub struct StringCoercer;
 
 impl Coercer for StringCoercer {
     fn get_primitive_type(&self) -> PrimitiveType { PrimitiveType::String }
-    fn coerce(&self, val: &mut json::Json, path: &str) -> super::DslResult<Option<json::Json>> {
+    fn coerce(&self, val: &mut json::Json, path: &str) -> CoercerResult<Option<json::Json>> {
         if val.is_string() {
             Ok(None)
         } else if val.is_number() {
@@ -49,7 +51,7 @@ pub struct I64Coercer;
 
 impl Coercer for I64Coercer {
     fn get_primitive_type(&self) -> PrimitiveType { PrimitiveType::I64 }
-    fn coerce(&self, val: &mut json::Json, path: &str) -> super::DslResult<Option<json::Json>> {
+    fn coerce(&self, val: &mut json::Json, path: &str) -> CoercerResult<Option<json::Json>> {
         if val.is_i64() {
             return Ok(None)
         } else if val.is_u64() {
@@ -86,7 +88,7 @@ pub struct U64Coercer;
 
 impl Coercer for U64Coercer {
     fn get_primitive_type(&self) -> PrimitiveType { PrimitiveType::U64 }
-    fn coerce(&self, val: &mut json::Json, path: &str) -> super::DslResult<Option<json::Json>> {
+    fn coerce(&self, val: &mut json::Json, path: &str) -> CoercerResult<Option<json::Json>> {
         if val.is_u64() {
             return Ok(None)
         } else if val.is_i64() {
@@ -123,7 +125,7 @@ pub struct F64Coercer;
 
 impl Coercer for F64Coercer {
     fn get_primitive_type(&self) -> PrimitiveType { PrimitiveType::F64 }
-    fn coerce(&self, val: &mut json::Json, path: &str) -> super::DslResult<Option<json::Json>> {
+    fn coerce(&self, val: &mut json::Json, path: &str) -> CoercerResult<Option<json::Json>> {
         if val.is_f64() {
             return Ok(None)
         } else if val.is_i64() {
@@ -160,7 +162,7 @@ pub struct BooleanCoercer;
 
 impl Coercer for BooleanCoercer {
     fn get_primitive_type(&self) -> PrimitiveType { PrimitiveType::Boolean }
-    fn coerce(&self, val: &mut json::Json, path: &str) -> super::DslResult<Option<json::Json>> {
+    fn coerce(&self, val: &mut json::Json, path: &str) -> CoercerResult<Option<json::Json>> {
         if val.is_boolean() {
             Ok(None)
         } else if val.is_string() {
@@ -193,7 +195,7 @@ pub struct NullCoercer;
 
 impl Coercer for NullCoercer {
     fn get_primitive_type(&self) -> PrimitiveType { PrimitiveType::Null }
-    fn coerce(&self, val: &mut json::Json, path: &str) -> super::DslResult<Option<json::Json>> {
+    fn coerce(&self, val: &mut json::Json, path: &str) -> CoercerResult<Option<json::Json>> {
         if val.is_null() {
             Ok(None)
         } else if val.is_string() {
@@ -253,7 +255,7 @@ impl ArrayCoercer {
         }
     }
 
-    fn coerce_array(&self, val: &mut json::Json, path: &str) -> super::DslResult<Option<json::Json>> {
+    fn coerce_array(&self, val: &mut json::Json, path: &str) -> CoercerResult<Option<json::Json>> {
         let array = val.as_array_mut().unwrap();
         if self.sub_coercer.is_some() {
             let sub_coercer = self.sub_coercer.as_ref().unwrap();
@@ -286,7 +288,7 @@ impl ArrayCoercer {
 impl Coercer for ArrayCoercer {
     fn get_primitive_type(&self) -> PrimitiveType { PrimitiveType::Array }
 
-    fn coerce(&self, val: &mut json::Json, path: &str) -> super::DslResult<Option<json::Json>> {
+    fn coerce(&self, val: &mut json::Json, path: &str) -> CoercerResult<Option<json::Json>> {
         if val.is_array() {
             self.coerce_array(val, path)
         } else if val.is_string() && self.separator.is_some() {
@@ -316,7 +318,7 @@ pub struct ObjectCoercer;
 
 impl Coercer for ObjectCoercer {
     fn get_primitive_type(&self) -> PrimitiveType { PrimitiveType::Object }
-    fn coerce(&self, val: &mut json::Json, path: &str) -> super::DslResult<Option<json::Json>> {
+    fn coerce(&self, val: &mut json::Json, path: &str) -> CoercerResult<Option<json::Json>> {
         if val.is_object() {
             Ok(None)    
         } else {

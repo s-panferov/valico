@@ -8,13 +8,11 @@ pub fn test_result(params: &json_dsl::Builder, body: &str) -> json::Json {
     let obj = body.parse::<json::Json>();
     match obj {
         Ok(mut json) => { 
-            match params.process(&mut json) {
-                Ok(()) => {
-                    return json;
-                },
-                Err(err) => {
-                    panic!("Errors during process: {:?}", err);
-                }
+            let state = params.process(&mut json, &None);
+            if state.is_valid() {
+                return json;
+            } else {
+                panic!("Errors during process: {:?}", state);
             }
         },
         Err(_) => {
@@ -27,13 +25,11 @@ pub fn get_errors(params: &json_dsl::Builder, body: &str) -> Vec<Box<error::Vali
     let obj = body.parse::<json::Json>();
     match obj {
         Ok(mut json) => { 
-            match params.process(&mut json) {
-                Ok(()) => {
-                    panic!("Success responce when we await some errors");
-                },
-                Err(errors) => {
-                    return errors;
-                }
+            let state = params.process(&mut json, &None);
+            if state.is_valid() {
+                panic!("Success responce when we await some errors");
+            } else {
+                return state.errors;
             }
         },
         Err(_) => {
