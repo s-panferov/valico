@@ -10,6 +10,12 @@ pub trait ValicoError: error::Error + fmt::Debug + Send + any::Any + json::ToJso
     fn get_detail(&self) -> Option<&str> { None }
 }
 
+impl json::ToJson for Box<ValicoError> {
+    fn to_json(&self) -> json::Json {
+        (**self).to_json()
+    }
+}
+
 pub type ValicoErrors = Vec<Box<ValicoError>>;
 
 mopafy!(ValicoError);
