@@ -146,7 +146,7 @@ fn validate_properties() {
                 prop2.minimum(11f64, false);
             });
         });
-    }).into_json()).ok().unwrap();
+    }).into_json(), true).ok().unwrap();
 
     assert_eq!(schema.validate(&jsonway::object(|obj| {
         obj.set("prop1", 10);
@@ -182,7 +182,7 @@ fn validate_kw_properties() {
                 prop2.minimum(11f64, false);
             });
         });
-    }).into_json()).ok().unwrap();
+    }).into_json(), true).ok().unwrap();
 
     assert_eq!(schema.validate(&jsonway::object(|obj| {
         obj.set("id", 10);
@@ -210,7 +210,7 @@ fn validate_pattern_properties() {
                 prop.maximum(1000f64, false);
             });
         });
-    }).into_json()).ok().unwrap();
+    }).into_json(), true).ok().unwrap();
 
     assert_eq!(schema.validate(&jsonway::object(|obj| {
         obj.set("prop1", 11);
@@ -242,7 +242,7 @@ fn validate_additional_properties_false() {
             });
         });
         s.additional_properties(false);
-    }).into_json()).ok().unwrap();
+    }).into_json(), true).ok().unwrap();
 
     assert_eq!(schema.validate(&jsonway::object(|obj| {
         obj.set("prop1", 10);
@@ -273,7 +273,7 @@ fn validate_additional_properties_schema() {
         s.additional_properties_schema(|additional| {
             additional.maximum(5f64, false)
         });
-    }).into_json()).ok().unwrap();
+    }).into_json(), true).ok().unwrap();
 
     assert_eq!(schema.validate(&jsonway::object(|obj| {
         obj.set("prop1", 10);
@@ -294,25 +294,25 @@ fn malformed() {
 
     assert!(scope.compile_and_return(jsonway::object(|schema| {
         schema.set("properties", false);
-    }).unwrap()).is_err());
+    }).unwrap(), true).is_err());
 
     assert!(scope.compile_and_return(jsonway::object(|schema| {
         schema.set("patternProperties", false);
-    }).unwrap()).is_err());
+    }).unwrap(), true).is_err());
 
     assert!(scope.compile_and_return(jsonway::object(|schema| {
         schema.object("patternProperties", |pattern| {
             pattern.set("test", 1)
         });
-    }).unwrap()).is_err());
+    }).unwrap(), true).is_err());
 
     assert!(scope.compile_and_return(jsonway::object(|schema| {
         schema.object("patternProperties", |pattern| {
             pattern.object("((", |_malformed| {})
         });
-    }).unwrap()).is_err());
+    }).unwrap(), true).is_err());
 
     assert!(scope.compile_and_return(jsonway::object(|schema| {
         schema.set("additionalProperties", 10);
-    }).unwrap()).is_err());
+    }).unwrap(), true).is_err());
 }

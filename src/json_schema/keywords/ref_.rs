@@ -47,7 +47,7 @@ fn validate() {
         s.items_schema(|items| {
             items.ref_("#");
         })
-    }).into_json()).ok().unwrap();
+    }).into_json(), true).ok().unwrap();
 
     let array: Vec<String> = vec![];
     let array2: Vec<Vec<String>> = vec![vec![], vec![]];
@@ -66,5 +66,5 @@ fn malformed() {
 
     assert!(scope.compile_and_return(jsonway::object(|schema| {
         schema.set("$ref", "///".to_string());
-    }).unwrap()).is_err());
+    }).unwrap(), true).is_err());
 }

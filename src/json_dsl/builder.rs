@@ -96,7 +96,7 @@ impl Builder {
         self.validators.push(validator);
     }
 
-    pub fn validate_with<F>(&mut self, validator: F) where F: Fn(&json::Json, &str, bool) -> validators::ValidatorResult + Send+Sync {
+    pub fn validate_with<F>(&mut self, validator: F) where F: Fn(&json::Json, &str) -> validators::ValidatorResult + Send+Sync {
         self.validators.push(Box::new(validator));
     }
 
@@ -127,7 +127,7 @@ impl Builder {
         for param in self.requires.iter_mut().chain(self.optional.iter_mut()) {
             if param.schema_builder.is_some() {
                 let json_schema = json_schema::builder::schema_box(param.schema_builder.take().unwrap());
-                let id = try!(scope.compile(json_schema.to_json()));
+                let id = try!(scope.compile(json_schema.to_json(), true));
                 param.schema_id = Some(id);
             }
 
@@ -138,7 +138,7 @@ impl Builder {
 
         if self.schema_builder.is_some() {
             let json_schema = json_schema::builder::schema_box(self.schema_builder.take().unwrap());
-            let id = try!(scope.compile(json_schema.to_json()));
+            let id = try!(scope.compile(json_schema.to_json(), true));
             self.schema_id = Some(id);
         }
 
@@ -249,7 +249,7 @@ impl Builder {
         };
 
         for validator in self.validators.iter() {
-            match validator.validate(val, path, true) {
+            match validator.validate(val, path) {
                 Ok(()) => (),
                 Err(mut err) => {
                     state.errors.append(&mut err);

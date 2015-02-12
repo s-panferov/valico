@@ -40,7 +40,7 @@ fn validate() {
     let mut scope = scope::Scope::new();
     let schema = scope.compile_and_return(builder::schema(|s| {
         s.pattern(r"abb.*");
-    }).into_json()).ok().unwrap();
+    }).into_json(), true).ok().unwrap();
 
     assert_eq!(schema.validate(&"abb".to_json()).is_valid(), true);
     assert_eq!(schema.validate(&"abbd".to_json()).is_valid(), true);
@@ -53,9 +53,9 @@ fn mailformed() {
 
     assert!(scope.compile_and_return(jsonway::object(|schema| {
         schema.set("pattern", "([]".to_string());
-    }).unwrap()).is_err());
+    }).unwrap(), true).is_err());
 
     assert!(scope.compile_and_return(jsonway::object(|schema| {
         schema.set("pattern", 2);
-    }).unwrap()).is_err());
+    }).unwrap(), true).is_err());
 }

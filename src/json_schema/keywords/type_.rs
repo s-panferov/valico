@@ -85,7 +85,7 @@ fn validate_array() {
     let mut scope = scope::Scope::new();
     let schema = scope.compile_and_return(builder::schema(|s| {
         s.array();
-    }).into_json()).ok().unwrap();
+    }).into_json(), true).ok().unwrap();
 
     assert_eq!(schema.validate(&jsonway::array(|_arr| {}).unwrap()).is_valid(), true);
     assert_eq!(schema.validate(&"string".to_json()).is_valid(), false);
@@ -96,7 +96,7 @@ fn validate_boolean() {
     let mut scope = scope::Scope::new();
     let schema = scope.compile_and_return(builder::schema(|s| {
         s.boolean();
-    }).into_json()).ok().unwrap();
+    }).into_json(), true).ok().unwrap();
 
     assert_eq!(schema.validate(&true.to_json()).is_valid(), true);
     assert_eq!(schema.validate(&false.to_json()).is_valid(), true);
@@ -108,7 +108,7 @@ fn validate_integer() {
     let mut scope = scope::Scope::new();
     let schema = scope.compile_and_return(builder::schema(|s| {
         s.integer();
-    }).into_json()).ok().unwrap();
+    }).into_json(), true).ok().unwrap();
 
     assert_eq!(schema.validate(&10.to_json()).is_valid(), true);
     assert_eq!(schema.validate(&(-10).to_json()).is_valid(), true);
@@ -121,7 +121,7 @@ fn validate_number() {
     let mut scope = scope::Scope::new();
     let schema = scope.compile_and_return(builder::schema(|s| {
         s.number();
-    }).into_json()).ok().unwrap();
+    }).into_json(), true).ok().unwrap();
 
     assert_eq!(schema.validate(&10.to_json()).is_valid(), true);
     assert_eq!(schema.validate(&(-10).to_json()).is_valid(), true);
@@ -134,7 +134,7 @@ fn validate_null() {
     let mut scope = scope::Scope::new();
     let schema = scope.compile_and_return(builder::schema(|s| {
         s.null();
-    }).into_json()).ok().unwrap();
+    }).into_json(), true).ok().unwrap();
 
     assert_eq!(schema.validate(&json::Json::Null).is_valid(), true);
     assert_eq!(schema.validate(&"string".to_json()).is_valid(), false);
@@ -145,7 +145,7 @@ fn validate_object() {
     let mut scope = scope::Scope::new();
     let schema = scope.compile_and_return(builder::schema(|s| {
         s.object();
-    }).into_json()).ok().unwrap();
+    }).into_json(), true).ok().unwrap();
 
     assert_eq!(schema.validate(&jsonway::object(|_arr| {}).unwrap()).is_valid(), true);
     assert_eq!(schema.validate(&"string".to_json()).is_valid(), false);
@@ -156,7 +156,7 @@ fn validate_string() {
     let mut scope = scope::Scope::new();
     let schema = scope.compile_and_return(builder::schema(|s| {
         s.string();
-    }).into_json()).ok().unwrap();
+    }).into_json(), true).ok().unwrap();
 
     assert_eq!(schema.validate(&"string".to_json()).is_valid(), true);
     assert_eq!(schema.validate(&jsonway::object(|_arr| {}).unwrap()).is_valid(), false);
@@ -167,7 +167,7 @@ fn validate_set() {
     let mut scope = scope::Scope::new();
     let schema = scope.compile_and_return(builder::schema(|s| {
         s.types(&[super::super::PrimitiveType::Integer, super::super::PrimitiveType::String]);
-    }).into_json()).ok().unwrap();
+    }).into_json(), true).ok().unwrap();
 
     assert_eq!(schema.validate(&10.to_json()).is_valid(), true);
     assert_eq!(schema.validate(&(-11).to_json()).is_valid(), true);
@@ -182,25 +182,25 @@ fn malformed() {
 
     assert!(scope.compile_and_return(jsonway::object(|schema| {
         schema.set("type", 10);
-    }).unwrap()).is_err());
+    }).unwrap(), true).is_err());
 
     assert!(scope.compile_and_return(jsonway::object(|schema| {
         schema.object("type", |_type| {});
-    }).unwrap()).is_err());
+    }).unwrap(), true).is_err());
 
     assert!(scope.compile_and_return(jsonway::object(|schema| {
         schema.set("type", "unsigned".to_string());
-    }).unwrap()).is_err());
+    }).unwrap(), true).is_err());
 
     assert!(scope.compile_and_return(jsonway::object(|schema| {
         schema.array("type", |types| {
             types.push(10);
         });
-    }).unwrap()).is_err());
+    }).unwrap(), true).is_err());
 
     assert!(scope.compile_and_return(jsonway::object(|schema| {
         schema.array("type", |types| {
             types.push("unsigned".to_string());
         });
-    }).unwrap()).is_err());
+    }).unwrap(), true).is_err());
 }

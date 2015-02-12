@@ -6,8 +6,8 @@ use super::super::scope;
 #[allow(missing_copy_implementations)]
 pub struct UniqueItems;
 impl super::Validator for UniqueItems {
-    fn validate(&self, val: &json::Json, path: &str, strict: bool, _scope: &scope::Scope) -> super::ValidationState {
-        let array = strict_process!(val.as_array(), path, strict, "The value must be an array");
+    fn validate(&self, val: &json::Json, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+        let array = nonstrict_process!(val.as_array(), path);
 
         // TODO we need some quicker algorithm for this
 

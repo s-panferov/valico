@@ -2,6 +2,8 @@
 #![feature(collections)]
 #![feature(plugin)]
 
+#![plugin(phf_macros)]
+
 extern crate "rustc-serialize" as rustc_serialize;
 extern crate regex;
 extern crate collections;
@@ -10,6 +12,7 @@ extern crate jsonway;
 #[macro_use] #[no_link]
 extern crate mopa;
 extern crate uuid;
+extern crate phf;
 
 pub use mutable_json::MutableJson;
 

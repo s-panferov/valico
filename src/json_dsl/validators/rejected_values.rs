@@ -15,7 +15,7 @@ impl RejectedValues {
 }
 
 impl super::Validator for RejectedValues {
-    fn validate(&self, val: &json::Json, path: &str, _strict: bool) -> super::ValidatorResult {
+    fn validate(&self, val: &json::Json, path: &str) -> super::ValidatorResult {
         let mut matched = false;
         for rejected_value in self.rejected_values.iter() {
             if val == rejected_value { matched = true; }

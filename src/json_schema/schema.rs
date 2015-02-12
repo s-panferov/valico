@@ -1,6 +1,7 @@
 use url;
 use std::collections;
 use rustc_serialize::json::{self};
+use phf;
 
 use super::helpers;
 use super::scope;
@@ -27,6 +28,7 @@ pub enum SchemaError {
     IdConflicts,
     NotAnObject,
     UrlParseError(url::ParseError),
+    UnknownKey(String),
     Malformed {
         path: String,
         detail: String
@@ -67,17 +69,47 @@ pub struct Schema {
     scopes: collections::HashMap<String, Vec<String>>
 }
 
-const NON_SCHEMA_KEYS: [&'static str; 6] = [
+static NON_SCHEMA_KEYS: phf::Set<&'static str> = phf_set! {
     "properties", 
     "patternProperties",
     "dependencies",
+    "definitions",
     "anyOf",
     "allOf",
     "oneOf",
-];
+};
+
+static FINAL_KEYS: phf::Set<&'static str> = phf_set! {
+    "enum", 
+    "required",
+    "type"
+};
+
+const ALLOW_NON_CONSUMED_KEYS: phf::Set<&'static str> = phf_set! {
+    "definitions",
+    "$schema",
+    "id",
+    "default",
+    "description",
+    "format",
+};
+
+pub struct CompilationSettings<'a> {
+    pub keywords: &'a keywords::KeywordMap,
+    pub ban_unknown_keywords: bool 
+}
+
+impl<'a> CompilationSettings<'a> {
+    pub fn new(keywords: &'a keywords::KeywordMap, ban_unknown_keywords: bool) -> CompilationSettings<'a> {
+        CompilationSettings {
+            keywords: keywords,
+            ban_unknown_keywords: ban_unknown_keywords,
+        }
+    }
+}
 
 impl Schema {
-    fn compile(def: json::Json, external_id: Option<url::Url>, keywords: &keywords::Keywords) -> Result<Schema, SchemaError> {
+    fn compile(def: json::Json, external_id: Option<url::Url>, settings: CompilationSettings) -> Result<Schema, SchemaError> {
         if !def.is_object() {
             return Err(SchemaError::NotAnObject)
         }
@@ -97,6 +129,9 @@ impl Schema {
             let mut scopes = collections::HashMap::new();
 
             for (key, value) in obj.iter() {
+                if !value.is_object() && !value.is_array() { continue; }
+                if FINAL_KEYS.contains(&key[]) { continue; }
+                
                 let mut context = WalkContext {
                     url: &id,
                     fragment: vec![key.clone()],
@@ -106,8 +141,8 @@ impl Schema {
                 let scheme = try!(Schema::compile_sub(
                     value.clone(),
                     &mut context,
-                    keywords,
-                    !NON_SCHEMA_KEYS.iter().any(|k| k == key)
+                    &settings,
+                    !NON_SCHEMA_KEYS.contains(&key[])
                 ));
 
                 tree.insert(helpers::encode(key), scheme);
@@ -120,7 +155,7 @@ impl Schema {
             url: &id,
             fragment: vec![],
             scopes: &mut scopes,
-        }, keywords));
+        }, &settings));
 
         let schema = Schema {
             id: Some(id),
@@ -134,20 +169,48 @@ impl Schema {
         Ok(schema)
     }
 
-    fn compile_keywords(def: &json::Json, context: &WalkContext, keywords: &keywords::Keywords) -> Result<validators::Validators, SchemaError> {
+    fn compile_keywords(def: &json::Json, context: &WalkContext, settings: &CompilationSettings) -> Result<validators::Validators, SchemaError> {
         let mut validators = vec![];
+        let mut keys: collections::HashSet<&str> = def.as_object().unwrap().keys().map(|key| key.as_slice()).collect();
+        let mut not_consumed = collections::HashSet::new();
 
-        for keyword in keywords.iter() {
-            let maybe_validator = try!(keyword.compile(def, context));
-            if maybe_validator.is_some() {
-                validators.push(maybe_validator.unwrap())
+        loop {
+            let key = keys.iter().next().cloned();
+            if key.is_some() {
+                let key = key.unwrap();
+                match settings.keywords.get(&key[]) {
+                    Some(keyword) => {
+                        keyword.consume(&mut keys);
+
+                        match try!(keyword.keyword.compile(def, context)) {
+                            Some(validator) => validators.push(validator),
+                            None => ()
+                        }
+                    },
+                    None => { 
+                        keys.remove(&key);
+                        if settings.ban_unknown_keywords {
+                            not_consumed.insert(key);
+                        }
+                    }
+                }
+            } else {
+                break;
+            }
+        }
+
+        if settings.ban_unknown_keywords && not_consumed.len() > 0 {
+            for key in not_consumed.iter() {
+                if !ALLOW_NON_CONSUMED_KEYS.contains(&key[]) {
+                    return Err(SchemaError::UnknownKey(key.to_string()))
+                }
             }
         }
 
         Ok(validators)
     }
 
-    fn compile_sub(def: json::Json, context: &mut WalkContext, keywords: &keywords::Keywords, is_schema: bool) -> Result<Schema, SchemaError> {
+    fn compile_sub(def: json::Json, context: &mut WalkContext, keywords: &CompilationSettings, is_schema: bool) -> Result<Schema, SchemaError> {
 
         let mut id = None; 
         let mut schema = None; 
@@ -164,6 +227,9 @@ impl Schema {
                 let obj = def.as_object().unwrap();
 
                 for (key, value) in obj.iter() {
+                    if !value.is_object() && !value.is_array() { continue; }
+                    if FINAL_KEYS.contains(&key[]) { continue; }
+
                     let mut current_fragment = context.fragment.clone();
                     current_fragment.push(key.clone());
 
@@ -177,7 +243,7 @@ impl Schema {
                         value.clone(),
                         &mut context,
                         keywords,
-                        !NON_SCHEMA_KEYS.iter().any(|k| k == key)
+                        !NON_SCHEMA_KEYS.contains(&key[])
                     ));
 
                     tree.insert(helpers::encode(key), scheme);
@@ -186,6 +252,8 @@ impl Schema {
                 let array = def.as_array().unwrap();
 
                 for (idx, value) in array.iter().enumerate() {
+                    if !value.is_object() && !value.is_array() { continue; }
+
                     let mut current_fragment = context.fragment.clone();
                     current_fragment.push(idx.to_string().clone());
 
@@ -213,7 +281,7 @@ impl Schema {
             context.scopes.insert(id.clone().unwrap().serialize(), context.fragment.clone());
         }
 
-        let validators = if is_schema {
+        let validators = if is_schema && def.is_object() {
             try!(Schema::compile_keywords(&def, context, keywords))
         } else {
             vec![]
@@ -263,18 +331,18 @@ impl Schema {
         let mut state = validators::ValidationState::new();
 
         for validator in self.validators.iter() {
-            state.append(&mut validator.validate(data, path, false, scope))
+            state.append(&mut validator.validate(data, path, scope))
         }
 
         state
     }
 }
 
-pub fn compile(def: json::Json, external_id: Option<url::Url>, keywords: &keywords::Keywords) -> Result<Schema, SchemaError> {
-    Schema::compile(def, external_id, keywords)
+pub fn compile(def: json::Json, external_id: Option<url::Url>, settings: CompilationSettings) -> Result<Schema, SchemaError> {
+    Schema::compile(def, external_id, settings)
 }
 
 #[test]
 fn schema_doesnt_compile_not_object() {
-    assert!(Schema::compile(json::Json::Boolean(true), None, &keywords::default()).is_err());
+    assert!(Schema::compile(json::Json::Boolean(true), None, CompilationSettings::new(&keywords::default(), true)).is_err());
 }

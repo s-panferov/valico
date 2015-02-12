@@ -10,19 +10,15 @@ pub use self::mutually_exclusive::{MutuallyExclusive};
 pub use self::rejected_values::{RejectedValues};
 
 macro_rules! strict_process {
-    ($val:expr, $path:ident, $strict:expr, $err:expr) => {{
+    ($val:expr, $path:ident, $err:expr) => {{
         let maybe_val = $val;
         if maybe_val.is_none() {
-            return if !$strict {
-                Ok(())
-            } else {
-                Err(vec![
-                    Box::new($crate::json_dsl::errors::WrongType {
-                        path: $path.to_string(),
-                        detail: $err.to_string()
-                    })
-                ])
-            }
+            return Err(vec![
+                Box::new($crate::json_dsl::errors::WrongType {
+                    path: $path.to_string(),
+                    detail: $err.to_string()
+                })
+            ])
         }
 
         maybe_val.unwrap()
@@ -39,7 +35,7 @@ mod rejected_values;
 pub type ValidatorResult = Result<(), error::ValicoErrors>;
 
 pub trait Validator {
-    fn validate(&self, item: &json::Json, &str, bool) -> ValidatorResult;
+    fn validate(&self, item: &json::Json, &str) -> ValidatorResult;
 }
 
 impl fmt::Debug for Validator + 'static {
@@ -51,8 +47,8 @@ impl fmt::Debug for Validator + 'static {
 pub type BoxedValidator = Box<Validator + 'static + Send + Sync>;
 pub type Validators = Vec<BoxedValidator>;
 
-impl<T> Validator for T where T: Fn(&json::Json, &str, bool) -> ValidatorResult {
-    fn validate(&self, val: &json::Json, path: &str, strict: bool) -> ValidatorResult {
-        self(val, path, strict)
+impl<T> Validator for T where T: Fn(&json::Json, &str) -> ValidatorResult {
+    fn validate(&self, val: &json::Json, path: &str) -> ValidatorResult {
+        self(val, path)
     }
 }

@@ -44,7 +44,7 @@ fn validate() {
             items.push("prop1".to_string());
             items.push("prop2".to_string());
         })
-    }).to_json()).ok().unwrap();
+    }).to_json(), true).ok().unwrap();
 
     assert_eq!(schema.validate(&"prop1".to_json()).is_valid(), true);
     assert_eq!(schema.validate(&"prop2".to_json()).is_valid(), true);
@@ -58,9 +58,9 @@ fn malformed() {
 
     assert!(scope.compile_and_return(jsonway::object(|schema| {
         schema.array("enum", |_| {});
-    }).unwrap()).is_err());
+    }).unwrap(), true).is_err());
 
     assert!(scope.compile_and_return(jsonway::object(|schema| {
         schema.object("enum", |_| {});
-    }).unwrap()).is_err());
+    }).unwrap(), true).is_err());
 }

@@ -107,7 +107,7 @@ fn validate_items_with_schema() {
             items.minimum(5f64, false);
             items.maximum(10f64, false);
         });
-    }).into_json()).ok().unwrap();
+    }).into_json(), true).ok().unwrap();
 
     assert_eq!(schema.validate(&[5,6,7,8,9,10].to_json()).is_valid(), true);
     assert_eq!(schema.validate(&[4,5,6,7,8,9,10].to_json()).is_valid(), false);
@@ -128,7 +128,7 @@ fn validate_items_with_array_of_schemes() {
                 item.maximum(6f64, false);
             });
         })
-    }).into_json()).ok().unwrap();
+    }).into_json(), true).ok().unwrap();
 
     assert_eq!(schema.validate(&[1].to_json()).is_valid(), true);
     assert_eq!(schema.validate(&[1,3].to_json()).is_valid(), true);
@@ -153,7 +153,7 @@ fn validate_items_with_array_of_schemes_with_additional_bool() {
             });
         });
         s.additional_items(false);
-    }).into_json()).ok().unwrap();
+    }).into_json(), true).ok().unwrap();
 
     assert_eq!(schema.validate(&[1,3,100].to_json()).is_valid(), false);
 }
@@ -175,7 +175,7 @@ fn validate_items_with_array_of_schemes_with_additional_schema() {
         s.additional_items_schema(|add| {
            add.maximum(100f64, false) 
         });
-    }).into_json()).ok().unwrap();
+    }).into_json(), true).ok().unwrap();
 
     assert_eq!(schema.validate(&[1,3,100].to_json()).is_valid(), true);
     assert_eq!(schema.validate(&[1,3,101].to_json()).is_valid(), false);

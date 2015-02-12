@@ -95,7 +95,7 @@ fn validate_dependencies() {
             });
             deps.property("item_id", vec!["item_name".to_string()]);
         });
-    }).to_json()).ok().unwrap();
+    }).to_json(), true).ok().unwrap();
 
     assert_eq!(schema.validate(&jsonway::object(|obj| {
         obj.set("isbn", "some_isbn".to_string());
@@ -130,7 +130,7 @@ fn malformed() {
         schema.object("dependencies", |deps| {
             deps.set("isbn", 10);
         });
-    }).unwrap()).is_err());
+    }).unwrap(), true).is_err());
 
     assert!(scope.compile_and_return(jsonway::object(|schema| {
         schema.object("dependencies", |deps| {
@@ -138,5 +138,5 @@ fn malformed() {
                 item_id.push(10)
             });
         });
-    }).unwrap()).is_err());
+    }).unwrap(), true).is_err());
 }

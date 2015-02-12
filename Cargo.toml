@@ -17,6 +17,8 @@ url = "*"
 mopa = "*"
 jsonway = "*"
 uuid = "*"
+phf = "*"
+phf_macros = "*"
 
 [[test]]
 name = "tests"

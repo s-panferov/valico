@@ -5,19 +5,26 @@ use url;
 use super::scope;
 
 macro_rules! strict_process {
-    ($val:expr, $path:ident, $strict:expr, $err:expr) => {{
+    ($val:expr, $path:ident, $err:expr) => {{
         let maybe_val = $val;
         if maybe_val.is_none() {
-            return if !$strict {
-                $crate::json_schema::validators::ValidationState::new()
-            } else {
-                val_error!(
-                    $crate::json_schema::errors::WrongType {
-                        path: $path.to_string(),
-                        detail: $err.to_string()
-                    }
-                )
-            }
+            return val_error!(
+                $crate::json_schema::errors::WrongType {
+                    path: $path.to_string(),
+                    detail: $err.to_string()
+                }
+            )
+        }
+
+        maybe_val.unwrap()
+    }}
+}
+
+macro_rules! nonstrict_process {
+    ($val:expr, $path:ident) => {{
+        let maybe_val = $val;
+        if maybe_val.is_none() {
+            return $crate::json_schema::validators::ValidationState::new()
         }
 
         maybe_val.unwrap()
@@ -111,7 +118,7 @@ impl json::ToJson for ValidationState {
 }
 
 pub trait Validator {
-    fn validate(&self, item: &json::Json, &str, bool, &scope::Scope) -> ValidationState;
+    fn validate(&self, item: &json::Json, &str, &scope::Scope) -> ValidationState;
 }
 
 impl fmt::Debug for Validator + 'static + Send + Sync {
@@ -123,8 +130,8 @@ impl fmt::Debug for Validator + 'static + Send + Sync {
 pub type BoxedValidator = Box<Validator + 'static + Send + Sync>;
 pub type Validators = Vec<BoxedValidator>;
 
-impl<T> Validator for T where T: Fn(&json::Json, &str, bool, &scope::Scope) -> ValidationState {
-    fn validate(&self, val: &json::Json, path: &str, strict: bool, scope: &scope::Scope) -> ValidationState {
-        self(val, path, strict, scope)
+impl<T> Validator for T where T: Fn(&json::Json, &str, &scope::Scope) -> ValidationState {
+    fn validate(&self, val: &json::Json, path: &str, scope: &scope::Scope) -> ValidationState {
+        self(val, path, scope)
     }
 }

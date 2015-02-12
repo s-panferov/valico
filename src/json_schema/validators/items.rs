@@ -24,8 +24,8 @@ pub struct Items {
 }
 
 impl super::Validator for Items {
-    fn validate(&self, val: &json::Json, path: &str, strict: bool, scope: &scope::Scope) -> super::ValidationState {
-        let array = strict_process!(val.as_array(), path, strict, "The value must be an array");
+    fn validate(&self, val: &json::Json, path: &str, scope: &scope::Scope) -> super::ValidationState {
+        let array = nonstrict_process!(val.as_array(), path);
 
         let mut state = super::ValidationState::new();
 
