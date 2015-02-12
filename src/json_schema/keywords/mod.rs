@@ -2,6 +2,7 @@ use rustc_serialize::json;
 use std::fmt;
 use std::rc;
 use std::collections;
+use std::any;
 
 use super::schema;
 use super::validators;
@@ -11,9 +12,17 @@ pub type KeywordPair = (Vec<&'static str>, Box<Keyword + 'static>);
 pub type KeywordPairs = Vec<KeywordPair>;
 pub type KeywordMap = collections::HashMap<&'static str, rc::Rc<KeywordConsumer>>;
 
-pub trait Keyword: Sync {
+pub trait Keyword: Sync + any::Any {
     fn compile(&self, &json::Json, &schema::WalkContext) -> KeywordResult;
 }
+
+impl<T: Send + Sync> Keyword for T where T: Fn(&json::Json, &schema::WalkContext) -> KeywordResult {
+    fn compile(&self, def: &json::Json, ctx: &schema::WalkContext) -> KeywordResult {
+        self(def, ctx)
+    }
+}
+
+mopafy!(Keyword);
 
 impl fmt::Debug for Keyword + 'static {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
@@ -49,34 +58,33 @@ pub mod type_;
 pub mod of;
 pub mod ref_;
 pub mod not;
+pub mod format;
 
 pub fn default() -> KeywordMap {
-    let mut default: KeywordPairs = vec![];
-    default.push((vec!["multipleOf"], Box::new(multiple_of::MultipleOf)));
-    default.push((vec!["maximum", "exclusiveMaximum"], Box::new(maxmin::Maximum)));
-    default.push((vec!["minimum", "exclusiveMinimum"], Box::new(maxmin::Minimum)));
-    default.push((vec!["maxLength"], Box::new(maxmin_length::MaxLength)));
-    default.push((vec!["minLength"], Box::new(maxmin_length::MinLength)));
-    default.push((vec!["pattern"], Box::new(pattern::Pattern)));
-    default.push((vec!["maxItems"], Box::new(maxmin_items::MaxItems)));
-    default.push((vec!["minItems"], Box::new(maxmin_items::MinItems)));
-    default.push((vec!["uniqueItems"], Box::new(unique_items::UniqueItems)));
-    default.push((vec!["items", "additionalItems"], Box::new(items::Items)));
-    default.push((vec!["maxProperties"], Box::new(maxmin_properties::MaxProperties)));
-    default.push((vec!["minProperties"], Box::new(maxmin_properties::MinProperties)));
-    default.push((vec!["required"], Box::new(required::Required)));
-    default.push((vec!["properties", "additionalProperties", "patternProperties"], Box::new(properties::Properties)));
-    default.push((vec!["dependencies"], Box::new(dependencies::Dependencies)));
-    default.push((vec!["enum"], Box::new(enum_::Enum)));
-    default.push((vec!["type"], Box::new(type_::Type)));
-    default.push((vec!["allOf"], Box::new(of::AllOf)));
-    default.push((vec!["anyOf"], Box::new(of::AnyOf)));
-    default.push((vec!["oneOf"], Box::new(of::OneOf)));
-    default.push((vec!["$ref"], Box::new(ref_::Ref)));
-    default.push((vec!["not"], Box::new(not::Not)));
-
     let mut map = collections::HashMap::new();
-    decouple_keywords(default, &mut map);
+
+    decouple_keyword((vec!["multipleOf"], Box::new(multiple_of::MultipleOf)), &mut map);
+    decouple_keyword((vec!["maximum", "exclusiveMaximum"], Box::new(maxmin::Maximum)), &mut map);
+    decouple_keyword((vec!["minimum", "exclusiveMinimum"], Box::new(maxmin::Minimum)), &mut map);
+    decouple_keyword((vec!["maxLength"], Box::new(maxmin_length::MaxLength)), &mut map);
+    decouple_keyword((vec!["minLength"], Box::new(maxmin_length::MinLength)), &mut map);
+    decouple_keyword((vec!["pattern"], Box::new(pattern::Pattern)), &mut map);
+    decouple_keyword((vec!["maxItems"], Box::new(maxmin_items::MaxItems)), &mut map);
+    decouple_keyword((vec!["minItems"], Box::new(maxmin_items::MinItems)), &mut map);
+    decouple_keyword((vec!["uniqueItems"], Box::new(unique_items::UniqueItems)), &mut map);
+    decouple_keyword((vec!["items", "additionalItems"], Box::new(items::Items)), &mut map);
+    decouple_keyword((vec!["maxProperties"], Box::new(maxmin_properties::MaxProperties)), &mut map);
+    decouple_keyword((vec!["minProperties"], Box::new(maxmin_properties::MinProperties)), &mut map);
+    decouple_keyword((vec!["required"], Box::new(required::Required)), &mut map);
+    decouple_keyword((vec!["properties", "additionalProperties", "patternProperties"], Box::new(properties::Properties)), &mut map);
+    decouple_keyword((vec!["dependencies"], Box::new(dependencies::Dependencies)), &mut map);
+    decouple_keyword((vec!["enum"], Box::new(enum_::Enum)), &mut map);
+    decouple_keyword((vec!["type"], Box::new(type_::Type)), &mut map);
+    decouple_keyword((vec!["allOf"], Box::new(of::AllOf)), &mut map);
+    decouple_keyword((vec!["anyOf"], Box::new(of::AnyOf)), &mut map);
+    decouple_keyword((vec!["oneOf"], Box::new(of::OneOf)), &mut map);
+    decouple_keyword((vec!["$ref"], Box::new(ref_::Ref)), &mut map);
+    decouple_keyword((vec!["not"], Box::new(not::Not)), &mut map);
 
     map
 }
@@ -94,13 +102,6 @@ impl KeywordConsumer {
                 set.remove(key);
             }
         }
-    }
-}
-
-pub fn decouple_keywords(keyword_pairs: KeywordPairs, 
-                         map: &mut KeywordMap) {
-    for keyword_pair in keyword_pairs.into_iter() {
-        decouple_keyword(keyword_pair, map)
     }
 }
 

@@ -45,13 +45,9 @@ impl Scope {
         self.add_and_return(id, schema)
     }
 
-    // fn keywords(&self) -> &keywords::Keywords {
-    //     &self.keywords
-    // }
-
-    // fn add_keyword<T>(&mut self, keyword: T) where T: keywords::Keyword + 'static {
-    //     self.keywords.push(Box::new(keyword));
-    // }
+    fn add_keyword<T>(&mut self, keys: Vec<&'static str>, keyword: T) where T: keywords::Keyword + 'static {
+        keywords::decouple_keyword((keys, Box::new(keyword)), &mut self.keywords);
+    }
 
     fn add(&mut self, id: &url::Url, schema: schema::Schema) -> Result<(), schema::SchemaError> {
         let (id_str, fragment) = helpers::serialize_schema_path(id);
