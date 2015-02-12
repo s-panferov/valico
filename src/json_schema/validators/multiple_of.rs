@@ -11,8 +11,8 @@ pub struct MultipleOf {
 }
 
 impl super::Validator for MultipleOf {
-    fn validate(&self, val: &json::Json, path: &str, strict: bool, _scope: &scope::Scope) -> super::ValidationState {
-        let number = strict_process!(val.as_f64(), path, strict, "The value must be a number");
+    fn validate(&self, val: &json::Json, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+        let number = nonstrict_process!(val.as_f64(), path);
 
         let valid = if (number.fract() == 0f64) && (self.number.fract() == 0f64) {
             (number % self.number) == 0f64

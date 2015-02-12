@@ -52,7 +52,7 @@ fn validate() {
     let mut scope = scope::Scope::new();
     let schema = scope.compile_and_return(builder::schema(|s| {
         s.required(vec!["prop1".to_string(), "prop2".to_string()]);
-    }).into_json()).ok().unwrap();
+    }).into_json(), true).ok().unwrap();
 
     assert_eq!(schema.validate(&jsonway::object(|obj| {
         obj.set("prop1", 0);
@@ -74,11 +74,11 @@ fn malformed() {
 
     assert!(scope.compile_and_return(jsonway::object(|schema| {
         schema.array("required", |_| {});
-    }).unwrap()).is_err());
+    }).unwrap(), true).is_err());
 
     assert!(scope.compile_and_return(jsonway::object(|schema| {
         schema.array("required", |required| {
             required.push(1)
         });
-    }).unwrap()).is_err());
+    }).unwrap(), true).is_err());
 }

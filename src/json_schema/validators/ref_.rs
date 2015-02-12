@@ -9,7 +9,7 @@ pub struct Ref {
 }
 
 impl super::Validator for Ref {
-    fn validate(&self, val: &json::Json, path: &str, _strict: bool, scope: &scope::Scope) -> super::ValidationState {
+    fn validate(&self, val: &json::Json, path: &str, scope: &scope::Scope) -> super::ValidationState {
         let schema = scope.resolve(&self.url);
 
         if schema.is_some() {

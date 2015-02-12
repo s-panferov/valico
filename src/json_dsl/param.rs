@@ -104,14 +104,14 @@ impl Param {
         self.validators.push(validator);
     }
 
-    pub fn validate_with<F>(&mut self, validator: F) where F: Fn(&json::Json, &str, bool) -> super::validators::ValidatorResult + Send+Sync {
+    pub fn validate_with<F>(&mut self, validator: F) where F: Fn(&json::Json, &str) -> super::validators::ValidatorResult + Send+Sync {
         self.validators.push(Box::new(validator));
     }
 
     fn process_validators(&self, val: &json::Json, path: &str) -> super::super::ValicoErrors {
         let mut errors = vec![];
         for validator in self.validators.iter() {
-            match validator.validate(val, path, true) {
+            match validator.validate(val, path) {
                 Ok(()) => (),
                 Err(mut validation_errors) => errors.append(&mut validation_errors)
             }

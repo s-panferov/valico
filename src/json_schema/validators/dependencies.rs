@@ -17,19 +17,9 @@ pub struct Dependencies {
 }
 
 impl super::Validator for Dependencies {
-    fn validate(&self, object: &json::Json, path: &str, strict: bool, scope: &scope::Scope) -> super::ValidationState {
-
+    fn validate(&self, object: &json::Json, path: &str, scope: &scope::Scope) -> super::ValidationState {
         if !object.is_object() {
-            return if !strict {
-                super::ValidationState::new()
-            } else {
-                val_error!(
-                    errors::WrongType {
-                        path: path.to_string(),
-                        detail: "The value must be an object".to_string()
-                    }
-                )
-            }
+            return super::ValidationState::new()
         }
 
         let mut state = super::ValidationState::new();

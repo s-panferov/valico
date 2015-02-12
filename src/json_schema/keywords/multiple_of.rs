@@ -40,7 +40,7 @@ fn validate() {
     let mut scope = scope::Scope::new();
     let schema = scope.compile_and_return(builder::schema(|s| {
         s.multiple_of(3.5f64);
-    }).into_json()).ok().unwrap();
+    }).into_json(), true).ok().unwrap();
 
     assert_eq!(schema.validate(&"".to_json()).is_valid(), true);
     assert_eq!(schema.validate(&7.to_json()).is_valid(), true);
@@ -53,13 +53,13 @@ fn malformed() {
     
     assert!(scope.compile_and_return(jsonway::object(|schema| {
         schema.set("multipleOf", "".to_string());
-    }).unwrap()).is_err());
+    }).unwrap(), true).is_err());
 
     assert!(scope.compile_and_return(jsonway::object(|schema| {
         schema.set("multipleOf", 0.to_json());
-    }).unwrap()).is_err());
+    }).unwrap(), true).is_err());
     
     assert!(scope.compile_and_return(jsonway::object(|schema| {
         schema.set("multipleOf", (-1).to_json());
-    }).unwrap()).is_err());
+    }).unwrap(), true).is_err());
 }

@@ -165,3 +165,12 @@ pub struct Not {
 impl_err!(Not, "not", "Not condition is not met");
 impl_to_json!(Not);
 
+#[derive(Debug)]
+#[allow(missing_copy_implementations)]
+pub struct Format {
+    pub path: String,
+    pub detail: String
+}
+impl_err!(Format, "format", "Format is wrong", +detail);
+impl_to_json!(Format);
+

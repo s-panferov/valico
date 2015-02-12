@@ -27,9 +27,17 @@ fn test_suite() {
             let spec = spec.as_object().unwrap();
             let mut scope = json_schema::Scope::new();
 
-            scope.compile(json_v4_schema.clone()).ok().unwrap();
+            scope.compile(json_v4_schema.clone(), true).ok().unwrap();
 
-            let schema = scope.compile_and_return(spec.get("schema").unwrap().clone()).ok().unwrap();
+            let schema = match scope.compile_and_return(spec.get("schema").unwrap().clone(), false) {
+                Ok(schema) => schema,
+                Err(err) => panic!("Error in schema {} {}: {:?}", 
+                    path.filename_str().unwrap().to_string(),
+                    spec.get("description").unwrap().as_string().unwrap(),
+                    err
+                )
+            };
+
             let tests = spec.get("tests").unwrap().as_array().unwrap();
             
             for test in tests.iter() {
@@ -42,6 +50,8 @@ fn test_suite() {
 
                 if state.is_valid() != valid {
                     failures.push((path.filename_str().unwrap().to_string(), description.to_string()))
+                } else {
+                    println!("test json_schema::test_suite -> {} .. ok", description);
                 }
             }
         }
@@ -53,6 +63,7 @@ fn test_suite() {
             ("refRemote.json".to_string(), "remote fragment invalid".to_string()),
             ("refRemote.json".to_string(), "ref within ref invalid".to_string()),
             ("refRemote.json".to_string(), "changed scope ref invalid".to_string()),
+            ("definitions.json".to_string(), "invalid definition schema".to_string()),
         ];
 
         for failure in failures.iter() {

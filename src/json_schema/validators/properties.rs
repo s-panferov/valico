@@ -20,8 +20,8 @@ pub struct Properties {
 }
 
 impl super::Validator for Properties {
-    fn validate(&self, val: &json::Json, path: &str, strict: bool, scope: &scope::Scope) -> super::ValidationState {
-        let object = strict_process!(val.as_object(), path, strict, "The value must be an object");
+    fn validate(&self, val: &json::Json, path: &str, scope: &scope::Scope) -> super::ValidationState {
+        let object = nonstrict_process!(val.as_object(), path);
         let mut state = super::ValidationState::new();
 
         'main: for (key, value) in object.iter() {

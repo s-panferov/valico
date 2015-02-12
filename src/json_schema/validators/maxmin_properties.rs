@@ -9,8 +9,8 @@ pub struct MaxProperties {
 }
 
 impl super::Validator for MaxProperties {
-    fn validate(&self, val: &json::Json, path: &str, strict: bool, _scope: &scope::Scope) -> super::ValidationState {
-        let object = strict_process!(val.as_object(), path, strict, "The value must be an object");
+    fn validate(&self, val: &json::Json, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+        let object = nonstrict_process!(val.as_object(), path);
 
         if (object.len() as u64) <= self.length {
             super::ValidationState::new()
@@ -30,8 +30,8 @@ pub struct MinProperties {
 }
 
 impl super::Validator for MinProperties {
-    fn validate(&self, val: &json::Json, path: &str, strict: bool, _scope: &scope::Scope) -> super::ValidationState {
-        let object = strict_process!(val.as_object(), path, strict, "The value must be an object");
+    fn validate(&self, val: &json::Json, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+        let object = nonstrict_process!(val.as_object(), path);
 
         if (object.len() as u64) >= self.length {
             super::ValidationState::new()

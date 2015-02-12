@@ -15,7 +15,7 @@ impl AllowedValues {
 }
 
 impl super::Validator for AllowedValues {
-    fn validate(&self, val: &json::Json, path: &str, _strict: bool) -> super::ValidatorResult {
+    fn validate(&self, val: &json::Json, path: &str) -> super::ValidatorResult {
         let mut matched = false;
         for allowed_value in self.allowed_values.iter() {
             if val == allowed_value { matched = true; }

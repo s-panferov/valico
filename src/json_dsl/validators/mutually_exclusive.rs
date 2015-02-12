@@ -15,9 +15,9 @@ impl MutuallyExclusive {
 }
 
 impl super::Validator for MutuallyExclusive {
-    fn validate(&self, val: &json::Json, path: &str, strict: bool) -> super::ValidatorResult {
+    fn validate(&self, val: &json::Json, path: &str) -> super::ValidatorResult {
 
-        let object = strict_process!(val.as_object(), path, strict, "The value must be an object");
+        let object = strict_process!(val.as_object(), path, "The value must be an object");
 
         let mut matched = vec![];
         for param in self.params.iter() {

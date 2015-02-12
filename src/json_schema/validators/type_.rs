@@ -29,7 +29,7 @@ fn check_type(val: &json::Json, ty: &json_schema::PrimitiveType) -> bool {
 }
 
 impl super::Validator for Type {
-    fn validate(&self, val: &json::Json, path: &str, _strict: bool, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(&self, val: &json::Json, path: &str, _scope: &scope::Scope) -> super::ValidationState {
         let mut state = super::ValidationState::new();
 
         match self.item {

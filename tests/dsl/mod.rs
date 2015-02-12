@@ -260,7 +260,7 @@ fn is_validates_with_function_validator() {
     let params = json_dsl::Builder::build(|params| {
         params.req("a", |a| {
             a.coerce(json_dsl::u64());
-            a.validate_with(|&: val: &json::Json, path: &str, _strict: bool| {
+            a.validate_with(|&: val: &json::Json, path: &str| {
                 if *val == 2us.to_json() {
                     Ok(())
                 } else {
@@ -399,7 +399,7 @@ fn is_validates_with_function() {
         params.opt_defined("a");
         params.opt_defined("b");
 
-        params.validate_with(|&: _: &json::Json, path: &str, _strict: bool| {
+        params.validate_with(|&: _: &json::Json, path: &str| {
             Err(vec![
                 Box::new(errors::WrongType{
                     path: path.to_string(),

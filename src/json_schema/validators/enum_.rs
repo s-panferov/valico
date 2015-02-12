@@ -9,7 +9,7 @@ pub struct Enum {
 }
 
 impl super::Validator for Enum {
-    fn validate(&self, val: &json::Json, path: &str, _strict: bool, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(&self, val: &json::Json, path: &str, _scope: &scope::Scope) -> super::ValidationState {
         let mut state = super::ValidationState::new();
 
         let mut contains = false;

@@ -64,7 +64,7 @@ fn validate_maximum() {
     let mut scope = scope::Scope::new();
     let schema = scope.compile_and_return(builder::schema(|s| {
         s.maximum(10f64, false);
-    }).into_json()).ok().unwrap();
+    }).into_json(), true).ok().unwrap();
 
     assert_eq!(schema.validate(&9.to_json()).is_valid(), true);
     assert_eq!(schema.validate(&10.to_json()).is_valid(), true);
@@ -76,7 +76,7 @@ fn validate_exclusive_maximum() {
     let mut scope = scope::Scope::new();
     let schema = scope.compile_and_return(builder::schema(|s| {
         s.maximum(10f64, true);
-    }).into_json()).ok().unwrap();
+    }).into_json(), true).ok().unwrap();
 
     assert_eq!(schema.validate(&9.to_json()).is_valid(), true);
     assert_eq!(schema.validate(&10.to_json()).is_valid(), false);
@@ -89,7 +89,7 @@ fn mailformed_maximum() {
     
     assert!(scope.compile_and_return(jsonway::object(|schema| {
         schema.set("maximum", true);
-    }).unwrap()).is_err());
+    }).unwrap(), true).is_err());
 }
 
 #[test]
@@ -98,12 +98,12 @@ fn mailformed_exclusive_maximum() {
     
     assert!(scope.compile_and_return(jsonway::object(|schema| {
         schema.set("exclusiveMaximum", true);
-    }).unwrap()).is_err());
+    }).unwrap(), true).is_err());
 
     assert!(scope.compile_and_return(jsonway::object(|schema| {
         schema.set("maximum", 10);
         schema.set("exclusiveMaximum", "".to_string());
-    }).unwrap()).is_err());
+    }).unwrap(), true).is_err());
 }
 
 #[test]
@@ -111,7 +111,7 @@ fn validate_minumum() {
     let mut scope = scope::Scope::new();
     let schema = scope.compile_and_return(builder::schema(|s| {
         s.minimum(10f64, false);
-    }).into_json()).ok().unwrap();
+    }).into_json(), true).ok().unwrap();
 
     assert_eq!(schema.validate(&9.to_json()).is_valid(), false);
     assert_eq!(schema.validate(&10.to_json()).is_valid(), true);
@@ -123,7 +123,7 @@ fn validate_exclusive_minimum() {
     let mut scope = scope::Scope::new();
     let schema = scope.compile_and_return(builder::schema(|s| {
         s.minimum(10f64, true);
-    }).into_json()).ok().unwrap();
+    }).into_json(), true).ok().unwrap();
 
     assert_eq!(schema.validate(&9.to_json()).is_valid(), false);
     assert_eq!(schema.validate(&10.to_json()).is_valid(), false);
@@ -136,7 +136,7 @@ fn mailformed_minumum() {
 
     assert!(scope.compile_and_return(jsonway::object(|schema| {
         schema.set("minimum", true);
-    }).unwrap()).is_err());
+    }).unwrap(), true).is_err());
 }
 
 #[test]
@@ -145,11 +145,11 @@ fn mailformed_exclusive_minumum() {
 
     assert!(scope.compile_and_return(jsonway::object(|schema| {
         schema.set("exclusiveMinimum", true);
-    }).unwrap()).is_err());
+    }).unwrap(), true).is_err());
 
     assert!(scope.compile_and_return(jsonway::object(|schema| {
         schema.set("minimum", 10);
         schema.set("exclusiveMinimum", "".to_string());
-    }).unwrap()).is_err());
+    }).unwrap(), true).is_err());
 }
 

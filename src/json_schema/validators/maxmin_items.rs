@@ -9,8 +9,8 @@ pub struct MaxItems {
 }
 
 impl super::Validator for MaxItems {
-    fn validate(&self, val: &json::Json, path: &str, strict: bool, _scope: &scope::Scope) -> super::ValidationState {
-        let array = strict_process!(val.as_array(), path, strict, "The value must be an array");
+    fn validate(&self, val: &json::Json, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+        let array = nonstrict_process!(val.as_array(), path);
 
         if (array.len() as u64) <= self.length {
             super::ValidationState::new()
@@ -30,8 +30,8 @@ pub struct MinItems {
 }
 
 impl super::Validator for MinItems {
-    fn validate(&self, val: &json::Json, path: &str, strict: bool, _scope: &scope::Scope) -> super::ValidationState {
-        let array = strict_process!(val.as_array(), path, strict, "The value must be an array");
+    fn validate(&self, val: &json::Json, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+        let array = nonstrict_process!(val.as_array(), path);
 
         if (array.len() as u64) >= self.length {
             super::ValidationState::new()
