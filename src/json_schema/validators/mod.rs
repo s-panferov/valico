@@ -75,6 +75,7 @@ pub mod type_;
 mod of;
 mod ref_;
 mod not;
+pub mod formats;
 
 #[derive(Debug)]
 pub struct ValidationState {

@@ -136,6 +136,10 @@ impl Builder {
         self.obj_builder.set("pattern", pattern.to_string())
     }
 
+    pub fn format(&mut self, format: &str) {
+        self.obj_builder.set("format", format.to_string())
+    }
+
     pub fn items_schema<F>(&mut self, build: F) where F: FnOnce(&mut Builder) {
         self.obj_builder.set("items", Builder::build(build).into_json() )
     }

@@ -1,6 +1,5 @@
 use url;
 use std::collections;
-use std::rc;
 use rustc_serialize::json;
 
 use super::schema;
@@ -10,17 +9,37 @@ use super::helpers;
 #[allow(dead_code)]
 #[derive(Debug)]
 pub struct Scope {
-    keywords: collections::HashMap<&'static str, rc::Rc<keywords::KeywordConsumer>>,
+    keywords: keywords::KeywordMap,
     schemes: collections::HashMap<String, schema::Schema>,
 }
 
 #[allow(dead_code)]
 impl Scope {
     pub fn new() -> Scope {
+        let mut scope = Scope {
+            keywords: keywords::default(),
+            schemes: collections::HashMap::new()
+        };
+
+        scope.add_keyword(vec!["format"], keywords::format::Format::new());
+        scope
+    }
+
+    pub fn without_formats() -> Scope {
         Scope {
             keywords: keywords::default(),
             schemes: collections::HashMap::new()
         }
+    }
+
+    pub fn with_formats<F>(build_formats: F) -> Scope where F: FnOnce(&mut keywords::format::FormatBuilders) {
+        let mut scope = Scope {
+            keywords: keywords::default(),
+            schemes: collections::HashMap::new()
+        };
+
+        scope.add_keyword(vec!["format"], keywords::format::Format::with(build_formats));
+        scope
     }
 
     pub fn compile(&mut self, def: json::Json, ban_unknown: bool) -> Result<url::Url, schema::SchemaError> {
@@ -30,22 +49,28 @@ impl Scope {
         Ok(id)
     }
 
-    pub fn compile_with_id(&mut self, id: &url::Url, def: json::Json, ban_unknown: bool) -> Result<(), schema::SchemaError> {
+    pub fn compile_with_id(&mut self, id: &url::Url, def: json::Json, ban_unknown: bool) 
+        -> Result<(), schema::SchemaError> 
+    {
         let schema = try!(schema::compile(def, Some(id.clone()), schema::CompilationSettings::new(&self.keywords, ban_unknown)));
         self.add(id, schema)
     }
 
-    pub fn compile_and_return<'a>(&'a mut self, def: json::Json, ban_unknown: bool) -> Result<schema::ScopedSchema<'a>, schema::SchemaError> {
+    pub fn compile_and_return<'a>(&'a mut self, def: json::Json, ban_unknown: bool) 
+        -> Result<schema::ScopedSchema<'a>, schema::SchemaError> 
+    {
         let schema = try!(schema::compile(def, None, schema::CompilationSettings::new(&self.keywords, ban_unknown)));
         self.add_and_return(schema.id.clone().as_ref().unwrap(), schema)
     }
 
-    pub fn compile_and_return_with_id<'a>(&'a mut self, id: &url::Url, def: json::Json, ban_unknown: bool) -> Result<schema::ScopedSchema<'a>, schema::SchemaError> {
+    pub fn compile_and_return_with_id<'a>(&'a mut self, id: &url::Url, def: json::Json, ban_unknown: bool) 
+        -> Result<schema::ScopedSchema<'a>, schema::SchemaError> 
+    {
         let schema = try!(schema::compile(def, Some(id.clone()), schema::CompilationSettings::new(&self.keywords, ban_unknown)));
         self.add_and_return(id, schema)
     }
 
-    fn add_keyword<T>(&mut self, keys: Vec<&'static str>, keyword: T) where T: keywords::Keyword + 'static {
+    pub fn add_keyword<T>(&mut self, keys: Vec<&'static str>, keyword: T) where T: keywords::Keyword + 'static {
         keywords::decouple_keyword((keys, Box::new(keyword)), &mut self.keywords);
     }
 
@@ -65,7 +90,9 @@ impl Scope {
         }
     }
 
-    fn add_and_return<'a>(&'a mut self, id: &url::Url, schema: schema::Schema) -> Result<schema::ScopedSchema<'a>, schema::SchemaError> {
+    fn add_and_return<'a>(&'a mut self, id: &url::Url, schema: schema::Schema) 
+        -> Result<schema::ScopedSchema<'a>, schema::SchemaError> 
+    {
         let (id_str, fragment) = helpers::serialize_schema_path(id);
 
         match fragment {
