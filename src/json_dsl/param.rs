@@ -121,8 +121,8 @@ impl Param {
     }
 
     pub fn process(&self, val: &mut json::Json, path: &str, scope: &Option<&json_schema::Scope>) -> super::ExtendedResult<Option<json::Json>> {
-        if val.is_null() && self.allow_null { 
-            return super::ExtendedResult::new(None) 
+        if val.is_null() && self.allow_null {
+            return super::ExtendedResult::new(None)
         }
 
         let mut result = super::ExtendedResult::new(None);
@@ -134,8 +134,8 @@ impl Param {
                 match self.coercer.as_ref().unwrap().coerce(val, path) {
                     Ok(None) => val,
                     Ok(Some(new_value)) => {
-                        return_value = Some(new_value); 
-                        return_value.as_mut().unwrap() 
+                        return_value = Some(new_value);
+                        return_value.as_mut().unwrap()
                     },
                     Err(mut errors) => {
                         result.state.errors.append(&mut errors);
@@ -167,7 +167,7 @@ impl Param {
         if return_value.is_some() {
             result.value = return_value;
         }
-        
+
         result
     }
 }

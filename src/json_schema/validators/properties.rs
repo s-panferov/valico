@@ -68,6 +68,7 @@ impl super::Validator for Properties {
                 },
                 AdditionalKind::Schema(ref url) => {
                     let schema = scope.resolve(url);
+
                     if schema.is_some() {
                         let value_path = [path, key.as_slice()].connect("/");
                         state.append(&mut schema.unwrap().validate_in(value, value_path.as_slice()))

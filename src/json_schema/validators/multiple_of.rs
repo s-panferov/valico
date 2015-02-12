@@ -20,7 +20,7 @@ impl super::Validator for MultipleOf {
             let remainder: f64 = (number/self.number) % 1f64;
             !(remainder >= f64::EPSILON) && (remainder < (1f64 - f64::EPSILON))
         };
-        
+
         if valid {
             super::ValidationState::new()
         } else {

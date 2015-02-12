@@ -50,7 +50,7 @@ impl super::Validator for AnyOf {
                     valid = true;
                     break;
                 } else {
-                   states.push(current_state) 
+                   states.push(current_state)
                 }
             } else {
                 state.missing.push(url.clone())
@@ -63,7 +63,7 @@ impl super::Validator for AnyOf {
                     path: path.to_string(),
                     states: states
                 }
-            ))  
+            ))
         }
 
 
@@ -93,7 +93,7 @@ impl super::Validator for OneOf {
                 if current_state.is_valid() {
                     valid += 1;
                 } else {
-                   states.push(current_state) 
+                   states.push(current_state)
                 }
             } else {
                 state.missing.push(url.clone())
@@ -106,7 +106,7 @@ impl super::Validator for OneOf {
                     path: path.to_string(),
                     states: states
                 }
-            ))  
+            ))
         }
 
 

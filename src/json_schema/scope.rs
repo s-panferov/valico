@@ -49,22 +49,22 @@ impl Scope {
         Ok(id)
     }
 
-    pub fn compile_with_id(&mut self, id: &url::Url, def: json::Json, ban_unknown: bool) 
-        -> Result<(), schema::SchemaError> 
+    pub fn compile_with_id(&mut self, id: &url::Url, def: json::Json, ban_unknown: bool)
+        -> Result<(), schema::SchemaError>
     {
         let schema = try!(schema::compile(def, Some(id.clone()), schema::CompilationSettings::new(&self.keywords, ban_unknown)));
         self.add(id, schema)
     }
 
-    pub fn compile_and_return<'a>(&'a mut self, def: json::Json, ban_unknown: bool) 
-        -> Result<schema::ScopedSchema<'a>, schema::SchemaError> 
+    pub fn compile_and_return<'a>(&'a mut self, def: json::Json, ban_unknown: bool)
+        -> Result<schema::ScopedSchema<'a>, schema::SchemaError>
     {
         let schema = try!(schema::compile(def, None, schema::CompilationSettings::new(&self.keywords, ban_unknown)));
         self.add_and_return(schema.id.clone().as_ref().unwrap(), schema)
     }
 
-    pub fn compile_and_return_with_id<'a>(&'a mut self, id: &url::Url, def: json::Json, ban_unknown: bool) 
-        -> Result<schema::ScopedSchema<'a>, schema::SchemaError> 
+    pub fn compile_and_return_with_id<'a>(&'a mut self, id: &url::Url, def: json::Json, ban_unknown: bool)
+        -> Result<schema::ScopedSchema<'a>, schema::SchemaError>
     {
         let schema = try!(schema::compile(def, Some(id.clone()), schema::CompilationSettings::new(&self.keywords, ban_unknown)));
         self.add_and_return(id, schema)
@@ -90,8 +90,8 @@ impl Scope {
         }
     }
 
-    fn add_and_return<'a>(&'a mut self, id: &url::Url, schema: schema::Schema) 
-        -> Result<schema::ScopedSchema<'a>, schema::SchemaError> 
+    fn add_and_return<'a>(&'a mut self, id: &url::Url, schema: schema::Schema)
+        -> Result<schema::ScopedSchema<'a>, schema::SchemaError>
     {
         let (id_str, fragment) = helpers::serialize_schema_path(id);
 
@@ -132,7 +132,7 @@ impl Scope {
                 },
                 None => Some(schema::ScopedSchema::new(self, schema))
             }
-        })        
+        })
     }
 }
 
@@ -142,7 +142,7 @@ use jsonway;
 #[test]
 fn lookup() {
     let mut scope = Scope::new();
-    
+
     scope.compile(jsonway::object(|schema| {
         schema.set("id", "http://example.com/schema".to_string())
     }).unwrap(), false).ok().unwrap();

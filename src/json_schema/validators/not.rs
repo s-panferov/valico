@@ -20,7 +20,7 @@ impl super::Validator for Not {
                     errors::Not {
                         path: path.to_string()
                     }
-                )) 
+                ))
             }
         } else {
             state.missing.push(self.url.clone());

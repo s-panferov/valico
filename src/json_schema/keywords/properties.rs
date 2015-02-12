@@ -14,21 +14,21 @@ impl super::Keyword for Properties {
         let maybe_additional = def.find("additionalProperties");
         let maybe_pattern = def.find("patternProperties");
 
-        if !(maybe_properties.is_some() || maybe_additional.is_some() || maybe_pattern.is_some()) {
+        if maybe_properties.is_none() && maybe_additional.is_none() && maybe_pattern.is_none() {
             return Ok(None)
         }
-        
-        let properties = if maybe_properties.is_some() {      
-            let properties = maybe_properties.unwrap();    
+
+        let properties = if maybe_properties.is_some() {
+            let properties = maybe_properties.unwrap();
             if properties.is_object() {
-                let mut schemes = collections::HashMap::new();  
+                let mut schemes = collections::HashMap::new();
                 let properties = properties.as_object().unwrap();
                 for (key, value) in properties.iter() {
                     if value.is_object() {
-                        schemes.insert(key.to_string(), 
+                        schemes.insert(key.to_string(),
                             helpers::alter_fragment_path(ctx.url.clone(), [
-                                ctx.escaped_fragment().as_slice().as_slice(), 
-                                "properties", 
+                                ctx.escaped_fragment().as_slice().as_slice(),
+                                "properties",
                                 helpers::encode(key).as_slice()
                             ].connect("/"))
                         );
@@ -36,7 +36,7 @@ impl super::Keyword for Properties {
                         return Err(schema::SchemaError::Malformed {
                             path: ctx.fragment.connect("/"),
                             detail: "Each value of this object MUST be an object".to_string()
-                        }) 
+                        })
                     }
                 }
                 schemes
@@ -44,7 +44,7 @@ impl super::Keyword for Properties {
                 return Err(schema::SchemaError::Malformed {
                     path: ctx.fragment.connect("/"),
                     detail: "The value of `properties` MUST be an object.".to_string()
-                }) 
+                })
             }
         } else {
             collections::HashMap::new()
@@ -60,7 +60,7 @@ impl super::Keyword for Properties {
 
                 validators::properties::AdditionalKind::Schema(
                     helpers::alter_fragment_path(ctx.url.clone(), [
-                        ctx.escaped_fragment().as_slice().as_slice(), 
+                        ctx.escaped_fragment().as_slice().as_slice(),
                         "additionalProperties"
                     ].connect("/"))
                 )
@@ -70,11 +70,11 @@ impl super::Keyword for Properties {
                 return Err(schema::SchemaError::Malformed {
                     path: ctx.fragment.connect("/"),
                     detail: "The value of `additionalProperties` MUST be a boolean or an object.".to_string()
-                }) 
+                })
 
             }
-        } else { 
-            validators::properties::AdditionalKind::Boolean(true) 
+        } else {
+            validators::properties::AdditionalKind::Boolean(true)
         };
 
         let patterns = if maybe_pattern.is_some() {
@@ -89,8 +89,8 @@ impl super::Keyword for Properties {
                         match regex::Regex::new(key.as_slice()) {
                             Ok(regex) => {
                                 let url = helpers::alter_fragment_path(ctx.url.clone(), [
-                                    ctx.escaped_fragment().as_slice().as_slice(), 
-                                    "patternProperties", 
+                                    ctx.escaped_fragment().as_slice().as_slice(),
+                                    "patternProperties",
                                     helpers::encode(key).as_slice()
                                 ].connect("/"));
                                 patterns.push((regex, url));
@@ -102,12 +102,12 @@ impl super::Keyword for Properties {
                                 })
                             }
                         }
-                        
+
                     } else {
                         return Err(schema::SchemaError::Malformed {
                             path: ctx.fragment.connect("/"),
                             detail: "Each value of this object MUST be an object".to_string()
-                        }) 
+                        })
                     }
                 }
 
@@ -117,7 +117,7 @@ impl super::Keyword for Properties {
                 return Err(schema::SchemaError::Malformed {
                     path: ctx.fragment.connect("/"),
                     detail: "The value of `patternProperties` MUST be an object".to_string()
-                }) 
+                })
             }
         } else { vec![] };
 

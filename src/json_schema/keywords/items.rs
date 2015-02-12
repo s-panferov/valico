@@ -21,7 +21,7 @@ impl super::Keyword for Items {
 
                 validators::items::ItemsKind::Schema(
                     helpers::alter_fragment_path(ctx.url.clone(), [
-                        ctx.escaped_fragment().as_slice().as_slice(), 
+                        ctx.escaped_fragment().as_slice().as_slice(),
                         "items"
                     ].connect("/"))
                 )
@@ -53,7 +53,7 @@ impl super::Keyword for Items {
                 return Err(schema::SchemaError::Malformed {
                     path: ctx.fragment.connect("/"),
                     detail: "`items` must be an object or an array".to_string()
-                }) 
+                })
 
             })
         } else {
@@ -70,7 +70,7 @@ impl super::Keyword for Items {
 
                 validators::items::AdditionalKind::Schema(
                     helpers::alter_fragment_path(ctx.url.clone(), [
-                        ctx.escaped_fragment().as_slice().as_slice(), 
+                        ctx.escaped_fragment().as_slice().as_slice(),
                         "additionalItems"
                     ].connect("/"))
                 )
@@ -80,7 +80,7 @@ impl super::Keyword for Items {
                 return Err(schema::SchemaError::Malformed {
                     path: ctx.fragment.connect("/"),
                     detail: "`additionalItems` must be a boolean or an object".to_string()
-                }) 
+                })
 
             })
         } else {
@@ -91,7 +91,7 @@ impl super::Keyword for Items {
             items: items,
             additional: additional_items
         })))
-        
+
     }
 }
 
@@ -120,11 +120,11 @@ fn validate_items_with_array_of_schemes() {
     let schema = scope.compile_and_return(builder::schema(|s| {
         s.items_array(|items| {
             items.push(|item| {
-                item.minimum(1f64, false);  
+                item.minimum(1f64, false);
                 item.maximum(3f64, false);
             });
             items.push(|item| {
-                item.minimum(3f64, false);  
+                item.minimum(3f64, false);
                 item.maximum(6f64, false);
             });
         })
@@ -144,11 +144,11 @@ fn validate_items_with_array_of_schemes_with_additional_bool() {
     let schema = scope.compile_and_return(builder::schema(|s| {
         s.items_array(|items| {
             items.push(|item| {
-                item.minimum(1f64, false);  
+                item.minimum(1f64, false);
                 item.maximum(3f64, false);
             });
             items.push(|item| {
-                item.minimum(3f64, false);  
+                item.minimum(3f64, false);
                 item.maximum(6f64, false);
             });
         });
@@ -164,16 +164,16 @@ fn validate_items_with_array_of_schemes_with_additional_schema() {
     let schema = scope.compile_and_return(builder::schema(|s| {
         s.items_array(|items| {
             items.push(|item| {
-                item.minimum(1f64, false);  
+                item.minimum(1f64, false);
                 item.maximum(3f64, false);
             });
             items.push(|item| {
-                item.minimum(3f64, false);  
+                item.minimum(3f64, false);
                 item.maximum(6f64, false);
             });
         });
         s.additional_items_schema(|add| {
-           add.maximum(100f64, false) 
+           add.maximum(100f64, false)
         });
     }).into_json(), true).ok().unwrap();
 

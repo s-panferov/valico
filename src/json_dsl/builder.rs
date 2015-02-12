@@ -202,7 +202,7 @@ impl Builder {
     }
 
     fn process_object(&self, val: &mut json::Json, path: &str, scope: &Option<&json_schema::Scope>) -> json_schema::ValidationState  {
-        
+
         let mut state = json_schema::ValidationState::new();
 
         {

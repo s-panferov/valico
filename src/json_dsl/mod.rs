@@ -29,16 +29,16 @@ pub fn string() -> Box<coercers::Coercer + Send + Sync> { Box::new(coercers::Str
 pub fn boolean() -> Box<coercers::Coercer + Send + Sync> { Box::new(coercers::BooleanCoercer) }
 pub fn null() -> Box<coercers::Coercer + Send + Sync> { Box::new(coercers::NullCoercer) }
 pub fn array() -> Box<coercers::Coercer + Send + Sync> { Box::new(coercers::ArrayCoercer::new()) }
-pub fn array_of(coercer: Box<coercers::Coercer + Send + Sync>) -> Box<coercers::Coercer + Send + Sync> { 
-    Box::new(coercers::ArrayCoercer::of_type(coercer)) 
+pub fn array_of(coercer: Box<coercers::Coercer + Send + Sync>) -> Box<coercers::Coercer + Send + Sync> {
+    Box::new(coercers::ArrayCoercer::of_type(coercer))
 }
 
-pub fn encoded_array(separator: &str) -> Box<coercers::Coercer + Send + Sync> { 
-    Box::new(coercers::ArrayCoercer::encoded(separator.to_string())) 
+pub fn encoded_array(separator: &str) -> Box<coercers::Coercer + Send + Sync> {
+    Box::new(coercers::ArrayCoercer::encoded(separator.to_string()))
 }
 
-pub fn encoded_array_of(separator: &str, coercer: Box<coercers::Coercer + Send + Sync>) -> Box<coercers::Coercer + Send + Sync> { 
-    Box::new(coercers::ArrayCoercer::encoded_of(separator.to_string(), coercer)) 
+pub fn encoded_array_of(separator: &str, coercer: Box<coercers::Coercer + Send + Sync>) -> Box<coercers::Coercer + Send + Sync> {
+    Box::new(coercers::ArrayCoercer::encoded_of(separator.to_string(), coercer))
 }
 
 pub fn object() -> Box<coercers::Coercer + Send + Sync> { Box::new(coercers::ObjectCoercer) }

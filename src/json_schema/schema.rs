@@ -2,6 +2,7 @@ use url;
 use std::collections;
 use rustc_serialize::json::{self};
 use phf;
+use std::ops;
 
 use super::helpers;
 use super::scope;
@@ -41,6 +42,14 @@ pub struct ScopedSchema<'a> {
     schema: &'a Schema
 }
 
+impl<'a> ops::Deref for ScopedSchema<'a> {
+    type Target = Schema;
+
+    fn deref(&self) -> &Schema {
+        &self.schema
+    }
+}
+
 impl<'a> ScopedSchema<'a> {
     pub fn new(scope: &'a scope::Scope, schema: &'a Schema) -> ScopedSchema<'a> {
         ScopedSchema {
@@ -69,8 +78,13 @@ pub struct Schema {
     scopes: collections::HashMap<String, Vec<String>>
 }
 
+static PROPERTY_KEYS: phf::Set<&'static str> = phf_set! {
+    "properties",
+    "patternProperties",
+};
+
 static NON_SCHEMA_KEYS: phf::Set<&'static str> = phf_set! {
-    "properties", 
+    "properties",
     "patternProperties",
     "dependencies",
     "definitions",
@@ -80,7 +94,7 @@ static NON_SCHEMA_KEYS: phf::Set<&'static str> = phf_set! {
 };
 
 static FINAL_KEYS: phf::Set<&'static str> = phf_set! {
-    "enum", 
+    "enum",
     "required",
     "type"
 };
@@ -96,7 +110,7 @@ const ALLOW_NON_CONSUMED_KEYS: phf::Set<&'static str> = phf_set! {
 
 pub struct CompilationSettings<'a> {
     pub keywords: &'a keywords::KeywordMap,
-    pub ban_unknown_keywords: bool 
+    pub ban_unknown_keywords: bool
 }
 
 impl<'a> CompilationSettings<'a> {
@@ -131,7 +145,7 @@ impl Schema {
             for (key, value) in obj.iter() {
                 if !value.is_object() && !value.is_array() { continue; }
                 if FINAL_KEYS.contains(&key[]) { continue; }
-                
+
                 let mut context = WalkContext {
                     url: &id,
                     fragment: vec![key.clone()],
@@ -187,7 +201,7 @@ impl Schema {
                             None => ()
                         }
                     },
-                    None => { 
+                    None => {
                         keys.remove(&key);
                         if settings.ban_unknown_keywords {
                             not_consumed.insert(key);
@@ -212,8 +226,8 @@ impl Schema {
 
     fn compile_sub(def: json::Json, context: &mut WalkContext, keywords: &CompilationSettings, is_schema: bool) -> Result<Schema, SchemaError> {
 
-        let mut id = None; 
-        let mut schema = None; 
+        let mut id = None;
+        let mut schema = None;
 
         if is_schema {
             id = try!(helpers::parse_url_key_with_base("id", &def, context.url));
@@ -225,13 +239,16 @@ impl Schema {
 
             if def.is_object() {
                 let obj = def.as_object().unwrap();
+                let parent_key = &context.fragment[context.fragment.len() - 1];
 
                 for (key, value) in obj.iter() {
                     if !value.is_object() && !value.is_array() { continue; }
-                    if FINAL_KEYS.contains(&key[]) { continue; }
+                    if !PROPERTY_KEYS.contains(&parent_key[]) && FINAL_KEYS.contains(&key[]) { continue; }
 
                     let mut current_fragment = context.fragment.clone();
                     current_fragment.push(key.clone());
+
+                    let is_schema = PROPERTY_KEYS.contains(&parent_key[]) || !NON_SCHEMA_KEYS.contains(&key[]);
 
                     let mut context = WalkContext {
                         url: id.as_ref().unwrap_or(context.url),
@@ -243,7 +260,7 @@ impl Schema {
                         value.clone(),
                         &mut context,
                         keywords,
-                        !NON_SCHEMA_KEYS.contains(&key[])
+                        is_schema
                     ));
 
                     tree.insert(helpers::encode(key), scheme);

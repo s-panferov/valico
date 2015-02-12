@@ -6,7 +6,7 @@ pub trait MutableJson {
 }
 
 impl MutableJson for json::Json {
-    
+
     /// If the Json value is an Object, returns the associated BTreeMap.
     /// Returns None otherwise.
     fn as_object_mut<'a>(&'a mut self) -> Option<&'a mut json::Object> {

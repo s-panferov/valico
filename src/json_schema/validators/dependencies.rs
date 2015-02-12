@@ -42,7 +42,7 @@ impl super::Validator for Dependencies {
                                     errors::Required {
                                         path: [path, key.as_slice()].connect("/")
                                     }
-                                ))          
+                                ))
                             }
                         }
                     }

@@ -203,7 +203,7 @@ impl Builder {
     }
 
     pub fn dependencies<F>(&mut self, build: F) where F: FnOnce(&mut Dependencies) {
-        self.obj_builder.set("dependencies", Dependencies::build(build)) 
+        self.obj_builder.set("dependencies", Dependencies::build(build))
     }
 
     pub fn enum_<F>(&mut self, build: F) where F: FnOnce(&mut jsonway::ArrayBuilder) {

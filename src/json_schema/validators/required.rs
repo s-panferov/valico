@@ -19,7 +19,7 @@ impl super::Validator for Required {
                     errors::Required {
                         path: [path, key.as_slice()].connect("/")
                     }
-                ))          
+                ))
             }
         }
 

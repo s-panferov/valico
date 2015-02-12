@@ -36,7 +36,7 @@ macro_rules! keyword_key_exists {
         if maybe_val.is_none() {
             return Ok(None)
         } else {
-           maybe_val.unwrap() 
+           maybe_val.unwrap()
         }
     }}
 }
@@ -105,7 +105,7 @@ impl KeywordConsumer {
     }
 }
 
-pub fn decouple_keyword(keyword_pair: KeywordPair, 
+pub fn decouple_keyword(keyword_pair: KeywordPair,
                         map: &mut KeywordMap) {
     let (keys, keyword) = keyword_pair;
     let consumer = rc::Rc::new(KeywordConsumer { keys: keys.clone(), keyword: keyword });

@@ -25,9 +25,9 @@ impl super::Validator for Enum {
                 errors::Enum {
                     path: path.to_string()
                 }
-            ))  
+            ))
         }
-        
+
         state
     }
 }

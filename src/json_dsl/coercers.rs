@@ -6,8 +6,8 @@ use super::errors;
 #[allow(dead_code)]
 #[derive(Copy)]
 pub enum PrimitiveType {
-    String, 
-    I64, 
+    String,
+    I64,
     U64,
     F64,
     Boolean,
@@ -320,7 +320,7 @@ impl Coercer for ObjectCoercer {
     fn get_primitive_type(&self) -> PrimitiveType { PrimitiveType::Object }
     fn coerce(&self, val: &mut json::Json, path: &str) -> CoercerResult<Option<json::Json>> {
         if val.is_object() {
-            Ok(None)    
+            Ok(None)
         } else {
             Err(vec![
                 Box::new(errors::WrongType {

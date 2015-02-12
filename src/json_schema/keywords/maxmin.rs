@@ -27,10 +27,10 @@ macro_rules! kw_minmax{
                         let value = value.as_f64().unwrap();
                         Ok(Some(Box::new(validators::$name {
                             number: value,
-                            exclusive: exclusive.is_some() && 
+                            exclusive: exclusive.is_some() &&
                                        try!(exclusive.unwrap()
                                             .as_boolean()
-                                            .ok_or_else(|| 
+                                            .ok_or_else(||
                                                 schema::SchemaError::Malformed {
                                                     path: ctx.fragment.connect("/"),
                                                     detail: "`exclusiveMaximum/exclusiveMaximum` must be boolean".to_string()
@@ -41,7 +41,7 @@ macro_rules! kw_minmax{
                         Err(schema::SchemaError::Malformed {
                             path: ctx.fragment.connect("/"),
                             detail: "the `minimum/maximum` value must be a number".to_string()
-                        }) 
+                        })
                     }
                 } else {
                     Ok(None)
@@ -58,7 +58,7 @@ kw_minmax!(Maximum, "maximum", "exclusiveMaximum");
 #[cfg(test)] use jsonway;
 #[cfg(test)] use super::super::builder;
 #[cfg(test)] use rustc_serialize::json::{ToJson};
-    
+
 #[test]
 fn validate_maximum() {
     let mut scope = scope::Scope::new();
@@ -86,7 +86,7 @@ fn validate_exclusive_maximum() {
 #[test]
 fn mailformed_maximum() {
     let mut scope = scope::Scope::new();
-    
+
     assert!(scope.compile_and_return(jsonway::object(|schema| {
         schema.set("maximum", true);
     }).unwrap(), true).is_err());
@@ -95,7 +95,7 @@ fn mailformed_maximum() {
 #[test]
 fn mailformed_exclusive_maximum() {
     let mut scope = scope::Scope::new();
-    
+
     assert!(scope.compile_and_return(jsonway::object(|schema| {
         schema.set("exclusiveMaximum", true);
     }).unwrap(), true).is_err());

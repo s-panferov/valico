@@ -20,9 +20,17 @@ fn test_suite() {
         .read_to_string().ok().unwrap().parse().unwrap();
 
     visit_specs(&Path::new("tests/schema/JSON-Schema-Test-Suite/tests/draft4"), |&: path, spec_set: json::Json| {
-        let mut failures: Vec<(String, String)> = vec![];
-
         let spec_set = spec_set.as_array().unwrap();
+
+        let exceptions: Vec<(String, String)> = vec![
+            ("maxLength.json".to_string(), "two supplementary Unicode code points is long enough".to_string()),
+            ("minLength.json".to_string(), "one supplementary Unicode code point is not long enough".to_string()),
+            ("refRemote.json".to_string(), "remote ref invalid".to_string()),
+            ("refRemote.json".to_string(), "remote fragment invalid".to_string()),
+            ("refRemote.json".to_string(), "ref within ref invalid".to_string()),
+            ("refRemote.json".to_string(), "changed scope ref invalid".to_string()),
+        ];
+
         for spec in spec_set.iter() {
             let spec = spec.as_object().unwrap();
             let mut scope = json_schema::Scope::new();
@@ -49,26 +57,14 @@ fn test_suite() {
                 let state = schema.validate(&data);
 
                 if state.is_valid() != valid {
-                    failures.push((path.filename_str().unwrap().to_string(), description.to_string()))
+                    if !exceptions.as_slice().contains(&(path.filename_str().unwrap().to_string(), description.to_string())) {
+                        panic!("Failure: \"{}\" in {}", 
+                            path.filename_str().unwrap().to_string(), 
+                            description.to_string());
+                    }
                 } else {
                     println!("test json_schema::test_suite -> {} .. ok", description);
                 }
-            }
-        }
-
-        let exceptions: Vec<(String, String)> = vec![
-            ("maxLength.json".to_string(), "two supplementary Unicode code points is long enough".to_string()),
-            ("minLength.json".to_string(), "one supplementary Unicode code point is not long enough".to_string()),
-            ("refRemote.json".to_string(), "remote ref invalid".to_string()),
-            ("refRemote.json".to_string(), "remote fragment invalid".to_string()),
-            ("refRemote.json".to_string(), "ref within ref invalid".to_string()),
-            ("refRemote.json".to_string(), "changed scope ref invalid".to_string()),
-            ("definitions.json".to_string(), "invalid definition schema".to_string()),
-        ];
-
-        for failure in failures.iter() {
-            if !exceptions.as_slice().contains(failure) {
-                panic!("Failure: \"{}\" in {}", failure.1, failure.0);
             }
         }
     })

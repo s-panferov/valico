@@ -38,9 +38,9 @@ impl super::Validator for Type {
                     state.errors.push(Box::new(
                         errors::WrongType {
                             path: path.to_string(),
-                            detail: format!("The value must be {}", t) 
+                            detail: format!("The value must be {}", t)
                         }
-                    ))  
+                    ))
                 }
             },
             TypeKind::Set(ref set) => {
@@ -56,7 +56,7 @@ impl super::Validator for Type {
                     state.errors.push(Box::new(
                         errors::WrongType {
                             path: path.to_string(),
-                            detail: format!("The value must be any of: {}", set.iter().map(|ty| ty.to_string()).collect::<Vec<String>>().connect(", ")) 
+                            detail: format!("The value must be any of: {}", set.iter().map(|ty| ty.to_string()).collect::<Vec<String>>().connect(", "))
                         }
                     ))
                 }

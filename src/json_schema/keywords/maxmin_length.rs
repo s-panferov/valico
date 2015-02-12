@@ -22,7 +22,7 @@ macro_rules! kw_minmax_integer{
                         Err(schema::SchemaError::Malformed {
                             path: ctx.fragment.connect("/"),
                             detail: "The value MUST be a positive integer or zero".to_string()
-                        })  
+                        })
                     }
                 } else {
                     Err(schema::SchemaError::Malformed {
