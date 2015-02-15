@@ -83,7 +83,7 @@
         <span class='kw'>if</span> <span class='ident'>not</span>.<span class='ident'>is_object</span>() {
             <span class='prelude-val'>Ok</span>(<span class='prelude-val'>Some</span>(<span class='ident'>Box</span>::<span class='ident'>new</span>(<span class='ident'>validators</span>::<span class='ident'>Not</span> {
                 <span class='ident'>url</span>: <span class='ident'>helpers</span>::<span class='ident'>alter_fragment_path</span>(<span class='ident'>ctx</span>.<span class='ident'>url</span>.<span class='ident'>clone</span>(), [
-                        <span class='ident'>ctx</span>.<span class='ident'>escaped_fragment</span>().<span class='ident'>as_slice</span>().<span class='ident'>as_slice</span>(), 
+                        <span class='ident'>ctx</span>.<span class='ident'>escaped_fragment</span>().<span class='ident'>as_slice</span>().<span class='ident'>as_slice</span>(),
                         <span class='string'>&quot;not&quot;</span>
                      ].<span class='ident'>connect</span>(<span class='string'>&quot;/&quot;</span>))
             })))

@@ -149,9 +149,9 @@
                     <span class='ident'>state</span>.<span class='ident'>errors</span>.<span class='ident'>push</span>(<span class='ident'>Box</span>::<span class='ident'>new</span>(
                         <span class='ident'>errors</span>::<span class='ident'>WrongType</span> {
                             <span class='ident'>path</span>: <span class='ident'>path</span>.<span class='ident'>to_string</span>(),
-                            <span class='ident'>detail</span>: <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;The value must be {}&quot;</span>, <span class='ident'>t</span>) 
+                            <span class='ident'>detail</span>: <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;The value must be {}&quot;</span>, <span class='ident'>t</span>)
                         }
-                    ))  
+                    ))
                 }
             },
             <span class='ident'>TypeKind</span>::<span class='ident'>Set</span>(<span class='kw-2'>ref</span> <span class='ident'>set</span>) <span class='op'>=&gt;</span> {
@@ -167,7 +167,7 @@
                     <span class='ident'>state</span>.<span class='ident'>errors</span>.<span class='ident'>push</span>(<span class='ident'>Box</span>::<span class='ident'>new</span>(
                         <span class='ident'>errors</span>::<span class='ident'>WrongType</span> {
                             <span class='ident'>path</span>: <span class='ident'>path</span>.<span class='ident'>to_string</span>(),
-                            <span class='ident'>detail</span>: <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;The value must be any of: {}&quot;</span>, <span class='ident'>set</span>.<span class='ident'>iter</span>().<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>ty</span><span class='op'>|</span> <span class='ident'>ty</span>.<span class='ident'>to_string</span>()).<span class='ident'>collect</span>::<span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>String</span><span class='op'>&gt;&gt;</span>().<span class='ident'>connect</span>(<span class='string'>&quot;, &quot;</span>)) 
+                            <span class='ident'>detail</span>: <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;The value must be any of: {}&quot;</span>, <span class='ident'>set</span>.<span class='ident'>iter</span>().<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>ty</span><span class='op'>|</span> <span class='ident'>ty</span>.<span class='ident'>to_string</span>()).<span class='ident'>collect</span>::<span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>String</span><span class='op'>&gt;&gt;</span>().<span class='ident'>connect</span>(<span class='string'>&quot;, &quot;</span>))
                         }
                     ))
                 }

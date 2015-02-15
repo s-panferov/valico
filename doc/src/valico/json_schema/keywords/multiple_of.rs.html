@@ -158,7 +158,7 @@
 <span class='attribute'>#[<span class='ident'>test</span>]</span>
 <span class='kw'>fn</span> <span class='ident'>malformed</span>() {
     <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>scope</span> <span class='op'>=</span> <span class='ident'>scope</span>::<span class='ident'>Scope</span>::<span class='ident'>new</span>();
-    
+
     <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>scope</span>.<span class='ident'>compile_and_return</span>(<span class='ident'>jsonway</span>::<span class='ident'>object</span>(<span class='op'>|</span><span class='ident'>schema</span><span class='op'>|</span> {
         <span class='ident'>schema</span>.<span class='ident'>set</span>(<span class='string'>&quot;multipleOf&quot;</span>, <span class='string'>&quot;&quot;</span>.<span class='ident'>to_string</span>());
     }).<span class='ident'>unwrap</span>(), <span class='boolval'>true</span>).<span class='ident'>is_err</span>());
@@ -166,7 +166,7 @@
     <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>scope</span>.<span class='ident'>compile_and_return</span>(<span class='ident'>jsonway</span>::<span class='ident'>object</span>(<span class='op'>|</span><span class='ident'>schema</span><span class='op'>|</span> {
         <span class='ident'>schema</span>.<span class='ident'>set</span>(<span class='string'>&quot;multipleOf&quot;</span>, <span class='number'>0</span>.<span class='ident'>to_json</span>());
     }).<span class='ident'>unwrap</span>(), <span class='boolval'>true</span>).<span class='ident'>is_err</span>());
-    
+
     <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>scope</span>.<span class='ident'>compile_and_return</span>(<span class='ident'>jsonway</span>::<span class='ident'>object</span>(<span class='op'>|</span><span class='ident'>schema</span><span class='op'>|</span> {
         <span class='ident'>schema</span>.<span class='ident'>set</span>(<span class='string'>&quot;multipleOf&quot;</span>, (<span class='op'>-</span><span class='number'>1</span>).<span class='ident'>to_json</span>());
     }).<span class='ident'>unwrap</span>(), <span class='boolval'>true</span>).<span class='ident'>is_err</span>());

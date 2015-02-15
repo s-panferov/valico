@@ -194,7 +194,7 @@
         <span class='kw'>if</span> <span class='ident'>maybe_val</span>.<span class='ident'>is_none</span>() {
             <span class='kw'>return</span> <span class='prelude-val'>Ok</span>(<span class='prelude-val'>None</span>)
         } <span class='kw'>else</span> {
-           <span class='ident'>maybe_val</span>.<span class='ident'>unwrap</span>() 
+           <span class='ident'>maybe_val</span>.<span class='ident'>unwrap</span>()
         }
     }}
 }
@@ -263,7 +263,7 @@
     }
 }
 
-<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>decouple_keyword</span>(<span class='ident'>keyword_pair</span>: <span class='ident'>KeywordPair</span>, 
+<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>decouple_keyword</span>(<span class='ident'>keyword_pair</span>: <span class='ident'>KeywordPair</span>,
                         <span class='ident'>map</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>KeywordMap</span>) {
     <span class='kw'>let</span> (<span class='ident'>keys</span>, <span class='ident'>keyword</span>) <span class='op'>=</span> <span class='ident'>keyword_pair</span>;
     <span class='kw'>let</span> <span class='ident'>consumer</span> <span class='op'>=</span> <span class='ident'>rc</span>::<span class='ident'>Rc</span>::<span class='ident'>new</span>(<span class='ident'>KeywordConsumer</span> { <span class='ident'>keys</span>: <span class='ident'>keys</span>.<span class='ident'>clone</span>(), <span class='ident'>keyword</span>: <span class='ident'>keyword</span> });

@@ -382,8 +382,8 @@
 <span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>dead_code</span>)]</span>
 <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Copy</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>PrimitiveType</span> {
-    <span class='ident'>String</span>, 
-    <span class='ident'>I64</span>, 
+    <span class='ident'>String</span>,
+    <span class='ident'>I64</span>,
     <span class='ident'>U64</span>,
     <span class='ident'>F64</span>,
     <span class='ident'>Boolean</span>,
@@ -696,7 +696,7 @@
     <span class='kw'>fn</span> <span class='ident'>get_primitive_type</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>PrimitiveType</span> { <span class='ident'>PrimitiveType</span>::<span class='ident'>Object</span> }
     <span class='kw'>fn</span> <span class='ident'>coerce</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>val</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>json</span>::<span class='ident'>Json</span>, <span class='ident'>path</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>CoercerResult</span><span class='op'>&lt;</span><span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>json</span>::<span class='ident'>Json</span><span class='op'>&gt;&gt;</span> {
         <span class='kw'>if</span> <span class='ident'>val</span>.<span class='ident'>is_object</span>() {
-            <span class='prelude-val'>Ok</span>(<span class='prelude-val'>None</span>)    
+            <span class='prelude-val'>Ok</span>(<span class='prelude-val'>None</span>)
         } <span class='kw'>else</span> {
             <span class='prelude-val'>Err</span>(<span class='macro'>vec</span><span class='macro'>!</span>[
                 <span class='ident'>Box</span>::<span class='ident'>new</span>(<span class='ident'>errors</span>::<span class='ident'>WrongType</span> {

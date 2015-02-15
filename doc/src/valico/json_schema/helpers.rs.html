@@ -184,7 +184,7 @@
 <span class='doccomment'>/// http://tools.ietf.org/html/draft-ietf-appsawg-json-pointer-07</span>
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>encode</span>(<span class='ident'>string</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>String</span> {
     <span class='ident'>percent_encoding</span>::<span class='ident'>percent_encode</span>(
-        <span class='ident'>string</span>.<span class='ident'>replace</span>(<span class='string'>&quot;~&quot;</span>, <span class='string'>&quot;~0&quot;</span>).<span class='ident'>replace</span>(<span class='string'>&quot;/&quot;</span>, <span class='string'>&quot;~1&quot;</span>).<span class='ident'>as_bytes</span>(), 
+        <span class='ident'>string</span>.<span class='ident'>replace</span>(<span class='string'>&quot;~&quot;</span>, <span class='string'>&quot;~0&quot;</span>).<span class='ident'>replace</span>(<span class='string'>&quot;/&quot;</span>, <span class='string'>&quot;~1&quot;</span>).<span class='ident'>as_bytes</span>(),
         <span class='ident'>percent_encoding</span>::<span class='ident'>FORM_URLENCODED_ENCODE_SET</span>
     )
 }
@@ -249,7 +249,7 @@
         },
         _ <span class='op'>=&gt;</span> <span class='string'>&quot;/&quot;</span>.<span class='ident'>to_string</span>() <span class='op'>+</span> <span class='ident'>normalized_fragment</span>
     };
-    
+
     <span class='ident'>url</span>.<span class='ident'>fragment</span> <span class='op'>=</span> <span class='prelude-val'>Some</span>(<span class='ident'>result_fragment</span>);
     <span class='ident'>url</span>
 }
