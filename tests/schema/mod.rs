@@ -1,25 +1,34 @@
-use std::old_io::fs;
-use std::old_io::fs::PathExtensions;
+use std::fs;
+use std::path;
+use std::fs::PathExt;
+use std::io::Read;
 use serialize::json;
 use valico::json_schema;
 
-fn visit_specs<F>(dir: &Path, cb: F) where F: Fn(&Path, json::Json) {
-    let contents = fs::readdir(dir).ok().unwrap();
-    for entry in contents.iter() {
-        if entry.is_file() {
-            let mut file = fs::File::open(&entry).ok().unwrap();
-            let json: json::Json = file.read_to_string().ok().unwrap().parse().unwrap();
-            cb(&entry, json);
+fn visit_specs<F>(dir: &path::Path, cb: F) where F: Fn(&path::Path, json::Json) {
+    let contents = fs::read_dir(dir).ok().unwrap();
+    for entry in contents {
+        let path = entry.unwrap().path();
+        if path.is_file() {
+            let mut file = fs::File::open(&path).ok().unwrap();
+            let mut content = String::new();
+            file.read_to_string(&mut content).ok().unwrap();
+            let json: json::Json = content.parse().unwrap();
+            cb(&path, json);
         }
     }
 }
 
 #[test]
 fn test_suite() {
-    let json_v4_schema: json::Json = fs::File::open(&Path::new("tests/schema/schema.json")).ok().unwrap()
-        .read_to_string().ok().unwrap().parse().unwrap();
+    let mut content = String::new();
 
-    visit_specs(&Path::new("tests/schema/JSON-Schema-Test-Suite/tests/draft4"), |&: path, spec_set: json::Json| {
+    fs::File::open(&path::Path::new("tests/schema/schema.json")).ok().unwrap()
+        .read_to_string(&mut content).ok().unwrap();
+
+    let json_v4_schema: json::Json = content.parse().unwrap();
+
+    visit_specs(&path::Path::new("tests/schema/JSON-Schema-Test-Suite/tests/draft4"), |&: path, spec_set: json::Json| {
         let spec_set = spec_set.as_array().unwrap();
 
         let exceptions: Vec<(String, String)> = vec![
@@ -39,15 +48,15 @@ fn test_suite() {
 
             let schema = match scope.compile_and_return(spec.get("schema").unwrap().clone(), false) {
                 Ok(schema) => schema,
-                Err(err) => panic!("Error in schema {} {}: {:?}", 
-                    path.filename_str().unwrap().to_string(),
+                Err(err) => panic!("Error in schema {} {}: {:?}",
+                    path.file_name().unwrap().to_str().unwrap(),
                     spec.get("description").unwrap().as_string().unwrap(),
                     err
                 )
             };
 
             let tests = spec.get("tests").unwrap().as_array().unwrap();
-            
+
             for test in tests.iter() {
                 let test = test.as_object().unwrap();
                 let description = test.get("description").unwrap().as_string().unwrap();
@@ -57,9 +66,9 @@ fn test_suite() {
                 let state = schema.validate(&data);
 
                 if state.is_valid() != valid {
-                    if !exceptions.as_slice().contains(&(path.filename_str().unwrap().to_string(), description.to_string())) {
-                        panic!("Failure: \"{}\" in {}", 
-                            path.filename_str().unwrap().to_string(), 
+                    if !exceptions.as_slice().contains(&(path.file_name().unwrap().to_str().unwrap().to_string(), description.to_string())) {
+                        panic!("Failure: \"{}\" in {}",
+                            path.file_name().unwrap().to_str().unwrap(),
                             description.to_string());
                     }
                 } else {

@@ -144,7 +144,7 @@ impl Schema {
 
             for (key, value) in obj.iter() {
                 if !value.is_object() && !value.is_array() { continue; }
-                if FINAL_KEYS.contains(&key[]) { continue; }
+                if FINAL_KEYS.contains(&key[..]) { continue; }
 
                 let mut context = WalkContext {
                     url: &id,
@@ -156,7 +156,7 @@ impl Schema {
                     value.clone(),
                     &mut context,
                     &settings,
-                    !NON_SCHEMA_KEYS.contains(&key[])
+                    !NON_SCHEMA_KEYS.contains(&key[..])
                 ));
 
                 tree.insert(helpers::encode(key), scheme);
@@ -192,7 +192,7 @@ impl Schema {
             let key = keys.iter().next().cloned();
             if key.is_some() {
                 let key = key.unwrap();
-                match settings.keywords.get(&key[]) {
+                match settings.keywords.get(&key) {
                     Some(keyword) => {
                         keyword.consume(&mut keys);
 
@@ -215,7 +215,7 @@ impl Schema {
 
         if settings.ban_unknown_keywords && not_consumed.len() > 0 {
             for key in not_consumed.iter() {
-                if !ALLOW_NON_CONSUMED_KEYS.contains(&key[]) {
+                if !ALLOW_NON_CONSUMED_KEYS.contains(&key[..]) {
                     return Err(SchemaError::UnknownKey(key.to_string()))
                 }
             }
@@ -243,12 +243,12 @@ impl Schema {
 
                 for (key, value) in obj.iter() {
                     if !value.is_object() && !value.is_array() { continue; }
-                    if !PROPERTY_KEYS.contains(&parent_key[]) && FINAL_KEYS.contains(&key[]) { continue; }
+                    if !PROPERTY_KEYS.contains(&parent_key[..]) && FINAL_KEYS.contains(&key[..]) { continue; }
 
                     let mut current_fragment = context.fragment.clone();
                     current_fragment.push(key.clone());
 
-                    let is_schema = PROPERTY_KEYS.contains(&parent_key[]) || !NON_SCHEMA_KEYS.contains(&key[]);
+                    let is_schema = PROPERTY_KEYS.contains(&parent_key[..]) || !NON_SCHEMA_KEYS.contains(&key[..]);
 
                     let mut context = WalkContext {
                         url: id.as_ref().unwrap_or(context.url),

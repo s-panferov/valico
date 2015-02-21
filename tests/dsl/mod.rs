@@ -6,9 +6,9 @@ use valico::json_schema::errors as schema_errors;
 use valico::json_dsl::errors;
 
 use self::helpers::{
-    assert_str_eq_with_scope, 
+    assert_str_eq_with_scope,
     assert_error_with_scope,
-    assert_str_eq, 
+    assert_str_eq,
     assert_error
 };
 
@@ -39,7 +39,7 @@ fn is_process_i64_require() {
     });
 
     assert_str_eq(&params, r#"{"a":"1"}"#, r#"{"a":1}"#);
-    
+
     // truncate!
     assert_str_eq(&params, r#"{"a": 1.112}"#, r#"{"a":1}"#);
 
@@ -60,10 +60,10 @@ fn is_process_string_require() {
     assert_str_eq(&params, r#"{"a":"1"}"#, r#"{"a":"1"}"#);
     assert_str_eq(&params, r#"{"a":1}"#, r#"{"a":"1"}"#);
     assert_str_eq(&params, r#"{"a":1.112}"#, r#"{"a":"1.112"}"#);
-    
+
     // error because "a" is object
     assert_error::<errors::WrongType>(&params, r#"{"a": {}}"#, "/a");
-    
+
     // error because "a" is null
     assert_error::<errors::WrongType>(&params, r#"{"a": null}"#, "/a");
 }
@@ -261,7 +261,7 @@ fn is_validates_with_function_validator() {
         params.req("a", |a| {
             a.coerce(json_dsl::u64());
             a.validate_with(|&: val: &json::Json, path: &str| {
-                if *val == 2us.to_json() {
+                if *val == 2usize.to_json() {
                     Ok(())
                 } else {
                     Err(vec![

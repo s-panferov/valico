@@ -96,7 +96,7 @@ impl Builder {
         self.validators.push(validator);
     }
 
-    pub fn validate_with<F>(&mut self, validator: F) where F: Fn(&json::Json, &str) -> validators::ValidatorResult + Send+Sync {
+    pub fn validate_with<F>(&mut self, validator: F) where F: Fn(&json::Json, &str) -> validators::ValidatorResult + 'static + Send+Sync {
         self.validators.push(Box::new(validator));
     }
 
@@ -119,7 +119,7 @@ impl Builder {
         self.schema_id = Some(id);
     }
 
-    pub fn schema<F>(&mut self, build: F) where F: Fn(&mut json_schema::Builder,) + Send + Sync {
+    pub fn schema<F>(&mut self, build: F) where F: Fn(&mut json_schema::Builder,) + 'static + Send + Sync {
         self.schema_builder = Some(Box::new(build));
     }
 

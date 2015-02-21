@@ -1,6 +1,7 @@
 #![feature(core)]
 #![feature(collections)]
 #![feature(plugin)]
+#![feature(net)]
 
 #![plugin(phf_macros)]
 #![plugin(regex_macros)]

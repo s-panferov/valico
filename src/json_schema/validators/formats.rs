@@ -1,5 +1,5 @@
 use rustc_serialize::json;
-use std::old_io::net::ip;
+use std::net;
 use uuid;
 use url;
 
@@ -13,16 +13,8 @@ impl super::Validator for Ipv4 {
     fn validate(&self, val: &json::Json, path: &str, _scope: &scope::Scope) -> super::ValidationState {
         let string = nonstrict_process!(val.as_string(), path);
 
-        match string.parse::<ip::IpAddr>() {
-            Ok(ip) => match ip {
-                ip::IpAddr::Ipv4Addr(..) => super::ValidationState::new(),
-                ip::IpAddr::Ipv6Addr(..) => val_error!(
-                    errors::Format {
-                        path: path.to_string(),
-                        detail: "Wrong IP address type".to_string()
-                    }
-                )
-            },
+        match string.parse::<net::Ipv4Addr>() {
+            Ok(_) => super::ValidationState::new(),
             Err(_) => {
                 val_error!(
                     errors::Format {
@@ -42,16 +34,8 @@ impl super::Validator for Ipv6 {
     fn validate(&self, val: &json::Json, path: &str, _scope: &scope::Scope) -> super::ValidationState {
         let string = nonstrict_process!(val.as_string(), path);
 
-        match string.parse::<ip::IpAddr>() {
-            Ok(ip) => match ip {
-                ip::IpAddr::Ipv6Addr(..) => super::ValidationState::new(),
-                ip::IpAddr::Ipv4Addr(..) => val_error!(
-                    errors::Format {
-                        path: path.to_string(),
-                        detail: "Wrong IP address type".to_string()
-                    }
-                )
-            },
+        match string.parse::<net::Ipv6Addr>() {
+            Ok(_) => super::ValidationState::new(),
             Err(_) => {
                 val_error!(
                     errors::Format {
