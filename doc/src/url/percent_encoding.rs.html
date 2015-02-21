@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/url-0.2.20/src/percent_encoding.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/url-0.2.21/src/percent_encoding.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>percent_encoding.rs.html -- source</title>
@@ -327,7 +327,7 @@
 <span class='doccomment'>/// will be replaced � U+FFFD, the replacement character.</span>
 <span class='attribute'>#[<span class='ident'>inline</span>]</span>
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>lossy_utf8_percent_decode</span>(<span class='ident'>input</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>u8</span>]) <span class='op'>-&gt;</span> <span class='ident'>String</span> {
-    <span class='ident'>String</span>::<span class='ident'>from_utf8_lossy</span>(<span class='ident'>percent_decode</span>(<span class='ident'>input</span>).<span class='ident'>as_slice</span>()).<span class='ident'>to_string</span>()
+    <span class='ident'>String</span>::<span class='ident'>from_utf8_lossy</span>(<span class='kw-2'>&amp;</span><span class='ident'>percent_decode</span>(<span class='ident'>input</span>)).<span class='ident'>to_string</span>()
 }
 
 <span class='attribute'>#[<span class='ident'>inline</span>]</span>

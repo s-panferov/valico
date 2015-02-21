@@ -42,9 +42,8 @@
 
     <section id='main' class="content enum">
 <h1 class='fqn'><span class='in-band'>Enum <a href='index.html'>regex</a>::<wbr><a class='enum' href=''>Regex</a><wbr></span><span class='out-of-band'><span id='render-detail'>
-            <a id="collapse-all" href="#">[-]
-            </a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-8709' href='../src/regex/re.rs.html#110-120'>[src]</a></span></h1>
+            <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
+        </span><a id='src-8704' href='../src/regex/re.rs.html#109-119'>[src]</a></span></h1>
 <pre class='rust enum'>pub enum Regex {
     // some variants omitted
 }</pre><div class='docblock'><p>A compiled regular expression</p>
@@ -83,8 +82,8 @@ pointers into the string given.</p>
 you compile your program:</p>
 <pre id='rust-example-rendered' class='rust '>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>plugin</span>)]</span>
+<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>plugin</span>(<span class='ident'>regex_macros</span>)]</span>
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>regex</span>;
-<span class='attribute'>#[<span class='ident'>plugin</span>]</span> <span class='attribute'>#[<span class='ident'>no_link</span>]</span> <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>regex_macros</span>;
 
 <span class='kw'>fn</span> <span class='ident'>main</span>() {
     <span class='kw'>let</span> <span class='ident'>re</span> <span class='op'>=</span> <span class='macro'>regex</span><span class='macro'>!</span>(<span class='string'>r&quot;\d+&quot;</span>);
@@ -276,7 +275,7 @@ captures corresponding to a match. This allows one to access
 submatches easily:</p>
 <pre id='rust-example-rendered' class='rust '>
 <span class='kw'>let</span> <span class='ident'>re</span> <span class='op'>=</span> <span class='macro'>regex</span><span class='macro'>!</span>(<span class='string'>r&quot;([^,\s]+),\s+(\S+)&quot;</span>);
-<span class='kw'>let</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>re</span>.<span class='ident'>replace</span>(<span class='string'>&quot;Springsteen, Bruce&quot;</span>, <span class='op'>|</span><span class='kw-2'>&amp;</span>: <span class='ident'>caps</span>: <span class='kw-2'>&amp;</span><span class='ident'>Captures</span><span class='op'>|</span> {
+<span class='kw'>let</span> <span class='ident'>result</span> <span class='op'>=</span> <span class='ident'>re</span>.<span class='ident'>replace</span>(<span class='string'>&quot;Springsteen, Bruce&quot;</span>, <span class='op'>|</span><span class='ident'>caps</span>: <span class='kw-2'>&amp;</span><span class='ident'>Captures</span><span class='op'>|</span> {
     <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;{} {}&quot;</span>, <span class='ident'>caps</span>.<span class='ident'>at</span>(<span class='number'>2</span>).<span class='ident'>unwrap_or</span>(<span class='string'>&quot;&quot;</span>), <span class='ident'>caps</span>.<span class='ident'>at</span>(<span class='number'>1</span>).<span class='ident'>unwrap_or</span>(<span class='string'>&quot;&quot;</span>))
 });
 <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>result</span>, <span class='string'>&quot;Bruce Springsteen&quot;</span>);

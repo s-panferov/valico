@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/rand-0.1.2/src/reseeding.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/rand-0.1.3/src/reseeding.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>reseeding.rs.html -- source</title>
@@ -271,8 +271,6 @@
 <span id="229">229</span>
 <span id="230">230</span>
 <span id="231">231</span>
-<span id="232">232</span>
-<span id="233">233</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2013 The Rust Project Developers. See the COPYRIGHT</span>
 <span class='comment'>// file at the top-level directory of this distribution and at</span>
@@ -294,14 +292,14 @@
 
 <span class='doccomment'>/// How many bytes of entropy the underling RNG is allowed to generate</span>
 <span class='doccomment'>/// before it is reseeded.</span>
-<span class='kw'>static</span> <span class='ident'>DEFAULT_GENERATION_THRESHOLD</span>: <span class='ident'>uint</span> <span class='op'>=</span> <span class='number'>32</span> <span class='op'>*</span> <span class='number'>1024</span>;
+<span class='kw'>static</span> <span class='ident'>DEFAULT_GENERATION_THRESHOLD</span>: <span class='ident'>usize</span> <span class='op'>=</span> <span class='number'>32</span> <span class='op'>*</span> <span class='number'>1024</span>;
 
 <span class='doccomment'>/// A wrapper around any RNG which reseeds the underlying RNG after it</span>
 <span class='doccomment'>/// has generated a certain number of random bytes.</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>ReseedingRng</span><span class='op'>&lt;</span><span class='ident'>R</span>, <span class='ident'>Rsdr</span><span class='op'>&gt;</span> {
     <span class='ident'>rng</span>: <span class='ident'>R</span>,
-    <span class='ident'>generation_threshold</span>: <span class='ident'>uint</span>,
-    <span class='ident'>bytes_generated</span>: <span class='ident'>uint</span>,
+    <span class='ident'>generation_threshold</span>: <span class='ident'>usize</span>,
+    <span class='ident'>bytes_generated</span>: <span class='ident'>usize</span>,
     <span class='doccomment'>/// Controls the behaviour when reseeding the RNG.</span>
     <span class='kw'>pub</span> <span class='ident'>reseeder</span>: <span class='ident'>Rsdr</span>,
 }
@@ -314,7 +312,7 @@
     <span class='doccomment'>/// * `rng`: the random number generator to use.</span>
     <span class='doccomment'>/// * `generation_threshold`: the number of bytes of entropy at which to reseed the RNG.</span>
     <span class='doccomment'>/// * `reseeder`: the reseeding object to use.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>rng</span>: <span class='ident'>R</span>, <span class='ident'>generation_threshold</span>: <span class='ident'>uint</span>, <span class='ident'>reseeder</span>: <span class='ident'>Rsdr</span>) <span class='op'>-&gt;</span> <span class='ident'>ReseedingRng</span><span class='op'>&lt;</span><span class='ident'>R</span>,<span class='ident'>Rsdr</span><span class='op'>&gt;</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>rng</span>: <span class='ident'>R</span>, <span class='ident'>generation_threshold</span>: <span class='ident'>usize</span>, <span class='ident'>reseeder</span>: <span class='ident'>Rsdr</span>) <span class='op'>-&gt;</span> <span class='ident'>ReseedingRng</span><span class='op'>&lt;</span><span class='ident'>R</span>,<span class='ident'>Rsdr</span><span class='op'>&gt;</span> {
         <span class='ident'>ReseedingRng</span> {
             <span class='ident'>rng</span>: <span class='ident'>rng</span>,
             <span class='ident'>generation_threshold</span>: <span class='ident'>generation_threshold</span>,
@@ -417,9 +415,7 @@
         <span class='op'>*</span><span class='ident'>rng</span> <span class='op'>=</span> <span class='ident'>Default</span>::<span class='ident'>default</span>();
     }
 }
-<span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;rust1&quot;</span>, <span class='ident'>since</span> <span class='op'>=</span> <span class='string'>&quot;1.0.0&quot;</span>)]</span>
 <span class='kw'>impl</span> <span class='ident'>Default</span> <span class='kw'>for</span> <span class='ident'>ReseedWithDefault</span> {
-    <span class='attribute'>#[<span class='ident'>stable</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;rust1&quot;</span>, <span class='ident'>since</span> <span class='op'>=</span> <span class='string'>&quot;1.0.0&quot;</span>)]</span>
     <span class='kw'>fn</span> <span class='ident'>default</span>() <span class='op'>-&gt;</span> <span class='ident'>ReseedWithDefault</span> { <span class='ident'>ReseedWithDefault</span> }
 }
 
@@ -463,7 +459,7 @@
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>rs</span> <span class='op'>=</span> <span class='ident'>ReseedingRng</span>::<span class='ident'>new</span>(<span class='ident'>Counter</span> {<span class='ident'>i</span>:<span class='number'>0</span>}, <span class='number'>400</span>, <span class='ident'>ReseedWithDefault</span>);
 
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>i</span> <span class='op'>=</span> <span class='number'>0</span>;
-        <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='number'>0u</span>..<span class='number'>1000</span> {
+        <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='number'>0</span>..<span class='number'>1000</span> {
             <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>rs</span>.<span class='ident'>next_u32</span>(), <span class='ident'>i</span> <span class='op'>%</span> <span class='number'>100</span>);
             <span class='ident'>i</span> <span class='op'>+=</span> <span class='number'>1</span>;
         }
@@ -488,7 +484,7 @@
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>string1</span>, <span class='ident'>string2</span>);
     }
 
-    <span class='kw'>static</span> <span class='ident'>FILL_BYTES_V_LEN</span>: <span class='ident'>uint</span> <span class='op'>=</span> <span class='number'>13579</span>;
+    <span class='kw'>static</span> <span class='ident'>FILL_BYTES_V_LEN</span>: <span class='ident'>usize</span> <span class='op'>=</span> <span class='number'>13579</span>;
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>test_rng_fill_bytes</span>() {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='ident'>repeat</span>(<span class='number'>0u8</span>).<span class='ident'>take</span>(<span class='ident'>FILL_BYTES_V_LEN</span>).<span class='ident'>collect</span>::<span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span>_<span class='op'>&gt;&gt;</span>();

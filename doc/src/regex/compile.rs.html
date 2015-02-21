@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/regex-0.1.14/src/compile.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/regex-0.1.15/src/compile.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>compile.rs.html -- source</title>
@@ -451,7 +451,7 @@
     }
 }
 
-<span class='kw'>struct</span> <span class='ident'>Compiler</span><span class='op'>&lt;</span><span class='lifetime'>&#39;r</span><span class='op'>&gt;</span> {
+<span class='kw'>struct</span> <span class='ident'>Compiler</span> {
     <span class='ident'>insts</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Inst</span><span class='op'>&gt;</span>,
     <span class='ident'>names</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>String</span><span class='op'>&gt;&gt;</span>,
 }
@@ -460,7 +460,7 @@
 <span class='comment'>// in this crate is in the parser or the VM.</span>
 <span class='comment'>// The only tricky thing here is patching jump/split instructions to point to</span>
 <span class='comment'>// the right instruction.</span>
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;r</span><span class='op'>&gt;</span> <span class='ident'>Compiler</span><span class='op'>&lt;</span><span class='lifetime'>&#39;r</span><span class='op'>&gt;</span> {
+<span class='kw'>impl</span> <span class='ident'>Compiler</span> {
     <span class='kw'>fn</span> <span class='ident'>compile</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>ast</span>: <span class='ident'>parse</span>::<span class='ident'>Ast</span>) {
         <span class='kw'>match</span> <span class='ident'>ast</span> {
             <span class='ident'>Nothing</span> <span class='op'>=&gt;</span> {},

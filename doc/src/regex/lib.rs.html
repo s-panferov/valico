@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/regex-0.1.14/src/lib.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/regex-0.1.15/src/lib.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>lib.rs.html -- source</title>
@@ -455,7 +455,6 @@
 <span id="413">413</span>
 <span id="414">414</span>
 <span id="415">415</span>
-<span id="416">416</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2014 The Rust Project Developers. See the COPYRIGHT</span>
 <span class='comment'>// file at the top-level directory of this distribution and at</span>
@@ -527,8 +526,7 @@
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! ```rust</span>
 <span class='doccomment'>//! #![feature(plugin)]</span>
-<span class='doccomment'>//! #[plugin] #[no_link]</span>
-<span class='doccomment'>//! extern crate regex_macros;</span>
+<span class='doccomment'>//! #![plugin(regex_macros)]</span>
 <span class='doccomment'>//! extern crate regex;</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! fn main() {</span>
@@ -556,8 +554,8 @@
 <span class='doccomment'>//! them by their component pieces:</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! ```rust</span>
-<span class='doccomment'>//! # #![feature(plugin)]</span>
-<span class='doccomment'>//! # extern crate regex; #[plugin] #[no_link] extern crate regex_macros;</span>
+<span class='doccomment'>//! # #![feature(plugin)] #![plugin(regex_macros)]</span>
+<span class='doccomment'>//! # extern crate regex;</span>
 <span class='doccomment'>//! # fn main() {</span>
 <span class='doccomment'>//! let re = regex!(r&quot;(\d{4})-(\d{2})-(\d{2})&quot;);</span>
 <span class='doccomment'>//! let text = &quot;2012-03-14, 2013-01-01 and 2014-07-05&quot;;</span>
@@ -584,8 +582,8 @@
 <span class='doccomment'>//! in our replacement text:</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! ```rust</span>
-<span class='doccomment'>//! # #![feature(plugin)]</span>
-<span class='doccomment'>//! # extern crate regex; #[plugin] #[no_link] extern crate regex_macros;</span>
+<span class='doccomment'>//! # #![feature(plugin)] #![plugin(regex_macros)]</span>
+<span class='doccomment'>//! # extern crate regex;</span>
 <span class='doccomment'>//! # fn main() {</span>
 <span class='doccomment'>//! let re = regex!(r&quot;(?P&lt;y&gt;\d{4})-(?P&lt;m&gt;\d{2})-(?P&lt;d&gt;\d{2})&quot;);</span>
 <span class='doccomment'>//! let before = &quot;2012-03-14, 2013-01-01 and 2014-07-05&quot;;</span>
@@ -631,8 +629,8 @@
 <span class='doccomment'>//! directly in your expression:</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! ```rust</span>
-<span class='doccomment'>//! # #![feature(plugin)]</span>
-<span class='doccomment'>//! # extern crate regex; #[plugin] #[no_link] extern crate regex_macros;</span>
+<span class='doccomment'>//! # #![feature(plugin)] #![plugin(regex_macros)]</span>
+<span class='doccomment'>//! # extern crate regex;</span>
 <span class='doccomment'>//! # fn main() {</span>
 <span class='doccomment'>//! let re = regex!(r&quot;(?i)Δ+&quot;);</span>
 <span class='doccomment'>//! assert_eq!(re.find(&quot;ΔδΔ&quot;), Some((0, 6)));</span>
@@ -644,8 +642,8 @@
 <span class='doccomment'>//! Cherokee letters:</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! ```rust</span>
-<span class='doccomment'>//! # #![feature(plugin)]</span>
-<span class='doccomment'>//! # extern crate regex; #[plugin] #[no_link] extern crate regex_macros;</span>
+<span class='doccomment'>//! # #![feature(plugin)] #![plugin(regex_macros)]</span>
+<span class='doccomment'>//! # extern crate regex;</span>
 <span class='doccomment'>//! # fn main() {</span>
 <span class='doccomment'>//! let re = regex!(r&quot;[\pN\p{Greek}\p{Cherokee}]+&quot;);</span>
 <span class='doccomment'>//! assert_eq!(re.find(&quot;abcΔᎠβⅠᏴγδⅡxyz&quot;), Some((3, 23)));</span>
@@ -741,8 +739,8 @@
 <span class='doccomment'>//! expression:</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! ```rust</span>
-<span class='doccomment'>//! # #![feature(plugin)]</span>
-<span class='doccomment'>//! # extern crate regex; #[plugin] #[no_link] extern crate regex_macros;</span>
+<span class='doccomment'>//! # #![feature(plugin)] #![plugin(regex_macros)]</span>
+<span class='doccomment'>//! # extern crate regex;</span>
 <span class='doccomment'>//! # fn main() {</span>
 <span class='doccomment'>//! let re = regex!(r&quot;(?i)a+(?-i)b+&quot;);</span>
 <span class='doccomment'>//! let cap = re.captures(&quot;AaAaAbbBBBb&quot;).unwrap();</span>

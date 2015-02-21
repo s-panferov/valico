@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/phf_shared-0.6.8/src/lib.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/phf_shared-0.6.9/src/lib.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>lib.rs.html -- source</title>
@@ -189,7 +189,7 @@
 
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>slice</span>::<span class='ident'>AsSlice</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>str</span>::<span class='ident'>StrExt</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>hash</span>::{<span class='ident'>Writer</span>, <span class='ident'>Hasher</span>, <span class='ident'>Hash</span>, <span class='ident'>SipHasher</span>};
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>hash</span>::{<span class='ident'>Hasher</span>, <span class='ident'>Hash</span>, <span class='ident'>SipHasher</span>};
 
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;core&quot;</span>)]</span>
 <span class='kw'>mod</span> <span class='ident'>std</span> {
@@ -242,7 +242,7 @@
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>phf_hash</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>seed</span>: <span class='ident'>u64</span>) <span class='op'>-&gt;</span> (<span class='ident'>u32</span>, <span class='ident'>u32</span>, <span class='ident'>u32</span>) {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>state</span> <span class='op'>=</span> <span class='ident'>SipHasher</span>::<span class='ident'>new_with_keys</span>(<span class='ident'>seed</span>, <span class='number'>0</span>);
-        <span class='ident'>state</span>.<span class='ident'>write</span>(<span class='self'>self</span>);
+        <span class='ident'>Hasher</span>::<span class='ident'>write</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>state</span>, <span class='self'>self</span>);
         <span class='ident'>split</span>(<span class='ident'>state</span>.<span class='ident'>finish</span>())
     }
 }
@@ -278,7 +278,7 @@
             <span class='attribute'>#[<span class='ident'>inline</span>]</span>
             <span class='kw'>fn</span> <span class='ident'>phf_hash</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>seed</span>: <span class='ident'>u64</span>) <span class='op'>-&gt;</span> (<span class='ident'>u32</span>, <span class='ident'>u32</span>, <span class='ident'>u32</span>) {
                 <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>hasher</span> <span class='op'>=</span> <span class='ident'>SipHasher</span>::<span class='ident'>new_with_keys</span>(<span class='ident'>seed</span>, <span class='number'>0</span>);
-                <span class='ident'>hasher</span>.<span class='ident'>write</span>(<span class='self'>self</span>.<span class='ident'>as_slice</span>());
+                <span class='ident'>Hasher</span>::<span class='ident'>write</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>hasher</span>, <span class='self'>self</span>);
                 <span class='ident'>split</span>(<span class='ident'>hasher</span>.<span class='ident'>finish</span>())
             }
         }

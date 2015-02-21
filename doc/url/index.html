@@ -42,8 +42,7 @@
 
     <section id='main' class="content mod">
 <h1 class='fqn'><span class='in-band'>Crate <a class='mod' href=''>url</a><wbr></span><span class='out-of-band'><a href='stability.html'>[stability]</a> <span id='render-detail'>
-            <a id="collapse-all" href="#">[-]
-            </a>&nbsp;<a id="expand-all" href="#">[+]</a>
+            <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
         </span><a id='src-0' href='../src/url/lib.rs.html#9-1007'>[src]</a></span></h1>
 <div class='docblock'><p><a href="https://github.com/servo/rust-url"><img style="position: absolute; top: 0; left: 0; border: 0;" src="../github.png" alt="Fork me on GitHub"></a>
 <style>.sidebar { margin-top: 53px }</style></p>
@@ -92,9 +91,9 @@ features = [&quot;query_encoding&quot;]
 <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>issue_list_url</span>.<span class='ident'>scheme</span> <span class='op'>==</span> <span class='string'>&quot;https&quot;</span>.<span class='ident'>to_string</span>());
 <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>issue_list_url</span>.<span class='ident'>domain</span>() <span class='op'>==</span> <span class='prelude-val'>Some</span>(<span class='string'>&quot;github.com&quot;</span>));
 <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>issue_list_url</span>.<span class='ident'>port</span>() <span class='op'>==</span> <span class='prelude-val'>None</span>);
-<span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>issue_list_url</span>.<span class='ident'>path</span>() <span class='op'>==</span> <span class='prelude-val'>Some</span>([<span class='string'>&quot;rust-lang&quot;</span>.<span class='ident'>to_string</span>(),
+<span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>issue_list_url</span>.<span class='ident'>path</span>() <span class='op'>==</span> <span class='prelude-val'>Some</span>(<span class='kw-2'>&amp;</span>[<span class='string'>&quot;rust-lang&quot;</span>.<span class='ident'>to_string</span>(),
                                         <span class='string'>&quot;rust&quot;</span>.<span class='ident'>to_string</span>(),
-                                        <span class='string'>&quot;issues&quot;</span>.<span class='ident'>to_string</span>()].<span class='ident'>as_slice</span>()));
+                                        <span class='string'>&quot;issues&quot;</span>.<span class='ident'>to_string</span>()][]));
 <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>issue_list_url</span>.<span class='ident'>query</span> <span class='op'>==</span> <span class='prelude-val'>Some</span>(<span class='string'>&quot;labels=E-easy&amp;state=open&quot;</span>.<span class='ident'>to_string</span>()));
 <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>issue_list_url</span>.<span class='ident'>fragment</span> <span class='op'>==</span> <span class='prelude-val'>None</span>);
 <span class='kw'>match</span> <span class='ident'>issue_list_url</span>.<span class='ident'>scheme_data</span> {

@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/rand-0.1.2/src/distributions/range.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/rand-0.1.3/src/distributions/range.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>range.rs.html -- source</title>
@@ -314,10 +314,10 @@
 <span class='doccomment'>/// use rand::distributions::{IndependentSample, Range};</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// fn main() {</span>
-<span class='doccomment'>///     let between = Range::new(10u, 10000u);</span>
+<span class='doccomment'>///     let between = Range::new(10, 10000);</span>
 <span class='doccomment'>///     let mut rng = rand::thread_rng();</span>
 <span class='doccomment'>///     let mut sum = 0;</span>
-<span class='doccomment'>///     for _ in 0u..1000 {</span>
+<span class='doccomment'>///     for _ in 0..1000 {</span>
 <span class='doccomment'>///         sum += between.ind_sample(&amp;mut rng);</span>
 <span class='doccomment'>///     }</span>
 <span class='doccomment'>///     println!(&quot;{}&quot;, sum);</span>
@@ -410,12 +410,12 @@
 <span class='macro'>integer_impl</span><span class='macro'>!</span> { <span class='ident'>i16</span>, <span class='ident'>u16</span> }
 <span class='macro'>integer_impl</span><span class='macro'>!</span> { <span class='ident'>i32</span>, <span class='ident'>u32</span> }
 <span class='macro'>integer_impl</span><span class='macro'>!</span> { <span class='ident'>i64</span>, <span class='ident'>u64</span> }
-<span class='macro'>integer_impl</span><span class='macro'>!</span> { <span class='ident'>int</span>, <span class='ident'>uint</span> }
+<span class='macro'>integer_impl</span><span class='macro'>!</span> { <span class='ident'>isize</span>, <span class='ident'>usize</span> }
 <span class='macro'>integer_impl</span><span class='macro'>!</span> { <span class='ident'>u8</span>, <span class='ident'>u8</span> }
 <span class='macro'>integer_impl</span><span class='macro'>!</span> { <span class='ident'>u16</span>, <span class='ident'>u16</span> }
 <span class='macro'>integer_impl</span><span class='macro'>!</span> { <span class='ident'>u32</span>, <span class='ident'>u32</span> }
 <span class='macro'>integer_impl</span><span class='macro'>!</span> { <span class='ident'>u64</span>, <span class='ident'>u64</span> }
-<span class='macro'>integer_impl</span><span class='macro'>!</span> { <span class='ident'>uint</span>, <span class='ident'>uint</span> }
+<span class='macro'>integer_impl</span><span class='macro'>!</span> { <span class='ident'>usize</span>, <span class='ident'>usize</span> }
 
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>float_impl</span> {
     (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ty</span>:<span class='ident'>ty</span>) <span class='op'>=&gt;</span> {
@@ -466,7 +466,7 @@
                                             (<span class='ident'>Int</span>::<span class='ident'>min_value</span>(), <span class='ident'>Int</span>::<span class='ident'>max_value</span>())];
                    <span class='kw'>for</span> <span class='kw-2'>&amp;</span>(<span class='ident'>low</span>, <span class='ident'>high</span>) <span class='kw'>in</span> <span class='ident'>v</span>.<span class='ident'>iter</span>() {
                         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>sampler</span>: <span class='ident'>Range</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ty</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>Range</span>::<span class='ident'>new</span>(<span class='ident'>low</span>, <span class='ident'>high</span>);
-                        <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='number'>0u</span>..<span class='number'>1000</span> {
+                        <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='number'>0</span>..<span class='number'>1000</span> {
                             <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='ident'>sampler</span>.<span class='ident'>sample</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>rng</span>);
                             <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>low</span> <span class='op'>&lt;=</span> <span class='ident'>v</span> <span class='op'>&amp;&amp;</span> <span class='ident'>v</span> <span class='op'>&lt;</span> <span class='ident'>high</span>);
                             <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='ident'>sampler</span>.<span class='ident'>ind_sample</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>rng</span>);
@@ -476,8 +476,8 @@
                  )<span class='op'>*</span>
             }}
         }
-        <span class='macro'>t</span><span class='macro'>!</span>(<span class='ident'>i8</span>, <span class='ident'>i16</span>, <span class='ident'>i32</span>, <span class='ident'>i64</span>, <span class='ident'>int</span>,
-           <span class='ident'>u8</span>, <span class='ident'>u16</span>, <span class='ident'>u32</span>, <span class='ident'>u64</span>, <span class='ident'>uint</span>)
+        <span class='macro'>t</span><span class='macro'>!</span>(<span class='ident'>i8</span>, <span class='ident'>i16</span>, <span class='ident'>i32</span>, <span class='ident'>i64</span>, <span class='ident'>isize</span>,
+           <span class='ident'>u8</span>, <span class='ident'>u16</span>, <span class='ident'>u32</span>, <span class='ident'>u64</span>, <span class='ident'>usize</span>)
     }
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
@@ -492,7 +492,7 @@
                                             (<span class='op'>-</span><span class='number'>1e35</span>, <span class='number'>1e35</span>)];
                    <span class='kw'>for</span> <span class='kw-2'>&amp;</span>(<span class='ident'>low</span>, <span class='ident'>high</span>) <span class='kw'>in</span> <span class='ident'>v</span>.<span class='ident'>iter</span>() {
                         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>sampler</span>: <span class='ident'>Range</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ty</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>Range</span>::<span class='ident'>new</span>(<span class='ident'>low</span>, <span class='ident'>high</span>);
-                        <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='number'>0u</span>..<span class='number'>1000</span> {
+                        <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='number'>0</span>..<span class='number'>1000</span> {
                             <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='ident'>sampler</span>.<span class='ident'>sample</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>rng</span>);
                             <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>low</span> <span class='op'>&lt;=</span> <span class='ident'>v</span> <span class='op'>&amp;&amp;</span> <span class='ident'>v</span> <span class='op'>&lt;</span> <span class='ident'>high</span>);
                             <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='ident'>sampler</span>.<span class='ident'>ind_sample</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>rng</span>);

@@ -552,7 +552,7 @@
 
             <span class='kw'>for</span> (<span class='ident'>key</span>, <span class='ident'>value</span>) <span class='kw'>in</span> <span class='ident'>obj</span>.<span class='ident'>iter</span>() {
                 <span class='kw'>if</span> <span class='op'>!</span><span class='ident'>value</span>.<span class='ident'>is_object</span>() <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='ident'>value</span>.<span class='ident'>is_array</span>() { <span class='kw'>continue</span>; }
-                <span class='kw'>if</span> <span class='ident'>FINAL_KEYS</span>.<span class='ident'>contains</span>(<span class='kw-2'>&amp;</span><span class='ident'>key</span>[]) { <span class='kw'>continue</span>; }
+                <span class='kw'>if</span> <span class='ident'>FINAL_KEYS</span>.<span class='ident'>contains</span>(<span class='kw-2'>&amp;</span><span class='ident'>key</span>[..]) { <span class='kw'>continue</span>; }
 
                 <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>context</span> <span class='op'>=</span> <span class='ident'>WalkContext</span> {
                     <span class='ident'>url</span>: <span class='kw-2'>&amp;</span><span class='ident'>id</span>,
@@ -564,7 +564,7 @@
                     <span class='ident'>value</span>.<span class='ident'>clone</span>(),
                     <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>context</span>,
                     <span class='kw-2'>&amp;</span><span class='ident'>settings</span>,
-                    <span class='op'>!</span><span class='ident'>NON_SCHEMA_KEYS</span>.<span class='ident'>contains</span>(<span class='kw-2'>&amp;</span><span class='ident'>key</span>[])
+                    <span class='op'>!</span><span class='ident'>NON_SCHEMA_KEYS</span>.<span class='ident'>contains</span>(<span class='kw-2'>&amp;</span><span class='ident'>key</span>[..])
                 ));
 
                 <span class='ident'>tree</span>.<span class='ident'>insert</span>(<span class='ident'>helpers</span>::<span class='ident'>encode</span>(<span class='ident'>key</span>), <span class='ident'>scheme</span>);
@@ -600,7 +600,7 @@
             <span class='kw'>let</span> <span class='ident'>key</span> <span class='op'>=</span> <span class='ident'>keys</span>.<span class='ident'>iter</span>().<span class='ident'>next</span>().<span class='ident'>cloned</span>();
             <span class='kw'>if</span> <span class='ident'>key</span>.<span class='ident'>is_some</span>() {
                 <span class='kw'>let</span> <span class='ident'>key</span> <span class='op'>=</span> <span class='ident'>key</span>.<span class='ident'>unwrap</span>();
-                <span class='kw'>match</span> <span class='ident'>settings</span>.<span class='ident'>keywords</span>.<span class='ident'>get</span>(<span class='kw-2'>&amp;</span><span class='ident'>key</span>[]) {
+                <span class='kw'>match</span> <span class='ident'>settings</span>.<span class='ident'>keywords</span>.<span class='ident'>get</span>(<span class='kw-2'>&amp;</span><span class='ident'>key</span>) {
                     <span class='prelude-val'>Some</span>(<span class='ident'>keyword</span>) <span class='op'>=&gt;</span> {
                         <span class='ident'>keyword</span>.<span class='ident'>consume</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>keys</span>);
 
@@ -623,7 +623,7 @@
 
         <span class='kw'>if</span> <span class='ident'>settings</span>.<span class='ident'>ban_unknown_keywords</span> <span class='op'>&amp;&amp;</span> <span class='ident'>not_consumed</span>.<span class='ident'>len</span>() <span class='op'>&gt;</span> <span class='number'>0</span> {
             <span class='kw'>for</span> <span class='ident'>key</span> <span class='kw'>in</span> <span class='ident'>not_consumed</span>.<span class='ident'>iter</span>() {
-                <span class='kw'>if</span> <span class='op'>!</span><span class='ident'>ALLOW_NON_CONSUMED_KEYS</span>.<span class='ident'>contains</span>(<span class='kw-2'>&amp;</span><span class='ident'>key</span>[]) {
+                <span class='kw'>if</span> <span class='op'>!</span><span class='ident'>ALLOW_NON_CONSUMED_KEYS</span>.<span class='ident'>contains</span>(<span class='kw-2'>&amp;</span><span class='ident'>key</span>[..]) {
                     <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>SchemaError</span>::<span class='ident'>UnknownKey</span>(<span class='ident'>key</span>.<span class='ident'>to_string</span>()))
                 }
             }
@@ -651,12 +651,12 @@
 
                 <span class='kw'>for</span> (<span class='ident'>key</span>, <span class='ident'>value</span>) <span class='kw'>in</span> <span class='ident'>obj</span>.<span class='ident'>iter</span>() {
                     <span class='kw'>if</span> <span class='op'>!</span><span class='ident'>value</span>.<span class='ident'>is_object</span>() <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='ident'>value</span>.<span class='ident'>is_array</span>() { <span class='kw'>continue</span>; }
-                    <span class='kw'>if</span> <span class='op'>!</span><span class='ident'>PROPERTY_KEYS</span>.<span class='ident'>contains</span>(<span class='kw-2'>&amp;</span><span class='ident'>parent_key</span>[]) <span class='op'>&amp;&amp;</span> <span class='ident'>FINAL_KEYS</span>.<span class='ident'>contains</span>(<span class='kw-2'>&amp;</span><span class='ident'>key</span>[]) { <span class='kw'>continue</span>; }
+                    <span class='kw'>if</span> <span class='op'>!</span><span class='ident'>PROPERTY_KEYS</span>.<span class='ident'>contains</span>(<span class='kw-2'>&amp;</span><span class='ident'>parent_key</span>[..]) <span class='op'>&amp;&amp;</span> <span class='ident'>FINAL_KEYS</span>.<span class='ident'>contains</span>(<span class='kw-2'>&amp;</span><span class='ident'>key</span>[..]) { <span class='kw'>continue</span>; }
 
                     <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>current_fragment</span> <span class='op'>=</span> <span class='ident'>context</span>.<span class='ident'>fragment</span>.<span class='ident'>clone</span>();
                     <span class='ident'>current_fragment</span>.<span class='ident'>push</span>(<span class='ident'>key</span>.<span class='ident'>clone</span>());
 
-                    <span class='kw'>let</span> <span class='ident'>is_schema</span> <span class='op'>=</span> <span class='ident'>PROPERTY_KEYS</span>.<span class='ident'>contains</span>(<span class='kw-2'>&amp;</span><span class='ident'>parent_key</span>[]) <span class='op'>||</span> <span class='op'>!</span><span class='ident'>NON_SCHEMA_KEYS</span>.<span class='ident'>contains</span>(<span class='kw-2'>&amp;</span><span class='ident'>key</span>[]);
+                    <span class='kw'>let</span> <span class='ident'>is_schema</span> <span class='op'>=</span> <span class='ident'>PROPERTY_KEYS</span>.<span class='ident'>contains</span>(<span class='kw-2'>&amp;</span><span class='ident'>parent_key</span>[..]) <span class='op'>||</span> <span class='op'>!</span><span class='ident'>NON_SCHEMA_KEYS</span>.<span class='ident'>contains</span>(<span class='kw-2'>&amp;</span><span class='ident'>key</span>[..]);
 
                     <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>context</span> <span class='op'>=</span> <span class='ident'>WalkContext</span> {
                         <span class='ident'>url</span>: <span class='ident'>id</span>.<span class='ident'>as_ref</span>().<span class='ident'>unwrap_or</span>(<span class='ident'>context</span>.<span class='ident'>url</span>),

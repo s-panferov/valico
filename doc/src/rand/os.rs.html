@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/rand-0.1.2/src/os.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/rand-0.1.3/src/os.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>os.rs.html -- source</title>
@@ -797,7 +797,7 @@
     <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>sync</span>::<span class='ident'>mpsc</span>::<span class='ident'>channel</span>;
     <span class='kw'>use</span> <span class='ident'>Rng</span>;
     <span class='kw'>use</span> <span class='ident'>OsRng</span>;
-    <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>thread</span>::<span class='ident'>Thread</span>;
+    <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>thread</span>;
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>test_os_rng</span>() {
@@ -814,27 +814,27 @@
     <span class='kw'>fn</span> <span class='ident'>test_os_rng_tasks</span>() {
 
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>txs</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>();
-        <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='number'>0u</span>..<span class='number'>20</span> {
+        <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='number'>0</span>..<span class='number'>20</span> {
             <span class='kw'>let</span> (<span class='ident'>tx</span>, <span class='ident'>rx</span>) <span class='op'>=</span> <span class='ident'>channel</span>();
             <span class='ident'>txs</span>.<span class='ident'>push</span>(<span class='ident'>tx</span>);
 
-            <span class='ident'>Thread</span>::<span class='ident'>spawn</span>(<span class='kw'>move</span><span class='op'>||</span> {
+            <span class='ident'>thread</span>::<span class='ident'>spawn</span>(<span class='kw'>move</span><span class='op'>||</span> {
                 <span class='comment'>// wait until all the tasks are ready to go.</span>
                 <span class='ident'>rx</span>.<span class='ident'>recv</span>().<span class='ident'>unwrap</span>();
 
                 <span class='comment'>// deschedule to attempt to interleave things as much</span>
                 <span class='comment'>// as possible (XXX: is this a good test?)</span>
                 <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>r</span> <span class='op'>=</span> <span class='ident'>OsRng</span>::<span class='ident'>new</span>().<span class='ident'>unwrap</span>();
-                <span class='ident'>Thread</span>::<span class='ident'>yield_now</span>();
+                <span class='ident'>thread</span>::<span class='ident'>yield_now</span>();
                 <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>v</span> <span class='op'>=</span> [<span class='number'>0u8</span>; <span class='number'>1000</span>];
 
-                <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='number'>0u</span>..<span class='number'>100</span> {
+                <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='number'>0</span>..<span class='number'>100</span> {
                     <span class='ident'>r</span>.<span class='ident'>next_u32</span>();
-                    <span class='ident'>Thread</span>::<span class='ident'>yield_now</span>();
+                    <span class='ident'>thread</span>::<span class='ident'>yield_now</span>();
                     <span class='ident'>r</span>.<span class='ident'>next_u64</span>();
-                    <span class='ident'>Thread</span>::<span class='ident'>yield_now</span>();
+                    <span class='ident'>thread</span>::<span class='ident'>yield_now</span>();
                     <span class='ident'>r</span>.<span class='ident'>fill_bytes</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>v</span>);
-                    <span class='ident'>Thread</span>::<span class='ident'>yield_now</span>();
+                    <span class='ident'>thread</span>::<span class='ident'>yield_now</span>();
                 }
             });
         }

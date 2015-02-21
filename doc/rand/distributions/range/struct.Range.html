@@ -42,9 +42,8 @@
 
     <section id='main' class="content struct">
 <h1 class='fqn'><span class='in-band'>Struct <a href='../../index.html'>rand</a>::<wbr><a href='../index.html'>distributions</a>::<wbr><a href='index.html'>range</a>::<wbr><a class='struct' href=''>Range</a><wbr></span><span class='out-of-band'><span id='render-detail'>
-            <a id="collapse-all" href="#">[-]
-            </a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-47' href='../../../src/rand/distributions/range.rs.html#50-54'>[src]</a></span></h1>
+            <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
+        </span><a id='src-49' href='../../../src/rand/distributions/range.rs.html#50-54'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct Range&lt;X&gt; {
     // some fields omitted
 }</pre><div class='docblock'><p>Sample values uniformly between two bounds.</p>
@@ -66,10 +65,10 @@ normally satisfy it, but rounding may mean <code>high</code> can occur.</p>
 <span class='kw'>use</span> <span class='ident'>rand</span>::<span class='ident'>distributions</span>::{<span class='ident'>IndependentSample</span>, <span class='ident'>Range</span>};
 
 <span class='kw'>fn</span> <span class='ident'>main</span>() {
-    <span class='kw'>let</span> <span class='ident'>between</span> <span class='op'>=</span> <span class='ident'>Range</span>::<span class='ident'>new</span>(<span class='number'>10u</span>, <span class='number'>10000u</span>);
+    <span class='kw'>let</span> <span class='ident'>between</span> <span class='op'>=</span> <span class='ident'>Range</span>::<span class='ident'>new</span>(<span class='number'>10</span>, <span class='number'>10000</span>);
     <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>rng</span> <span class='op'>=</span> <span class='ident'>rand</span>::<span class='ident'>thread_rng</span>();
     <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>sum</span> <span class='op'>=</span> <span class='number'>0</span>;
-    <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='number'>0u</span>..<span class='number'>1000</span> {
+    <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='number'>0</span>..<span class='number'>1000</span> {
         <span class='ident'>sum</span> <span class='op'>+=</span> <span class='ident'>between</span>.<span class='ident'>ind_sample</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>rng</span>);
     }
     <span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;{}&quot;</span>, <span class='ident'>sum</span>);

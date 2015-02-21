@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/rand-0.1.2/src/distributions/mod.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/rand-0.1.3/src/distributions/mod.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>mod.rs.html -- source</title>
@@ -403,6 +403,13 @@
 <span id="361">361</span>
 <span id="362">362</span>
 <span id="363">363</span>
+<span id="364">364</span>
+<span id="365">365</span>
+<span id="366">366</span>
+<span id="367">367</span>
+<span id="368">368</span>
+<span id="369">369</span>
+<span id="370">370</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2013 The Rust Project Developers. See the COPYRIGHT</span>
 <span class='comment'>// file at the top-level directory of this distribution and at</span>
@@ -423,10 +430,9 @@
 <span class='doccomment'>//! internally. The `IndependentSample` trait is for generating values</span>
 <span class='doccomment'>//! that do not need to record state.</span>
 
-<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>unstable</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;rand&quot;</span>)]</span>
-
-<span class='kw'>use</span> <span class='ident'>core</span>::<span class='ident'>prelude</span>::<span class='op'>*</span>;
 <span class='kw'>use</span> <span class='ident'>core</span>::<span class='ident'>num</span>::{<span class='ident'>Float</span>, <span class='ident'>Int</span>};
+<span class='kw'>use</span> <span class='ident'>core</span>::<span class='ident'>prelude</span>::<span class='op'>*</span>;
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>marker</span>;
 
 <span class='kw'>use</span> {<span class='ident'>Rng</span>, <span class='ident'>Rand</span>};
 
@@ -462,7 +468,9 @@
 
 <span class='doccomment'>/// A wrapper for generating types that implement `Rand` via the</span>
 <span class='doccomment'>/// `Sample` &amp; `IndependentSample` traits.</span>
-<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>RandSample</span><span class='op'>&lt;</span><span class='ident'>Sup</span><span class='op'>&gt;</span>;
+<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>RandSample</span><span class='op'>&lt;</span><span class='ident'>Sup</span><span class='op'>&gt;</span> {
+    <span class='ident'>_marker</span>: <span class='ident'>marker</span>::<span class='ident'>PhantomData</span><span class='op'>&lt;</span><span class='kw'>fn</span>() <span class='op'>-&gt;</span> <span class='ident'>Sup</span><span class='op'>&gt;</span>,
+}
 
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>Sup</span>: <span class='ident'>Rand</span><span class='op'>&gt;</span> <span class='ident'>Sample</span><span class='op'>&lt;</span><span class='ident'>Sup</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>RandSample</span><span class='op'>&lt;</span><span class='ident'>Sup</span><span class='op'>&gt;</span> {
     <span class='kw'>fn</span> <span class='ident'>sample</span><span class='op'>&lt;</span><span class='ident'>R</span>: <span class='ident'>Rng</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>rng</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>R</span>) <span class='op'>-&gt;</span> <span class='ident'>Sup</span> { <span class='self'>self</span>.<span class='ident'>ind_sample</span>(<span class='ident'>rng</span>) }
@@ -474,10 +482,16 @@
     }
 }
 
+<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>Sup</span><span class='op'>&gt;</span> <span class='ident'>RandSample</span><span class='op'>&lt;</span><span class='ident'>Sup</span><span class='op'>&gt;</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>() <span class='op'>-&gt;</span> <span class='ident'>RandSample</span><span class='op'>&lt;</span><span class='ident'>Sup</span><span class='op'>&gt;</span> {
+        <span class='ident'>RandSample</span> { <span class='ident'>_marker</span>: <span class='ident'>marker</span>::<span class='ident'>PhantomData</span> }
+    }
+}
+
 <span class='doccomment'>/// A value with a particular weight for use with `WeightedChoice`.</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Weighted</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
     <span class='doccomment'>/// The numerical weight of this item</span>
-    <span class='kw'>pub</span> <span class='ident'>weight</span>: <span class='ident'>uint</span>,
+    <span class='kw'>pub</span> <span class='ident'>weight</span>: <span class='ident'>usize</span>,
     <span class='doccomment'>/// The actual item which is being weighted</span>
     <span class='kw'>pub</span> <span class='ident'>item</span>: <span class='ident'>T</span>,
 }
@@ -489,7 +503,7 @@
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// The `Clone` restriction is a limitation of the `Sample` and</span>
 <span class='doccomment'>/// `IndependentSample` traits. Note that `&amp;T` is (cheaply) `Clone` for</span>
-<span class='doccomment'>/// all `T`, as is `uint`, so one can store references or indices into</span>
+<span class='doccomment'>/// all `T`, as is `usize`, so one can store references or indices into</span>
 <span class='doccomment'>/// another vector.</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// # Example</span>
@@ -502,14 +516,14 @@
 <span class='doccomment'>///                      Weighted { weight: 1, item: &#39;c&#39; });</span>
 <span class='doccomment'>/// let wc = WeightedChoice::new(items.as_mut_slice());</span>
 <span class='doccomment'>/// let mut rng = rand::thread_rng();</span>
-<span class='doccomment'>/// for _ in 0u..16 {</span>
+<span class='doccomment'>/// for _ in 0..16 {</span>
 <span class='doccomment'>///      // on average prints &#39;a&#39; 4 times, &#39;b&#39; 8 and &#39;c&#39; twice.</span>
 <span class='doccomment'>///      println!(&quot;{}&quot;, wc.ind_sample(&amp;mut rng));</span>
 <span class='doccomment'>/// }</span>
 <span class='doccomment'>/// ```</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>WeightedChoice</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>T</span>:<span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
     <span class='ident'>items</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> [<span class='ident'>Weighted</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>],
-    <span class='ident'>weight_range</span>: <span class='ident'>Range</span><span class='op'>&lt;</span><span class='ident'>uint</span><span class='op'>&gt;</span>
+    <span class='ident'>weight_range</span>: <span class='ident'>Range</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span>
 }
 
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>T</span>: <span class='ident'>Clone</span><span class='op'>&gt;</span> <span class='ident'>WeightedChoice</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>T</span><span class='op'>&gt;</span> {
@@ -518,12 +532,12 @@
     <span class='doccomment'>/// Panics if:</span>
     <span class='doccomment'>/// - `v` is empty</span>
     <span class='doccomment'>/// - the total weight is 0</span>
-    <span class='doccomment'>/// - the total weight is larger than a `uint` can contain.</span>
+    <span class='doccomment'>/// - the total weight is larger than a `usize` can contain.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>items</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> [<span class='ident'>Weighted</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>]) <span class='op'>-&gt;</span> <span class='ident'>WeightedChoice</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>T</span><span class='op'>&gt;</span> {
         <span class='comment'>// strictly speaking, this is subsumed by the total weight == 0 case</span>
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='op'>!</span><span class='ident'>items</span>.<span class='ident'>is_empty</span>(), <span class='string'>&quot;WeightedChoice::new called with no items&quot;</span>);
 
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>running_total</span> <span class='op'>=</span> <span class='number'>0u</span>;
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>running_total</span> <span class='op'>=</span> <span class='number'>0</span>;
 
         <span class='comment'>// we convert the list from individual weights to cumulative</span>
         <span class='comment'>// weights so we can binary search. This *could* drop elements</span>
@@ -532,7 +546,7 @@
             <span class='ident'>running_total</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='ident'>running_total</span>.<span class='ident'>checked_add</span>(<span class='ident'>item</span>.<span class='ident'>weight</span>) {
                 <span class='prelude-val'>Some</span>(<span class='ident'>n</span>) <span class='op'>=&gt;</span> <span class='ident'>n</span>,
                 <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;WeightedChoice::new called with a total weight \
-                               larger than a uint can contain&quot;</span>)
+                               larger than a usize can contain&quot;</span>)
             };
 
             <span class='ident'>item</span>.<span class='ident'>weight</span> <span class='op'>=</span> <span class='ident'>running_total</span>;
@@ -637,7 +651,7 @@
         <span class='comment'>// this may be slower than it would be otherwise.)</span>
         <span class='comment'>// FIXME: investigate/optimise for the above.</span>
         <span class='kw'>let</span> <span class='ident'>bits</span>: <span class='ident'>u64</span> <span class='op'>=</span> <span class='ident'>rng</span>.<span class='ident'>gen</span>();
-        <span class='kw'>let</span> <span class='ident'>i</span> <span class='op'>=</span> (<span class='ident'>bits</span> <span class='kw-2'>&amp;</span> <span class='number'>0xff</span>) <span class='kw'>as</span> <span class='ident'>uint</span>;
+        <span class='kw'>let</span> <span class='ident'>i</span> <span class='op'>=</span> (<span class='ident'>bits</span> <span class='kw-2'>&amp;</span> <span class='number'>0xff</span>) <span class='kw'>as</span> <span class='ident'>usize</span>;
         <span class='kw'>let</span> <span class='ident'>f</span> <span class='op'>=</span> (<span class='ident'>bits</span> <span class='op'>&gt;&gt;</span> <span class='number'>11</span>) <span class='kw'>as</span> <span class='ident'>f64</span> <span class='op'>/</span> <span class='ident'>SCALE</span>;
 
         <span class='comment'>// u is either U(-1, 1) or U(0, 1) depending on if this is a</span>
@@ -669,7 +683,7 @@
     <span class='kw'>use</span> <span class='ident'>super</span>::{<span class='ident'>RandSample</span>, <span class='ident'>WeightedChoice</span>, <span class='ident'>Weighted</span>, <span class='ident'>Sample</span>, <span class='ident'>IndependentSample</span>};
 
     <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>PartialEq</span>, <span class='ident'>Debug</span>)]</span>
-    <span class='kw'>struct</span> <span class='ident'>ConstRand</span>(<span class='ident'>uint</span>);
+    <span class='kw'>struct</span> <span class='ident'>ConstRand</span>(<span class='ident'>usize</span>);
     <span class='kw'>impl</span> <span class='ident'>Rand</span> <span class='kw'>for</span> <span class='ident'>ConstRand</span> {
         <span class='kw'>fn</span> <span class='ident'>rand</span><span class='op'>&lt;</span><span class='ident'>R</span>: <span class='ident'>Rng</span><span class='op'>&gt;</span>(_: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>R</span>) <span class='op'>-&gt;</span> <span class='ident'>ConstRand</span> {
             <span class='ident'>ConstRand</span>(<span class='number'>0</span>)
@@ -690,7 +704,7 @@
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>test_rand_sample</span>() {
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>rand_sample</span> <span class='op'>=</span> <span class='ident'>RandSample</span>::<span class='op'>&lt;</span><span class='ident'>ConstRand</span><span class='op'>&gt;</span>;
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>rand_sample</span> <span class='op'>=</span> <span class='ident'>RandSample</span>::<span class='op'>&lt;</span><span class='ident'>ConstRand</span><span class='op'>&gt;</span>::<span class='ident'>new</span>();
 
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>rand_sample</span>.<span class='ident'>sample</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> ::<span class='ident'>test</span>::<span class='ident'>rng</span>()), <span class='ident'>ConstRand</span>(<span class='number'>0</span>));
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>rand_sample</span>.<span class='ident'>ind_sample</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> ::<span class='ident'>test</span>::<span class='ident'>rng</span>()), <span class='ident'>ConstRand</span>(<span class='number'>0</span>));
@@ -751,7 +765,7 @@
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span> <span class='attribute'>#[<span class='ident'>should_fail</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>test_weighted_choice_no_items</span>() {
-        <span class='ident'>WeightedChoice</span>::<span class='op'>&lt;</span><span class='ident'>int</span><span class='op'>&gt;</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> []);
+        <span class='ident'>WeightedChoice</span>::<span class='op'>&lt;</span><span class='ident'>isize</span><span class='op'>&gt;</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> []);
     }
     <span class='attribute'>#[<span class='ident'>test</span>]</span> <span class='attribute'>#[<span class='ident'>should_fail</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>test_weighted_choice_zero_weight</span>() {
@@ -760,7 +774,7 @@
     }
     <span class='attribute'>#[<span class='ident'>test</span>]</span> <span class='attribute'>#[<span class='ident'>should_fail</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>test_weighted_choice_weight_overflows</span>() {
-        <span class='kw'>let</span> <span class='ident'>x</span> <span class='op'>=</span> (<span class='op'>-</span><span class='number'>1</span>) <span class='kw'>as</span> <span class='ident'>uint</span> <span class='op'>/</span> <span class='number'>2</span>; <span class='comment'>// x + x + 2 is the overflow</span>
+        <span class='kw'>let</span> <span class='ident'>x</span> <span class='op'>=</span> <span class='op'>!</span><span class='number'>0usize</span> <span class='op'>/</span> <span class='number'>2</span>; <span class='comment'>// x + x + 2 is the overflow</span>
         <span class='ident'>WeightedChoice</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='ident'>Weighted</span> { <span class='ident'>weight</span>: <span class='ident'>x</span>, <span class='ident'>item</span>: <span class='number'>0</span> },
                                   <span class='ident'>Weighted</span> { <span class='ident'>weight</span>: <span class='number'>1</span>, <span class='ident'>item</span>: <span class='number'>1</span> },
                                   <span class='ident'>Weighted</span> { <span class='ident'>weight</span>: <span class='ident'>x</span>, <span class='ident'>item</span>: <span class='number'>2</span> },

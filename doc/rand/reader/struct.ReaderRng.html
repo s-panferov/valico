@@ -42,9 +42,8 @@
 
     <section id='main' class="content struct">
 <h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>rand</a>::<wbr><a href='index.html'>reader</a>::<wbr><a class='struct' href=''>ReaderRng</a><wbr></span><span class='out-of-band'><span id='render-detail'>
-            <a id="collapse-all" href="#">[-]
-            </a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-12342' href='../../src/rand/reader.rs.html#32-34'>[src]</a></span></h1>
+            <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
+        </span><a id='src-12258' href='../../src/rand/reader.rs.html#32-34'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct ReaderRng&lt;R&gt; {
     // some fields omitted
 }</pre><div class='docblock'><p>An RNG that reads random bytes straight from a <code>Reader</code>. This will
@@ -60,7 +59,7 @@ work best with an infinite reader, but this is not required.</p>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>old_io</span>::<span class='ident'>MemReader</span>;
 
 <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>rng</span> <span class='op'>=</span> <span class='ident'>reader</span>::<span class='ident'>ReaderRng</span>::<span class='ident'>new</span>(<span class='ident'>MemReader</span>::<span class='ident'>new</span>(<span class='macro'>vec</span><span class='macro'>!</span>(<span class='number'>1</span>,<span class='number'>2</span>,<span class='number'>3</span>,<span class='number'>4</span>,<span class='number'>5</span>,<span class='number'>6</span>,<span class='number'>7</span>,<span class='number'>8</span>)));
-<span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;{:x}&quot;</span>, <span class='ident'>rng</span>.<span class='ident'>gen</span>::<span class='op'>&lt;</span><span class='ident'>uint</span><span class='op'>&gt;</span>());
+<span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;{:x}&quot;</span>, <span class='ident'>rng</span>.<span class='ident'>gen</span>::<span class='op'>&lt;</span><span class='ident'>u32</span><span class='op'>&gt;</span>());
 </pre>
 </div><h2 id='methods'>Methods</h2><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;R: <a class='trait' href='http://doc.rust-lang.org/nightly/std/old_io/trait.Reader.html' title='std::old_io::Reader'>Reader</a>&gt; <a class='struct' href='../../rand/reader/struct.ReaderRng.html' title='rand::reader::ReaderRng'>ReaderRng</a>&lt;R&gt;</code></h3><div class='impl-items'><h4 id='method.new' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.new' class='fnname'>new</a>(r: R) -&gt; <a class='struct' href='../../rand/reader/struct.ReaderRng.html' title='rand::reader::ReaderRng'>ReaderRng</a>&lt;R&gt;</code></h4>
 <div class='docblock'><p>Create a new <code>ReaderRng</code> from a <code>Reader</code>.</p>

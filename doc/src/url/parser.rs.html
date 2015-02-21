@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/url-0.2.20/src/parser.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/url-0.2.21/src/parser.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>parser.rs.html -- source</title>
@@ -886,21 +886,21 @@
 
 
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>parse_url</span>(<span class='ident'>input</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>parser</span>: <span class='kw-2'>&amp;</span><span class='ident'>UrlParser</span>) <span class='op'>-&gt;</span> <span class='ident'>ParseResult</span><span class='op'>&lt;</span><span class='ident'>Url</span><span class='op'>&gt;</span> {
-    <span class='kw'>let</span> <span class='ident'>input</span> <span class='op'>=</span> <span class='ident'>input</span>.<span class='ident'>trim_matches</span>([<span class='string'>&#39; &#39;</span>, <span class='string'>&#39;\t&#39;</span>, <span class='string'>&#39;\n&#39;</span>, <span class='string'>&#39;\r&#39;</span>, <span class='string'>&#39;\x0C&#39;</span>].<span class='ident'>as_slice</span>());
+    <span class='kw'>let</span> <span class='ident'>input</span> <span class='op'>=</span> <span class='ident'>input</span>.<span class='ident'>trim_matches</span>(<span class='kw-2'>&amp;</span>[<span class='string'>&#39; &#39;</span>, <span class='string'>&#39;\t&#39;</span>, <span class='string'>&#39;\n&#39;</span>, <span class='string'>&#39;\r&#39;</span>, <span class='string'>&#39;\x0C&#39;</span>][..]);
     <span class='kw'>let</span> (<span class='ident'>scheme</span>, <span class='ident'>remaining</span>) <span class='op'>=</span> <span class='kw'>match</span> <span class='ident'>parse_scheme</span>(<span class='ident'>input</span>, <span class='ident'>Context</span>::<span class='ident'>UrlParser</span>) {
         <span class='prelude-val'>Some</span>((<span class='ident'>scheme</span>, <span class='ident'>remaining</span>)) <span class='op'>=&gt;</span> (<span class='ident'>scheme</span>, <span class='ident'>remaining</span>),
         <span class='comment'>// No-scheme state</span>
         <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='kw'>match</span> <span class='ident'>parser</span>.<span class='ident'>base_url</span> {
             <span class='prelude-val'>Some</span>(<span class='kw-2'>&amp;</span><span class='ident'>Url</span> { <span class='kw-2'>ref</span> <span class='ident'>scheme</span>, <span class='ident'>scheme_data</span>: <span class='ident'>SchemeData</span>::<span class='ident'>Relative</span>(<span class='kw-2'>ref</span> <span class='ident'>base</span>),
                         <span class='kw-2'>ref</span> <span class='ident'>query</span>, .. }) <span class='op'>=&gt;</span> {
-                <span class='kw'>let</span> <span class='ident'>scheme_type</span> <span class='op'>=</span> <span class='ident'>parser</span>.<span class='ident'>get_scheme_type</span>(<span class='ident'>scheme</span>.<span class='ident'>as_slice</span>());
+                <span class='kw'>let</span> <span class='ident'>scheme_type</span> <span class='op'>=</span> <span class='ident'>parser</span>.<span class='ident'>get_scheme_type</span>(<span class='kw-2'>&amp;</span><span class='ident'>scheme</span>);
                 <span class='ident'>parse_relative_url</span>(<span class='ident'>input</span>, <span class='ident'>scheme</span>.<span class='ident'>clone</span>(), <span class='ident'>scheme_type</span>, <span class='ident'>base</span>, <span class='ident'>query</span>, <span class='ident'>parser</span>)
             },
             <span class='prelude-val'>Some</span>(_) <span class='op'>=&gt;</span> <span class='prelude-val'>Err</span>(<span class='ident'>ParseError</span>::<span class='ident'>RelativeUrlWithNonRelativeBase</span>),
             <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Err</span>(<span class='ident'>ParseError</span>::<span class='ident'>RelativeUrlWithoutBase</span>),
         },
     };
-    <span class='kw'>let</span> <span class='ident'>scheme_type</span> <span class='op'>=</span> <span class='ident'>parser</span>.<span class='ident'>get_scheme_type</span>(<span class='ident'>scheme</span>.<span class='ident'>as_slice</span>());
+    <span class='kw'>let</span> <span class='ident'>scheme_type</span> <span class='op'>=</span> <span class='ident'>parser</span>.<span class='ident'>get_scheme_type</span>(<span class='kw-2'>&amp;</span><span class='ident'>scheme</span>);
     <span class='kw'>match</span> <span class='ident'>scheme_type</span> {
         <span class='ident'>SchemeType</span>::<span class='ident'>FileLike</span> <span class='op'>=&gt;</span> {
             <span class='comment'>// Relative state?</span>
@@ -1204,7 +1204,7 @@
             }
         }
     }
-    <span class='kw'>let</span> <span class='ident'>host</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>Host</span>::<span class='ident'>parse</span>(<span class='ident'>host_input</span>.<span class='ident'>as_slice</span>()));
+    <span class='kw'>let</span> <span class='ident'>host</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>Host</span>::<span class='ident'>parse</span>(<span class='kw-2'>&amp;</span><span class='ident'>host_input</span>));
     <span class='prelude-val'>Ok</span>((<span class='ident'>host</span>, <span class='kw-2'>&amp;</span><span class='ident'>input</span>[<span class='ident'>end</span>..]))
 }
 
@@ -1256,7 +1256,7 @@
     <span class='kw'>let</span> <span class='ident'>host</span> <span class='op'>=</span> <span class='kw'>if</span> <span class='ident'>host_input</span>.<span class='ident'>is_empty</span>() {
         <span class='ident'>Host</span>::<span class='ident'>Domain</span>(<span class='ident'>String</span>::<span class='ident'>new</span>())
     } <span class='kw'>else</span> {
-        <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>Host</span>::<span class='ident'>parse</span>(<span class='ident'>host_input</span>.<span class='ident'>as_slice</span>()))
+        <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>Host</span>::<span class='ident'>parse</span>(<span class='kw-2'>&amp;</span><span class='ident'>host_input</span>))
     };
     <span class='prelude-val'>Ok</span>((<span class='ident'>host</span>, <span class='kw-2'>&amp;</span><span class='ident'>input</span>[<span class='ident'>end</span>..]))
 }
@@ -1333,7 +1333,7 @@
                 }
             }
         }
-        <span class='kw'>match</span> <span class='ident'>path_part</span>.<span class='ident'>as_slice</span>() {
+        <span class='kw'>match</span> <span class='kw-2'>&amp;</span><span class='op'>*</span><span class='ident'>path_part</span> {
             <span class='string'>&quot;..&quot;</span> <span class='op'>|</span> <span class='string'>&quot;.%2e&quot;</span> <span class='op'>|</span> <span class='string'>&quot;.%2E&quot;</span> <span class='op'>|</span> <span class='string'>&quot;%2e.&quot;</span> <span class='op'>|</span> <span class='string'>&quot;%2E.&quot;</span> <span class='op'>|</span>
             <span class='string'>&quot;%2e%2e&quot;</span> <span class='op'>|</span> <span class='string'>&quot;%2E%2e&quot;</span> <span class='op'>|</span> <span class='string'>&quot;%2e%2E&quot;</span> <span class='op'>|</span> <span class='string'>&quot;%2E%2E&quot;</span> <span class='op'>=&gt;</span> {
                 <span class='ident'>path</span>.<span class='ident'>pop</span>();
@@ -1350,8 +1350,8 @@
                 <span class='kw'>if</span> <span class='ident'>scheme_type</span> <span class='op'>==</span> <span class='ident'>SchemeType</span>::<span class='ident'>FileLike</span>
                    <span class='op'>&amp;&amp;</span> <span class='ident'>path</span>.<span class='ident'>is_empty</span>()
                    <span class='op'>&amp;&amp;</span> <span class='ident'>path_part</span>.<span class='ident'>len</span>() <span class='op'>==</span> <span class='number'>2</span>
-                   <span class='op'>&amp;&amp;</span> <span class='ident'>starts_with_ascii_alpha</span>(<span class='ident'>path_part</span>.<span class='ident'>as_slice</span>())
-                   <span class='op'>&amp;&amp;</span> <span class='ident'>path_part</span>.<span class='ident'>as_slice</span>().<span class='ident'>char_at</span>(<span class='number'>1</span>) <span class='op'>==</span> <span class='string'>&#39;|&#39;</span> {
+                   <span class='op'>&amp;&amp;</span> <span class='ident'>starts_with_ascii_alpha</span>(<span class='kw-2'>&amp;</span><span class='ident'>path_part</span>)
+                   <span class='op'>&amp;&amp;</span> <span class='ident'>path_part</span>.<span class='ident'>char_at</span>(<span class='number'>1</span>) <span class='op'>==</span> <span class='string'>&#39;|&#39;</span> {
                     <span class='comment'>// Windows drive letter quirk</span>
                     <span class='kw'>unsafe</span> {
                         <span class='ident'>path_part</span>.<span class='ident'>as_mut_vec</span>()[<span class='number'>1</span>] <span class='op'>=</span> <span class='string'>b&#39;:&#39;</span>
@@ -1430,8 +1430,8 @@
         }
     }
 
-    <span class='kw'>let</span> <span class='ident'>query_bytes</span> <span class='op'>=</span> <span class='ident'>parser</span>.<span class='ident'>query_encoding_override</span>.<span class='ident'>encode</span>(<span class='ident'>query</span>.<span class='ident'>as_slice</span>());
-    <span class='prelude-val'>Ok</span>((<span class='ident'>percent_encode</span>(<span class='ident'>query_bytes</span>.<span class='ident'>as_slice</span>(), <span class='ident'>QUERY_ENCODE_SET</span>), <span class='ident'>remaining</span>))
+    <span class='kw'>let</span> <span class='ident'>query_bytes</span> <span class='op'>=</span> <span class='ident'>parser</span>.<span class='ident'>query_encoding_override</span>.<span class='ident'>encode</span>(<span class='kw-2'>&amp;</span><span class='ident'>query</span>);
+    <span class='prelude-val'>Ok</span>((<span class='ident'>percent_encode</span>(<span class='kw-2'>&amp;</span><span class='ident'>query_bytes</span>, <span class='ident'>QUERY_ENCODE_SET</span>), <span class='ident'>remaining</span>))
 }
 
 

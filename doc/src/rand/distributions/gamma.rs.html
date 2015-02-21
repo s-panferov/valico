@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/rand-0.1.2/src/distributions/gamma.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/rand-0.1.3/src/distributions/gamma.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>gamma.rs.html -- source</title>
@@ -783,7 +783,7 @@
     <span class='kw'>fn</span> <span class='ident'>test_chi_squared_one</span>() {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>chi</span> <span class='op'>=</span> <span class='ident'>ChiSquared</span>::<span class='ident'>new</span>(<span class='number'>1.0</span>);
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>rng</span> <span class='op'>=</span> ::<span class='ident'>test</span>::<span class='ident'>rng</span>();
-        <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='number'>0u</span>..<span class='number'>1000</span> {
+        <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='number'>0</span>..<span class='number'>1000</span> {
             <span class='ident'>chi</span>.<span class='ident'>sample</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>rng</span>);
             <span class='ident'>chi</span>.<span class='ident'>ind_sample</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>rng</span>);
         }
@@ -792,7 +792,7 @@
     <span class='kw'>fn</span> <span class='ident'>test_chi_squared_small</span>() {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>chi</span> <span class='op'>=</span> <span class='ident'>ChiSquared</span>::<span class='ident'>new</span>(<span class='number'>0.5</span>);
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>rng</span> <span class='op'>=</span> ::<span class='ident'>test</span>::<span class='ident'>rng</span>();
-        <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='number'>0u</span>..<span class='number'>1000</span> {
+        <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='number'>0</span>..<span class='number'>1000</span> {
             <span class='ident'>chi</span>.<span class='ident'>sample</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>rng</span>);
             <span class='ident'>chi</span>.<span class='ident'>ind_sample</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>rng</span>);
         }
@@ -801,7 +801,7 @@
     <span class='kw'>fn</span> <span class='ident'>test_chi_squared_large</span>() {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>chi</span> <span class='op'>=</span> <span class='ident'>ChiSquared</span>::<span class='ident'>new</span>(<span class='number'>30.0</span>);
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>rng</span> <span class='op'>=</span> ::<span class='ident'>test</span>::<span class='ident'>rng</span>();
-        <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='number'>0u</span>..<span class='number'>1000</span> {
+        <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='number'>0</span>..<span class='number'>1000</span> {
             <span class='ident'>chi</span>.<span class='ident'>sample</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>rng</span>);
             <span class='ident'>chi</span>.<span class='ident'>ind_sample</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>rng</span>);
         }
@@ -816,7 +816,7 @@
     <span class='kw'>fn</span> <span class='ident'>test_f</span>() {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>f</span> <span class='op'>=</span> <span class='ident'>FisherF</span>::<span class='ident'>new</span>(<span class='number'>2.0</span>, <span class='number'>32.0</span>);
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>rng</span> <span class='op'>=</span> ::<span class='ident'>test</span>::<span class='ident'>rng</span>();
-        <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='number'>0u</span>..<span class='number'>1000</span> {
+        <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='number'>0</span>..<span class='number'>1000</span> {
             <span class='ident'>f</span>.<span class='ident'>sample</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>rng</span>);
             <span class='ident'>f</span>.<span class='ident'>ind_sample</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>rng</span>);
         }
@@ -826,7 +826,7 @@
     <span class='kw'>fn</span> <span class='ident'>test_t</span>() {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>t</span> <span class='op'>=</span> <span class='ident'>StudentT</span>::<span class='ident'>new</span>(<span class='number'>11.0</span>);
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>rng</span> <span class='op'>=</span> ::<span class='ident'>test</span>::<span class='ident'>rng</span>();
-        <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='number'>0u</span>..<span class='number'>1000</span> {
+        <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='number'>0</span>..<span class='number'>1000</span> {
             <span class='ident'>t</span>.<span class='ident'>sample</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>rng</span>);
             <span class='ident'>t</span>.<span class='ident'>ind_sample</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>rng</span>);
         }

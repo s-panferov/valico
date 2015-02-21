@@ -42,9 +42,8 @@
 
     <section id='main' class="content mod">
 <h1 class='fqn'><span class='in-band'>Crate <a class='mod' href=''>regex</a><wbr></span><span class='out-of-band'><a href='stability.html'>[stability]</a> <span id='render-detail'>
-            <a id="collapse-all" href="#">[-]
-            </a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-0' href='../src/regex/lib.rs.html#13-416'>[src]</a></span></h1>
+            <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
+        </span><a id='src-0' href='../src/regex/lib.rs.html#13-415'>[src]</a></span></h1>
 <div class='docblock'><p>This crate provides a native implementation of regular expressions that is
 heavily based on RE2 both in syntax and in implementation. Notably,
 backreferences and arbitrary lookahead/lookbehind assertions are not
@@ -101,8 +100,7 @@ compiled at runtime with <code>Regex::new</code>.</p>
 the <code>regex_macros</code> crate as a syntax extension:</p>
 <pre id='rust-example-rendered' class='rust '>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>plugin</span>)]</span>
-<span class='attribute'>#[<span class='ident'>plugin</span>]</span> <span class='attribute'>#[<span class='ident'>no_link</span>]</span>
-<span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>regex_macros</span>;
+<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>plugin</span>(<span class='ident'>regex_macros</span>)]</span>
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>regex</span>;
 
 <span class='kw'>fn</span> <span class='ident'>main</span>() {

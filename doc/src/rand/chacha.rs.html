@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/rand-0.1.2/src/chacha.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/rand-0.1.3/src/chacha.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>chacha.rs.html -- source</title>
@@ -351,9 +351,9 @@
 <span class='kw'>use</span> <span class='ident'>core</span>::<span class='ident'>num</span>::<span class='ident'>Int</span>;
 <span class='kw'>use</span> {<span class='ident'>Rng</span>, <span class='ident'>SeedableRng</span>, <span class='ident'>Rand</span>};
 
-<span class='kw'>const</span> <span class='ident'>KEY_WORDS</span>    : <span class='ident'>uint</span> <span class='op'>=</span>  <span class='number'>8</span>; <span class='comment'>// 8 words for the 256-bit key</span>
-<span class='kw'>const</span> <span class='ident'>STATE_WORDS</span>  : <span class='ident'>uint</span> <span class='op'>=</span> <span class='number'>16</span>;
-<span class='kw'>const</span> <span class='ident'>CHACHA_ROUNDS</span>: <span class='ident'>uint</span> <span class='op'>=</span> <span class='number'>20</span>; <span class='comment'>// Cryptographically secure from 8 upwards as of this writing</span>
+<span class='kw'>const</span> <span class='ident'>KEY_WORDS</span>    : <span class='ident'>usize</span> <span class='op'>=</span>  <span class='number'>8</span>; <span class='comment'>// 8 words for the 256-bit key</span>
+<span class='kw'>const</span> <span class='ident'>STATE_WORDS</span>  : <span class='ident'>usize</span> <span class='op'>=</span> <span class='number'>16</span>;
+<span class='kw'>const</span> <span class='ident'>CHACHA_ROUNDS</span>: <span class='ident'>usize</span> <span class='op'>=</span> <span class='number'>20</span>; <span class='comment'>// Cryptographically secure from 8 upwards as of this writing</span>
 
 <span class='doccomment'>/// A random number generator that uses the ChaCha20 algorithm [1].</span>
 <span class='doccomment'>///</span>
@@ -368,7 +368,7 @@
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>ChaChaRng</span> {
     <span class='ident'>buffer</span>:  [<span class='ident'>u32</span>; <span class='ident'>STATE_WORDS</span>], <span class='comment'>// Internal buffer of output</span>
     <span class='ident'>state</span>:   [<span class='ident'>u32</span>; <span class='ident'>STATE_WORDS</span>], <span class='comment'>// Initial state</span>
-    <span class='ident'>index</span>:   <span class='ident'>uint</span>,                 <span class='comment'>// Index into state</span>
+    <span class='ident'>index</span>:   <span class='ident'>usize</span>,                 <span class='comment'>// Index into state</span>
 }
 
 <span class='kw'>static</span> <span class='ident'>EMPTY</span>: <span class='ident'>ChaChaRng</span> <span class='op'>=</span> <span class='ident'>ChaChaRng</span> {
@@ -605,9 +605,9 @@
         <span class='comment'>// Store the 17*i-th 32-bit word,</span>
         <span class='comment'>// i.e., the i-th word of the i-th 16-word block</span>
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>v</span> : <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>u32</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>new</span>();
-        <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='number'>0u</span>..<span class='number'>16</span> {
+        <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='number'>0</span>..<span class='number'>16</span> {
             <span class='ident'>v</span>.<span class='ident'>push</span>(<span class='ident'>ra</span>.<span class='ident'>next_u32</span>());
-            <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='number'>0u</span>..<span class='number'>16</span> {
+            <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='number'>0</span>..<span class='number'>16</span> {
                 <span class='ident'>ra</span>.<span class='ident'>next_u32</span>();
             }
         }
@@ -624,7 +624,7 @@
         <span class='kw'>let</span> <span class='ident'>seed</span> : <span class='kw-2'>&amp;</span>[_] <span class='op'>=</span> <span class='kw-2'>&amp;</span>[<span class='number'>0u32</span>; <span class='number'>8</span>];
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>rng</span>: <span class='ident'>ChaChaRng</span> <span class='op'>=</span> <span class='ident'>SeedableRng</span>::<span class='ident'>from_seed</span>(<span class='ident'>seed</span>);
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>clone</span> <span class='op'>=</span> <span class='ident'>rng</span>.<span class='ident'>clone</span>();
-        <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='number'>0u</span>..<span class='number'>16</span> {
+        <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='number'>0</span>..<span class='number'>16</span> {
             <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>rng</span>.<span class='ident'>next_u64</span>(), <span class='ident'>clone</span>.<span class='ident'>next_u64</span>());
         }
     }

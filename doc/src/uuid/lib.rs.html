@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/uuid-0.1.9/src/lib.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/uuid-0.1.10/src/lib.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>lib.rs.html -- source</title>
@@ -918,7 +918,7 @@
 <span class='doccomment'>//! * [RFC4122: A Universally Unique IDentifier (UUID) URN Namespace](</span>
 <span class='doccomment'>//!     http://tools.ietf.org/html/rfc4122)</span>
 
-<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>collections</span>, <span class='ident'>core</span>, <span class='ident'>hash</span>, <span class='ident'>rand</span>, <span class='ident'>unicode</span>)]</span>
+<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>collections</span>, <span class='ident'>core</span>, <span class='ident'>unicode</span>)]</span>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>doc</span>(<span class='ident'>html_logo_url</span> <span class='op'>=</span> <span class='string'>&quot;http://www.rust-lang.org/logos/rust-logo-128x128-blk-v2.png&quot;</span>,
        <span class='ident'>html_favicon_url</span> <span class='op'>=</span> <span class='string'>&quot;http://www.rust-lang.org/favicon.ico&quot;</span>,
        <span class='ident'>html_root_url</span> <span class='op'>=</span> <span class='string'>&quot;http://doc.rust-lang.org/uuid/&quot;</span>)]</span>
@@ -930,6 +930,7 @@
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>test</span>;
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='string'>&quot;rustc-serialize&quot;</span> <span class='kw'>as</span> <span class='ident'>rustc_serialize</span>;
+<span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>rand</span>;
 
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>default</span>::<span class='ident'>Default</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fmt</span>;
@@ -937,11 +938,10 @@
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>iter</span>::<span class='ident'>repeat</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>mem</span>::{<span class='ident'>transmute</span>,<span class='ident'>transmute_copy</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>num</span>::{<span class='ident'>FromStrRadix</span>, <span class='ident'>Int</span>};
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>rand</span>::<span class='ident'>Rng</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>rand</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>slice</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>str</span>::<span class='ident'>FromStr</span>;
 
+<span class='kw'>use</span> <span class='ident'>rand</span>::<span class='ident'>Rng</span>;
 <span class='kw'>use</span> <span class='ident'>rustc_serialize</span>::{<span class='ident'>Encoder</span>, <span class='ident'>Encodable</span>, <span class='ident'>Decoder</span>, <span class='ident'>Decodable</span>};
 
 <span class='doccomment'>/// A 128-bit (16 byte) buffer containing the ID</span>
@@ -983,8 +983,8 @@
     <span class='ident'>bytes</span>: <span class='ident'>UuidBytes</span>
 }
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>S</span>: <span class='ident'>hash</span>::<span class='ident'>Writer</span> <span class='op'>+</span> <span class='ident'>hash</span>::<span class='ident'>Hasher</span><span class='op'>&gt;</span> <span class='ident'>hash</span>::<span class='ident'>Hash</span><span class='op'>&lt;</span><span class='ident'>S</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Uuid</span> {
-    <span class='kw'>fn</span> <span class='ident'>hash</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>state</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>S</span>) {
+<span class='kw'>impl</span> <span class='ident'>hash</span>::<span class='ident'>Hash</span> <span class='kw'>for</span> <span class='ident'>Uuid</span> {
+    <span class='kw'>fn</span> <span class='ident'>hash</span><span class='op'>&lt;</span><span class='ident'>S</span>: <span class='ident'>hash</span>::<span class='ident'>Hasher</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>state</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>S</span>) {
         <span class='self'>self</span>.<span class='ident'>bytes</span>.<span class='ident'>hash</span>(<span class='ident'>state</span>)
     }
 }
@@ -1034,7 +1034,7 @@
 
 <span class='comment'>// Length of each hyphenated group in hex digits</span>
 <span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>non_upper_case_globals</span>)]</span>
-<span class='kw'>static</span> <span class='ident'>UuidGroupLens</span>: [<span class='ident'>usize</span>; <span class='number'>5</span>] <span class='op'>=</span> [<span class='number'>8us</span>, <span class='number'>4us</span>, <span class='number'>4us</span>, <span class='number'>4us</span>, <span class='number'>12us</span>];
+<span class='kw'>static</span> <span class='ident'>UuidGroupLens</span>: [<span class='ident'>usize</span>; <span class='number'>5</span>] <span class='op'>=</span> [<span class='number'>8</span>, <span class='number'>4</span>, <span class='number'>4</span>, <span class='number'>4</span>, <span class='number'>12</span>];
 
 <span class='doccomment'>/// UUID support</span>
 <span class='kw'>impl</span> <span class='ident'>Uuid</span> {
@@ -1177,7 +1177,7 @@
     <span class='doccomment'>/// Example: `936DA01F9ABD4d9d80C702AF85C822A8`</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>to_simple_string</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>String</span> {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>s</span> <span class='op'>=</span> <span class='ident'>repeat</span>(<span class='number'>0u8</span>).<span class='ident'>take</span>(<span class='number'>32</span>).<span class='ident'>collect</span>::<span class='op'>&lt;</span><span class='ident'>Vec</span><span class='op'>&lt;</span>_<span class='op'>&gt;&gt;</span>();
-        <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='ident'>range</span>(<span class='number'>0</span>, <span class='number'>16</span>) {
+        <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='number'>0</span>..<span class='number'>16</span> {
             <span class='kw'>let</span> <span class='ident'>digit</span> <span class='op'>=</span> <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;{:02x}&quot;</span>, <span class='self'>self</span>.<span class='ident'>bytes</span>[<span class='ident'>i</span>] <span class='kw'>as</span> <span class='ident'>usize</span>);
             <span class='ident'>s</span>[<span class='ident'>i</span><span class='op'>*</span><span class='number'>2</span><span class='op'>+</span><span class='number'>0</span>] <span class='op'>=</span> <span class='ident'>digit</span>.<span class='ident'>as_bytes</span>()[<span class='number'>0</span>];
             <span class='ident'>s</span>[<span class='ident'>i</span><span class='op'>*</span><span class='number'>2</span><span class='op'>+</span><span class='number'>1</span>] <span class='op'>=</span> <span class='ident'>digit</span>.<span class='ident'>as_bytes</span>()[<span class='number'>1</span>];
@@ -1284,7 +1284,7 @@
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>ub</span> <span class='op'>=</span> [<span class='number'>0u8</span>; <span class='number'>16</span>];
 
         <span class='comment'>// Extract each hex digit from the string</span>
-        <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='ident'>range</span>(<span class='number'>0</span>, <span class='number'>16</span>) {
+        <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='number'>0</span>..<span class='number'>16</span> {
             <span class='ident'>ub</span>[<span class='ident'>i</span>] <span class='op'>=</span> <span class='ident'>FromStrRadix</span>::<span class='ident'>from_str_radix</span>(<span class='kw-2'>&amp;</span><span class='ident'>vs</span>[<span class='ident'>i</span><span class='op'>*</span><span class='number'>2</span> .. (<span class='ident'>i</span><span class='op'>+</span><span class='number'>1</span>)<span class='op'>*</span><span class='number'>2</span>],
                                                  <span class='number'>16</span>).<span class='ident'>unwrap</span>();
         }
@@ -1373,7 +1373,7 @@
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
 <span class='kw'>mod</span> <span class='ident'>tests</span> {
     <span class='kw'>use</span> <span class='ident'>super</span>::{<span class='ident'>Uuid</span>, <span class='ident'>UuidVariant</span>, <span class='ident'>UuidVersion</span>};
-    <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>rand</span>;
+    <span class='kw'>use</span> <span class='ident'>rand</span>;
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>test_nil</span>() {

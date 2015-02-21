@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/rustc-serialize-0.2.14/src/json.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/rustc-serialize-0.2.15/src/json.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>json.rs.html -- source</title>
@@ -4999,7 +4999,7 @@
     <span class='doccomment'>/// Returns None otherwise.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>as_string</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>str</span><span class='op'>&gt;</span> {
         <span class='kw'>match</span> <span class='op'>*</span><span class='self'>self</span> {
-            <span class='ident'>Json</span>::<span class='ident'>String</span>(<span class='kw-2'>ref</span> <span class='ident'>s</span>) <span class='op'>=&gt;</span> <span class='prelude-val'>Some</span>(<span class='kw-2'>&amp;</span><span class='ident'>s</span>[]),
+            <span class='ident'>Json</span>::<span class='ident'>String</span>(<span class='kw-2'>ref</span> <span class='ident'>s</span>) <span class='op'>=&gt;</span> <span class='prelude-val'>Some</span>(<span class='kw-2'>&amp;</span><span class='ident'>s</span>),
             _ <span class='op'>=&gt;</span> <span class='prelude-val'>None</span>
         }
     }
@@ -6094,7 +6094,7 @@
                 <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>ExpectedError</span>(<span class='string'>&quot;String or Object&quot;</span>.<span class='ident'>to_string</span>(), <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;{}&quot;</span>, <span class='ident'>json</span>)))
             }
         };
-        <span class='kw'>let</span> <span class='ident'>idx</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='ident'>names</span>.<span class='ident'>iter</span>().<span class='ident'>position</span>(<span class='op'>|</span><span class='ident'>n</span><span class='op'>|</span> <span class='op'>*</span><span class='ident'>n</span> <span class='op'>==</span> <span class='kw-2'>&amp;</span><span class='ident'>name</span>[]) {
+        <span class='kw'>let</span> <span class='ident'>idx</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='ident'>names</span>.<span class='ident'>iter</span>().<span class='ident'>position</span>(<span class='op'>|</span><span class='ident'>n</span><span class='op'>|</span> <span class='op'>*</span><span class='ident'>n</span> <span class='op'>==</span> <span class='ident'>name</span>) {
             <span class='prelude-val'>Some</span>(<span class='ident'>idx</span>) <span class='op'>=&gt;</span> <span class='ident'>idx</span>,
             <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>UnknownVariantError</span>(<span class='ident'>name</span>))
         };
@@ -7320,7 +7320,7 @@
         <span class='ident'>hm</span>.<span class='ident'>insert</span>(<span class='number'>1</span>, <span class='boolval'>true</span>);
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>mem_buf</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>new</span>();
         <span class='macro'>write</span><span class='macro'>!</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>mem_buf</span>, <span class='string'>&quot;{}&quot;</span>, <span class='ident'>super</span>::<span class='ident'>as_pretty_json</span>(<span class='kw-2'>&amp;</span><span class='ident'>hm</span>)).<span class='ident'>unwrap</span>();
-        <span class='kw'>let</span> <span class='ident'>json_str</span> <span class='op'>=</span> <span class='ident'>from_utf8</span>(<span class='kw-2'>&amp;</span><span class='ident'>mem_buf</span>[]).<span class='ident'>unwrap</span>();
+        <span class='kw'>let</span> <span class='ident'>json_str</span> <span class='op'>=</span> <span class='ident'>from_utf8</span>(<span class='kw-2'>&amp;</span><span class='ident'>mem_buf</span>).<span class='ident'>unwrap</span>();
         <span class='kw'>match</span> <span class='ident'>Json</span>::<span class='ident'>from_str</span>(<span class='ident'>json_str</span>) {
             <span class='prelude-val'>Err</span>(_) <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;Unable to parse json_str: {}&quot;</span>, <span class='ident'>json_str</span>),
             _ <span class='op'>=&gt;</span> {} <span class='comment'>// it parsed and we are good to go</span>
@@ -7336,7 +7336,7 @@
         <span class='ident'>hm</span>.<span class='ident'>insert</span>(<span class='number'>1</span>, <span class='boolval'>true</span>);
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>mem_buf</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>new</span>();
         <span class='macro'>write</span><span class='macro'>!</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>mem_buf</span>, <span class='string'>&quot;{}&quot;</span>, <span class='ident'>super</span>::<span class='ident'>as_pretty_json</span>(<span class='kw-2'>&amp;</span><span class='ident'>hm</span>)).<span class='ident'>unwrap</span>();
-        <span class='kw'>let</span> <span class='ident'>json_str</span> <span class='op'>=</span> <span class='ident'>from_utf8</span>(<span class='kw-2'>&amp;</span><span class='ident'>mem_buf</span>[]).<span class='ident'>unwrap</span>();
+        <span class='kw'>let</span> <span class='ident'>json_str</span> <span class='op'>=</span> <span class='ident'>from_utf8</span>(<span class='kw-2'>&amp;</span><span class='ident'>mem_buf</span>).<span class='ident'>unwrap</span>();
         <span class='kw'>match</span> <span class='ident'>Json</span>::<span class='ident'>from_str</span>(<span class='ident'>json_str</span>) {
             <span class='prelude-val'>Err</span>(_) <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;Unable to parse json_str: {}&quot;</span>, <span class='ident'>json_str</span>),
             _ <span class='op'>=&gt;</span> {} <span class='comment'>// it parsed and we are good to go</span>
@@ -7376,7 +7376,7 @@
             <span class='macro'>write</span><span class='macro'>!</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>writer</span>, <span class='string'>&quot;{}&quot;</span>,
                    <span class='ident'>super</span>::<span class='ident'>as_pretty_json</span>(<span class='kw-2'>&amp;</span><span class='ident'>json</span>).<span class='ident'>indent</span>(<span class='ident'>i</span> <span class='kw'>as</span> <span class='ident'>u32</span>)).<span class='ident'>unwrap</span>();
 
-            <span class='kw'>let</span> <span class='ident'>printed</span> <span class='op'>=</span> <span class='ident'>from_utf8</span>(<span class='kw-2'>&amp;</span><span class='ident'>writer</span>[]).<span class='ident'>unwrap</span>();
+            <span class='kw'>let</span> <span class='ident'>printed</span> <span class='op'>=</span> <span class='ident'>from_utf8</span>(<span class='kw-2'>&amp;</span><span class='ident'>writer</span>).<span class='ident'>unwrap</span>();
 
             <span class='comment'>// Check for indents at each line</span>
             <span class='kw'>let</span> <span class='ident'>lines</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>str</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>printed</span>.<span class='ident'>lines</span>().<span class='ident'>collect</span>();
