@@ -4,10 +4,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="API documentation for the Rust `phf_shared` crate.">
-    <meta name="keywords" content="rust, rustlang, rust-lang, phf_shared">
+    <meta name="description" content="API documentation for the Rust `HashState` struct in crate `phf_generator`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, HashState">
 
-    <title>phf_shared - Rust</title>
+    <title>phf_generator::HashState - Rust</title>
 
     <link rel="stylesheet" type="text/css" href="../main.css">
 
@@ -26,7 +26,7 @@
 
     <section class="sidebar">
         
-        <p class='location'></p>
+        <p class='location'><a href='index.html'>phf_generator</a></p><div class='block struct'><h2>Structs</h2><a class='struct current' href='struct.HashState.html' title=''>HashState</a></div><div class='block fn'><h2>Functions</h2><a class='fn ' href='fn.generate_hash.html' title=''>generate_hash</a></div>
     </section>
 
     <nav class="sub">
@@ -40,26 +40,16 @@
         </form>
     </nav>
 
-    <section id='main' class="content mod">
-<h1 class='fqn'><span class='in-band'>Crate <a class='mod' href=''>phf_shared</a><wbr></span><span class='out-of-band'><a href='stability.html'>[stability]</a> <span id='render-detail'>
+    <section id='main' class="content struct">
+<h1 class='fqn'><span class='in-band'>Struct <a href='index.html'>phf_generator</a>::<wbr><a class='struct' href=''>HashState</a><wbr></span><span class='out-of-band'><span id='render-detail'>
             <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-0' href='../src/phf_shared/lib.rs.html#1-127'>[src]</a></span></h1>
-<h2 id='traits' class='section-header'><a href="#traits">Traits</a></h2>
-<table>
-                    <tr>
-                        <td><a class='stability Unmarked' title='No stability level'></a><a class='trait' href='trait.PhfHash.html'
-                               title='phf_shared::PhfHash'>PhfHash</a></td>
-                        <td class='docblock short'><p>A trait implemented by types which can be used in PHF data structures</p>
-</td>
-                    </tr>
-                </table><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
-<table>
-                    <tr>
-                        <td><a class='stability Unmarked' title='No stability level'></a><a class='fn' href='fn.displace.html'
-                               title='phf_shared::displace'>displace</a></td>
-                        <td class='docblock short'></td>
-                    </tr>
-                </table></section>
+        </span><a id='src-25' href='../src/phf_generator/lib.rs.html#12-16'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct HashState {
+    pub key: <a href='http://doc.rust-lang.org/nightly/std/primitive.u64.html'>u64</a>,
+    pub disps: <a class='struct' href='http://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(<a href='http://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>, <a href='http://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>)</a>&gt;,
+    pub map: <a class='struct' href='http://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a href='http://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>&gt;,
+}</pre><h2 class='fields'>Fields</h2>
+<table><tr><td id='structfield.key'><a class='stability Unmarked' title='No stability level'></a><code>key</code></td><td></td></tr><tr><td id='structfield.disps'><a class='stability Unmarked' title='No stability level'></a><code>disps</code></td><td></td></tr><tr><td id='structfield.map'><a class='stability Unmarked' title='No stability level'></a><code>map</code></td><td></td></tr></table></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>
@@ -99,7 +89,7 @@
 
     <script>
         window.rootPath = "../";
-        window.currentCrate = "phf_shared";
+        window.currentCrate = "phf_generator";
         window.playgroundUrl = "";
     </script>
     <script src="../jquery.js"></script>
