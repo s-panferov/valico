@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/regex-0.1.15/src/lib.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/regex-0.1.16/src/lib.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>lib.rs.html -- source</title>
@@ -455,6 +455,15 @@
 <span id="413">413</span>
 <span id="414">414</span>
 <span id="415">415</span>
+<span id="416">416</span>
+<span id="417">417</span>
+<span id="418">418</span>
+<span id="419">419</span>
+<span id="420">420</span>
+<span id="421">421</span>
+<span id="422">422</span>
+<span id="423">423</span>
+<span id="424">424</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2014 The Rust Project Developers. See the COPYRIGHT</span>
 <span class='comment'>// file at the top-level directory of this distribution and at</span>
@@ -465,8 +474,6 @@
 <span class='comment'>// &lt;LICENSE-MIT or http://opensource.org/licenses/MIT&gt;, at your</span>
 <span class='comment'>// option. This file may not be copied, modified, or distributed</span>
 <span class='comment'>// except according to those terms.</span>
-<span class='comment'>//</span>
-<span class='comment'>// ignore-lexer-test FIXME #15679</span>
 
 <span class='doccomment'>//! This crate provides a native implementation of regular expressions that is</span>
 <span class='doccomment'>//! heavily based on RE2 both in syntax and in implementation. Notably,</span>
@@ -478,6 +485,9 @@
 <span class='doccomment'>//! This crate&#39;s documentation provides some simple examples, describes Unicode</span>
 <span class='doccomment'>//! support and exhaustively lists the supported syntax. For more specific</span>
 <span class='doccomment'>//! details on the API, please see the documentation for the `Regex` type.</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! This crates is [on crates.io](https://crates.io/crates/regex) and can be</span>
+<span class='doccomment'>//! used by adding `regex` to your dependencies in your projects `Cargo.toml`.</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! # First example: find a date</span>
 <span class='doccomment'>//!</span>
@@ -515,16 +525,10 @@
 <span class='doccomment'>//! given expression to native Rust code, which makes it much faster for</span>
 <span class='doccomment'>//! searching text.</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! Since `regex!` provides compiled regular expressions that are both safer</span>
-<span class='doccomment'>//! and faster to use, you should use them whenever possible. The only</span>
-<span class='doccomment'>//! requirement for using them is that you have a string literal corresponding</span>
-<span class='doccomment'>//! to your expression. Otherwise, it is indistinguishable from an expression</span>
-<span class='doccomment'>//! compiled at runtime with `Regex::new`.</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! To use the `regex!` macro, you must enable the `phase` feature and import</span>
+<span class='doccomment'>//! To use the `regex!` macro, you must enable the `plugin` feature and import</span>
 <span class='doccomment'>//! the `regex_macros` crate as a syntax extension:</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! ```rust</span>
+<span class='doccomment'>//! ```ignore</span>
 <span class='doccomment'>//! #![feature(plugin)]</span>
 <span class='doccomment'>//! #![plugin(regex_macros)]</span>
 <span class='doccomment'>//! extern crate regex;</span>
@@ -546,6 +550,21 @@
 <span class='doccomment'>//! expressions, but 100+ calls to `regex!` will probably result in a</span>
 <span class='doccomment'>//! noticeably bigger binary.</span>
 <span class='doccomment'>//!</span>
+<span class='doccomment'>//! **NOTE**: This is implemented using a compiler plugin, which will not be</span>
+<span class='doccomment'>//! available on the Rust 1.0 beta/stable channels. Therefore, you&#39;ll only</span>
+<span class='doccomment'>//! be able to use `regex!` on the nightlies. If you want to retain the</span>
+<span class='doccomment'>//! `regex!` macro, you can cheat and define this:</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! ```rust</span>
+<span class='doccomment'>//! macro_rules! regex(</span>
+<span class='doccomment'>//!     ($s:expr) =&gt; (regex::Regex::new($s).unwrap());</span>
+<span class='doccomment'>//! );</span>
+<span class='doccomment'>//! ```</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! But this just replaces native regexes with dynamic regexes under the hood.</span>
+<span class='doccomment'>//! Moreover, this will cause your program to panic *at runtime* if an invalid</span>
+<span class='doccomment'>//! regular expression is given.</span>
+<span class='doccomment'>//!</span>
 <span class='doccomment'>//! # Example: iterating over capture groups</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! This crate provides convenient iterators for matching an expression</span>
@@ -554,10 +573,9 @@
 <span class='doccomment'>//! them by their component pieces:</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! ```rust</span>
-<span class='doccomment'>//! # #![feature(plugin)] #![plugin(regex_macros)]</span>
-<span class='doccomment'>//! # extern crate regex;</span>
+<span class='doccomment'>//! # extern crate regex; use regex::Regex;</span>
 <span class='doccomment'>//! # fn main() {</span>
-<span class='doccomment'>//! let re = regex!(r&quot;(\d{4})-(\d{2})-(\d{2})&quot;);</span>
+<span class='doccomment'>//! let re = Regex::new(r&quot;(\d{4})-(\d{2})-(\d{2})&quot;).unwrap();</span>
 <span class='doccomment'>//! let text = &quot;2012-03-14, 2013-01-01 and 2014-07-05&quot;;</span>
 <span class='doccomment'>//! for cap in re.captures_iter(text) {</span>
 <span class='doccomment'>//!     println!(&quot;Month: {} Day: {} Year: {}&quot;,</span>
@@ -582,10 +600,9 @@
 <span class='doccomment'>//! in our replacement text:</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! ```rust</span>
-<span class='doccomment'>//! # #![feature(plugin)] #![plugin(regex_macros)]</span>
-<span class='doccomment'>//! # extern crate regex;</span>
+<span class='doccomment'>//! # extern crate regex; use regex::Regex;</span>
 <span class='doccomment'>//! # fn main() {</span>
-<span class='doccomment'>//! let re = regex!(r&quot;(?P&lt;y&gt;\d{4})-(?P&lt;m&gt;\d{2})-(?P&lt;d&gt;\d{2})&quot;);</span>
+<span class='doccomment'>//! let re = Regex::new(r&quot;(?P&lt;y&gt;\d{4})-(?P&lt;m&gt;\d{2})-(?P&lt;d&gt;\d{2})&quot;).unwrap();</span>
 <span class='doccomment'>//! let before = &quot;2012-03-14, 2013-01-01 and 2014-07-05&quot;;</span>
 <span class='doccomment'>//! let after = re.replace_all(before, &quot;$m/$d/$y&quot;);</span>
 <span class='doccomment'>//! assert_eq!(after.as_slice(), &quot;03/14/2012, 01/01/2013 and 07/05/2014&quot;);</span>
@@ -629,10 +646,9 @@
 <span class='doccomment'>//! directly in your expression:</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! ```rust</span>
-<span class='doccomment'>//! # #![feature(plugin)] #![plugin(regex_macros)]</span>
-<span class='doccomment'>//! # extern crate regex;</span>
+<span class='doccomment'>//! # extern crate regex; use regex::Regex;</span>
 <span class='doccomment'>//! # fn main() {</span>
-<span class='doccomment'>//! let re = regex!(r&quot;(?i)Δ+&quot;);</span>
+<span class='doccomment'>//! let re = Regex::new(r&quot;(?i)Δ+&quot;).unwrap();</span>
 <span class='doccomment'>//! assert_eq!(re.find(&quot;ΔδΔ&quot;), Some((0, 6)));</span>
 <span class='doccomment'>//! # }</span>
 <span class='doccomment'>//! ```</span>
@@ -642,10 +658,9 @@
 <span class='doccomment'>//! Cherokee letters:</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! ```rust</span>
-<span class='doccomment'>//! # #![feature(plugin)] #![plugin(regex_macros)]</span>
-<span class='doccomment'>//! # extern crate regex;</span>
+<span class='doccomment'>//! # extern crate regex; use regex::Regex;</span>
 <span class='doccomment'>//! # fn main() {</span>
-<span class='doccomment'>//! let re = regex!(r&quot;[\pN\p{Greek}\p{Cherokee}]+&quot;);</span>
+<span class='doccomment'>//! let re = Regex::new(r&quot;[\pN\p{Greek}\p{Cherokee}]+&quot;).unwrap();</span>
 <span class='doccomment'>//! assert_eq!(re.find(&quot;abcΔᎠβⅠᏴγδⅡxyz&quot;), Some((3, 23)));</span>
 <span class='doccomment'>//! # }</span>
 <span class='doccomment'>//! ```</span>
@@ -739,10 +754,9 @@
 <span class='doccomment'>//! expression:</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! ```rust</span>
-<span class='doccomment'>//! # #![feature(plugin)] #![plugin(regex_macros)]</span>
-<span class='doccomment'>//! # extern crate regex;</span>
+<span class='doccomment'>//! # extern crate regex; use regex::Regex;</span>
 <span class='doccomment'>//! # fn main() {</span>
-<span class='doccomment'>//! let re = regex!(r&quot;(?i)a+(?-i)b+&quot;);</span>
+<span class='doccomment'>//! let re = Regex::new(r&quot;(?i)a+(?-i)b+&quot;).unwrap();</span>
 <span class='doccomment'>//! let cap = re.captures(&quot;AaAaAbbBBBb&quot;).unwrap();</span>
 <span class='doccomment'>//! assert_eq!(cap.at(0), Some(&quot;AaAaAbb&quot;));</span>
 <span class='doccomment'>//! # }</span>
@@ -859,8 +873,10 @@
     <span class='comment'>// On the bright side, `rustdoc` lets us hide this from the public API</span>
     <span class='comment'>// documentation.</span>
     <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>compile</span>::<span class='ident'>Program</span>;
-    <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>compile</span>::<span class='ident'>Inst</span>::{<span class='ident'>Match</span>, <span class='ident'>OneChar</span>, <span class='ident'>CharClass</span>, <span class='ident'>Any</span>, <span class='ident'>EmptyBegin</span>, <span class='ident'>EmptyEnd</span>,
-                            <span class='ident'>EmptyWordBoundary</span>, <span class='ident'>Save</span>, <span class='ident'>Jump</span>, <span class='ident'>Split</span>};
+    <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>compile</span>::<span class='ident'>Inst</span>::{
+        <span class='ident'>Match</span>, <span class='ident'>OneChar</span>, <span class='ident'>CharClass</span>, <span class='ident'>Any</span>, <span class='ident'>EmptyBegin</span>, <span class='ident'>EmptyEnd</span>,
+        <span class='ident'>EmptyWordBoundary</span>, <span class='ident'>Save</span>, <span class='ident'>Jump</span>, <span class='ident'>Split</span>,
+    };
     <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>parse</span>::{
         <span class='ident'>FLAG_EMPTY</span>, <span class='ident'>FLAG_NOCASE</span>, <span class='ident'>FLAG_MULTI</span>, <span class='ident'>FLAG_DOTNL</span>,
         <span class='ident'>FLAG_SWAP_GREED</span>, <span class='ident'>FLAG_NEGATED</span>,
@@ -869,7 +885,9 @@
     <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>re</span>::<span class='ident'>Regex</span>::{<span class='ident'>Dynamic</span>, <span class='ident'>Native</span>};
     <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>vm</span>::{<span class='ident'>CharReader</span>, <span class='ident'>find_prefix</span>};
     <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>vm</span>::<span class='ident'>MatchKind</span>::{<span class='self'>self</span>, <span class='ident'>Exists</span>, <span class='ident'>Location</span>, <span class='ident'>Submatches</span>};
-    <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>vm</span>::<span class='ident'>StepState</span>::{<span class='self'>self</span>, <span class='ident'>StepMatchEarlyReturn</span>, <span class='ident'>StepMatch</span>, <span class='ident'>StepContinue</span>};
+    <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>vm</span>::<span class='ident'>StepState</span>::{
+        <span class='self'>self</span>, <span class='ident'>StepMatchEarlyReturn</span>, <span class='ident'>StepMatch</span>, <span class='ident'>StepContinue</span>,
+    };
 }
 </pre>
 </section>
