@@ -296,7 +296,7 @@ impl Coercer for ArrayCoercer {
             let string = val.as_string().unwrap();
             let mut array = json::Json::Array(
                 string
-                    .split_str(separator.as_slice())
+                    .split(separator.as_slice())
                     .map(|s| s.to_string().to_json())
                     .collect::<Vec<json::Json>>()
             );

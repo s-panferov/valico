@@ -28,7 +28,7 @@ fn test_suite() {
 
     let json_v4_schema: json::Json = content.parse().unwrap();
 
-    visit_specs(&path::Path::new("tests/schema/JSON-Schema-Test-Suite/tests/draft4"), |&: path, spec_set: json::Json| {
+    visit_specs(&path::Path::new("tests/schema/JSON-Schema-Test-Suite/tests/draft4"), |path, spec_set: json::Json| {
         let spec_set = spec_set.as_array().unwrap();
 
         let exceptions: Vec<(String, String)> = vec![

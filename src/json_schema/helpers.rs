@@ -69,7 +69,7 @@ pub fn alter_fragment_path(mut url: url::Url, new_fragment: String) -> url::Url 
         Some(ref fragment) if fragment.len() > 0 => {
             if !fragment.starts_with("/") {
                 let mut result_fragment = "".to_string();
-                let mut fragment_parts = fragment.split_str("/").map(|s| s.to_string());
+                let mut fragment_parts = fragment.split("/").map(|s| s.to_string());
                 result_fragment.push_str("#");
                 result_fragment.push_str(fragment_parts.next().unwrap().as_slice());
                 result_fragment.push_str("/");
@@ -91,7 +91,7 @@ pub fn serialize_schema_path(url: &url::Url) -> (String, Option<String>) {
         Some(fragment) if fragment.len() > 0 => {
             let mut url_str = url.serialize_no_fragment();
             if !fragment.starts_with("/") {
-                let fragment_parts = fragment.split_str("/").map(|s| s.to_string()).collect::<Vec<String>>();
+                let fragment_parts = fragment.split("/").map(|s| s.to_string()).collect::<Vec<String>>();
                 url_str.push_str("#");
                 url_str.push_str(fragment_parts[0].as_slice());
                 let fragment = if fragment_parts.len() > 1 {

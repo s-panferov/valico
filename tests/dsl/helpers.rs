@@ -8,7 +8,7 @@ use valico::common::error;
 pub fn test_result(params: &json_dsl::Builder, scope: Option<&json_schema::Scope>, body: &str) -> json::Json {
     let obj = body.parse::<json::Json>();
     match obj {
-        Ok(mut json) => { 
+        Ok(mut json) => {
             let state = params.process(&mut json, &scope);
             if state.is_strictly_valid() {
                 return json;
@@ -25,7 +25,7 @@ pub fn test_result(params: &json_dsl::Builder, scope: Option<&json_schema::Scope
 pub fn get_errors(params: &json_dsl::Builder, scope: Option<&json_schema::Scope>, body: &str) -> Vec<Box<error::ValicoError>> {
     let obj = body.parse::<json::Json>();
     match obj {
-        Ok(mut json) => { 
+        Ok(mut json) => {
             let state = params.process(&mut json, &scope);
             if state.is_strictly_valid() {
                 panic!("Success responce when we await some errors");
@@ -45,7 +45,7 @@ pub fn assert_str_eq_with_scope(params: &json_dsl::Builder, scope: Option<&json_
 
 pub fn assert_error_with_scope<T: error::ValicoError + Send>(params: &json_dsl::Builder, scope: Option<&json_schema::Scope>, body: &str, path: &str) {
     let errors = get_errors(params, scope, body);
-    let error = errors.iter().find(|&: error| {
+    let error = errors.iter().find(|error| {
         let err = error.downcast_ref::<T>();
         err.is_some() && err.unwrap().get_path() == path
     });
