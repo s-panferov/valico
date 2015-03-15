@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["glob_t",""],["timespec",""],["timeval",""]],"enum":[["timezone",""]],"type":[["pthread_t",""],["sighandler_t",""]]});
+initSidebarItems({"enum":[["timezone",""]],"struct":[["glob_t",""],["timespec",""],["timeval",""]],"type":[["pthread_t",""],["sighandler_t",""]]});
