@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/rustc-serialize-0.3.5/src/base64.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/rustc-serialize-0.3.6/src/base64.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>base64.rs.html -- source</title>
@@ -578,14 +578,14 @@
         <span class='kw'>let</span> <span class='ident'>mod_len</span> <span class='op'>=</span> <span class='ident'>len</span> <span class='op'>%</span> <span class='number'>3</span>;
         <span class='kw'>let</span> <span class='ident'>cond_len</span> <span class='op'>=</span> <span class='ident'>len</span> <span class='op'>-</span> <span class='ident'>mod_len</span>;
         <span class='kw'>let</span> <span class='ident'>newline</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='ident'>config</span>.<span class='ident'>newline</span> {
-            <span class='ident'>Newline</span>::<span class='ident'>LF</span> <span class='op'>=&gt;</span> <span class='string'>b&quot;\n&quot;</span>,
-            <span class='ident'>Newline</span>::<span class='ident'>CRLF</span> <span class='op'>=&gt;</span> <span class='string'>b&quot;\r\n&quot;</span>
+            <span class='ident'>Newline</span>::<span class='ident'>LF</span> <span class='op'>=&gt;</span> <span class='string'>&quot;\n&quot;</span>,
+            <span class='ident'>Newline</span>::<span class='ident'>CRLF</span> <span class='op'>=&gt;</span> <span class='string'>&quot;\r\n&quot;</span>,
         };
         <span class='kw'>while</span> <span class='ident'>i</span> <span class='op'>&lt;</span> <span class='ident'>cond_len</span> {
             <span class='kw'>let</span> (<span class='ident'>first</span>, <span class='ident'>second</span>, <span class='ident'>third</span>) <span class='op'>=</span> (<span class='self'>self</span>[<span class='ident'>i</span>], <span class='self'>self</span>[<span class='ident'>i</span> <span class='op'>+</span> <span class='number'>1</span>], <span class='self'>self</span>[<span class='ident'>i</span> <span class='op'>+</span> <span class='number'>2</span>]);
             <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>line_length</span>) <span class='op'>=</span> <span class='ident'>config</span>.<span class='ident'>line_length</span> {
                 <span class='kw'>if</span> <span class='ident'>cur_length</span> <span class='op'>&gt;=</span> <span class='ident'>line_length</span> {
-                    <span class='ident'>v</span>.<span class='ident'>extend</span>(<span class='ident'>newline</span>.<span class='ident'>iter</span>().<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='op'>*</span><span class='ident'>x</span>));
+                    <span class='ident'>v</span>.<span class='ident'>extend</span>(<span class='ident'>newline</span>.<span class='ident'>bytes</span>());
                     <span class='ident'>cur_length</span> <span class='op'>=</span> <span class='number'>0</span>;
                 }
             }
@@ -607,7 +607,7 @@
         <span class='kw'>if</span> <span class='ident'>mod_len</span> <span class='op'>!=</span> <span class='number'>0</span> {
             <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>line_length</span>) <span class='op'>=</span> <span class='ident'>config</span>.<span class='ident'>line_length</span> {
                 <span class='kw'>if</span> <span class='ident'>cur_length</span> <span class='op'>&gt;=</span> <span class='ident'>line_length</span> {
-                    <span class='ident'>v</span>.<span class='ident'>extend</span>(<span class='ident'>newline</span>.<span class='ident'>iter</span>().<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='op'>*</span><span class='ident'>x</span>));
+                    <span class='ident'>v</span>.<span class='ident'>extend</span>(<span class='ident'>newline</span>.<span class='ident'>bytes</span>());
                 }
             }
         }
