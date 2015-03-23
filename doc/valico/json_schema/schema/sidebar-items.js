@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["compile",""]],"struct":[["CompilationSettings",""],["Schema",""],["ScopedSchema",""],["WalkContext",""]],"enum":[["SchemaError",""]]});
+initSidebarItems({"struct":[["CompilationSettings",""],["Schema",""],["ScopedSchema",""],["WalkContext",""]],"enum":[["SchemaError",""]],"fn":[["compile",""]]});
