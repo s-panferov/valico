@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/rand-0.1.4/src/distributions/mod.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/rand-0.2.1/src/distributions/mod.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>mod.rs.html -- source</title>
@@ -408,8 +408,6 @@
 <span id="366">366</span>
 <span id="367">367</span>
 <span id="368">368</span>
-<span id="369">369</span>
-<span id="370">370</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2013 The Rust Project Developers. See the COPYRIGHT</span>
 <span class='comment'>// file at the top-level directory of this distribution and at</span>
@@ -430,8 +428,7 @@
 <span class='doccomment'>//! internally. The `IndependentSample` trait is for generating values</span>
 <span class='doccomment'>//! that do not need to record state.</span>
 
-<span class='kw'>use</span> <span class='ident'>core</span>::<span class='ident'>num</span>::{<span class='ident'>Float</span>, <span class='ident'>Int</span>};
-<span class='kw'>use</span> <span class='ident'>core</span>::<span class='ident'>prelude</span>::<span class='op'>*</span>;
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>num</span>::{<span class='ident'>Float</span>, <span class='ident'>Int</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>marker</span>;
 
 <span class='kw'>use</span> {<span class='ident'>Rng</span>, <span class='ident'>Rand</span>};
@@ -491,7 +488,7 @@
 <span class='doccomment'>/// A value with a particular weight for use with `WeightedChoice`.</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Weighted</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
     <span class='doccomment'>/// The numerical weight of this item</span>
-    <span class='kw'>pub</span> <span class='ident'>weight</span>: <span class='ident'>usize</span>,
+    <span class='kw'>pub</span> <span class='ident'>weight</span>: <span class='ident'>u32</span>,
     <span class='doccomment'>/// The actual item which is being weighted</span>
     <span class='kw'>pub</span> <span class='ident'>item</span>: <span class='ident'>T</span>,
 }
@@ -503,7 +500,7 @@
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// The `Clone` restriction is a limitation of the `Sample` and</span>
 <span class='doccomment'>/// `IndependentSample` traits. Note that `&amp;T` is (cheaply) `Clone` for</span>
-<span class='doccomment'>/// all `T`, as is `usize`, so one can store references or indices into</span>
+<span class='doccomment'>/// all `T`, as is `u32`, so one can store references or indices into</span>
 <span class='doccomment'>/// another vector.</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// # Example</span>
@@ -523,7 +520,7 @@
 <span class='doccomment'>/// ```</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>WeightedChoice</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>T</span>:<span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> {
     <span class='ident'>items</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> [<span class='ident'>Weighted</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>],
-    <span class='ident'>weight_range</span>: <span class='ident'>Range</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span>
+    <span class='ident'>weight_range</span>: <span class='ident'>Range</span><span class='op'>&lt;</span><span class='ident'>u32</span><span class='op'>&gt;</span>
 }
 
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>T</span>: <span class='ident'>Clone</span><span class='op'>&gt;</span> <span class='ident'>WeightedChoice</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>T</span><span class='op'>&gt;</span> {
@@ -532,7 +529,7 @@
     <span class='doccomment'>/// Panics if:</span>
     <span class='doccomment'>/// - `v` is empty</span>
     <span class='doccomment'>/// - the total weight is 0</span>
-    <span class='doccomment'>/// - the total weight is larger than a `usize` can contain.</span>
+    <span class='doccomment'>/// - the total weight is larger than a `u32` can contain.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>items</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> [<span class='ident'>Weighted</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>]) <span class='op'>-&gt;</span> <span class='ident'>WeightedChoice</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>T</span><span class='op'>&gt;</span> {
         <span class='comment'>// strictly speaking, this is subsumed by the total weight == 0 case</span>
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='op'>!</span><span class='ident'>items</span>.<span class='ident'>is_empty</span>(), <span class='string'>&quot;WeightedChoice::new called with no items&quot;</span>);
@@ -546,7 +543,7 @@
             <span class='ident'>running_total</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='ident'>running_total</span>.<span class='ident'>checked_add</span>(<span class='ident'>item</span>.<span class='ident'>weight</span>) {
                 <span class='prelude-val'>Some</span>(<span class='ident'>n</span>) <span class='op'>=&gt;</span> <span class='ident'>n</span>,
                 <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;WeightedChoice::new called with a total weight \
-                               larger than a usize can contain&quot;</span>)
+                               larger than a u32 can contain&quot;</span>)
             };
 
             <span class='ident'>item</span>.<span class='ident'>weight</span> <span class='op'>=</span> <span class='ident'>running_total</span>;
@@ -635,7 +632,7 @@
             <span class='kw-2'>mut</span> <span class='ident'>pdf</span>: <span class='ident'>P</span>,
             <span class='kw-2'>mut</span> <span class='ident'>zero_case</span>: <span class='ident'>Z</span>)
             <span class='op'>-&gt;</span> <span class='ident'>f64</span> <span class='kw'>where</span> <span class='ident'>P</span>: <span class='ident'>FnMut</span>(<span class='ident'>f64</span>) <span class='op'>-&gt;</span> <span class='ident'>f64</span>, <span class='ident'>Z</span>: <span class='ident'>FnMut</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>R</span>, <span class='ident'>f64</span>) <span class='op'>-&gt;</span> <span class='ident'>f64</span> {
-    <span class='kw'>static</span> <span class='ident'>SCALE</span>: <span class='ident'>f64</span> <span class='op'>=</span> (<span class='number'>1u64</span> <span class='op'>&lt;&lt;</span> <span class='number'>53</span>) <span class='kw'>as</span> <span class='ident'>f64</span>;
+    <span class='kw'>const</span> <span class='ident'>SCALE</span>: <span class='ident'>f64</span> <span class='op'>=</span> (<span class='number'>1u64</span> <span class='op'>&lt;&lt;</span> <span class='number'>53</span>) <span class='kw'>as</span> <span class='ident'>f64</span>;
     <span class='kw'>loop</span> {
         <span class='comment'>// reimplement the f64 generation as an optimisation suggested</span>
         <span class='comment'>// by the Doornik paper: we have a lot of precision-space</span>
@@ -677,7 +674,6 @@
 
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
 <span class='kw'>mod</span> <span class='ident'>tests</span> {
-    <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>prelude</span>::<span class='ident'>v1</span>::<span class='op'>*</span>;
 
     <span class='kw'>use</span> {<span class='ident'>Rng</span>, <span class='ident'>Rand</span>};
     <span class='kw'>use</span> <span class='ident'>super</span>::{<span class='ident'>RandSample</span>, <span class='ident'>WeightedChoice</span>, <span class='ident'>Weighted</span>, <span class='ident'>Sample</span>, <span class='ident'>IndependentSample</span>};
@@ -763,18 +759,18 @@
            [<span class='number'>50</span>, <span class='number'>51</span>, <span class='number'>52</span>, <span class='number'>53</span>, <span class='number'>54</span>, <span class='number'>55</span>, <span class='number'>56</span>]);
     }
 
-    <span class='attribute'>#[<span class='ident'>test</span>]</span> <span class='attribute'>#[<span class='ident'>should_fail</span>]</span>
+    <span class='attribute'>#[<span class='ident'>test</span>]</span> <span class='attribute'>#[<span class='ident'>should_panic</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>test_weighted_choice_no_items</span>() {
         <span class='ident'>WeightedChoice</span>::<span class='op'>&lt;</span><span class='ident'>isize</span><span class='op'>&gt;</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> []);
     }
-    <span class='attribute'>#[<span class='ident'>test</span>]</span> <span class='attribute'>#[<span class='ident'>should_fail</span>]</span>
+    <span class='attribute'>#[<span class='ident'>test</span>]</span> <span class='attribute'>#[<span class='ident'>should_panic</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>test_weighted_choice_zero_weight</span>() {
         <span class='ident'>WeightedChoice</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='ident'>Weighted</span> { <span class='ident'>weight</span>: <span class='number'>0</span>, <span class='ident'>item</span>: <span class='number'>0</span>},
                                   <span class='ident'>Weighted</span> { <span class='ident'>weight</span>: <span class='number'>0</span>, <span class='ident'>item</span>: <span class='number'>1</span>}]);
     }
-    <span class='attribute'>#[<span class='ident'>test</span>]</span> <span class='attribute'>#[<span class='ident'>should_fail</span>]</span>
+    <span class='attribute'>#[<span class='ident'>test</span>]</span> <span class='attribute'>#[<span class='ident'>should_panic</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>test_weighted_choice_weight_overflows</span>() {
-        <span class='kw'>let</span> <span class='ident'>x</span> <span class='op'>=</span> <span class='op'>!</span><span class='number'>0usize</span> <span class='op'>/</span> <span class='number'>2</span>; <span class='comment'>// x + x + 2 is the overflow</span>
+        <span class='kw'>let</span> <span class='ident'>x</span> <span class='op'>=</span> <span class='op'>!</span><span class='number'>0</span> <span class='op'>/</span> <span class='number'>2</span>; <span class='comment'>// x + x + 2 is the overflow</span>
         <span class='ident'>WeightedChoice</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='ident'>Weighted</span> { <span class='ident'>weight</span>: <span class='ident'>x</span>, <span class='ident'>item</span>: <span class='number'>0</span> },
                                   <span class='ident'>Weighted</span> { <span class='ident'>weight</span>: <span class='number'>1</span>, <span class='ident'>item</span>: <span class='number'>1</span> },
                                   <span class='ident'>Weighted</span> { <span class='ident'>weight</span>: <span class='ident'>x</span>, <span class='ident'>item</span>: <span class='number'>2</span> },

@@ -4,10 +4,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="API documentation for the Rust `enabled` fn in crate `log`.">
-    <meta name="keywords" content="rust, rustlang, rust-lang, enabled">
+    <meta name="description" content="API documentation for the Rust `LogMetadata` struct in crate `log`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, LogMetadata">
 
-    <title>log::enabled - Rust</title>
+    <title>log::LogMetadata - Rust</title>
 
     <link rel="stylesheet" type="text/css" href="../main.css">
 
@@ -26,7 +26,7 @@
 
     <section class="sidebar">
         <a href='../log/index.html'><img src='http://www.rust-lang.org/logos/rust-logo-128x128-blk-v2.png' alt='' width='100'></a>
-        <p class='location'><a href='index.html'>log</a></p><script>window.sidebarCurrent = {name: 'enabled', ty: 'fn', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+        <p class='location'><a href='index.html'>log</a></p><script>window.sidebarCurrent = {name: 'LogMetadata', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
     </section>
 
     <nav class="sub">
@@ -40,16 +40,18 @@
         </form>
     </nav>
 
-    <section id='main' class="content fn">
-<h1 class='fqn'><span class='in-band'>Function <a href='index.html'>log</a>::<wbr><a class='fn' href=''>enabled</a><wbr></span><span class='out-of-band'><span id='render-detail'>
+    <section id='main' class="content struct">
+<h1 class='fqn'><span class='in-band'>Struct <a href='index.html'>log</a>::<wbr><a class='struct' href=''>LogMetadata</a><wbr></span><span class='out-of-band'><span id='render-detail'>
             <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-1408' href='../src/log/lib.rs.html#596-602'>[src]</a></span></h1>
-<pre class='rust fn'>pub fn enabled(level: <a class='enum' href='../log/enum.LogLevel.html' title='log::LogLevel'>LogLevel</a>, module: &amp;<a href='http://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></pre><div class='docblock'><p>Determines if the current logger will ignore a log message at the specified
-level from the specified module.</p>
-
-<p>This should not typically be called directly. The <code>log_enabled!</code> macro
-should be used instead.</p>
-</div></section>
+        </span><a id='src-938' href='../src/log/lib.rs.html#459-462'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct LogMetadata&lt;'a&gt; {
+    // some fields omitted
+}</pre><div class='docblock'><p>Metadata about a log message.</p>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;'a&gt; <a class='struct' href='../log/struct.LogMetadata.html' title='log::LogMetadata'>LogMetadata</a>&lt;'a&gt;</code></h3><div class='impl-items'><h4 id='method.level' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.level' class='fnname'>level</a>(&amp;self) -&gt; <a class='enum' href='../log/enum.LogLevel.html' title='log::LogLevel'>LogLevel</a></code></h4>
+<div class='docblock'><p>The verbosity level of the message.</p>
+</div><h4 id='method.target' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.target' class='fnname'>target</a>(&amp;self) -&gt; &amp;<a href='http://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a></code></h4>
+<div class='docblock'><p>The name of the target of the directive.</p>
+</div></div></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>

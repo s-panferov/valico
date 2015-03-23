@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/rand-0.1.4/src/distributions/gamma.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/rand-0.2.1/src/distributions/gamma.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>gamma.rs.html -- source</title>
@@ -453,7 +453,6 @@
 <span id="411">411</span>
 <span id="412">412</span>
 <span id="413">413</span>
-<span id="414">414</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2013 The Rust Project Developers. See the COPYRIGHT</span>
 <span class='comment'>// file at the top-level directory of this distribution and at</span>
@@ -472,7 +471,7 @@
 <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>GammaRepr</span>::<span class='op'>*</span>;
 <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>ChiSquaredRepr</span>::<span class='op'>*</span>;
 
-<span class='kw'>use</span> <span class='ident'>core</span>::<span class='ident'>num</span>::<span class='ident'>Float</span>;
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>num</span>::<span class='ident'>Float</span>;
 
 <span class='kw'>use</span> {<span class='ident'>Rng</span>, <span class='ident'>Open01</span>};
 <span class='kw'>use</span> <span class='ident'>super</span>::<span class='ident'>normal</span>::<span class='ident'>StandardNormal</span>;
@@ -807,7 +806,7 @@
         }
     }
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
-    <span class='attribute'>#[<span class='ident'>should_fail</span>]</span>
+    <span class='attribute'>#[<span class='ident'>should_panic</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>test_chi_squared_invalid_dof</span>() {
         <span class='ident'>ChiSquared</span>::<span class='ident'>new</span>(<span class='op'>-</span><span class='number'>1.0</span>);
     }
@@ -836,7 +835,6 @@
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
 <span class='kw'>mod</span> <span class='ident'>bench</span> {
     <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>test</span>;
-    <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>prelude</span>::<span class='ident'>v1</span>::<span class='op'>*</span>;
     <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>test</span>::<span class='ident'>Bencher</span>;
     <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>mem</span>::<span class='ident'>size_of</span>;
     <span class='kw'>use</span> <span class='ident'>distributions</span>::<span class='ident'>IndependentSample</span>;

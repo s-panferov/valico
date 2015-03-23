@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/rand-0.1.4/src/isaac.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/rand-0.2.1/src/isaac.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>isaac.rs.html -- source</title>
@@ -664,10 +664,6 @@
 <span id="622">622</span>
 <span id="623">623</span>
 <span id="624">624</span>
-<span id="625">625</span>
-<span id="626">626</span>
-<span id="627">627</span>
-<span id="628">628</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2013 The Rust Project Developers. See the COPYRIGHT</span>
 <span class='comment'>// file at the top-level directory of this distribution and at</span>
@@ -683,10 +679,9 @@
 
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>allow</span>(<span class='ident'>non_camel_case_types</span>)]</span>
 
-<span class='kw'>use</span> <span class='ident'>core</span>::<span class='ident'>prelude</span>::<span class='op'>*</span>;
-<span class='kw'>use</span> <span class='ident'>core</span>::<span class='ident'>slice</span>;
-<span class='kw'>use</span> <span class='ident'>core</span>::<span class='ident'>iter</span>::{<span class='ident'>range_step</span>, <span class='ident'>repeat</span>};
-<span class='kw'>use</span> <span class='ident'>core</span>::<span class='ident'>num</span>::<span class='ident'>wrapping</span>::<span class='ident'>Wrapping</span> <span class='kw'>as</span> <span class='ident'>w</span>;
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>slice</span>;
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>iter</span>::<span class='ident'>repeat</span>;
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>num</span>::<span class='ident'>wrapping</span>::<span class='ident'>Wrapping</span> <span class='kw'>as</span> <span class='ident'>w</span>;
 
 <span class='kw'>use</span> {<span class='ident'>Rng</span>, <span class='ident'>SeedableRng</span>, <span class='ident'>Rand</span>, <span class='ident'>w32</span>, <span class='ident'>w64</span>};
 
@@ -763,7 +758,7 @@
         <span class='kw'>if</span> <span class='ident'>use_rsl</span> {
             <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>memloop</span> {
                 (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>arr</span>:<span class='ident'>expr</span>) <span class='op'>=&gt;</span> {{
-                    <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='ident'>range_step</span>(<span class='number'>0</span>, <span class='ident'>RAND_SIZE_USIZE</span>, <span class='number'>8</span>) {
+                    <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> (<span class='number'>0</span>..<span class='ident'>RAND_SIZE_USIZE</span>).<span class='ident'>step_by</span>(<span class='number'>8</span>) {
                         <span class='ident'>a</span><span class='op'>=</span><span class='ident'>a</span><span class='op'>+</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>arr</span>[<span class='ident'>i</span>  ]; <span class='ident'>b</span><span class='op'>=</span><span class='ident'>b</span><span class='op'>+</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>arr</span>[<span class='ident'>i</span><span class='op'>+</span><span class='number'>1</span>];
                         <span class='ident'>c</span><span class='op'>=</span><span class='ident'>c</span><span class='op'>+</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>arr</span>[<span class='ident'>i</span><span class='op'>+</span><span class='number'>2</span>]; <span class='ident'>d</span><span class='op'>=</span><span class='ident'>d</span><span class='op'>+</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>arr</span>[<span class='ident'>i</span><span class='op'>+</span><span class='number'>3</span>];
                         <span class='ident'>e</span><span class='op'>=</span><span class='ident'>e</span><span class='op'>+</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>arr</span>[<span class='ident'>i</span><span class='op'>+</span><span class='number'>4</span>]; <span class='ident'>f</span><span class='op'>=</span><span class='ident'>f</span><span class='op'>+</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>arr</span>[<span class='ident'>i</span><span class='op'>+</span><span class='number'>5</span>];
@@ -780,7 +775,7 @@
             <span class='macro'>memloop</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>rsl</span>);
             <span class='macro'>memloop</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>mem</span>);
         } <span class='kw'>else</span> {
-            <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='ident'>range_step</span>(<span class='number'>0</span>, <span class='ident'>RAND_SIZE_USIZE</span>, <span class='number'>8</span>) {
+            <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> (<span class='number'>0</span>..<span class='ident'>RAND_SIZE_USIZE</span>).<span class='ident'>step_by</span>(<span class='number'>8</span>) {
                 <span class='macro'>mix</span><span class='macro'>!</span>();
                 <span class='self'>self</span>.<span class='ident'>mem</span>[<span class='ident'>i</span>  ]<span class='op'>=</span><span class='ident'>a</span>; <span class='self'>self</span>.<span class='ident'>mem</span>[<span class='ident'>i</span><span class='op'>+</span><span class='number'>1</span>]<span class='op'>=</span><span class='ident'>b</span>;
                 <span class='self'>self</span>.<span class='ident'>mem</span>[<span class='ident'>i</span><span class='op'>+</span><span class='number'>2</span>]<span class='op'>=</span><span class='ident'>c</span>; <span class='self'>self</span>.<span class='ident'>mem</span>[<span class='ident'>i</span><span class='op'>+</span><span class='number'>3</span>]<span class='op'>=</span><span class='ident'>d</span>;
@@ -794,7 +789,6 @@
 
     <span class='doccomment'>/// Refills the output buffer (`self.rsl`)</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>unsigned_negation</span>)]</span>
     <span class='kw'>fn</span> <span class='ident'>isaac</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) {
         <span class='self'>self</span>.<span class='ident'>c</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>c</span> <span class='op'>+</span> <span class='ident'>w</span>(<span class='number'>1</span>);
         <span class='comment'>// abbreviations</span>
@@ -840,7 +834,7 @@
                 }}
             }
 
-            <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='ident'>range_step</span>(<span class='number'>0</span>, <span class='ident'>MIDPOINT</span>, <span class='number'>4</span>) {
+            <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> (<span class='number'>0</span>..<span class='ident'>MIDPOINT</span>).<span class='ident'>step_by</span>(<span class='number'>4</span>) {
                 <span class='macro'>rngstepp</span><span class='macro'>!</span>(<span class='ident'>i</span> <span class='op'>+</span> <span class='number'>0</span>, <span class='number'>13</span>);
                 <span class='macro'>rngstepn</span><span class='macro'>!</span>(<span class='ident'>i</span> <span class='op'>+</span> <span class='number'>1</span>, <span class='number'>6</span>);
                 <span class='macro'>rngstepp</span><span class='macro'>!</span>(<span class='ident'>i</span> <span class='op'>+</span> <span class='number'>2</span>, <span class='number'>2</span>);
@@ -1179,9 +1173,7 @@
 
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
 <span class='kw'>mod</span> <span class='ident'>test</span> {
-    <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>prelude</span>::<span class='ident'>v1</span>::<span class='op'>*</span>;
-
-    <span class='kw'>use</span> <span class='ident'>core</span>::<span class='ident'>iter</span>::<span class='ident'>order</span>;
+    <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>iter</span>::<span class='ident'>order</span>;
     <span class='kw'>use</span> {<span class='ident'>Rng</span>, <span class='ident'>SeedableRng</span>};
     <span class='kw'>use</span> <span class='ident'>super</span>::{<span class='ident'>IsaacRng</span>, <span class='ident'>Isaac64Rng</span>};
 

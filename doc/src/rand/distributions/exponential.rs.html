@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/rand-0.1.4/src/distributions/exponential.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/rand-0.2.1/src/distributions/exponential.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>exponential.rs.html -- source</title>
@@ -181,8 +181,6 @@
 <span id="139">139</span>
 <span id="140">140</span>
 <span id="141">141</span>
-<span id="142">142</span>
-<span id="143">143</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2013 The Rust Project Developers. See the COPYRIGHT</span>
 <span class='comment'>// file at the top-level directory of this distribution and at</span>
@@ -196,7 +194,7 @@
 
 <span class='doccomment'>//! The exponential distribution.</span>
 
-<span class='kw'>use</span> <span class='ident'>core</span>::<span class='ident'>num</span>::<span class='ident'>Float</span>;
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>num</span>::<span class='ident'>Float</span>;
 
 <span class='kw'>use</span> {<span class='ident'>Rng</span>, <span class='ident'>Rand</span>};
 <span class='kw'>use</span> <span class='ident'>distributions</span>::{<span class='ident'>ziggurat</span>, <span class='ident'>ziggurat_tables</span>, <span class='ident'>Sample</span>, <span class='ident'>IndependentSample</span>};
@@ -292,12 +290,12 @@
         }
     }
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
-    <span class='attribute'>#[<span class='ident'>should_fail</span>]</span>
+    <span class='attribute'>#[<span class='ident'>should_panic</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>test_exp_invalid_lambda_zero</span>() {
         <span class='ident'>Exp</span>::<span class='ident'>new</span>(<span class='number'>0.0</span>);
     }
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
-    <span class='attribute'>#[<span class='ident'>should_fail</span>]</span>
+    <span class='attribute'>#[<span class='ident'>should_panic</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>test_exp_invalid_lambda_neg</span>() {
         <span class='ident'>Exp</span>::<span class='ident'>new</span>(<span class='op'>-</span><span class='number'>10.0</span>);
     }
@@ -306,8 +304,6 @@
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
 <span class='kw'>mod</span> <span class='ident'>bench</span> {
     <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>test</span>;
-
-    <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>prelude</span>::<span class='ident'>v1</span>::<span class='op'>*</span>;
 
     <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>test</span>::<span class='ident'>Bencher</span>;
     <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>mem</span>::<span class='ident'>size_of</span>;

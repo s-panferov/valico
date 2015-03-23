@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/rand-0.1.4/src/rand_impls.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/rand-0.2.1/src/rand_impls.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>rand_impls.rs.html -- source</title>
@@ -304,7 +304,6 @@
 <span id="262">262</span>
 <span id="263">263</span>
 <span id="264">264</span>
-<span id="265">265</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2013-2014 The Rust Project Developers. See the COPYRIGHT</span>
 <span class='comment'>// file at the top-level directory of this distribution and at</span>
@@ -318,10 +317,9 @@
 
 <span class='doccomment'>//! The implementations of `Rand` for the built-in types.</span>
 
-<span class='kw'>use</span> <span class='ident'>core</span>::<span class='ident'>prelude</span>::<span class='op'>*</span>;
-<span class='kw'>use</span> <span class='ident'>core</span>::<span class='ident'>char</span>;
-<span class='kw'>use</span> <span class='ident'>core</span>::<span class='ident'>isize</span>;
-<span class='kw'>use</span> <span class='ident'>core</span>::<span class='ident'>usize</span>;
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>char</span>;
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>isize</span>;
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>usize</span>;
 
 <span class='kw'>use</span> {<span class='ident'>Rand</span>,<span class='ident'>Rng</span>};
 
@@ -449,7 +447,7 @@
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>rand</span><span class='op'>&lt;</span><span class='ident'>R</span>: <span class='ident'>Rng</span><span class='op'>&gt;</span>(<span class='ident'>rng</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>R</span>) <span class='op'>-&gt;</span> <span class='ident'>char</span> {
         <span class='comment'>// a char is 21 bits</span>
-        <span class='kw'>static</span> <span class='ident'>CHAR_MASK</span>: <span class='ident'>u32</span> <span class='op'>=</span> <span class='number'>0x001f_ffff</span>;
+        <span class='kw'>const</span> <span class='ident'>CHAR_MASK</span>: <span class='ident'>u32</span> <span class='op'>=</span> <span class='number'>0x001f_ffff</span>;
         <span class='kw'>loop</span> {
             <span class='comment'>// Rejection sampling. About 0.2% of numbers with at most</span>
             <span class='comment'>// 21-bits are invalid codepoints (surrogates), so this</span>

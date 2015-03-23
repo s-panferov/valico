@@ -43,7 +43,7 @@
     <section id='main' class="content trait">
 <h1 class='fqn'><span class='in-band'>Trait <a href='index.html'>rand</a>::<wbr><a class='trait' href=''>Rng</a><wbr></span><span class='out-of-band'><span id='render-detail'>
             <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-12616' href='../src/rand/lib.rs.html#272-517'>[src]</a></span></h1>
+        </span><a id='src-12645' href='../src/rand/lib.rs.html#274-519'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait Rng: <a class='trait' href='http://doc.rust-lang.org/nightly/core/marker/trait.Sized.html' title='core::marker::Sized'>Sized</a> {
     fn <a href='#tymethod.next_u32' class='fnname'>next_u32</a>(&amp;mut self) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>;
 
@@ -54,7 +54,7 @@
     fn <a href='#method.gen' class='fnname'>gen</a>&lt;T: <a class='trait' href='../rand/trait.Rand.html' title='rand::Rand'>Rand</a>&gt;(&amp;mut self) -&gt; T { ... }
     fn <a href='#method.gen_iter' class='fnname'>gen_iter</a>&lt;'a, T: <a class='trait' href='../rand/trait.Rand.html' title='rand::Rand'>Rand</a>&gt;(&amp;'a mut self) -&gt; <a class='struct' href='../rand/struct.Generator.html' title='rand::Generator'>Generator</a>&lt;'a, T, Self&gt; { ... }
     fn <a href='#method.gen_range' class='fnname'>gen_range</a>&lt;T: <a class='trait' href='http://doc.rust-lang.org/nightly/core/cmp/trait.PartialOrd.html' title='core::cmp::PartialOrd'>PartialOrd</a> + <a class='trait' href='../rand/distributions/range/trait.SampleRange.html' title='rand::distributions::range::SampleRange'>SampleRange</a>&gt;(&amp;mut self, low: T, high: T) -&gt; T { ... }
-    fn <a href='#method.gen_weighted_bool' class='fnname'>gen_weighted_bool</a>(&amp;mut self, n: <a href='http://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a> { ... }
+    fn <a href='#method.gen_weighted_bool' class='fnname'>gen_weighted_bool</a>(&amp;mut self, n: <a href='http://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a> { ... }
     fn <a href='#method.gen_ascii_chars' class='fnname'>gen_ascii_chars</a>&lt;'a&gt;(&amp;'a mut self) -&gt; <a class='struct' href='../rand/struct.AsciiGenerator.html' title='rand::AsciiGenerator'>AsciiGenerator</a>&lt;'a, Self&gt; { ... }
     fn <a href='#method.choose' class='fnname'>choose</a>&lt;'a, T&gt;(&amp;mut self, values: <a href='http://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;'a [T]</a>) -&gt; <a class='enum' href='http://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;&amp;'a T&gt; { ... }
     fn <a href='#method.shuffle' class='fnname'>shuffle</a>&lt;T&gt;(&amp;mut self, values: <a href='http://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;mut [T]</a>) { ... }
@@ -119,7 +119,7 @@ source of randomness).</p>
 
 <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>v</span> <span class='op'>=</span> [<span class='number'>0u8</span>; <span class='number'>13579</span>];
 <span class='ident'>thread_rng</span>().<span class='ident'>fill_bytes</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>v</span>);
-<span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;{:?}&quot;</span>, <span class='ident'>v</span>.<span class='ident'>as_slice</span>());
+<span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;{:?}&quot;</span>, <span class='kw-2'>&amp;</span><span class='ident'>v</span>[..]);
 </pre>
 </div><h3 id='method.gen' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.gen' class='fnname'>gen</a>&lt;T: <a class='trait' href='../rand/trait.Rand.html' title='rand::Rand'>Rand</a>&gt;(&amp;mut self) -&gt; T</code></h3><div class='docblock'><p>Return a random value of a <code>Rand</code> type.</p>
 
@@ -167,7 +167,7 @@ uniformity, as they only happen on initialization.</p>
 <span class='kw'>let</span> <span class='ident'>m</span>: <span class='ident'>f64</span> <span class='op'>=</span> <span class='ident'>rng</span>.<span class='ident'>gen_range</span>(<span class='op'>-</span><span class='number'>40.0f64</span>, <span class='number'>1.3e5f64</span>);
 <span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;{}&quot;</span>, <span class='ident'>m</span>);
 </pre>
-</div><h3 id='method.gen_weighted_bool' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.gen_weighted_bool' class='fnname'>gen_weighted_bool</a>(&amp;mut self, n: <a href='http://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h3><div class='docblock'><p>Return a bool with a 1 in n chance of true</p>
+</div><h3 id='method.gen_weighted_bool' class='method'><a class='stability Unmarked' title='No stability level'></a><code>fn <a href='#method.gen_weighted_bool' class='fnname'>gen_weighted_bool</a>(&amp;mut self, n: <a href='http://doc.rust-lang.org/nightly/std/primitive.u32.html'>u32</a>) -&gt; <a href='http://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h3><div class='docblock'><p>Return a bool with a 1 in n chance of true</p>
 
 <h1 id="example" class='section-header'><a
                            href="#example">Example</a></h1><pre id='rust-example-rendered' class='rust '>
@@ -207,9 +207,9 @@ uniformity, as they only happen on initialization.</p>
 <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>rng</span> <span class='op'>=</span> <span class='ident'>thread_rng</span>();
 <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>y</span> <span class='op'>=</span> [<span class='number'>1</span>, <span class='number'>2</span>, <span class='number'>3</span>];
 <span class='ident'>rng</span>.<span class='ident'>shuffle</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>y</span>);
-<span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;{:?}&quot;</span>, <span class='ident'>y</span>.<span class='ident'>as_slice</span>());
+<span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;{:?}&quot;</span>, <span class='ident'>y</span>);
 <span class='ident'>rng</span>.<span class='ident'>shuffle</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>y</span>);
-<span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;{:?}&quot;</span>, <span class='ident'>y</span>.<span class='ident'>as_slice</span>());
+<span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;{:?}&quot;</span>, <span class='ident'>y</span>);
 </pre>
 </div></div>
         <h2 id='implementors'>Implementors</h2>
@@ -219,7 +219,7 @@ uniformity, as they only happen on initialization.</p>
 <li><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../rand/trait.Rng.html' title='rand::Rng'>Rng</a> for <a class='struct' href='../rand/chacha/struct.ChaChaRng.html' title='rand::chacha::ChaChaRng'>ChaChaRng</a></code></li>
 <li><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;R: <a class='trait' href='../rand/trait.Rng.html' title='rand::Rng'>Rng</a>, Rsdr: <a class='trait' href='../rand/reseeding/trait.Reseeder.html' title='rand::reseeding::Reseeder'>Reseeder</a>&lt;R&gt;&gt; <a class='trait' href='../rand/trait.Rng.html' title='rand::Rng'>Rng</a> for <a class='struct' href='../rand/reseeding/struct.ReseedingRng.html' title='rand::reseeding::ReseedingRng'>ReseedingRng</a>&lt;R, Rsdr&gt;</code></li>
 <li><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../rand/trait.Rng.html' title='rand::Rng'>Rng</a> for <a class='struct' href='../rand/struct.OsRng.html' title='rand::OsRng'>OsRng</a></code></li>
-<li><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;R: <a class='trait' href='http://doc.rust-lang.org/nightly/std/old_io/trait.Reader.html' title='std::old_io::Reader'>Reader</a>&gt; <a class='trait' href='../rand/trait.Rng.html' title='rand::Rng'>Rng</a> for <a class='struct' href='../rand/reader/struct.ReaderRng.html' title='rand::reader::ReaderRng'>ReaderRng</a>&lt;R&gt;</code></li>
+<li><a class='stability Unmarked' title='No stability level'></a><code>impl&lt;R: <a class='trait' href='http://doc.rust-lang.org/nightly/std/io/trait.Read.html' title='std::io::Read'>Read</a>&gt; <a class='trait' href='../rand/trait.Rng.html' title='rand::Rng'>Rng</a> for <a class='struct' href='../rand/read/struct.ReadRng.html' title='rand::read::ReadRng'>ReadRng</a>&lt;R&gt;</code></li>
 <li><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../rand/trait.Rng.html' title='rand::Rng'>Rng</a> for <a class='struct' href='../rand/struct.XorShiftRng.html' title='rand::XorShiftRng'>XorShiftRng</a></code></li>
 <li><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../rand/trait.Rng.html' title='rand::Rng'>Rng</a> for <a class='struct' href='../rand/struct.StdRng.html' title='rand::StdRng'>StdRng</a></code></li>
 <li><a class='stability Unmarked' title='No stability level'></a><code>impl <a class='trait' href='../rand/trait.Rng.html' title='rand::Rng'>Rng</a> for <a class='struct' href='../rand/struct.ThreadRng.html' title='rand::ThreadRng'>ThreadRng</a></code></li>
