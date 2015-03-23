@@ -260,7 +260,7 @@ impl ArrayCoercer {
         if self.sub_coercer.is_some() {
             let sub_coercer = self.sub_coercer.as_ref().unwrap();
             let mut errors = vec![];
-            for i in range(0, array.len()) {
+            for i in 0..array.len() {
                 let item_path = [path, i.to_string().as_slice()].connect("/");
                 match sub_coercer.coerce(&mut array[i], item_path.as_slice()) {
                     Ok(Some(value)) => {

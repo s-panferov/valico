@@ -48,7 +48,7 @@ impl super::Validator for Items {
                 let min = cmp::min(urls.len(), array.len());
 
                 // Validate against schemas
-                for idx in range(0, min) {
+                for idx in 0..min {
                     let schema = scope.resolve(&urls[idx]);
                     let item = &array[idx];
 

@@ -1,10 +1,7 @@
 #![plugin(regex_macros)]
 #![feature(plugin)]
 #![feature(core)]
-#![feature(fs)]
-#![feature(path)]
-#![feature(io)]
-#![feature(os)]
+#![feature(path_ext)]
 
 extern crate valico;
 extern crate "rustc-serialize" as serialize;

@@ -1,7 +1,7 @@
 use std::fs;
 use std::path;
-use std::fs::PathExt;
 use std::io::Read;
+use std::fs::PathExt;
 use serialize::json;
 use valico::json_schema;
 
