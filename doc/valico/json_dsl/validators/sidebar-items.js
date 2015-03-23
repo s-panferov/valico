@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["AllowedValues",""],["AtLeastOneOf",""],["ExactlyOneOf",""],["MutuallyExclusive",""],["RejectedValues",""]],"type":[["BoxedValidator",""],["ValidatorResult",""],["Validators",""]],"trait":[["Validator",""]]});
+initSidebarItems({"type":[["BoxedValidator",""],["ValidatorResult",""],["Validators",""]],"trait":[["Validator",""]],"struct":[["AllowedValues",""],["AtLeastOneOf",""],["ExactlyOneOf",""],["MutuallyExclusive",""],["RejectedValues",""]]});
