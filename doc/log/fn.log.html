@@ -4,10 +4,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="API documentation for the Rust `debug!` macro in crate `log`.">
-    <meta name="keywords" content="rust, rustlang, rust-lang, debug!">
+    <meta name="description" content="API documentation for the Rust `log` fn in crate `log`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, log">
 
-    <title>log::debug! - Rust</title>
+    <title>log::log - Rust</title>
 
     <link rel="stylesheet" type="text/css" href="../main.css">
 
@@ -26,7 +26,7 @@
 
     <section class="sidebar">
         <a href='../log/index.html'><img src='http://www.rust-lang.org/logos/rust-logo-128x128-blk-v2.png' alt='' width='100'></a>
-        <p class='location'><a href='index.html'>log</a></p><script>window.sidebarCurrent = {name: 'debug!', ty: 'macro', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+        <p class='location'><a href='index.html'>log</a></p><script>window.sidebarCurrent = {name: 'log', ty: 'fn', relpath: ''};</script><script defer src="sidebar-items.js"></script>
     </section>
 
     <nav class="sub">
@@ -40,22 +40,14 @@
         </form>
     </nav>
 
-    <section id='main' class="content macro">
-<h1 class='fqn'><span class='in-band'><a href='index.html'>log</a>::<wbr><a class='macro' href=''>debug!</a><wbr></span><span class='out-of-band'><span id='render-detail'>
+    <section id='main' class="content fn">
+<h1 class='fqn'><span class='in-band'>Function <a href='index.html'>log</a>::<wbr><a class='fn' href=''>log</a><wbr></span><span class='out-of-band'><span id='render-detail'>
             <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-1468' href='../src/log/macros.rs.html#77-81'>[src]</a></span></h1>
-<pre class='rust macro'>
-<span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>debug</span> {
-    ($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>arg</span>:<span class='ident'>tt</span>)<span class='op'>*</span>) <span class='op'>=&gt;</span> (
-        <span class='macro'>log</span><span class='macro'>!</span>(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>crate</span>::<span class='ident'>LogLevel</span>::<span class='ident'>Debug</span>, $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>arg</span>)<span class='op'>*</span>);
-    )
-}
-</pre>
-<div class='docblock'><p>Logs a message at the debug level.</p>
+        </span><a id='src-1434' href='../src/log/lib.rs.html#608-612'>[src]</a></span></h1>
+<pre class='rust fn'>pub fn log(level: <a class='enum' href='../log/enum.LogLevel.html' title='log::LogLevel'>LogLevel</a>, loc: &amp;<a class='struct' href='../log/struct.LogLocation.html' title='log::LogLocation'>LogLocation</a>, args: <a class='struct' href='http://doc.rust-lang.org/nightly/core/fmt/struct.Arguments.html' title='core::fmt::Arguments'>Arguments</a>)</pre><div class='docblock'><p>Logs a message.</p>
 
-<p>Logging at this level is disabled if any of the following cfgs are present:
-<code>log_level = &quot;off&quot;</code>, <code>log_level = &quot;error&quot;</code>, <code>log_level = &quot;warn&quot;</code>,
-or <code>log_level = &quot;info&quot;</code>.</p>
+<p>This should not typically be called directly. The <code>log!</code>, <code>error!</code>,
+<code>warn!</code>, <code>info!</code>, <code>debug!</code>, and <code>trace!</code> macros should be used instead.</p>
 </div></section>
     <section id='search' class="content hidden"></section>
 
