@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/rand-0.2.1/src/distributions/gamma.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/rand-0.3.0/src/distributions/gamma.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>gamma.rs.html -- source</title>
@@ -453,6 +453,14 @@
 <span id="411">411</span>
 <span id="412">412</span>
 <span id="413">413</span>
+<span id="414">414</span>
+<span id="415">415</span>
+<span id="416">416</span>
+<span id="417">417</span>
+<span id="418">418</span>
+<span id="419">419</span>
+<span id="420">420</span>
+<span id="421">421</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2013 The Rust Project Developers. See the COPYRIGHT</span>
 <span class='comment'>// file at the top-level directory of this distribution and at</span>
@@ -507,10 +515,12 @@
 <span class='doccomment'>/// for Generating Gamma Variables&quot; *ACM Trans. Math. Softw.* 26, 3</span>
 <span class='doccomment'>/// (September 2000),</span>
 <span class='doccomment'>/// 363-372. DOI:[10.1145/358407.358414](http://doi.acm.org/10.1145/358407.358414)</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Copy</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Gamma</span> {
     <span class='ident'>repr</span>: <span class='ident'>GammaRepr</span>,
 }
 
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Copy</span>)]</span>
 <span class='kw'>enum</span> <span class='ident'>GammaRepr</span> {
     <span class='ident'>Large</span>(<span class='ident'>GammaLargeShape</span>),
     <span class='ident'>One</span>(<span class='ident'>Exp</span>),
@@ -531,6 +541,7 @@
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// See `Gamma` for sampling from a Gamma distribution with general</span>
 <span class='doccomment'>/// shape parameters.</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Copy</span>)]</span>
 <span class='kw'>struct</span> <span class='ident'>GammaSmallShape</span> {
     <span class='ident'>inv_shape</span>: <span class='ident'>f64</span>,
     <span class='ident'>large_shape</span>: <span class='ident'>GammaLargeShape</span>
@@ -540,6 +551,7 @@
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// See `Gamma` for sampling from a Gamma distribution with general</span>
 <span class='doccomment'>/// shape parameters.</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Copy</span>)]</span>
 <span class='kw'>struct</span> <span class='ident'>GammaLargeShape</span> {
     <span class='ident'>scale</span>: <span class='ident'>f64</span>,
     <span class='ident'>c</span>: <span class='ident'>f64</span>,
@@ -648,10 +660,12 @@
 <span class='doccomment'>/// let v = chi.ind_sample(&amp;mut rand::thread_rng());</span>
 <span class='doccomment'>/// println!(&quot;{} is from a χ²(11) distribution&quot;, v)</span>
 <span class='doccomment'>/// ```</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Copy</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>ChiSquared</span> {
     <span class='ident'>repr</span>: <span class='ident'>ChiSquaredRepr</span>,
 }
 
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Copy</span>)]</span>
 <span class='kw'>enum</span> <span class='ident'>ChiSquaredRepr</span> {
     <span class='comment'>// k == 1, Gamma(alpha, ..) is particularly slow for alpha &lt; 1,</span>
     <span class='comment'>// e.g. when alpha = 1/2 as it would be for this case, so special-</span>
@@ -704,6 +718,7 @@
 <span class='doccomment'>/// let v = f.ind_sample(&amp;mut rand::thread_rng());</span>
 <span class='doccomment'>/// println!(&quot;{} is from an F(2, 32) distribution&quot;, v)</span>
 <span class='doccomment'>/// ```</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Copy</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>FisherF</span> {
     <span class='ident'>numer</span>: <span class='ident'>ChiSquared</span>,
     <span class='ident'>denom</span>: <span class='ident'>ChiSquared</span>,
@@ -747,6 +762,7 @@
 <span class='doccomment'>/// let v = t.ind_sample(&amp;mut rand::thread_rng());</span>
 <span class='doccomment'>/// println!(&quot;{} is from a t(11) distribution&quot;, v)</span>
 <span class='doccomment'>/// ```</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Copy</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>StudentT</span> {
     <span class='ident'>chi</span>: <span class='ident'>ChiSquared</span>,
     <span class='ident'>dof</span>: <span class='ident'>f64</span>
