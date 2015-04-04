@@ -3,6 +3,7 @@ use std::fmt;
 use std::rc;
 use std::collections;
 use std::any;
+use std::marker;
 
 use super::schema;
 use super::validators;
@@ -16,7 +17,7 @@ pub trait Keyword: Sync + any::Any {
     fn compile(&self, &json::Json, &schema::WalkContext) -> KeywordResult;
 }
 
-impl<T: 'static + Send + Sync> Keyword for T where T: Fn(&json::Json, &schema::WalkContext) -> KeywordResult {
+impl<T: 'static + Send + Sync + marker::Reflect> Keyword for T where T: Fn(&json::Json, &schema::WalkContext) -> KeywordResult {
     fn compile(&self, def: &json::Json, ctx: &schema::WalkContext) -> KeywordResult {
         self(def, ctx)
     }

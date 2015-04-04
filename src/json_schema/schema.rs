@@ -18,7 +18,7 @@ pub struct WalkContext<'a> {
 
 impl<'a> WalkContext<'a> {
     pub fn escaped_fragment(&self) -> String {
-        helpers::connect(self.fragment.iter().map(|s| s.as_slice()).collect::<Vec<&str>>().as_slice())
+        helpers::connect(self.fragment.iter().map(|s| s.as_ref()).collect::<Vec<&str>>().as_ref())
     }
 }
 
@@ -185,7 +185,7 @@ impl Schema {
 
     fn compile_keywords(def: &json::Json, context: &WalkContext, settings: &CompilationSettings) -> Result<validators::Validators, SchemaError> {
         let mut validators = vec![];
-        let mut keys: collections::HashSet<&str> = def.as_object().unwrap().keys().map(|key| key.as_slice()).collect();
+        let mut keys: collections::HashSet<&str> = def.as_object().unwrap().keys().map(|key| key.as_ref()).collect();
         let mut not_consumed = collections::HashSet::new();
 
         loop {

@@ -62,7 +62,7 @@ pub fn alter_fragment_path(mut url: url::Url, new_fragment: String) -> url::Url 
     let normalized_fragment = if new_fragment.starts_with("/") {
         &new_fragment[1..]
     } else {
-        new_fragment.as_slice()
+        new_fragment.as_ref()
     };
 
     let result_fragment = match url.fragment {
@@ -71,9 +71,9 @@ pub fn alter_fragment_path(mut url: url::Url, new_fragment: String) -> url::Url 
                 let mut result_fragment = "".to_string();
                 let mut fragment_parts = fragment.split("/").map(|s| s.to_string());
                 result_fragment.push_str("#");
-                result_fragment.push_str(fragment_parts.next().unwrap().as_slice());
+                result_fragment.push_str(fragment_parts.next().unwrap().as_ref());
                 result_fragment.push_str("/");
-                result_fragment.push_str(normalized_fragment.as_slice());
+                result_fragment.push_str(normalized_fragment.as_ref());
                 result_fragment
             } else {
                 "/".to_string() + normalized_fragment
@@ -93,9 +93,9 @@ pub fn serialize_schema_path(url: &url::Url) -> (String, Option<String>) {
             if !fragment.starts_with("/") {
                 let fragment_parts = fragment.split("/").map(|s| s.to_string()).collect::<Vec<String>>();
                 url_str.push_str("#");
-                url_str.push_str(fragment_parts[0].as_slice());
+                url_str.push_str(fragment_parts[0].as_ref());
                 let fragment = if fragment_parts.len() > 1 {
-                    Some("/".to_string() + fragment_parts[1..].connect("/").as_slice())
+                    Some("/".to_string() + fragment_parts[1..].connect("/").as_ref())
                 } else {
                     None
                 };

@@ -43,7 +43,7 @@ macro_rules! impl_err {
         impl $crate::common::error::ValicoError for $err {
             fn get_code(&self) -> &str { $code }
             fn get_title(&self) -> &str { $title }
-            fn get_path(&self) -> &str { self.path.as_slice() }
+            fn get_path(&self) -> &str { self.path.as_ref() }
         }
     };
 
@@ -53,8 +53,8 @@ macro_rules! impl_err {
         impl $crate::common::error::ValicoError for $err {
             fn get_code(&self) -> &str { $code }
             fn get_title(&self) -> &str { $title }
-            fn get_path(&self) -> &str { self.path.as_slice() }
-            fn get_detail(&self) -> Option<&str> { Some(self.detail.as_slice()) }
+            fn get_path(&self) -> &str { self.path.as_ref() }
+            fn get_detail(&self) -> Option<&str> { Some(self.detail.as_ref()) }
         }
     };
 
@@ -64,8 +64,8 @@ macro_rules! impl_err {
         impl $crate::common::error::ValicoError for $err {
             fn get_code(&self) -> &str { $code }
             fn get_title(&self) -> &str { $title }
-            fn get_path(&self) -> &str { self.path.as_slice() }
-            fn get_detail(&self) -> Option<&str> { self.detail.as_ref().map(|s| s.as_slice()) }
+            fn get_path(&self) -> &str { self.path.as_ref() }
+            fn get_detail(&self) -> Option<&str> { self.detail.as_ref().map(|s| s.as_ref()) }
         }
     }
 }

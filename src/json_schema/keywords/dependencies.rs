@@ -26,9 +26,9 @@ impl super::Keyword for Dependencies {
 
                 items.insert(key.clone(), validators::dependencies::DepKind::Schema(
                     helpers::alter_fragment_path(ctx.url.clone(), [
-                        ctx.escaped_fragment().as_slice().as_slice(),
+                        ctx.escaped_fragment().as_ref(),
                         "dependencies",
-                        helpers::encode(key).as_slice()
+                        helpers::encode(key).as_ref()
                     ].connect("/"))
                 ));
 

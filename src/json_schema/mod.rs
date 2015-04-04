@@ -14,7 +14,7 @@ pub use self::schema::{Schema, SchemaError};
 pub use self::builder::{Builder, schema};
 pub use self::validators::{ValidationState};
 
-#[derive(Copy, Debug)]
+#[derive(Copy, Debug, Clone)]
 pub enum PrimitiveType {
     Array,
     Boolean,

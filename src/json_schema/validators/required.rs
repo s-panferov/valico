@@ -17,7 +17,7 @@ impl super::Validator for Required {
             if !object.contains_key(key) {
                 state.errors.push(Box::new(
                     errors::Required {
-                        path: [path, key.as_slice()].connect("/")
+                        path: [path, key.as_ref()].connect("/")
                     }
                 ))
             }

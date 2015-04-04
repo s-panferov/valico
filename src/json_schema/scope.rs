@@ -114,7 +114,7 @@ impl Scope {
         let schema = self.schemes.get(&schema_path).or_else(|| {
             // Searching for inline schema in O(N)
             for (_, schema) in self.schemes.iter() {
-                let internal_schema = schema.resolve(schema_path.as_slice());
+                let internal_schema = schema.resolve(schema_path.as_ref());
                 if internal_schema.is_some() {
                     return internal_schema
                 }
@@ -126,7 +126,7 @@ impl Scope {
         schema.and_then(|schema| {
             match fragment {
                 Some(ref fragment) => {
-                    schema.resolve_fragment(fragment.as_slice()).map(|schema| {
+                    schema.resolve_fragment(fragment.as_ref()).map(|schema| {
                         schema::ScopedSchema::new(self, schema)
                     })
                 },

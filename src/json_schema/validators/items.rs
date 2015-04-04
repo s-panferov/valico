@@ -37,8 +37,8 @@ impl super::Validator for Items {
                 if schema.is_some() {
                     let schema = schema.unwrap();
                     for (idx, item) in array.iter().enumerate() {
-                        let item_path = [path, idx.to_string().as_slice()].connect("/");
-                        state.append(&mut schema.validate_in(item, item_path.as_slice()));
+                        let item_path = [path, idx.to_string().as_ref()].connect("/");
+                        state.append(&mut schema.validate_in(item, item_path.as_ref()));
                     }
                 } else {
                     state.missing.push(url.clone());
@@ -53,8 +53,8 @@ impl super::Validator for Items {
                     let item = &array[idx];
 
                     if schema.is_some() {
-                        let item_path = [path, idx.to_string().as_slice()].connect("/");
-                        state.append(&mut schema.unwrap().validate_in(item, item_path.as_slice()))
+                        let item_path = [path, idx.to_string().as_ref()].connect("/");
+                        state.append(&mut schema.unwrap().validate_in(item, item_path.as_ref()))
                     } else {
                         state.missing.push(urls[idx].clone())
                     }
@@ -76,8 +76,8 @@ impl super::Validator for Items {
                             if schema.is_some() {
                                 let schema = schema.unwrap();
                                 for (idx, item) in array[urls.len()..].iter().enumerate() {
-                                    let item_path = [path, idx.to_string().as_slice()].connect("/");
-                                    state.append(&mut schema.validate_in(item, item_path.as_slice()))
+                                    let item_path = [path, idx.to_string().as_ref()].connect("/");
+                                    state.append(&mut schema.validate_in(item, item_path.as_ref()))
                                 }
                             } else {
                                 state.missing.push(url.clone())

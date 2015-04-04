@@ -5,7 +5,7 @@
 #![plugin(phf_macros)]
 #![plugin(regex_macros)]
 
-extern crate "rustc-serialize" as rustc_serialize;
+extern crate rustc_serialize;
 extern crate regex;
 extern crate url;
 extern crate jsonway;

@@ -66,7 +66,7 @@ fn test_suite() {
                 let state = schema.validate(&data);
 
                 if state.is_valid() != valid {
-                    if !exceptions.as_slice().contains(&(path.file_name().unwrap().to_str().unwrap().to_string(), description.to_string())) {
+                    if !&exceptions[..].contains(&(path.file_name().unwrap().to_str().unwrap().to_string(), description.to_string())) {
                         panic!("Failure: \"{}\" in {}",
                             path.file_name().unwrap().to_str().unwrap(),
                             description.to_string());

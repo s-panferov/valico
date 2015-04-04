@@ -25,7 +25,7 @@ impl super::Validator for Dependencies {
         let mut state = super::ValidationState::new();
 
         for (key, dep) in self.items.iter() {
-            if object.find(key.as_slice()).is_some() {
+            if object.find(key.as_ref()).is_some() {
                 match dep {
                     &DepKind::Schema(ref url) => {
                         let schema = scope.resolve(url);
@@ -37,10 +37,10 @@ impl super::Validator for Dependencies {
                     },
                     &DepKind::Property(ref keys) => {
                         for key in keys.iter() {
-                            if !object.find(key.as_slice()).is_some() {
+                            if !object.find(key.as_ref()).is_some() {
                                 state.errors.push(Box::new(
                                     errors::Required {
-                                        path: [path, key.as_slice()].connect("/")
+                                        path: [path, key.as_ref()].connect("/")
                                     }
                                 ))
                             }
