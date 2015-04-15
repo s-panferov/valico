@@ -21,7 +21,7 @@ impl super::Keyword for Items {
 
                 validators::items::ItemsKind::Schema(
                     helpers::alter_fragment_path(ctx.url.clone(), [
-                        ctx.escaped_fragment().as_slice().as_slice(),
+                        ctx.escaped_fragment().as_ref(),
                         "items"
                     ].connect("/"))
                 )
@@ -33,9 +33,9 @@ impl super::Keyword for Items {
                     if item.is_object() {
                         schemas.push(
                             helpers::alter_fragment_path(ctx.url.clone(), [
-                                ctx.escaped_fragment().as_slice().as_slice(),
+                                ctx.escaped_fragment().as_ref(),
                                 "items",
-                                idx.to_string().as_slice()
+                                idx.to_string().as_ref()
                             ].connect("/"))
                         )
                     } else {
@@ -70,7 +70,7 @@ impl super::Keyword for Items {
 
                 validators::items::AdditionalKind::Schema(
                     helpers::alter_fragment_path(ctx.url.clone(), [
-                        ctx.escaped_fragment().as_slice().as_slice(),
+                        ctx.escaped_fragment().as_ref(),
                         "additionalItems"
                     ].connect("/"))
                 )

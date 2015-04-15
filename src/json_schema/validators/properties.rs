@@ -30,8 +30,8 @@ impl super::Validator for Properties {
                 let url = self.properties.get(key).unwrap();
                 let schema = scope.resolve(url);
                 if schema.is_some() {
-                    let value_path = [path, key.as_slice()].connect("/");
-                    state.append(&mut schema.unwrap().validate_in(value, value_path.as_slice()))
+                    let value_path = [path, key.as_ref()].connect("/");
+                    state.append(&mut schema.unwrap().validate_in(value, value_path.as_ref()))
                 } else {
                     state.missing.push(url.clone())
                 }
@@ -41,11 +41,11 @@ impl super::Validator for Properties {
 
             let mut is_pattern_passed = false;
             for &(ref regex, ref url) in self.patterns.iter() {
-                if regex.is_match(key.as_slice()) {
+                if regex.is_match(key.as_ref()) {
                     let schema = scope.resolve(url);
                     if schema.is_some() {
-                        let value_path = [path, key.as_slice()].connect("/");
-                        state.append(&mut schema.unwrap().validate_in(value, value_path.as_slice()));
+                        let value_path = [path, key.as_ref()].connect("/");
+                        state.append(&mut schema.unwrap().validate_in(value, value_path.as_ref()));
                         is_pattern_passed = true;
                     } else {
                         state.missing.push(url.clone())
@@ -70,8 +70,8 @@ impl super::Validator for Properties {
                     let schema = scope.resolve(url);
 
                     if schema.is_some() {
-                        let value_path = [path, key.as_slice()].connect("/");
-                        state.append(&mut schema.unwrap().validate_in(value, value_path.as_slice()))
+                        let value_path = [path, key.as_ref()].connect("/");
+                        state.append(&mut schema.unwrap().validate_in(value, value_path.as_ref()))
                     } else {
                         state.missing.push(url.clone())
                     }

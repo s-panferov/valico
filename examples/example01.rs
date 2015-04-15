@@ -1,5 +1,5 @@
 extern crate valico;
-extern crate "rustc-serialize" as serialize;
+extern crate rustc_serialize as serialize;
 
 use serialize::json::{Json};
 use valico::json_dsl;

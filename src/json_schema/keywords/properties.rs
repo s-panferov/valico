@@ -27,9 +27,9 @@ impl super::Keyword for Properties {
                     if value.is_object() {
                         schemes.insert(key.to_string(),
                             helpers::alter_fragment_path(ctx.url.clone(), [
-                                ctx.escaped_fragment().as_slice().as_slice(),
+                                ctx.escaped_fragment().as_ref(),
                                 "properties",
-                                helpers::encode(key).as_slice()
+                                helpers::encode(key).as_ref()
                             ].connect("/"))
                         );
                     } else {
@@ -60,7 +60,7 @@ impl super::Keyword for Properties {
 
                 validators::properties::AdditionalKind::Schema(
                     helpers::alter_fragment_path(ctx.url.clone(), [
-                        ctx.escaped_fragment().as_slice().as_slice(),
+                        ctx.escaped_fragment().as_ref(),
                         "additionalProperties"
                     ].connect("/"))
                 )
@@ -86,12 +86,12 @@ impl super::Keyword for Properties {
                 for (key, value) in pattern.iter() {
                     if value.is_object() {
 
-                        match regex::Regex::new(key.as_slice()) {
+                        match regex::Regex::new(key.as_ref()) {
                             Ok(regex) => {
                                 let url = helpers::alter_fragment_path(ctx.url.clone(), [
-                                    ctx.escaped_fragment().as_slice().as_slice(),
+                                    ctx.escaped_fragment().as_ref(),
                                     "patternProperties",
-                                    helpers::encode(key).as_slice()
+                                    helpers::encode(key).as_ref()
                                 ].connect("/"));
                                 patterns.push((regex, url));
                             },

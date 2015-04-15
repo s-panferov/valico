@@ -4,7 +4,7 @@ use mutable_json::MutableJson;
 use super::errors;
 
 #[allow(dead_code)]
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub enum PrimitiveType {
     String,
     I64,
@@ -25,7 +25,7 @@ pub trait Coercer: Send + Sync {
     fn coerce(&self, &mut json::Json, &str) -> CoercerResult<Option<json::Json>>;
 }
 
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct StringCoercer;
 
 impl Coercer for StringCoercer {
@@ -46,7 +46,7 @@ impl Coercer for StringCoercer {
     }
 }
 
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct I64Coercer;
 
 impl Coercer for I64Coercer {
@@ -83,7 +83,7 @@ impl Coercer for I64Coercer {
     }
 }
 
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct U64Coercer;
 
 impl Coercer for U64Coercer {
@@ -120,7 +120,7 @@ impl Coercer for U64Coercer {
     }
 }
 
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct F64Coercer;
 
 impl Coercer for F64Coercer {
@@ -157,7 +157,7 @@ impl Coercer for F64Coercer {
     }
 }
 
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct BooleanCoercer;
 
 impl Coercer for BooleanCoercer {
@@ -190,7 +190,7 @@ impl Coercer for BooleanCoercer {
     }
 }
 
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct NullCoercer;
 
 impl Coercer for NullCoercer {
@@ -261,8 +261,8 @@ impl ArrayCoercer {
             let sub_coercer = self.sub_coercer.as_ref().unwrap();
             let mut errors = vec![];
             for i in 0..array.len() {
-                let item_path = [path, i.to_string().as_slice()].connect("/");
-                match sub_coercer.coerce(&mut array[i], item_path.as_slice()) {
+                let item_path = [path, i.to_string().as_ref()].connect("/");
+                match sub_coercer.coerce(&mut array[i], item_path.as_ref()) {
                     Ok(Some(value)) => {
                         array.remove(i);
                         array.insert(i, value);
@@ -296,7 +296,7 @@ impl Coercer for ArrayCoercer {
             let string = val.as_string().unwrap();
             let mut array = json::Json::Array(
                 string
-                    .split(separator.as_slice())
+                    .split(&separator[..])
                     .map(|s| s.to_string().to_json())
                     .collect::<Vec<json::Json>>()
             );
@@ -313,7 +313,7 @@ impl Coercer for ArrayCoercer {
     }
 }
 
-#[derive(Copy)]
+#[derive(Copy, Clone)]
 pub struct ObjectCoercer;
 
 impl Coercer for ObjectCoercer {

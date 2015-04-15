@@ -154,9 +154,9 @@ impl Builder {
             let mut state = json_schema::ValidationState::new();
             let array = val.as_array_mut().unwrap();
             for (idx, item) in array.iter_mut().enumerate() {
-                let item_path = [path, idx.to_string().as_slice()].connect("/");
+                let item_path = [path, idx.to_string().as_ref()].connect("/");
                 if item.is_object() {
-                    let mut process_state = self.process_object(item, item_path.as_slice(), scope);
+                    let mut process_state = self.process_object(item, item_path.as_ref(), scope);
                     state.append(&mut process_state);
                 } else {
                     state.errors.push(
@@ -210,9 +210,9 @@ impl Builder {
             for param in self.requires.iter() {
                 let ref name = param.name;
                 let present = helpers::has_value(object, name);
-                let param_path = [path, name.as_slice()].connect("/");
+                let param_path = [path, name.as_ref()].connect("/");
                 if present {
-                    let mut process_result = param.process(object.get_mut(name).unwrap(), param_path.as_slice(), scope);
+                    let mut process_result = param.process(object.get_mut(name).unwrap(), param_path.as_ref(), scope);
                     match process_result.value  {
                         Some(new_value) => { object.insert(name.clone(), new_value); },
                         None => ()
@@ -229,9 +229,9 @@ impl Builder {
             for param in self.optional.iter() {
                 let ref name = param.name;
                 let present = helpers::has_value(object, name);
-                let param_path = [path, name.as_slice()].connect("/");
+                let param_path = [path, name.as_ref()].connect("/");
                 if present {
-                    let mut process_result = param.process(object.get_mut(name).unwrap(), param_path.as_slice(), scope);
+                    let mut process_result = param.process(object.get_mut(name).unwrap(), param_path.as_ref(), scope);
                     match process_result.value  {
                         Some(new_value) => { object.insert(name.clone(), new_value); },
                         None => ()
