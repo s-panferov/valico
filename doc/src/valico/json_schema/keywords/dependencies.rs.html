@@ -211,9 +211,9 @@
 
                 <span class='ident'>items</span>.<span class='ident'>insert</span>(<span class='ident'>key</span>.<span class='ident'>clone</span>(), <span class='ident'>validators</span>::<span class='ident'>dependencies</span>::<span class='ident'>DepKind</span>::<span class='ident'>Schema</span>(
                     <span class='ident'>helpers</span>::<span class='ident'>alter_fragment_path</span>(<span class='ident'>ctx</span>.<span class='ident'>url</span>.<span class='ident'>clone</span>(), [
-                        <span class='ident'>ctx</span>.<span class='ident'>escaped_fragment</span>().<span class='ident'>as_slice</span>().<span class='ident'>as_slice</span>(),
+                        <span class='ident'>ctx</span>.<span class='ident'>escaped_fragment</span>().<span class='ident'>as_ref</span>(),
                         <span class='string'>&quot;dependencies&quot;</span>,
-                        <span class='ident'>helpers</span>::<span class='ident'>encode</span>(<span class='ident'>key</span>).<span class='ident'>as_slice</span>()
+                        <span class='ident'>helpers</span>::<span class='ident'>encode</span>(<span class='ident'>key</span>).<span class='ident'>as_ref</span>()
                     ].<span class='ident'>connect</span>(<span class='string'>&quot;/&quot;</span>))
                 ));
 

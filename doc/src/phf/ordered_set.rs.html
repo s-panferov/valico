@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/phf-0.6.17/src/ordered_set.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/phf-0.7.2/src/ordered_set.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>ordered_set.rs.html -- source</title>
@@ -171,20 +171,12 @@
 <span id="129">129</span>
 <span id="130">130</span>
 <span id="131">131</span>
-<span id="132">132</span>
-<span id="133">133</span>
-<span id="134">134</span>
-<span id="135">135</span>
-<span id="136">136</span>
-<span id="137">137</span>
-<span id="138">138</span>
-<span id="139">139</span>
-<span id="140">140</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! An order-preserving immutable set constructed at compile time.</span>
+<span class='kw'>use</span> <span class='ident'>debug_builders</span>::<span class='ident'>DebugSet</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>prelude</span>::<span class='ident'>v1</span>::<span class='op'>*</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>borrow</span>::<span class='ident'>Borrow</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>iter</span>::{<span class='ident'>IntoIterator</span>, <span class='ident'>RandomAccessIterator</span>};
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>iter</span>::<span class='ident'>IntoIterator</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fmt</span>;
 <span class='kw'>use</span> <span class='ident'>ordered_map</span>;
 <span class='kw'>use</span> {<span class='ident'>PhfHash</span>, <span class='ident'>OrderedMap</span>};
@@ -206,11 +198,7 @@
 
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='ident'>fmt</span>::<span class='ident'>Debug</span> <span class='kw'>for</span> <span class='ident'>OrderedSet</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='kw'>where</span> <span class='ident'>T</span>: <span class='ident'>fmt</span>::<span class='ident'>Debug</span> {
     <span class='kw'>fn</span> <span class='ident'>fmt</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>fmt</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>fmt</span>::<span class='ident'>Formatter</span>) <span class='op'>-&gt;</span> <span class='ident'>fmt</span>::<span class='prelude-ty'>Result</span> {
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>builder</span> <span class='op'>=</span> <span class='ident'>fmt</span>.<span class='ident'>debug_set</span>(<span class='string'>&quot;OrderedSet&quot;</span>);
-        <span class='kw'>for</span> <span class='ident'>entry</span> <span class='kw'>in</span> <span class='self'>self</span> {
-            <span class='ident'>builder</span> <span class='op'>=</span> <span class='ident'>builder</span>.<span class='ident'>entry</span>(<span class='ident'>entry</span>);
-        }
-        <span class='ident'>builder</span>.<span class='ident'>finish</span>()
+        <span class='self'>self</span>.<span class='ident'>iter</span>().<span class='ident'>fold</span>(<span class='ident'>DebugSet</span>::<span class='ident'>new</span>(<span class='ident'>fmt</span>), <span class='op'>|</span><span class='ident'>b</span>, <span class='ident'>e</span><span class='op'>|</span> <span class='ident'>b</span>.<span class='ident'>entry</span>(<span class='ident'>e</span>)).<span class='ident'>finish</span>()
     }
 }
 
@@ -238,6 +226,12 @@
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>get_index</span><span class='op'>&lt;</span><span class='ident'>U</span>: ?<span class='ident'>Sized</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>key</span>: <span class='kw-2'>&amp;</span><span class='ident'>U</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span>
             <span class='kw'>where</span> <span class='ident'>U</span>: <span class='ident'>Eq</span> <span class='op'>+</span> <span class='ident'>PhfHash</span>, <span class='ident'>T</span>: <span class='ident'>Borrow</span><span class='op'>&lt;</span><span class='ident'>U</span><span class='op'>&gt;</span> {
         <span class='self'>self</span>.<span class='ident'>map</span>.<span class='ident'>get_index</span>(<span class='ident'>key</span>)
+    }
+
+    <span class='doccomment'>/// Returns references to both the key and values at an index</span>
+    <span class='doccomment'>/// within the list used to initialize the ordered map. See `.get_index(key)`.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>index</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>index</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
+        <span class='self'>self</span>.<span class='ident'>map</span>.<span class='ident'>index</span>(<span class='ident'>index</span>).<span class='ident'>map</span>(<span class='op'>|</span>(<span class='ident'>k</span>, <span class='kw-2'>&amp;</span>())<span class='op'>|</span> <span class='ident'>k</span>)
     }
 
     <span class='doccomment'>/// Returns true if `value` is in the `Set`.</span>
@@ -305,18 +299,6 @@
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>next_back</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>T</span><span class='op'>&gt;</span> {
         <span class='self'>self</span>.<span class='ident'>iter</span>.<span class='ident'>next_back</span>()
-    }
-}
-
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>T</span><span class='op'>&gt;</span> <span class='ident'>RandomAccessIterator</span> <span class='kw'>for</span> <span class='ident'>Iter</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>T</span><span class='op'>&gt;</span> {
-    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>fn</span> <span class='ident'>indexable</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>usize</span> {
-        <span class='self'>self</span>.<span class='ident'>iter</span>.<span class='ident'>indexable</span>()
-    }
-
-    <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-    <span class='kw'>fn</span> <span class='ident'>idx</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>index</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>T</span><span class='op'>&gt;</span> {
-        <span class='self'>self</span>.<span class='ident'>iter</span>.<span class='ident'>idx</span>(<span class='ident'>index</span>)
     }
 }
 

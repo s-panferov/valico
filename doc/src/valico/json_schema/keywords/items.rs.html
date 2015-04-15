@@ -246,7 +246,7 @@
 
                 <span class='ident'>validators</span>::<span class='ident'>items</span>::<span class='ident'>ItemsKind</span>::<span class='ident'>Schema</span>(
                     <span class='ident'>helpers</span>::<span class='ident'>alter_fragment_path</span>(<span class='ident'>ctx</span>.<span class='ident'>url</span>.<span class='ident'>clone</span>(), [
-                        <span class='ident'>ctx</span>.<span class='ident'>escaped_fragment</span>().<span class='ident'>as_slice</span>().<span class='ident'>as_slice</span>(),
+                        <span class='ident'>ctx</span>.<span class='ident'>escaped_fragment</span>().<span class='ident'>as_ref</span>(),
                         <span class='string'>&quot;items&quot;</span>
                     ].<span class='ident'>connect</span>(<span class='string'>&quot;/&quot;</span>))
                 )
@@ -258,9 +258,9 @@
                     <span class='kw'>if</span> <span class='ident'>item</span>.<span class='ident'>is_object</span>() {
                         <span class='ident'>schemas</span>.<span class='ident'>push</span>(
                             <span class='ident'>helpers</span>::<span class='ident'>alter_fragment_path</span>(<span class='ident'>ctx</span>.<span class='ident'>url</span>.<span class='ident'>clone</span>(), [
-                                <span class='ident'>ctx</span>.<span class='ident'>escaped_fragment</span>().<span class='ident'>as_slice</span>().<span class='ident'>as_slice</span>(),
+                                <span class='ident'>ctx</span>.<span class='ident'>escaped_fragment</span>().<span class='ident'>as_ref</span>(),
                                 <span class='string'>&quot;items&quot;</span>,
-                                <span class='ident'>idx</span>.<span class='ident'>to_string</span>().<span class='ident'>as_slice</span>()
+                                <span class='ident'>idx</span>.<span class='ident'>to_string</span>().<span class='ident'>as_ref</span>()
                             ].<span class='ident'>connect</span>(<span class='string'>&quot;/&quot;</span>))
                         )
                     } <span class='kw'>else</span> {
@@ -295,7 +295,7 @@
 
                 <span class='ident'>validators</span>::<span class='ident'>items</span>::<span class='ident'>AdditionalKind</span>::<span class='ident'>Schema</span>(
                     <span class='ident'>helpers</span>::<span class='ident'>alter_fragment_path</span>(<span class='ident'>ctx</span>.<span class='ident'>url</span>.<span class='ident'>clone</span>(), [
-                        <span class='ident'>ctx</span>.<span class='ident'>escaped_fragment</span>().<span class='ident'>as_slice</span>().<span class='ident'>as_slice</span>(),
+                        <span class='ident'>ctx</span>.<span class='ident'>escaped_fragment</span>().<span class='ident'>as_ref</span>(),
                         <span class='string'>&quot;additionalItems&quot;</span>
                     ].<span class='ident'>connect</span>(<span class='string'>&quot;/&quot;</span>))
                 )

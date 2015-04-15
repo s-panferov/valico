@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/url-0.2.27/src/percent_encoding.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/url-0.2.29/src/percent_encoding.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>percent_encoding.rs.html -- source</title>
@@ -219,7 +219,7 @@
 <span class='doccomment'>/// If you need a different encode set,</span>
 <span class='doccomment'>/// please [file a bug](https://github.com/servo/rust-url/issues)</span>
 <span class='doccomment'>/// explaining the use case.</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Copy</span>)]</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Copy</span>, <span class='ident'>Clone</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>EncodeSet</span> {
     <span class='ident'>map</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> [<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>str</span>; <span class='number'>256</span>],
 }

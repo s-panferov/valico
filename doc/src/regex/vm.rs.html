@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/regex-0.1.20/src/vm.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/regex-0.1.28/src/vm.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>vm.rs.html -- source</title>
@@ -628,8 +628,6 @@
 <span id="586">586</span>
 <span id="587">587</span>
 <span id="588">588</span>
-<span id="589">589</span>
-<span id="590">590</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2014 The Rust Project Developers. See the COPYRIGHT</span>
 <span class='comment'>// file at the top-level directory of this distribution and at</span>
@@ -684,6 +682,7 @@
 <span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>CaptureLocs</span> <span class='op'>=</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;&gt;</span>;
 
 <span class='doccomment'>/// Indicates the type of match to be performed by the VM.</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Copy</span>, <span class='ident'>Clone</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>MatchKind</span> {
     <span class='doccomment'>/// Only checks if a match exists or not. Does not return location.</span>
     <span class='ident'>Exists</span>,
@@ -693,8 +692,6 @@
     <span class='doccomment'>/// Returns the start and end indices of each submatch in the input given.</span>
     <span class='ident'>Submatches</span>,
 }
-
-<span class='kw'>impl</span> <span class='ident'>Copy</span> <span class='kw'>for</span> <span class='ident'>MatchKind</span> {}
 
 <span class='doccomment'>/// Runs an NFA simulation on the compiled expression given on the search text</span>
 <span class='doccomment'>/// `input`. The search begins at byte index `start` and ends at byte index</span>
@@ -730,6 +727,7 @@
 
 <span class='doccomment'>/// Indicates the next action to take after a single non-empty instruction</span>
 <span class='doccomment'>/// is processed.</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Copy</span>, <span class='ident'>Clone</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>StepState</span> {
     <span class='doccomment'>/// This is returned if and only if a Match instruction is reached and</span>
     <span class='doccomment'>/// we only care about the existence of a match. It instructs the VM to</span>
@@ -742,8 +740,6 @@
     <span class='doccomment'>/// No match was found. Continue with the next state in the queue.</span>
     <span class='ident'>StepContinue</span>,
 }
-
-<span class='kw'>impl</span> <span class='ident'>Copy</span> <span class='kw'>for</span> <span class='ident'>StepState</span> {}
 
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;r</span>, <span class='lifetime'>&#39;t</span><span class='op'>&gt;</span> <span class='ident'>Nfa</span><span class='op'>&lt;</span><span class='lifetime'>&#39;r</span>, <span class='lifetime'>&#39;t</span><span class='op'>&gt;</span> {
     <span class='kw'>fn</span> <span class='ident'>run</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>CaptureLocs</span> {
@@ -807,7 +803,7 @@
             <span class='comment'>// a state starting at the current position in the input for the</span>
             <span class='comment'>// beginning of the program only if we don&#39;t already have a match.</span>
             <span class='kw'>if</span> <span class='ident'>clist</span>.<span class='ident'>size</span> <span class='op'>==</span> <span class='number'>0</span> <span class='op'>||</span> (<span class='op'>!</span><span class='ident'>prefix_anchor</span> <span class='op'>&amp;&amp;</span> <span class='op'>!</span><span class='ident'>matched</span>) {
-                <span class='self'>self</span>.<span class='ident'>add</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>clist</span>, <span class='number'>0</span>, <span class='ident'>groups</span>.<span class='ident'>as_mut_slice</span>())
+                <span class='self'>self</span>.<span class='ident'>add</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>clist</span>, <span class='number'>0</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>groups</span>)
             }
 
             <span class='comment'>// Now we try to read the next character.</span>
@@ -818,7 +814,7 @@
 
             <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='number'>0</span>..<span class='ident'>clist</span>.<span class='ident'>size</span> {
                 <span class='kw'>let</span> <span class='ident'>pc</span> <span class='op'>=</span> <span class='ident'>clist</span>.<span class='ident'>pc</span>(<span class='ident'>i</span>);
-                <span class='kw'>let</span> <span class='ident'>step_state</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>step</span>(<span class='ident'>groups</span>.<span class='ident'>as_mut_slice</span>(), <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>nlist</span>,
+                <span class='kw'>let</span> <span class='ident'>step_state</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>step</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>groups</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>nlist</span>,
                                            <span class='ident'>clist</span>.<span class='ident'>groups</span>(<span class='ident'>i</span>), <span class='ident'>pc</span>);
                 <span class='kw'>match</span> <span class='ident'>step_state</span> {
                     <span class='ident'>StepMatchEarlyReturn</span> <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='macro'>vec</span><span class='macro'>!</span>[<span class='prelude-val'>Some</span>(<span class='number'>0</span>), <span class='prelude-val'>Some</span>(<span class='number'>0</span>)],
@@ -1143,7 +1139,7 @@
 
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>groups</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>i</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span>] {
-        <span class='self'>self</span>.<span class='ident'>queue</span>[<span class='ident'>i</span>].<span class='ident'>groups</span>.<span class='ident'>as_mut_slice</span>()
+        <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>queue</span>[<span class='ident'>i</span>].<span class='ident'>groups</span>
     }
 }
 

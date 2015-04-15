@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/regex-0.1.20/src/re.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/regex-0.1.28/src/re.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>re.rs.html -- source</title>
@@ -1064,6 +1064,23 @@
 <span id="1022">1022</span>
 <span id="1023">1023</span>
 <span id="1024">1024</span>
+<span id="1025">1025</span>
+<span id="1026">1026</span>
+<span id="1027">1027</span>
+<span id="1028">1028</span>
+<span id="1029">1029</span>
+<span id="1030">1030</span>
+<span id="1031">1031</span>
+<span id="1032">1032</span>
+<span id="1033">1033</span>
+<span id="1034">1034</span>
+<span id="1035">1035</span>
+<span id="1036">1036</span>
+<span id="1037">1037</span>
+<span id="1038">1038</span>
+<span id="1039">1039</span>
+<span id="1040">1040</span>
+<span id="1041">1041</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2014 The Rust Project Developers. See the COPYRIGHT</span>
 <span class='comment'>// file at the top-level directory of this distribution and at</span>
@@ -1075,11 +1092,13 @@
 <span class='comment'>// option. This file may not be copied, modified, or distributed</span>
 <span class='comment'>// except according to those terms.</span>
 
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>borrow</span>::{<span class='ident'>IntoCow</span>, <span class='ident'>Cow</span>};
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>borrow</span>::<span class='ident'>Cow</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>collections</span>::<span class='ident'>HashMap</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>collections</span>::<span class='ident'>hash_map</span>::<span class='ident'>Iter</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fmt</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>str</span>::{<span class='ident'>Pattern</span>, <span class='ident'>Searcher</span>, <span class='ident'>SearchStep</span>};
+<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;pattern&quot;</span>)]</span>
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>str</span>::<span class='ident'>pattern</span>::{<span class='ident'>Pattern</span>, <span class='ident'>Searcher</span>, <span class='ident'>SearchStep</span>};
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>str</span>::<span class='ident'>FromStr</span>;
 
 <span class='kw'>use</span> <span class='ident'>compile</span>::<span class='ident'>Program</span>;
 <span class='kw'>use</span> <span class='ident'>parse</span>;
@@ -1149,6 +1168,9 @@
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// # Using the `std::str::StrExt` methods with `Regex`</span>
 <span class='doccomment'>///</span>
+<span class='doccomment'>/// &gt; **Note**: This section requires that this crate is currently compiled with</span>
+<span class='doccomment'>/// &gt;           the `pattern` Cargo feature enabled.</span>
+<span class='doccomment'>///</span>
 <span class='doccomment'>/// Since `Regex` implements `Pattern`, you can use regexes with methods</span>
 <span class='doccomment'>/// defined on `std::str::StrExt`. For example, `is_match`, `find`, `find_iter`</span>
 <span class='doccomment'>/// and `split` can be replaced with `StrExt::contains`, `StrExt::find`,</span>
@@ -1156,7 +1178,7 @@
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// Here are some examples:</span>
 <span class='doccomment'>///</span>
-<span class='doccomment'>/// ```rust</span>
+<span class='doccomment'>/// ```rust,ignore</span>
 <span class='doccomment'>/// # use regex::Regex;</span>
 <span class='doccomment'>/// let re = Regex::new(r&quot;\d+&quot;).unwrap();</span>
 <span class='doccomment'>/// let haystack = &quot;a111b222c&quot;;</span>
@@ -1218,6 +1240,15 @@
     <span class='doccomment'>/// Shows the original regular expression.</span>
     <span class='kw'>fn</span> <span class='ident'>fmt</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>f</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>fmt</span>::<span class='ident'>Formatter</span>) <span class='op'>-&gt;</span> <span class='ident'>fmt</span>::<span class='prelude-ty'>Result</span> {
         <span class='ident'>fmt</span>::<span class='ident'>Display</span>::<span class='ident'>fmt</span>(<span class='self'>self</span>, <span class='ident'>f</span>)
+    }
+}
+
+<span class='kw'>impl</span> <span class='ident'>FromStr</span> <span class='kw'>for</span> <span class='ident'>Regex</span> {
+    <span class='kw'>type</span> <span class='prelude-val'>Err</span> <span class='op'>=</span> <span class='ident'>parse</span>::<span class='ident'>Error</span>;
+
+    <span class='doccomment'>/// Attempts to parse a string into a regular expression</span>
+    <span class='kw'>fn</span> <span class='ident'>from_str</span>(<span class='ident'>s</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>Regex</span>, <span class='ident'>parse</span>::<span class='ident'>Error</span><span class='op'>&gt;</span> {
+        <span class='ident'>Regex</span>::<span class='ident'>new</span>(<span class='ident'>s</span>)
     }
 }
 
@@ -1634,19 +1665,19 @@
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;t</span><span class='op'>&gt;</span> <span class='ident'>Replacer</span> <span class='kw'>for</span> <span class='ident'>NoExpand</span><span class='op'>&lt;</span><span class='lifetime'>&#39;t</span><span class='op'>&gt;</span> {
     <span class='kw'>fn</span> <span class='ident'>reg_replace</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='self'>self</span>, _: <span class='kw-2'>&amp;</span><span class='ident'>Captures</span>) <span class='op'>-&gt;</span> <span class='ident'>Cow</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>str</span><span class='op'>&gt;</span> {
         <span class='kw'>let</span> <span class='ident'>NoExpand</span>(<span class='ident'>s</span>) <span class='op'>=</span> <span class='op'>*</span><span class='self'>self</span>;
-        <span class='ident'>s</span>.<span class='ident'>into_cow</span>()
+        <span class='ident'>Cow</span>::<span class='ident'>Borrowed</span>(<span class='ident'>s</span>)
     }
 }
 
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;t</span><span class='op'>&gt;</span> <span class='ident'>Replacer</span> <span class='kw'>for</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;t</span> <span class='ident'>str</span> {
     <span class='kw'>fn</span> <span class='ident'>reg_replace</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>caps</span>: <span class='kw-2'>&amp;</span><span class='ident'>Captures</span>) <span class='op'>-&gt;</span> <span class='ident'>Cow</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>str</span><span class='op'>&gt;</span> {
-        <span class='ident'>caps</span>.<span class='ident'>expand</span>(<span class='op'>*</span><span class='self'>self</span>).<span class='ident'>into_cow</span>()
+        <span class='ident'>Cow</span>::<span class='ident'>Owned</span>(<span class='ident'>caps</span>.<span class='ident'>expand</span>(<span class='op'>*</span><span class='self'>self</span>))
     }
 }
 
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>F</span><span class='op'>&gt;</span> <span class='ident'>Replacer</span> <span class='kw'>for</span> <span class='ident'>F</span> <span class='kw'>where</span> <span class='ident'>F</span>: <span class='ident'>FnMut</span>(<span class='kw-2'>&amp;</span><span class='ident'>Captures</span>) <span class='op'>-&gt;</span> <span class='ident'>String</span> {
     <span class='kw'>fn</span> <span class='ident'>reg_replace</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>caps</span>: <span class='kw-2'>&amp;</span><span class='ident'>Captures</span>) <span class='op'>-&gt;</span> <span class='ident'>Cow</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>str</span><span class='op'>&gt;</span> {
-        (<span class='op'>*</span><span class='self'>self</span>)(<span class='ident'>caps</span>).<span class='ident'>into_cow</span>()
+        <span class='ident'>Cow</span>::<span class='ident'>Owned</span>((<span class='op'>*</span><span class='self'>self</span>)(<span class='ident'>caps</span>))
     }
 }
 
@@ -2017,12 +2048,14 @@
     }
 }
 
+<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;pattern&quot;</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>RegexSearcher</span><span class='op'>&lt;</span><span class='lifetime'>&#39;r</span>, <span class='lifetime'>&#39;t</span><span class='op'>&gt;</span> {
     <span class='ident'>it</span>: <span class='ident'>FindMatches</span><span class='op'>&lt;</span><span class='lifetime'>&#39;r</span>, <span class='lifetime'>&#39;t</span><span class='op'>&gt;</span>,
     <span class='ident'>last_step_end</span>: <span class='ident'>usize</span>,
     <span class='ident'>next_match</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span>(<span class='ident'>usize</span>, <span class='ident'>usize</span>)<span class='op'>&gt;</span>,
 }
 
+<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;pattern&quot;</span>)]</span>
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;r</span>, <span class='lifetime'>&#39;t</span><span class='op'>&gt;</span> <span class='ident'>Pattern</span><span class='op'>&lt;</span><span class='lifetime'>&#39;t</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;r</span> <span class='ident'>Regex</span> {
     <span class='kw'>type</span> <span class='ident'>Searcher</span> <span class='op'>=</span> <span class='ident'>RegexSearcher</span><span class='op'>&lt;</span><span class='lifetime'>&#39;r</span>, <span class='lifetime'>&#39;t</span><span class='op'>&gt;</span>;
 
@@ -2035,6 +2068,7 @@
     }
 }
 
+<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;pattern&quot;</span>)]</span>
 <span class='kw'>unsafe</span> <span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;r</span>, <span class='lifetime'>&#39;t</span><span class='op'>&gt;</span> <span class='ident'>Searcher</span><span class='op'>&lt;</span><span class='lifetime'>&#39;t</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>RegexSearcher</span><span class='op'>&lt;</span><span class='lifetime'>&#39;r</span>, <span class='lifetime'>&#39;t</span><span class='op'>&gt;</span> {
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>haystack</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;t</span> <span class='ident'>str</span> {

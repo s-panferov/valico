@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/rand-0.3.0/src/os.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/rand-0.3.7/src/os.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>os.rs.html -- source</title>
@@ -691,8 +691,6 @@
 
     <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>io</span>;
     <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>mem</span>;
-    <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>ops</span>::<span class='ident'>Drop</span>;
-    <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>os</span>;
     <span class='kw'>use</span> <span class='ident'>Rng</span>;
     <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>libc</span>::{<span class='ident'>DWORD</span>, <span class='ident'>BYTE</span>, <span class='ident'>LPCSTR</span>, <span class='ident'>BOOL</span>};
     <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>libc</span>::<span class='ident'>types</span>::<span class='ident'>os</span>::<span class='ident'>arch</span>::<span class='ident'>extra</span>::{<span class='ident'>LONG_PTR</span>};
@@ -765,7 +763,8 @@
                                <span class='ident'>v</span>.<span class='ident'>as_mut_ptr</span>())
             };
             <span class='kw'>if</span> <span class='ident'>ret</span> <span class='op'>==</span> <span class='number'>0</span> {
-                <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;couldn&#39;t generate random bytes: {}&quot;</span>, <span class='ident'>os</span>::<span class='ident'>last_os_error</span>());
+                <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;couldn&#39;t generate random bytes: {}&quot;</span>,
+                       <span class='ident'>io</span>::<span class='ident'>Error</span>::<span class='ident'>last_os_error</span>());
             }
         }
     }
@@ -776,7 +775,8 @@
                 <span class='ident'>CryptReleaseContext</span>(<span class='self'>self</span>.<span class='ident'>hcryptprov</span>, <span class='number'>0</span>)
             };
             <span class='kw'>if</span> <span class='ident'>ret</span> <span class='op'>==</span> <span class='number'>0</span> {
-                <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;couldn&#39;t release context: {}&quot;</span>, <span class='ident'>os</span>::<span class='ident'>last_os_error</span>());
+                <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;couldn&#39;t release context: {}&quot;</span>,
+                       <span class='ident'>io</span>::<span class='ident'>Error</span>::<span class='ident'>last_os_error</span>());
             }
         }
     }

@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/regex-0.1.20/src/lib.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/regex-0.1.28/src/lib.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>lib.rs.html -- source</title>
@@ -461,7 +461,6 @@
 <span id="419">419</span>
 <span id="420">420</span>
 <span id="421">421</span>
-<span id="422">422</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2014 The Rust Project Developers. See the COPYRIGHT</span>
 <span class='comment'>// file at the top-level directory of this distribution and at</span>
@@ -603,7 +602,7 @@
 <span class='doccomment'>//! let re = Regex::new(r&quot;(?P&lt;y&gt;\d{4})-(?P&lt;m&gt;\d{2})-(?P&lt;d&gt;\d{2})&quot;).unwrap();</span>
 <span class='doccomment'>//! let before = &quot;2012-03-14, 2013-01-01 and 2014-07-05&quot;;</span>
 <span class='doccomment'>//! let after = re.replace_all(before, &quot;$m/$d/$y&quot;);</span>
-<span class='doccomment'>//! assert_eq!(after.as_slice(), &quot;03/14/2012, 01/01/2013 and 07/05/2014&quot;);</span>
+<span class='doccomment'>//! assert_eq!(after, &quot;03/14/2012, 01/01/2013 and 07/05/2014&quot;);</span>
 <span class='doccomment'>//! # }</span>
 <span class='doccomment'>//! ```</span>
 <span class='doccomment'>//!</span>
@@ -675,8 +674,8 @@
 <span class='doccomment'>//! [xyz]       A character class matching either x, y or z.</span>
 <span class='doccomment'>//! [^xyz]      A character class matching any character except x, y and z.</span>
 <span class='doccomment'>//! [a-z]       A character class matching any character in range a-z.</span>
-<span class='doccomment'>//! \d          Perl character class ([0-9])</span>
-<span class='doccomment'>//! \D          Negated Perl character class ([^0-9])</span>
+<span class='doccomment'>//! \d          digit (\p{Nd})</span>
+<span class='doccomment'>//! \D          not digit</span>
 <span class='doccomment'>//! [:alpha:]   ASCII character class ([A-Za-z])</span>
 <span class='doccomment'>//! [:^alpha:]  Negated ASCII character class ([^A-Za-z])</span>
 <span class='doccomment'>//! \pN         One letter name Unicode character class</span>
@@ -832,14 +831,13 @@
 
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>deny</span>(<span class='ident'>missing_docs</span>)]</span>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>cfg_attr</span>(<span class='ident'>test</span>, <span class='ident'>deny</span>(<span class='ident'>warnings</span>))]</span>
+<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>cfg_attr</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;pattern&quot;</span>, <span class='ident'>feature</span>(<span class='ident'>core</span>))]</span>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>doc</span>(<span class='ident'>html_logo_url</span> <span class='op'>=</span> <span class='string'>&quot;http://www.rust-lang.org/logos/rust-logo-128x128-blk-v2.png&quot;</span>,
        <span class='ident'>html_favicon_url</span> <span class='op'>=</span> <span class='string'>&quot;http://www.rust-lang.org/favicon.ico&quot;</span>,
        <span class='ident'>html_root_url</span> <span class='op'>=</span> <span class='string'>&quot;http://doc.rust-lang.org/regex/&quot;</span>)]</span>
 
-<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>core</span>)]</span>
-
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>parse</span>::<span class='ident'>Error</span>;
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>re</span>::{<span class='ident'>Regex</span>, <span class='ident'>Captures</span>, <span class='ident'>SubCaptures</span>, <span class='ident'>SubCapturesPos</span>};
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>re</span>::{<span class='ident'>Regex</span>, <span class='ident'>Captures</span>, <span class='ident'>SubCaptures</span>, <span class='ident'>SubCapturesPos</span>, <span class='ident'>SubCapturesNamed</span>};
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>re</span>::{<span class='ident'>FindCaptures</span>, <span class='ident'>FindMatches</span>};
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>re</span>::{<span class='ident'>Replacer</span>, <span class='ident'>NoExpand</span>, <span class='ident'>RegexSplits</span>, <span class='ident'>RegexSplitsN</span>};
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>re</span>::{<span class='ident'>quote</span>, <span class='ident'>is_match</span>};

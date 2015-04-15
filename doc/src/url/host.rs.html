@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/url-0.2.27/src/host.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/url-0.2.29/src/host.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>host.rs.html -- source</title>
@@ -324,7 +324,7 @@
 <span class='comment'>// option. This file may not be copied, modified, or distributed</span>
 <span class='comment'>// except according to those terms.</span>
 
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>ascii</span>::{<span class='ident'>AsciiExt</span>, <span class='ident'>OwnedAsciiExt</span>};
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>ascii</span>::<span class='ident'>AsciiExt</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>cmp</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fmt</span>::{<span class='self'>self</span>, <span class='ident'>Formatter</span>};
 <span class='kw'>use</span> <span class='ident'>parser</span>::{<span class='ident'>ParseResult</span>, <span class='ident'>ParseError</span>};
@@ -381,7 +381,7 @@
             ][..]).<span class='ident'>is_some</span>() {
                 <span class='prelude-val'>Err</span>(<span class='ident'>ParseError</span>::<span class='ident'>InvalidDomainCharacter</span>)
             } <span class='kw'>else</span> {
-                <span class='prelude-val'>Ok</span>(<span class='ident'>Host</span>::<span class='ident'>Domain</span>(<span class='ident'>domain</span>.<span class='ident'>to_string</span>().<span class='ident'>into_ascii_lowercase</span>()))
+                <span class='prelude-val'>Ok</span>(<span class='ident'>Host</span>::<span class='ident'>Domain</span>(<span class='ident'>domain</span>.<span class='ident'>to_ascii_lowercase</span>()))
             }
         }
     }

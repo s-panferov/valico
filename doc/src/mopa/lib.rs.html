@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/mopa-0.1.5/src/lib.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/mopa-0.1.8/src/lib.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>lib.rs.html -- source</title>
@@ -352,6 +352,67 @@
 <span id="310">310</span>
 <span id="311">311</span>
 <span id="312">312</span>
+<span id="313">313</span>
+<span id="314">314</span>
+<span id="315">315</span>
+<span id="316">316</span>
+<span id="317">317</span>
+<span id="318">318</span>
+<span id="319">319</span>
+<span id="320">320</span>
+<span id="321">321</span>
+<span id="322">322</span>
+<span id="323">323</span>
+<span id="324">324</span>
+<span id="325">325</span>
+<span id="326">326</span>
+<span id="327">327</span>
+<span id="328">328</span>
+<span id="329">329</span>
+<span id="330">330</span>
+<span id="331">331</span>
+<span id="332">332</span>
+<span id="333">333</span>
+<span id="334">334</span>
+<span id="335">335</span>
+<span id="336">336</span>
+<span id="337">337</span>
+<span id="338">338</span>
+<span id="339">339</span>
+<span id="340">340</span>
+<span id="341">341</span>
+<span id="342">342</span>
+<span id="343">343</span>
+<span id="344">344</span>
+<span id="345">345</span>
+<span id="346">346</span>
+<span id="347">347</span>
+<span id="348">348</span>
+<span id="349">349</span>
+<span id="350">350</span>
+<span id="351">351</span>
+<span id="352">352</span>
+<span id="353">353</span>
+<span id="354">354</span>
+<span id="355">355</span>
+<span id="356">356</span>
+<span id="357">357</span>
+<span id="358">358</span>
+<span id="359">359</span>
+<span id="360">360</span>
+<span id="361">361</span>
+<span id="362">362</span>
+<span id="363">363</span>
+<span id="364">364</span>
+<span id="365">365</span>
+<span id="366">366</span>
+<span id="367">367</span>
+<span id="368">368</span>
+<span id="369">369</span>
+<span id="370">370</span>
+<span id="371">371</span>
+<span id="372">372</span>
+<span id="373">373</span>
 </pre><pre class='rust '>
 <span class='comment'>// This is largely taken from the Rust distribution, with only comparatively</span>
 <span class='comment'>// minor additions and alterations. Therefore, their copyright notice follows:</span>
@@ -367,6 +428,8 @@
 <span class='comment'>//     except according to those terms.</span>
 <span class='comment'>//</span>
 <span class='comment'>// I have kept my additions under the same terms (being rather fond of MIT/Apache-2.0 myself).</span>
+
+<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>cfg_attr</span>(<span class='ident'>test</span>, <span class='ident'>feature</span>(<span class='ident'>core</span>))]</span>
 
 <span class='doccomment'>//! **MOPA: My Own Personal Any.** A macro to implement all the `Any` methods on your own trait.</span>
 <span class='doccomment'>//!</span>
@@ -405,6 +468,7 @@
 <span class='doccomment'>//! `Person`’s plate after all.</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! ```rust</span>
+<span class='doccomment'>//! #![feature(core)]</span>
 <span class='doccomment'>//! #[macro_use] #[no_link]</span>
 <span class='doccomment'>//! extern crate mopa;</span>
 <span class='doccomment'>//!</span>
@@ -489,8 +553,6 @@
 <span class='doccomment'>//! types across a variety of libraries. But the question of purpose and suitability is open, and I</span>
 <span class='doccomment'>//! don’t have a really good example of such a use case here at present. TODO.</span>
 
-<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>unstable</span> <span class='op'>=</span> <span class='string'>&quot;a little too early to guarantee stability&quot;</span>]</span>
-
 <span class='doccomment'>/// The macro for implementing all the `Any` methods on your own trait.</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// # Instructions for use</span>
@@ -510,6 +572,7 @@
 <span class='doccomment'>/// 1. If you are a **normal person**:</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>///    ```rust</span>
+<span class='doccomment'>///    # #![feature(core)]</span>
 <span class='doccomment'>///    # #[macro_use] #[no_link] extern crate mopa;</span>
 <span class='doccomment'>///    # trait Trait: std::any::Any { }</span>
 <span class='doccomment'>///    mopafy!(Trait);</span>
@@ -519,6 +582,7 @@
 <span class='doccomment'>/// 2. If you are using **libcore** but not libstd (`#![no_std]`) or liballoc:</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>///    ```rust</span>
+<span class='doccomment'>///    # #![feature(core)]</span>
 <span class='doccomment'>///    # #[macro_use] #[no_link] extern crate mopa;</span>
 <span class='doccomment'>///    # extern crate core;</span>
 <span class='doccomment'>///    # trait Trait: core::any::Any { }</span>
@@ -534,6 +598,7 @@
 <span class='doccomment'>/// 3. If you are using **libcore and liballoc** but not libstd (`#![nostd]`):</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>///    ```rust</span>
+<span class='doccomment'>///    # #![feature(core, alloc)]</span>
 <span class='doccomment'>///    # #[macro_use] #[no_link] extern crate mopa;</span>
 <span class='doccomment'>///    # extern crate core;</span>
 <span class='doccomment'>///    # extern crate alloc;</span>
@@ -547,39 +612,27 @@
 <span class='doccomment'>///</span>
 <span class='doccomment'>///    This gets you all the methods.</span>
 <span class='attribute'>#[<span class='ident'>macro_export</span>]</span>
-<span class='attribute'>#[<span class='ident'>unstable</span> <span class='op'>=</span> <span class='string'>&quot;a little too early to guarantee stability&quot;</span>]</span>
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>mopafy</span> {
     <span class='comment'>// Using libstd like a normal person? Here’s what you want, just a simple `mopafy!(Trait)`.</span>
-    (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>trait_</span>:<span class='ident'>ty</span>) <span class='op'>=&gt;</span> {
+    (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>trait_</span>:<span class='ident'>ident</span>) <span class='op'>=&gt;</span> {
         <span class='macro'>mopafy</span><span class='macro'>!</span>(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>trait_</span>, <span class='ident'>core</span> <span class='op'>=</span> <span class='ident'>std</span>, <span class='ident'>alloc</span> <span class='op'>=</span> <span class='ident'>std</span>);
     };
 
     <span class='comment'>// Not using libstd or liballoc? You can get the &amp;Any and &amp;mut Any methods by specifying what</span>
     <span class='comment'>// libcore is here, e.g. `mopafy!(Trait, core = core)`, but you won’t get the `Box&lt;Any&gt;`</span>
     <span class='comment'>// methods.</span>
-    (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>trait_</span>:<span class='ident'>ty</span>, <span class='ident'>core</span> <span class='op'>=</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>core</span>:<span class='ident'>ident</span>) <span class='op'>=&gt;</span> {
+    (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>trait_</span>:<span class='ident'>ident</span>, <span class='ident'>core</span> <span class='op'>=</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>core</span>:<span class='ident'>ident</span>) <span class='op'>=&gt;</span> {
         <span class='kw'>impl</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>trait_</span> {
             <span class='doccomment'>/// Returns true if the boxed type is the same as `T`</span>
-            <span class='attribute'>#[<span class='ident'>stable</span>]</span>
             <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-            <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>is</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='lifetime'>&#39;static</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
-                <span class='kw'>use</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>core</span>::<span class='ident'>any</span>::<span class='ident'>Any</span>;
-
-                <span class='comment'>// Get TypeId of the type this function is instantiated with</span>
-                <span class='kw'>let</span> <span class='ident'>t</span> <span class='op'>=</span> ::<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>core</span>::<span class='ident'>any</span>::<span class='ident'>TypeId</span>::<span class='ident'>of</span>::<span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>();
-
-                <span class='comment'>// Get TypeId of the type in the trait object</span>
-                <span class='kw'>let</span> <span class='ident'>boxed</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>get_type_id</span>();
-
-                <span class='comment'>// Compare both TypeIds on equality</span>
-                <span class='ident'>t</span> <span class='op'>==</span> <span class='ident'>boxed</span>
+            <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>is</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>trait_</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
+                ::<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>core</span>::<span class='ident'>any</span>::<span class='ident'>TypeId</span>::<span class='ident'>of</span>::<span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>() <span class='op'>==</span> <span class='self'>self</span>.<span class='ident'>get_type_id</span>()
             }
 
             <span class='doccomment'>/// Returns some reference to the boxed value if it is of type `T`, or</span>
             <span class='doccomment'>/// `None` if it isn&#39;t.</span>
-            <span class='attribute'>#[<span class='ident'>stable</span>]</span>
             <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-            <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>downcast_ref</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='lifetime'>&#39;static</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> ::<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>core</span>::<span class='ident'>option</span>::<span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
+            <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>downcast_ref</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>trait_</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> ::<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>core</span>::<span class='ident'>option</span>::<span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
                 <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>is</span>::<span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>() {
                     <span class='kw'>unsafe</span> {
                         ::<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>core</span>::<span class='ident'>option</span>::<span class='prelude-ty'>Option</span>::<span class='prelude-val'>Some</span>(<span class='self'>self</span>.<span class='ident'>downcast_ref_unchecked</span>())
@@ -591,21 +644,17 @@
 
             <span class='doccomment'>/// Returns a reference to the boxed value, blindly assuming it to be of type `T`.</span>
             <span class='doccomment'>/// If you are not *absolutely certain* of `T`, you *must not* call this.</span>
-            <span class='attribute'>#[<span class='ident'>unstable</span> <span class='op'>=</span> <span class='string'>&quot;naming conventions around acquiring references may change&quot;</span>]</span>
             <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-            <span class='kw'>pub</span> <span class='kw'>unsafe</span> <span class='kw'>fn</span> <span class='ident'>downcast_ref_unchecked</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='lifetime'>&#39;static</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='ident'>T</span> {
-                <span class='comment'>// Get the raw representation of the trait object</span>
-                <span class='kw'>let</span> <span class='ident'>to</span>: ::<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>core</span>::<span class='ident'>raw</span>::<span class='ident'>TraitObject</span> <span class='op'>=</span> ::<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>core</span>::<span class='ident'>mem</span>::<span class='ident'>transmute</span>(<span class='self'>self</span>);
-
-                <span class='comment'>// Extract the data pointer</span>
-                ::<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>core</span>::<span class='ident'>mem</span>::<span class='ident'>transmute</span>(<span class='ident'>to</span>.<span class='ident'>data</span>)
+            <span class='kw'>pub</span> <span class='kw'>unsafe</span> <span class='kw'>fn</span> <span class='ident'>downcast_ref_unchecked</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>trait_</span><span class='op'>&gt;</span>
+                                                (<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='ident'>T</span> {
+                <span class='kw'>let</span> <span class='ident'>trait_object</span>: ::<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>core</span>::<span class='ident'>raw</span>::<span class='ident'>TraitObject</span> <span class='op'>=</span> ::<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>core</span>::<span class='ident'>mem</span>::<span class='ident'>transmute</span>(<span class='self'>self</span>);
+                ::<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>core</span>::<span class='ident'>mem</span>::<span class='ident'>transmute</span>(<span class='ident'>trait_object</span>.<span class='ident'>data</span>)
             }
 
             <span class='doccomment'>/// Returns some mutable reference to the boxed value if it is of type `T`, or</span>
             <span class='doccomment'>/// `None` if it isn&#39;t.</span>
-            <span class='attribute'>#[<span class='ident'>stable</span>]</span>
             <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-            <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>downcast_mut</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='lifetime'>&#39;static</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> ::<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>core</span>::<span class='ident'>option</span>::<span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>T</span><span class='op'>&gt;</span> {
+            <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>downcast_mut</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>trait_</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> ::<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>core</span>::<span class='ident'>option</span>::<span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>T</span><span class='op'>&gt;</span> {
                 <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>is</span>::<span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>() {
                     <span class='kw'>unsafe</span> {
                         ::<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>core</span>::<span class='ident'>option</span>::<span class='prelude-ty'>Option</span>::<span class='prelude-val'>Some</span>(<span class='self'>self</span>.<span class='ident'>downcast_mut_unchecked</span>())
@@ -617,28 +666,24 @@
 
             <span class='doccomment'>/// Returns a mutable reference to the boxed value, blindly assuming it to be of type `T`.</span>
             <span class='doccomment'>/// If you are not *absolutely certain* of `T`, you *must not* call this.</span>
-            <span class='attribute'>#[<span class='ident'>unstable</span> <span class='op'>=</span> <span class='string'>&quot;naming conventions around acquiring references may change&quot;</span>]</span>
             <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-            <span class='kw'>pub</span> <span class='kw'>unsafe</span> <span class='kw'>fn</span> <span class='ident'>downcast_mut_unchecked</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='lifetime'>&#39;static</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>T</span> {
-                <span class='comment'>// Get the raw representation of the trait object</span>
-                <span class='kw'>let</span> <span class='ident'>to</span>: ::<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>core</span>::<span class='ident'>raw</span>::<span class='ident'>TraitObject</span> <span class='op'>=</span> ::<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>core</span>::<span class='ident'>mem</span>::<span class='ident'>transmute</span>(<span class='self'>self</span>);
-
-                <span class='comment'>// Extract the data pointer</span>
-                ::<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>core</span>::<span class='ident'>mem</span>::<span class='ident'>transmute</span>(<span class='ident'>to</span>.<span class='ident'>data</span>)
+            <span class='kw'>pub</span> <span class='kw'>unsafe</span> <span class='kw'>fn</span> <span class='ident'>downcast_mut_unchecked</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>trait_</span><span class='op'>&gt;</span>
+                                                (<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>T</span> {
+                <span class='kw'>let</span> <span class='ident'>trait_object</span>: ::<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>core</span>::<span class='ident'>raw</span>::<span class='ident'>TraitObject</span> <span class='op'>=</span> ::<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>core</span>::<span class='ident'>mem</span>::<span class='ident'>transmute</span>(<span class='self'>self</span>);
+                ::<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>core</span>::<span class='ident'>mem</span>::<span class='ident'>transmute</span>(<span class='ident'>trait_object</span>.<span class='ident'>data</span>)
             }
         }
     };
 
     <span class='comment'>// Not using libstd? You can get the Box&lt;Any&gt; methods by specifying what liballoc is here,</span>
     <span class='comment'>// e.g. `mopafy!(Trait, alloc = alloc)`</span>
-    (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>trait_</span>:<span class='ident'>ty</span>, <span class='ident'>core</span> <span class='op'>=</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>core</span>:<span class='ident'>ident</span>, <span class='ident'>alloc</span> <span class='op'>=</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>alloc</span>:<span class='ident'>ident</span>) <span class='op'>=&gt;</span> {
+    (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>trait_</span>:<span class='ident'>ident</span>, <span class='ident'>core</span> <span class='op'>=</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>core</span>:<span class='ident'>ident</span>, <span class='ident'>alloc</span> <span class='op'>=</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>alloc</span>:<span class='ident'>ident</span>) <span class='op'>=&gt;</span> {
         <span class='macro'>mopafy</span><span class='macro'>!</span>(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>trait_</span>, <span class='ident'>core</span> <span class='op'>=</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>core</span>);
 
         <span class='kw'>impl</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>trait_</span> {
             <span class='doccomment'>/// Returns the boxed value if it is of type `T`, or `Err(Self)` if it isn&#39;t.</span>
             <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-            <span class='attribute'>#[<span class='ident'>stable</span>]</span>
-            <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>downcast</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='lifetime'>&#39;static</span><span class='op'>&gt;</span>(<span class='self'>self</span>: ::<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>alloc</span>::<span class='ident'>boxed</span>::<span class='ident'>Box</span><span class='op'>&lt;</span><span class='kw'>Self</span><span class='op'>&gt;</span>)
+            <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>downcast</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>trait_</span><span class='op'>&gt;</span>(<span class='self'>self</span>: ::<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>alloc</span>::<span class='ident'>boxed</span>::<span class='ident'>Box</span><span class='op'>&lt;</span><span class='kw'>Self</span><span class='op'>&gt;</span>)
                     <span class='op'>-&gt;</span> ::<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>core</span>::<span class='ident'>result</span>::<span class='prelude-ty'>Result</span><span class='op'>&lt;</span>::<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>alloc</span>::<span class='ident'>boxed</span>::<span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>,
                                                ::<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>alloc</span>::<span class='ident'>boxed</span>::<span class='ident'>Box</span><span class='op'>&lt;</span><span class='kw'>Self</span><span class='op'>&gt;&gt;</span> {
                 <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>is</span>::<span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>() {
@@ -653,17 +698,94 @@
             <span class='doccomment'>/// Returns the boxed value, blindly assuming it to be of type `T`.</span>
             <span class='doccomment'>/// If you are not *absolutely certain* of `T`, you *must not* call this.</span>
             <span class='attribute'>#[<span class='ident'>inline</span>]</span>
-            <span class='attribute'>#[<span class='ident'>unstable</span> <span class='op'>=</span> <span class='string'>&quot;method may be renamed with respect to other downcasting methods&quot;</span>]</span>
-            <span class='kw'>pub</span> <span class='kw'>unsafe</span> <span class='kw'>fn</span> <span class='ident'>downcast_unchecked</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='lifetime'>&#39;static</span><span class='op'>&gt;</span>(<span class='self'>self</span>: ::<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>alloc</span>::<span class='ident'>boxed</span>::<span class='ident'>Box</span><span class='op'>&lt;</span><span class='kw'>Self</span><span class='op'>&gt;</span>)
+            <span class='kw'>pub</span> <span class='kw'>unsafe</span> <span class='kw'>fn</span> <span class='ident'>downcast_unchecked</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>trait_</span><span class='op'>&gt;</span>(<span class='self'>self</span>: ::<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>alloc</span>::<span class='ident'>boxed</span>::<span class='ident'>Box</span><span class='op'>&lt;</span><span class='kw'>Self</span><span class='op'>&gt;</span>)
                     <span class='op'>-&gt;</span> ::<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>alloc</span>::<span class='ident'>boxed</span>::<span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
-                <span class='comment'>// Get the raw representation of the trait object</span>
-                <span class='kw'>let</span> <span class='ident'>to</span>: ::<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>core</span>::<span class='ident'>raw</span>::<span class='ident'>TraitObject</span> <span class='op'>=</span> ::<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>core</span>::<span class='ident'>mem</span>::<span class='ident'>transmute</span>(<span class='self'>self</span>);
-
-                <span class='comment'>// Extract the data pointer</span>
-                ::<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>core</span>::<span class='ident'>mem</span>::<span class='ident'>transmute</span>(<span class='ident'>to</span>.<span class='ident'>data</span>)
+                <span class='kw'>let</span> <span class='ident'>trait_object</span>: ::<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>core</span>::<span class='ident'>raw</span>::<span class='ident'>TraitObject</span> <span class='op'>=</span> ::<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>core</span>::<span class='ident'>mem</span>::<span class='ident'>transmute</span>(<span class='self'>self</span>);
+                ::<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>core</span>::<span class='ident'>mem</span>::<span class='ident'>transmute</span>(<span class='ident'>trait_object</span>.<span class='ident'>data</span>)
             }
         }
     };
+}
+
+<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
+<span class='kw'>mod</span> <span class='ident'>tests</span> {
+    <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>any</span>::<span class='ident'>Any</span>;
+
+    <span class='kw'>trait</span> <span class='ident'>Person</span>: <span class='ident'>Any</span> {
+        <span class='kw'>fn</span> <span class='ident'>weight</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>i16</span>;
+    }
+
+    <span class='macro'>mopafy</span><span class='macro'>!</span>(<span class='ident'>Person</span>);
+
+    <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>Debug</span>, <span class='ident'>PartialEq</span>)]</span>
+    <span class='kw'>struct</span> <span class='ident'>Benny</span> {
+        <span class='comment'>// (Benny is not a superhero. He can’t carry more than 256kg of food at once.)</span>
+        <span class='ident'>kilograms_of_food</span>: <span class='ident'>u8</span>,
+    }
+
+    <span class='kw'>impl</span> <span class='ident'>Person</span> <span class='kw'>for</span> <span class='ident'>Benny</span> {
+        <span class='kw'>fn</span> <span class='ident'>weight</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>i16</span> {
+            <span class='self'>self</span>.<span class='ident'>kilograms_of_food</span> <span class='kw'>as</span> <span class='ident'>i16</span> <span class='op'>+</span> <span class='number'>60</span>
+        }
+    }
+
+    <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>Debug</span>, <span class='ident'>PartialEq</span>)]</span>
+    <span class='kw'>struct</span> <span class='ident'>Chris</span>;
+
+    <span class='kw'>impl</span> <span class='ident'>Person</span> <span class='kw'>for</span> <span class='ident'>Chris</span> {
+        <span class='kw'>fn</span> <span class='ident'>weight</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>i16</span> { <span class='op'>-</span><span class='number'>5</span> <span class='comment'>/* antigravity device! cool! */</span> }
+    }
+
+    <span class='attribute'>#[<span class='ident'>test</span>]</span>
+    <span class='kw'>fn</span> <span class='ident'>test_ref</span>() {
+        <span class='kw'>let</span> <span class='ident'>benny</span> <span class='op'>=</span> <span class='ident'>Benny</span> { <span class='ident'>kilograms_of_food</span>: <span class='number'>13</span> };
+        <span class='kw'>let</span> <span class='ident'>benny_ptr</span>: <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>Benny</span> <span class='op'>=</span> <span class='kw-2'>&amp;</span><span class='ident'>benny</span>;
+        <span class='kw'>let</span> <span class='ident'>person</span>: <span class='kw-2'>&amp;</span><span class='ident'>Person</span> <span class='op'>=</span> <span class='kw-2'>&amp;</span><span class='ident'>benny</span>;
+
+        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>person</span>.<span class='ident'>is</span>::<span class='op'>&lt;</span><span class='ident'>Benny</span><span class='op'>&gt;</span>());
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>person</span>.<span class='ident'>downcast_ref</span>::<span class='op'>&lt;</span><span class='ident'>Benny</span><span class='op'>&gt;</span>().<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span> <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>Benny</span>), <span class='prelude-val'>Some</span>(<span class='ident'>benny_ptr</span>));
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='kw'>unsafe</span> { <span class='ident'>person</span>.<span class='ident'>downcast_ref_unchecked</span>::<span class='op'>&lt;</span><span class='ident'>Benny</span><span class='op'>&gt;</span>() <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>Benny</span> }, <span class='ident'>benny_ptr</span>);
+
+        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='op'>!</span><span class='ident'>person</span>.<span class='ident'>is</span>::<span class='op'>&lt;</span><span class='ident'>Chris</span><span class='op'>&gt;</span>());
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>person</span>.<span class='ident'>downcast_ref</span>::<span class='op'>&lt;</span><span class='ident'>Chris</span><span class='op'>&gt;</span>(), <span class='prelude-val'>None</span>);
+    }
+
+    <span class='attribute'>#[<span class='ident'>test</span>]</span>
+    <span class='kw'>fn</span> <span class='ident'>test_mut</span>() {
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>benny</span> <span class='op'>=</span> <span class='ident'>Benny</span> { <span class='ident'>kilograms_of_food</span>: <span class='number'>13</span> };
+        <span class='kw'>let</span> <span class='ident'>benny_ptr</span>: <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>Benny</span> <span class='op'>=</span> <span class='kw-2'>&amp;</span><span class='ident'>benny</span>;
+        <span class='kw'>let</span> <span class='ident'>person</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Person</span> <span class='op'>=</span> <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>benny</span>;
+        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>person</span>.<span class='ident'>is</span>::<span class='op'>&lt;</span><span class='ident'>Benny</span><span class='op'>&gt;</span>());
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>person</span>.<span class='ident'>downcast_ref</span>::<span class='op'>&lt;</span><span class='ident'>Benny</span><span class='op'>&gt;</span>().<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span> <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>Benny</span>), <span class='prelude-val'>Some</span>(<span class='ident'>benny_ptr</span>));
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>person</span>.<span class='ident'>downcast_mut</span>::<span class='op'>&lt;</span><span class='ident'>Benny</span><span class='op'>&gt;</span>().<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='kw-2'>&amp;</span><span class='op'>*</span><span class='ident'>x</span> <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>Benny</span>), <span class='prelude-val'>Some</span>(<span class='ident'>benny_ptr</span>));
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='kw'>unsafe</span> { <span class='ident'>person</span>.<span class='ident'>downcast_ref_unchecked</span>::<span class='op'>&lt;</span><span class='ident'>Benny</span><span class='op'>&gt;</span>() <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>Benny</span> }, <span class='ident'>benny_ptr</span>);
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='kw'>unsafe</span> { <span class='kw-2'>&amp;</span><span class='op'>*</span><span class='ident'>person</span>.<span class='ident'>downcast_mut_unchecked</span>::<span class='op'>&lt;</span><span class='ident'>Benny</span><span class='op'>&gt;</span>() <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>Benny</span> }, <span class='ident'>benny_ptr</span>);
+
+        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='op'>!</span><span class='ident'>person</span>.<span class='ident'>is</span>::<span class='op'>&lt;</span><span class='ident'>Chris</span><span class='op'>&gt;</span>());
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>person</span>.<span class='ident'>downcast_ref</span>::<span class='op'>&lt;</span><span class='ident'>Chris</span><span class='op'>&gt;</span>(), <span class='prelude-val'>None</span>);
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>person</span>.<span class='ident'>downcast_mut</span>::<span class='op'>&lt;</span><span class='ident'>Chris</span><span class='op'>&gt;</span>(), <span class='prelude-val'>None</span>);
+    }
+
+    <span class='attribute'>#[<span class='ident'>test</span>]</span>
+    <span class='kw'>fn</span> <span class='ident'>test_box</span>() {
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>benny</span> <span class='op'>=</span> <span class='ident'>Benny</span> { <span class='ident'>kilograms_of_food</span>: <span class='number'>13</span> };
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>person</span>: <span class='ident'>Box</span><span class='op'>&lt;</span><span class='ident'>Person</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>Box</span>::<span class='ident'>new</span>(<span class='ident'>benny</span>.<span class='ident'>clone</span>());
+        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>person</span>.<span class='ident'>is</span>::<span class='op'>&lt;</span><span class='ident'>Benny</span><span class='op'>&gt;</span>());
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>person</span>.<span class='ident'>downcast_ref</span>::<span class='op'>&lt;</span><span class='ident'>Benny</span><span class='op'>&gt;</span>(), <span class='prelude-val'>Some</span>(<span class='kw-2'>&amp;</span><span class='ident'>benny</span>));
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>person</span>.<span class='ident'>downcast_mut</span>::<span class='op'>&lt;</span><span class='ident'>Benny</span><span class='op'>&gt;</span>(), <span class='prelude-val'>Some</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>benny</span>));
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>person</span>.<span class='ident'>downcast</span>::<span class='op'>&lt;</span><span class='ident'>Benny</span><span class='op'>&gt;</span>().<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='op'>*</span><span class='ident'>x</span>).<span class='ident'>ok</span>(), <span class='prelude-val'>Some</span>(<span class='ident'>benny</span>.<span class='ident'>clone</span>()));
+
+        <span class='ident'>person</span> <span class='op'>=</span> <span class='ident'>Box</span>::<span class='ident'>new</span>(<span class='ident'>benny</span>.<span class='ident'>clone</span>());
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='kw'>unsafe</span> { <span class='ident'>person</span>.<span class='ident'>downcast_ref_unchecked</span>::<span class='op'>&lt;</span><span class='ident'>Benny</span><span class='op'>&gt;</span>() }, <span class='kw-2'>&amp;</span><span class='ident'>benny</span>);
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='kw'>unsafe</span> { <span class='ident'>person</span>.<span class='ident'>downcast_mut_unchecked</span>::<span class='op'>&lt;</span><span class='ident'>Benny</span><span class='op'>&gt;</span>() }, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>benny</span>);
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='kw'>unsafe</span> { <span class='op'>*</span><span class='ident'>person</span>.<span class='ident'>downcast_unchecked</span>::<span class='op'>&lt;</span><span class='ident'>Benny</span><span class='op'>&gt;</span>() }, <span class='ident'>benny</span>);
+
+        <span class='ident'>person</span> <span class='op'>=</span> <span class='ident'>Box</span>::<span class='ident'>new</span>(<span class='ident'>benny</span>.<span class='ident'>clone</span>());
+        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='op'>!</span><span class='ident'>person</span>.<span class='ident'>is</span>::<span class='op'>&lt;</span><span class='ident'>Chris</span><span class='op'>&gt;</span>());
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>person</span>.<span class='ident'>downcast_ref</span>::<span class='op'>&lt;</span><span class='ident'>Chris</span><span class='op'>&gt;</span>(), <span class='prelude-val'>None</span>);
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>person</span>.<span class='ident'>downcast_mut</span>::<span class='op'>&lt;</span><span class='ident'>Chris</span><span class='op'>&gt;</span>(), <span class='prelude-val'>None</span>);
+        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>person</span>.<span class='ident'>downcast</span>::<span class='op'>&lt;</span><span class='ident'>Chris</span><span class='op'>&gt;</span>().<span class='ident'>err</span>().<span class='ident'>is_some</span>());
+    }
 }
 </pre>
 </section>
