@@ -140,12 +140,12 @@
     };
 }
 </pre>
-<div class='docblock'><p>The macro for implementing all the <code>Any</code> methods on your own trait.</p>
+<div class='docblock'><p>The macro for implementing all the <code>Any</code>`Any` methods on your own trait.</p>
 
 <h1 id="instructions-for-use" class='section-header'><a
                            href="#instructions-for-use">Instructions for use</a></h1>
 <ol>
-<li><p>Make sure your trait extends <code>Any</code> (e.g. <code>trait Trait: Any { }</code>)</p></li>
+<li><p>Make sure your trait extends <code>Any</code>`Any<code>(e.g.</code>` (e.g. <code>trait Trait: Any { }</code>`trait Trait: Any { }`)</p></li>
 <li><p>Mopafy your trait (see the next subsection for specifics).</p></li>
 <li><p>…</p></li>
 <li><p>Profit!</p></li>
@@ -160,21 +160,21 @@
 <pre id='rust-example-rendered' class='rust '>
 <span class='macro'>mopafy</span><span class='macro'>!</span>(<span class='ident'>Trait</span>);
 </pre></li>
-<li><p>If you are using <strong>libcore</strong> but not libstd (<code>#![no_std]</code>) or liballoc:</p>
+<li><p>If you are using <strong>libcore</strong> but not libstd (<code>#![no_std]</code>`#![no_std]`) or liballoc:</p>
 <pre id='rust-example-rendered' class='rust '>
 <span class='macro'>mopafy</span><span class='macro'>!</span>(<span class='ident'>Trait</span>, <span class='ident'>core</span> <span class='op'>=</span> <span class='ident'>core</span>);
 </pre>
 
-<p>(This is akin to <code>mopafy!(Trait, core = std)</code> if you were using libstd.)</p>
+<p>(This is akin to <code>mopafy!(Trait, core = std)</code>`mopafy!(Trait, core = std)` if you were using libstd.)</p>
 
-<p>Unlike the other two techniques, this only gets you the <code>&amp;Any</code> and <code>&amp;mut Any</code> methods; the
-<code>Box&lt;Any&gt;</code> methods require liballoc.</p></li>
-<li><p>If you are using <strong>libcore and liballoc</strong> but not libstd (<code>#![nostd]</code>):</p>
+<p>Unlike the other two techniques, this only gets you the <code>&amp;Any</code>`&amp;Any<code>and</code>` and <code>&amp;mut Any</code>`&amp;mut Any<code>methods; the</code>` methods; the
+<code>Box&lt;Any&gt;</code>`Box<Any>` methods require liballoc.</p></li>
+<li><p>If you are using <strong>libcore and liballoc</strong> but not libstd (<code>#![nostd]</code>`#![nostd]`):</p>
 <pre id='rust-example-rendered' class='rust '>
 <span class='macro'>mopafy</span><span class='macro'>!</span>(<span class='ident'>Trait</span>, <span class='ident'>core</span> <span class='op'>=</span> <span class='ident'>core</span>, <span class='ident'>alloc</span> <span class='op'>=</span> <span class='ident'>alloc</span>);
 </pre>
 
-<p>(This is akin to <code>mopafy!(Trait, core = std, alloc = std)</code> if you were using libstd; in
+<p>(This is akin to <code>mopafy!(Trait, core = std, alloc = std)</code>`mopafy!(Trait, core = std, alloc = std)` if you were using libstd; in
 fact, the first form is just sugar for this very thing.)</p>
 
 <p>This gets you all the methods.</p></li>
