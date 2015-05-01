@@ -2,7 +2,6 @@ use rustc_serialize::json;
 
 use super::super::errors;
 use super::super::scope;
-use std::num::Float;
 use std::f64;
 
 #[allow(missing_copy_implementations)]

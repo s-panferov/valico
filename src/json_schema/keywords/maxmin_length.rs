@@ -1,5 +1,4 @@
 use rustc_serialize::json;
-use std::num::{Float};
 
 use super::super::schema;
 use super::super::validators;
