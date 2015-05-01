@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/rustc-serialize-0.3.12/src/json.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/rustc-serialize-0.3.14/src/json.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>json.rs.html -- source</title>
@@ -3998,9 +3998,6 @@
 <span id="3956">3956</span>
 <span id="3957">3957</span>
 <span id="3958">3958</span>
-<span id="3959">3959</span>
-<span id="3960">3960</span>
-<span id="3961">3961</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2012-2014 The Rust Project Developers. See the COPYRIGHT</span>
 <span class='comment'>// file at the top-level directory of this distribution and at</span>
@@ -4154,7 +4151,7 @@
 <span class='doccomment'>//!         val: num.to_json(),</span>
 <span class='doccomment'>//!     }).unwrap();</span>
 <span class='doccomment'>//!     println!(&quot;data: {}&quot;, data);</span>
-<span class='doccomment'>//!     // data: {&quot;uid&quot;:1,&quot;dsc&quot;:&quot;test&quot;,&quot;val&quot;:&quot;0.0001+12.539j&quot;};</span>
+<span class='doccomment'>//!     // data: {&quot;uid&quot;:1,&quot;dsc&quot;:&quot;test&quot;,&quot;val&quot;:&quot;0.0001+12.539i&quot;};</span>
 <span class='doccomment'>//! }</span>
 <span class='doccomment'>//! ```</span>
 <span class='doccomment'>//!</span>
@@ -4245,7 +4242,6 @@
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>i64</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>io</span>::<span class='ident'>prelude</span>::<span class='op'>*</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>mem</span>::<span class='ident'>swap</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>num</span>::{<span class='ident'>Float</span>, <span class='ident'>Int</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>ops</span>::<span class='ident'>Index</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>str</span>::<span class='ident'>FromStr</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>string</span>;
@@ -5481,13 +5477,11 @@
             <span class='ident'>F64Value</span>(<span class='ident'>res</span>)
         } <span class='kw'>else</span> {
             <span class='kw'>if</span> <span class='ident'>neg</span> {
-                <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='op'>-</span>(<span class='ident'>res</span> <span class='kw'>as</span> <span class='ident'>i64</span>);
-
-                <span class='comment'>// Make sure we didn&#39;t underflow.</span>
-                <span class='kw'>if</span> <span class='ident'>res</span> <span class='op'>&gt;</span> <span class='number'>0</span> {
+                <span class='comment'>// Make sure we don&#39;t underflow.</span>
+                <span class='kw'>if</span> <span class='ident'>res</span> <span class='op'>&gt;</span> (<span class='ident'>i64</span>::<span class='ident'>MAX</span> <span class='kw'>as</span> <span class='ident'>u64</span>) <span class='op'>+</span> <span class='number'>1</span> {
                     <span class='ident'>Error</span>(<span class='ident'>SyntaxError</span>(<span class='ident'>InvalidNumber</span>, <span class='self'>self</span>.<span class='ident'>line</span>, <span class='self'>self</span>.<span class='ident'>col</span>))
                 } <span class='kw'>else</span> {
-                    <span class='ident'>I64Value</span>(<span class='ident'>res</span>)
+                    <span class='ident'>I64Value</span>((<span class='op'>!</span><span class='ident'>res</span> <span class='op'>+</span> <span class='number'>1</span>) <span class='kw'>as</span> <span class='ident'>i64</span>)
                 }
             } <span class='kw'>else</span> {
                 <span class='ident'>U64Value</span>(<span class='ident'>res</span>)
@@ -5496,7 +5490,7 @@
     }
 
     <span class='kw'>fn</span> <span class='ident'>parse_u64</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>u64</span>, <span class='ident'>ParserError</span><span class='op'>&gt;</span> {
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>accum</span> <span class='op'>=</span> <span class='number'>0</span>;
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>accum</span>: <span class='ident'>u64</span> <span class='op'>=</span> <span class='number'>0</span>;
 
         <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>ch_or_null</span>() {
             <span class='string'>&#39;0&#39;</span> <span class='op'>=&gt;</span> {

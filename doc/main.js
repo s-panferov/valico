@@ -806,33 +806,41 @@
         window.location = $('.srclink').attr('href');
     }
 
-    $("#expand-all").on("click", function() {
-        $(".docblock").show();
-        $(".toggle-label").hide();
-        $(".toggle-wrapper").removeClass("collapsed");
-        $(".collapse-toggle").children(".inner").html("-");
-    });
-
-    $("#collapse-all").on("click", function() {
-        $(".docblock").hide();
-        $(".toggle-label").show();
-        $(".toggle-wrapper").addClass("collapsed");
-        $(".collapse-toggle").children(".inner").html("+");
+    $("#toggle-all-docs").on("click", function() {
+        var toggle = $("#toggle-all-docs");
+        if (toggle.html() == "[&minus;]") {
+            toggle.html("[&plus;]");
+            toggle.attr("title", "expand all docs");
+            $(".docblock").hide();
+            $(".toggle-label").show();
+            $(".toggle-wrapper").addClass("collapsed");
+            $(".collapse-toggle").children(".inner").html("&plus;");
+        } else {
+            toggle.html("[&minus;]");
+            toggle.attr("title", "collapse all docs");
+            $(".docblock").show();
+            $(".toggle-label").hide();
+            $(".toggle-wrapper").removeClass("collapsed");
+            $(".collapse-toggle").children(".inner").html("&minus;");
+        }
     });
 
     $(document).on("click", ".collapse-toggle", function() {
         var toggle = $(this);
         var relatedDoc = toggle.parent().next();
+        if (relatedDoc.is(".stability")) {
+            relatedDoc = relatedDoc.next();
+        }
         if (relatedDoc.is(".docblock")) {
             if (relatedDoc.is(":visible")) {
                 relatedDoc.slideUp({duration:'fast', easing:'linear'});
                 toggle.parent(".toggle-wrapper").addClass("collapsed");
-                toggle.children(".inner").html("+");
+                toggle.children(".inner").html("&plus;");
                 toggle.children(".toggle-label").fadeIn();
             } else {
                 relatedDoc.slideDown({duration:'fast', easing:'linear'});
                 toggle.parent(".toggle-wrapper").removeClass("collapsed");
-                toggle.children(".inner").html("-");
+                toggle.children(".inner").html("&minus;");
                 toggle.children(".toggle-label").hide();
             }
         }
@@ -840,12 +848,13 @@
 
     $(function() {
         var toggle = $("<a/>", {'href': 'javascript:void(0)', 'class': 'collapse-toggle'})
-            .html("[<span class='inner'>-</span>]");
+            .html("[<span class='inner'>&minus;</span>]");
 
         $(".method").each(function() {
-           if ($(this).next().is(".docblock")) {
-               $(this).children().first().after(toggle.clone());
-           }
+            if ($(this).next().is(".docblock") ||
+                ($(this).next().is(".stability") && $(this).next().next().is(".docblock"))) {
+                    $(this).children().first().after(toggle.clone());
+            }
         });
 
         var mainToggle =

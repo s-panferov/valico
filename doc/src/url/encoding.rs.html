@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/url-0.2.29/src/encoding.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/url-0.2.31/src/encoding.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>encoding.rs.html -- source</title>
@@ -159,7 +159,7 @@
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;query_encoding&quot;</span>)]</span> <span class='kw'>pub</span> <span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>encoding</span>::<span class='ident'>types</span>::<span class='ident'>EncodingRef</span>;
 
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;query_encoding&quot;</span>)]</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Copy</span>)]</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Copy</span>, <span class='ident'>Clone</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>EncodingOverride</span> {
     <span class='doccomment'>/// `None` means UTF-8.</span>
     <span class='ident'>encoding</span>: <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>EncodingRef</span><span class='op'>&gt;</span>

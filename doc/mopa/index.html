@@ -42,44 +42,44 @@
 
     <section id='main' class="content mod">
 <h1 class='fqn'><span class='in-band'>Crate <a class='mod' href=''>mopa</a></span><span class='out-of-band'><span id='render-detail'>
-            <a id="collapse-all" href="#">[-]</a>&nbsp;<a id="expand-all" href="#">[+]</a>
-        </span><a id='src-0' class='srclink' href='../src/mopa/lib.rs.html#16-373'>[src]</a></span></h1>
-<div class='docblock'><p><strong>MOPA: My Own Personal Any.</strong> A macro to implement all the <code>Any</code>`Any` methods on your own trait.</p>
+            <a id="toggle-all-docs" href="#" title="collapse all docs">[&minus;]</a>
+        </span><a id='src-0' class='srclink' href='../src/mopa/lib.rs.html#16-373' title='goto source code'>[src]</a></span></h1>
+<div class='docblock'><p><strong>MOPA: My Own Personal Any.</strong> A macro to implement all the <code>Any</code> methods on your own trait.</p>
 
-<p>You like <code>Any</code>`Any<code>—its ability to store any</code>`—its ability to store any <code>&#39;static</code>`&#39;static<code>type as a trait object and then downcast it back to the original type is very convenient, and in fact you need it for whatever misguided reason. But it’s not enough. What you *really* want is your own trait object type with</code>` type as a trait object and then downcast it
+<p>You like <code>Any</code>—its ability to store any <code>&#39;static</code> type as a trait object and then downcast it
 back to the original type is very convenient, and in fact you need it for whatever misguided
-reason. But it’s not enough. What you <em>really</em> want is your own trait object type with <code>Any</code>`Any<code>’s functionality glued onto it. Maybe you have a</code>`’s
-functionality glued onto it. Maybe you have a <code>Person</code>`Person<code>trait and you want your people to be able to do various things, but you also want to be able to conveniently downcast the person to its original type, right? Alas, you can’t write a type like</code>` trait and you want your people to be
+reason. But it’s not enough. What you <em>really</em> want is your own trait object type with <code>Any</code>’s
+functionality glued onto it. Maybe you have a <code>Person</code> trait and you want your people to be
 able to do various things, but you also want to be able to conveniently downcast the person to
-its original type, right? Alas, you can’t write a type like <code>Box&lt;Person + Any&gt;</code>`Box<Person + Any>` (at present,
+its original type, right? Alas, you can’t write a type like <code>Box&lt;Person + Any&gt;</code> (at present,
 anyway). So what do you do instead? Do you give up? No, no! No, no! Enter MOPA.</p>
 
 <blockquote>
 <p>There once was a quite friendly trait<br>
-Called <code>Person</code>`Person<code>, with much on its plate. “I need to be</code>`, with much on its plate.<br>
-    “I need to be <code>Any</code>`Any<code>To downcast to</code>`<br>
-    To downcast to <code>Benny</code>`Benny`—<br>
+Called <code>Person</code>, with much on its plate.<br>
+    “I need to be <code>Any</code><br>
+    To downcast to <code>Benny</code>—<br>
 But I’m not, so I guess I’ll just wait.”</p>
 </blockquote>
 
 <p>A pitiful tale, isn’t it? Especially given that there was a bear chasing it with intent to eat
-it. Fortunately now you can <em>mopafy</em> <code>Person</code>`Person` in three simple steps:</p>
+it. Fortunately now you can <em>mopafy</em> <code>Person</code> in three simple steps:</p>
 
 <ol>
-<li><p>Add the <code>mopa</code>`mopa<code>crate to your</code>` crate to your <code>Cargo.toml</code>`Cargo.toml` as usual and your crate root like so:</p>
+<li><p>Add the <code>mopa</code> crate to your <code>Cargo.toml</code> as usual and your crate root like so:</p>
 <pre id='rust-example-rendered' class='rust '>
 <span class='attribute'>#[<span class='ident'>macro_use</span>]</span> <span class='attribute'>#[<span class='ident'>no_link</span>]</span>
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>mopa</span>;
 </pre></li>
-<li><p>Make <code>Any</code>`Any<code>a supertrait of</code>` a supertrait of <code>Person</code>`Person`;</p></li>
-<li><p><code>mopafy!(Person);</code>`mopafy!(Person);`.</p></li>
+<li><p>Make <code>Any</code> a supertrait of <code>Person</code>;</p></li>
+<li><p><code>mopafy!(Person);</code>.</p></li>
 </ol>
 
-<p>And lo, you can now write <code>person.is::&lt;Benny&gt;()</code>`person.is::<Benny>()<code>and</code>` and <code>person.downcast_ref::&lt;Benny&gt;()</code>`person.downcast_ref::<Benny>()` and so on
+<p>And lo, you can now write <code>person.is::&lt;Benny&gt;()</code> and <code>person.downcast_ref::&lt;Benny&gt;()</code> and so on
 to your heart’s content. Simple, huh?</p>
 
 <p>Oh, by the way, it was actually the person on the bear’s plate. There wasn’t really anything on
-<code>Person</code>`Person`’s plate after all.</p>
+<code>Person</code>’s plate after all.</p>
 <pre id='rust-example-rendered' class='rust '>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>feature</span>(<span class='ident'>core</span>)]</span>
 <span class='attribute'>#[<span class='ident'>macro_use</span>]</span> <span class='attribute'>#[<span class='ident'>no_link</span>]</span>
@@ -161,7 +161,7 @@ to your heart’s content. Simple, huh?</p>
 <p>Now <em>should</em> you do something like this? Probably not. Enums are probably a better solution for
 this particular case as written; frankly I believe that almost the only time you should
 downcast an Any trait object (or a mopafied trait object) is with a generic parameter, when
-producing something like <code>AnyMap</code>`AnyMap<code>, for example. If you control *all* the code,</code>`, for example. If you control <em>all</em> the code, <code>Any</code>`Any` trait
+producing something like <code>AnyMap</code>, for example. If you control <em>all</em> the code, <code>Any</code> trait
 objects are probably not the right solution; they’re good for cases with user-defined
 types across a variety of libraries. But the question of purpose and suitability is open, and I
 don’t have a really good example of such a use case here at present. TODO.</p>
@@ -171,7 +171,7 @@ don’t have a really good example of such a use case here at present. TODO.</p>
                         <td><a class='macro' href='macro.mopafy!.html'
                                title='mopa::mopafy!'>mopafy!</a></td>
                         <td class='docblock short'>
-                             <p>The macro for implementing all the <code>Any</code>`Any` methods on your own trait.</p>
+                             <p>The macro for implementing all the <code>Any</code> methods on your own trait.</p>
 
                         </td>
                     </tr>

@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/url-0.2.29/src/lib.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/url-0.2.31/src/lib.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>lib.rs.html -- source</title>
@@ -1050,8 +1050,6 @@
 <span id="1008">1008</span>
 <span id="1009">1009</span>
 <span id="1010">1010</span>
-<span id="1011">1011</span>
-<span id="1012">1012</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2013-2015 Simon Sapin.</span>
 <span class='comment'>//</span>
@@ -1185,13 +1183,7 @@ assert!(css_url.serialize() == &quot;http://servo.github.io/rust-url/main.css&qu
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>host</span>::{<span class='ident'>Host</span>, <span class='ident'>Ipv6Address</span>};
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>parser</span>::{<span class='ident'>ErrorHandler</span>, <span class='ident'>ParseResult</span>, <span class='ident'>ParseError</span>};
 
-<span class='attribute'>#[<span class='ident'>deprecated</span> <span class='op'>=</span> <span class='string'>&quot;Moved to the `percent_encoding` module&quot;</span>]</span>
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>percent_encoding</span>::{
-    <span class='ident'>percent_decode</span>, <span class='ident'>percent_decode_to</span>, <span class='ident'>percent_encode</span>, <span class='ident'>percent_encode_to</span>,
-    <span class='ident'>utf8_percent_encode</span>, <span class='ident'>utf8_percent_encode_to</span>, <span class='ident'>lossy_utf8_percent_decode</span>,
-    <span class='ident'>SIMPLE_ENCODE_SET</span>, <span class='ident'>QUERY_ENCODE_SET</span>, <span class='ident'>DEFAULT_ENCODE_SET</span>, <span class='ident'>USERINFO_ENCODE_SET</span>,
-    <span class='ident'>PASSWORD_ENCODE_SET</span>, <span class='ident'>USERNAME_ENCODE_SET</span>, <span class='ident'>FORM_URLENCODED_ENCODE_SET</span>, <span class='ident'>EncodeSet</span>,
-};
+<span class='kw'>use</span> <span class='ident'>percent_encoding</span>::{<span class='ident'>percent_encode</span>, <span class='ident'>lossy_utf8_percent_decode</span>, <span class='ident'>DEFAULT_ENCODE_SET</span>};
 
 <span class='kw'>use</span> <span class='ident'>format</span>::{<span class='ident'>PathFormatter</span>, <span class='ident'>UserInfoFormatter</span>, <span class='ident'>UrlNoFragmentFormatter</span>};
 <span class='kw'>use</span> <span class='ident'>encoding</span>::<span class='ident'>EncodingOverride</span>;
@@ -2025,6 +2017,8 @@ assert!(css_url.serialize() == &quot;http://servo.github.io/rust-url/main.css&qu
     <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>os</span>::<span class='ident'>unix</span>::<span class='ident'>prelude</span>::<span class='ident'>OsStrExt</span>;
     <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>path</span>::<span class='ident'>PathBuf</span>;
 
+    <span class='kw'>use</span> <span class='ident'>percent_encoding</span>::<span class='ident'>percent_decode_to</span>;
+
     <span class='kw'>if</span> <span class='ident'>path</span>.<span class='ident'>is_empty</span>() {
         <span class='kw'>return</span> <span class='prelude-val'>Ok</span>(<span class='ident'>PathBuf</span>::<span class='ident'>from</span>(<span class='string'>&quot;/&quot;</span>))
     }
@@ -2042,6 +2036,8 @@ assert!(css_url.serialize() == &quot;http://servo.github.io/rust-url/main.css&qu
 
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>windows</span>)]</span>
 <span class='kw'>fn</span> <span class='ident'>file_url_path_to_pathbuf</span>(<span class='ident'>path</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>String</span>]) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>PathBuf</span>, ()<span class='op'>&gt;</span> {
+    <span class='kw'>use</span> <span class='ident'>percent_encoding</span>::<span class='ident'>percent_decode</span>;
+
     <span class='kw'>if</span> <span class='ident'>path</span>.<span class='ident'>is_empty</span>() {
         <span class='kw'>return</span> <span class='prelude-val'>Err</span>(())
     }
