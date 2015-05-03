@@ -1,7 +1,6 @@
 use std::fs;
 use std::path;
 use std::io::Read;
-use std::fs::PathExt;
 use serialize::json;
 use valico::json_schema;
 
@@ -9,12 +8,17 @@ fn visit_specs<F>(dir: &path::Path, cb: F) where F: Fn(&path::Path, json::Json) 
     let contents = fs::read_dir(dir).ok().unwrap();
     for entry in contents {
         let path = entry.unwrap().path();
-        if path.is_file() {
-            let mut file = fs::File::open(&path).ok().unwrap();
-            let mut content = String::new();
-            file.read_to_string(&mut content).ok().unwrap();
-            let json: json::Json = content.parse().unwrap();
-            cb(&path, json);
+        match fs::File::open(&path) {
+            Err(_) => continue,
+            Ok(mut file) => {
+                let metadata = file.metadata().unwrap();
+                if metadata.is_file() {
+                    let mut content = String::new();
+                    file.read_to_string(&mut content).ok().unwrap();
+                    let json: json::Json = content.parse().unwrap();
+                    cb(&path, json);
+                }
+            }
         }
     }
 }

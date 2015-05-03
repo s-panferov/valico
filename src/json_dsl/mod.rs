@@ -70,7 +70,7 @@ impl<T> ExtendedResult<T> {
         self.state.is_valid()
     }
 
-    pub fn append(&mut self, second: &mut json_schema::ValidationState) {
+    pub fn append(&mut self, second: json_schema::ValidationState) {
         self.state.append(second);
     }
 }

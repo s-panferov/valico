@@ -99,9 +99,9 @@ impl ValidationState {
         self.errors.len() == 0 && self.missing.len() == 0
     }
 
-    pub fn append(&mut self, second: &mut ValidationState) {
-        self.errors.append(&mut second.errors);
-        self.missing.append(&mut second.missing);
+    pub fn append(&mut self, second: ValidationState) {
+        self.errors.extend(second.errors);
+        self.missing.extend(second.missing);
     }
 }
 

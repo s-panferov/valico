@@ -156,8 +156,8 @@ impl Builder {
             for (idx, item) in array.iter_mut().enumerate() {
                 let item_path = [path, idx.to_string().as_ref()].connect("/");
                 if item.is_object() {
-                    let mut process_state = self.process_object(item, item_path.as_ref(), scope);
-                    state.append(&mut process_state);
+                    let process_state = self.process_object(item, item_path.as_ref(), scope);
+                    state.append(process_state);
                 } else {
                     state.errors.push(
                         Box::new(errors::WrongType {
@@ -177,7 +177,7 @@ impl Builder {
                 Box::new(errors::WrongType {
                     path: path.to_string(),
                     detail: "Value is not an object or an array".to_string()
-                }) as Box<super::super::common::error::ValicoError>
+                })
             );
 
             state
@@ -193,7 +193,7 @@ impl Builder {
             let id = self.schema_id.as_ref().unwrap();
             let schema = scope.as_ref().unwrap().resolve(id);
             match schema {
-                Some(schema) => state.append(&mut schema.validate_in(val, path)),
+                Some(schema) => state.append(schema.validate_in(val, path)),
                 None => state.missing.push(id.clone())
             }
         }
@@ -212,13 +212,13 @@ impl Builder {
                 let present = helpers::has_value(object, name);
                 let param_path = [path, name.as_ref()].connect("/");
                 if present {
-                    let mut process_result = param.process(object.get_mut(name).unwrap(), param_path.as_ref(), scope);
+                    let process_result = param.process(object.get_mut(name).unwrap(), param_path.as_ref(), scope);
                     match process_result.value  {
                         Some(new_value) => { object.insert(name.clone(), new_value); },
                         None => ()
                     }
 
-                    state.append(&mut process_result.state);
+                    state.append(process_result.state);
                 } else {
                     state.errors.push(Box::new(errors::Required {
                         path: param_path.clone()
@@ -231,13 +231,13 @@ impl Builder {
                 let present = helpers::has_value(object, name);
                 let param_path = [path, name.as_ref()].connect("/");
                 if present {
-                    let mut process_result = param.process(object.get_mut(name).unwrap(), param_path.as_ref(), scope);
+                    let process_result = param.process(object.get_mut(name).unwrap(), param_path.as_ref(), scope);
                     match process_result.value  {
                         Some(new_value) => { object.insert(name.clone(), new_value); },
                         None => ()
                     }
 
-                    state.append(&mut process_result.state);
+                    state.append(process_result.state);
                 }
             }
         }
@@ -251,8 +251,8 @@ impl Builder {
         for validator in self.validators.iter() {
             match validator.validate(val, path) {
                 Ok(()) => (),
-                Err(mut err) => {
-                    state.errors.append(&mut err);
+                Err(err) => {
+                    state.errors.extend(err);
                 }
             };
         }

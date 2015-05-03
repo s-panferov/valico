@@ -38,7 +38,7 @@ impl super::Validator for Items {
                     let schema = schema.unwrap();
                     for (idx, item) in array.iter().enumerate() {
                         let item_path = [path, idx.to_string().as_ref()].connect("/");
-                        state.append(&mut schema.validate_in(item, item_path.as_ref()));
+                        state.append(schema.validate_in(item, item_path.as_ref()));
                     }
                 } else {
                     state.missing.push(url.clone());
@@ -54,7 +54,7 @@ impl super::Validator for Items {
 
                     if schema.is_some() {
                         let item_path = [path, idx.to_string().as_ref()].connect("/");
-                        state.append(&mut schema.unwrap().validate_in(item, item_path.as_ref()))
+                        state.append(schema.unwrap().validate_in(item, item_path.as_ref()))
                     } else {
                         state.missing.push(urls[idx].clone())
                     }
@@ -77,7 +77,7 @@ impl super::Validator for Items {
                                 let schema = schema.unwrap();
                                 for (idx, item) in array[urls.len()..].iter().enumerate() {
                                     let item_path = [path, idx.to_string().as_ref()].connect("/");
-                                    state.append(&mut schema.validate_in(item, item_path.as_ref()))
+                                    state.append(schema.validate_in(item, item_path.as_ref()))
                                 }
                             } else {
                                 state.missing.push(url.clone())

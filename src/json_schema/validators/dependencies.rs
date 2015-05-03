@@ -30,7 +30,7 @@ impl super::Validator for Dependencies {
                     &DepKind::Schema(ref url) => {
                         let schema = scope.resolve(url);
                         if schema.is_some() {
-                            state.append(&mut schema.unwrap().validate_in(object, path));
+                            state.append(schema.unwrap().validate_in(object, path));
                         } else {
                             state.missing.push(url.clone())
                         }

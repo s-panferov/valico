@@ -113,7 +113,7 @@ impl Param {
         for validator in self.validators.iter() {
             match validator.validate(val, path) {
                 Ok(()) => (),
-                Err(mut validation_errors) => errors.append(&mut validation_errors)
+                Err(validation_errors) => errors.extend(validation_errors)
             }
         };
 
@@ -137,8 +137,8 @@ impl Param {
                         return_value = Some(new_value);
                         return_value.as_mut().unwrap()
                     },
-                    Err(mut errors) => {
-                        result.state.errors.append(&mut errors);
+                    Err(errors) => {
+                        result.state.errors.extend(errors);
                         return result;
                     }
                 }
@@ -147,18 +147,18 @@ impl Param {
             };
 
             if self.nest.is_some() {
-                let mut process_state = self.nest.as_ref().unwrap().process_nest(val, path, scope);
-                result.append(&mut process_state);
+                let process_state = self.nest.as_ref().unwrap().process_nest(val, path, scope);
+                result.append(process_state);
             }
 
-            let mut validation_errors = self.process_validators(val, path);
-            result.state.errors.append(&mut validation_errors);
+            let validation_errors = self.process_validators(val, path);
+            result.state.errors.extend(validation_errors);
 
             if self.schema_id.is_some() && scope.is_some() {
                 let id = self.schema_id.as_ref().unwrap();
                 let schema = scope.as_ref().unwrap().resolve(id);
                 match schema {
-                    Some(schema) => result.append(&mut schema.validate_in(val, path)),
+                    Some(schema) => result.append(schema.validate_in(val, path)),
                     None => result.state.missing.push(id.clone())
                 }
             }

@@ -17,7 +17,7 @@ impl super::Validator for AllOf {
             let schema = scope.resolve(url);
 
             if schema.is_some() {
-                state.append(&mut schema.unwrap().validate_in(val, path))
+                state.append(schema.unwrap().validate_in(val, path))
             } else {
                 state.missing.push(url.clone())
             }
@@ -44,7 +44,7 @@ impl super::Validator for AnyOf {
             if schema.is_some() {
                 let current_state = schema.unwrap().validate_in(val, path);
 
-                state.missing.append(&mut current_state.missing.clone());
+                state.missing.extend(current_state.missing.clone());
 
                 if current_state.is_valid() {
                     valid = true;
@@ -88,7 +88,7 @@ impl super::Validator for OneOf {
             if schema.is_some() {
                 let current_state = schema.unwrap().validate_in(val, path);
 
-                state.missing.append(&mut current_state.missing.clone());
+                state.missing.extend(current_state.missing.clone());
 
                 if current_state.is_valid() {
                     valid += 1;

@@ -8,17 +8,21 @@ keywords = ["json", "validator", "json-schema"]
 license = "MIT"
 documentation = "http://rustless.org/valico/doc/valico/"
 homepage = "https://github.com/rustless/valico"
+build = "build.rs"
 
 [dependencies]
 regex = "*"
-regex_macros = "*"
 rustc-serialize = "*"
 url = "*"
-mopa = "*"
 jsonway = "*"
 uuid = "*"
 phf = "*"
-phf_macros = "*"
+lazy_static = "0.1.10"
+typeable = "*"
+traitobject = "*"
+
+[build-dependencies.phf_codegen]
+version = "*"
 
 [[test]]
 name = "tests"

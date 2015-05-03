@@ -268,8 +268,8 @@ impl ArrayCoercer {
                         array.insert(i, value);
                     },
                     Ok(None) => (),
-                    Err(mut err) => {
-                        errors.append(&mut err)
+                    Err(err) => {
+                        errors.extend(err);
                     }
                 }
             }
