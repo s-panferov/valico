@@ -12,14 +12,13 @@ build = "build.rs"
 
 [dependencies]
 regex = "*"
+lazy_static = "0.1.10"
 rustc-serialize = "*"
 url = "*"
+mopa = "*"
 jsonway = "*"
 uuid = "*"
 phf = "*"
-lazy_static = "0.1.10"
-typeable = "*"
-traitobject = "*"
 
 [build-dependencies.phf_codegen]
 version = "*"
