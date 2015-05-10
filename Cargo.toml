@@ -15,10 +15,11 @@ regex = "*"
 lazy_static = "0.1.10"
 rustc-serialize = "*"
 url = "*"
-mopa = "*"
 jsonway = "*"
 uuid = "*"
 phf = "*"
+typeable = "*"
+traitobject = "*"
 
 [build-dependencies.phf_codegen]
 version = "*"

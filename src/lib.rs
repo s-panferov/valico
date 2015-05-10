@@ -2,10 +2,11 @@ extern crate rustc_serialize;
 extern crate regex;
 extern crate url;
 extern crate jsonway;
-#[macro_use] extern crate mopa;
 extern crate uuid;
 extern crate phf;
 #[macro_use] extern crate lazy_static;
+extern crate typeable;
+extern crate traitobject;
 
 pub use mutable_json::MutableJson;
 

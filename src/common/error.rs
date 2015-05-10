@@ -1,12 +1,30 @@
 use std::error::Error;
 use rustc_serialize::json;
-use mopa::Any;
+use std::fmt::Debug;
+use typeable::Typeable;
+use traitobject;
+use std::any::TypeId;
+use std::mem;
 
-pub trait ValicoError : Error + Send + Any + json::ToJson {
+pub trait ValicoError : Error + Send + Debug + Typeable + json::ToJson {
     fn get_code(&self) -> &str;
     fn get_path(&self) -> &str;
     fn get_title(&self) -> &str;
     fn get_detail(&self) -> Option<&str> { None }
+}
+
+impl ValicoError {
+    /// Is this `Error` object of type `E`?
+    pub fn is<E: ValicoError>(&self) -> bool { self.get_type() == TypeId::of::<E>() }
+
+    /// If this error is `E`, downcast this error to `E`, by reference.
+    pub fn downcast<E: ValicoError>(&self) -> Option<&E> {
+        if self.is::<E>() {
+            unsafe { Some(mem::transmute(traitobject::data(self))) }
+        } else {
+            None
+        }
+    }
 }
 
 impl json::ToJson for Box<ValicoError> {
@@ -14,10 +32,8 @@ impl json::ToJson for Box<ValicoError> {
         (**self).to_json()
     }
 }
- 
-pub type ValicoErrors = Vec<Box<ValicoError>>;
 
-mopafy!(ValicoError);
+pub type ValicoErrors = Vec<Box<ValicoError>>;
 
 macro_rules! impl_basic_err {
     ($err:ty, $code:expr) => {

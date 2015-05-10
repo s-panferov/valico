@@ -1,4 +1,3 @@
-
 use serialize::json;
 
 use valico::json_dsl;
@@ -43,11 +42,11 @@ pub fn assert_str_eq_with_scope(params: &json_dsl::Builder, scope: Option<&json_
     assert_eq!(test_result(params, scope, body).to_string(), res.to_string());
 }
 
-pub fn assert_error_with_scope<T: error::ValicoError>(params: &json_dsl::Builder, scope: Option<&json_schema::Scope>, body: &str, path: &str) {
+pub fn assert_error_with_scope<T: error::ValicoError + 'static>(params: &json_dsl::Builder, scope: Option<&json_schema::Scope>, body: &str, path: &str) {
     let errors = get_errors(params, scope, body);
     println!("{:?}", errors);
     let error = errors.iter().find(|error| {
-        let err = error.downcast_ref::<T>();
+        let err = error.downcast::<T>();
         err.is_some() && err.unwrap().get_path() == path
     });
 
@@ -58,6 +57,6 @@ pub fn assert_str_eq(params: &json_dsl::Builder, body: &str, res: &str) {
     assert_str_eq_with_scope(params, None, body, res);
 }
 
-pub fn assert_error<T: error::ValicoError>(params: &json_dsl::Builder, body: &str, path: &str) {
+pub fn assert_error<T: error::ValicoError + 'static>(params: &json_dsl::Builder, body: &str, path: &str) {
     assert_error_with_scope::<T>(params, None, body, path);
 }
