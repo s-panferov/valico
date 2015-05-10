@@ -7,7 +7,11 @@ use super::super::validators;
 
 pub type FormatBuilders = collections::HashMap<String, Box<super::Keyword + Send + Sync>>;
 
-static DATE_TIME_REGEX: regex::Regex = regex!(r"^(?i)(\d\d\d\d)-(\d\d)-(\d\d)T(\d\d):(\d\d):(\d\d)(\.\d+)??([+-]\d\d\d\d|[A-Z]+)$");
+lazy_static! {
+    static ref DATE_TIME_REGEX: regex::Regex = {
+       regex::Regex::new(r"^(?i)(\d\d\d\d)-(\d\d)-(\d\d)T(\d\d):(\d\d):(\d\d)(\.\d+)??([+-]\d\d\d\d|[A-Z]+)$").unwrap()
+    };
+}
 
 fn default_formats() -> FormatBuilders  {
     let mut map: FormatBuilders = collections::HashMap::new();

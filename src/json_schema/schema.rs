@@ -78,35 +78,7 @@ pub struct Schema {
     scopes: collections::HashMap<String, Vec<String>>
 }
 
-static PROPERTY_KEYS: phf::Set<&'static str> = phf_set! {
-    "properties",
-    "patternProperties",
-};
-
-static NON_SCHEMA_KEYS: phf::Set<&'static str> = phf_set! {
-    "properties",
-    "patternProperties",
-    "dependencies",
-    "definitions",
-    "anyOf",
-    "allOf",
-    "oneOf",
-};
-
-static FINAL_KEYS: phf::Set<&'static str> = phf_set! {
-    "enum",
-    "required",
-    "type"
-};
-
-const ALLOW_NON_CONSUMED_KEYS: phf::Set<&'static str> = phf_set! {
-    "definitions",
-    "$schema",
-    "id",
-    "default",
-    "description",
-    "format",
-};
+include!(concat!(env!("OUT_DIR"), "/codegen.rs"));
 
 pub struct CompilationSettings<'a> {
     pub keywords: &'a keywords::KeywordMap,
@@ -348,7 +320,7 @@ impl Schema {
         let mut state = validators::ValidationState::new();
 
         for validator in self.validators.iter() {
-            state.append(&mut validator.validate(data, path, scope))
+            state.append(validator.validate(data, path, scope))
         }
 
         state
