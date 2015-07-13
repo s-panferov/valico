@@ -9,7 +9,7 @@ pub type FormatBuilders = collections::HashMap<String, Box<super::Keyword + Send
 
 lazy_static! {
     static ref DATE_TIME_REGEX: regex::Regex = {
-       regex::Regex::new(r"^(?i)(\d\d\d\d)-(\d\d)-(\d\d)T(\d\d):(\d\d):(\d\d)(\.\d+)??([+-]\d\d\d\d|[A-Z]+)$").unwrap()
+       regex::Regex::new(r"^(?i)(\d\d\d\d)-(\d\d)-(\d\d)T(\d\d):(\d\d):(\d\d)(\.\d+)??([+-]\d\d:?\d\d|[A-Z]+)$").unwrap()
     };
 }
 
