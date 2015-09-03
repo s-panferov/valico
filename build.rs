@@ -3,9 +3,10 @@ extern crate phf_codegen;
 use std::fs::File;
 use std::io::{BufWriter, Write};
 use std::path::Path;
+use std::env;
 
 fn main() {
-    let path = Path::new(env!("OUT_DIR")).join("codegen.rs");
+    let path = Path::new(&env::var("OUT_DIR").unwrap()).join("codegen.rs");
     let mut file = BufWriter::new(File::create(&path).unwrap());
 
     write!(&mut file, "static PROPERTY_KEYS: phf::Set<&'static str> = ").unwrap();
