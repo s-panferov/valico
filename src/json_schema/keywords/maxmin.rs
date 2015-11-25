@@ -15,7 +15,7 @@ macro_rules! kw_minmax{
                 if exclusive.is_some() {
                     if !maybe_value.is_some() {
                         return Err(schema::SchemaError::Malformed {
-                            path: ctx.fragment.connect("/"),
+                            path: ctx.fragment.join("/"),
                             detail: "`exclusiveMinimum/exclusiveMaximum` can't go without minimum/maximum".to_string()
                         })
                     }
@@ -32,14 +32,14 @@ macro_rules! kw_minmax{
                                             .as_boolean()
                                             .ok_or_else(||
                                                 schema::SchemaError::Malformed {
-                                                    path: ctx.fragment.connect("/"),
+                                                    path: ctx.fragment.join("/"),
                                                     detail: "`exclusiveMaximum/exclusiveMaximum` must be boolean".to_string()
                                                 }
                                             ))
                         })))
                     } else {
                         Err(schema::SchemaError::Malformed {
-                            path: ctx.fragment.connect("/"),
+                            path: ctx.fragment.join("/"),
                             detail: "the `minimum/maximum` value must be a number".to_string()
                         })
                     }

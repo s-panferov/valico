@@ -18,7 +18,7 @@ impl super::Keyword for Type {
                 })))
             } else {
                 Err(schema::SchemaError::Malformed {
-                    path: ctx.fragment.connect("/"),
+                    path: ctx.fragment.join("/"),
                     detail: format!("String values MUST be one of the seven primitive types defined by the core specification. Unknown type: {}", type_)
                 })
             }
@@ -28,7 +28,7 @@ impl super::Keyword for Type {
 
             if types.len() == 0 {
                 return Err(schema::SchemaError::Malformed {
-                    path: ctx.fragment.connect("/"),
+                    path: ctx.fragment.join("/"),
                     detail: "This array MUST have at least one element.".to_string()
                 })
             }
@@ -41,13 +41,13 @@ impl super::Keyword for Type {
                         converted_types.push(converted_ty.unwrap());
                     } else {
                         return Err(schema::SchemaError::Malformed {
-                            path: ctx.fragment.connect("/"),
+                            path: ctx.fragment.join("/"),
                             detail: format!("Unknown type: {}", ty)
                         })
                     }
                 } else {
                     return Err(schema::SchemaError::Malformed {
-                        path: ctx.fragment.connect("/"),
+                        path: ctx.fragment.join("/"),
                         detail: "String values MUST be one of the seven primitive types defined by the core specification.".to_string()
                     })
                 }
@@ -58,7 +58,7 @@ impl super::Keyword for Type {
             })))
         } else {
             Err(schema::SchemaError::Malformed {
-                path: ctx.fragment.connect("/"),
+                path: ctx.fragment.join("/"),
                 detail: "The value of this keyword MUST be either a string or an array.".to_string()
             })
         }

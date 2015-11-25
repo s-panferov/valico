@@ -23,7 +23,7 @@ pub fn encode(string: &str) -> String {
 
 /// Encode and connect
 pub fn connect(strings: &[&str]) -> String {
-    strings.iter().map(|s| encode(s)).collect::<Vec<String>>().connect("/")
+    strings.iter().map(|s| encode(s)).collect::<Vec<String>>().join("/")
 }
 
 pub fn parse_url_key(key: &str, obj: &json::Json) -> Result<Option<url::Url>, schema::SchemaError> {
@@ -95,7 +95,7 @@ pub fn serialize_schema_path(url: &url::Url) -> (String, Option<String>) {
                 url_str.push_str("#");
                 url_str.push_str(fragment_parts[0].as_ref());
                 let fragment = if fragment_parts.len() > 1 {
-                    Some("/".to_string() + fragment_parts[1..].connect("/").as_ref())
+                    Some("/".to_string() + fragment_parts[1..].join("/").as_ref())
                 } else {
                     None
                 };

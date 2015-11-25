@@ -154,7 +154,7 @@ impl Builder {
             let mut state = json_schema::ValidationState::new();
             let array = val.as_array_mut().unwrap();
             for (idx, item) in array.iter_mut().enumerate() {
-                let item_path = [path, idx.to_string().as_ref()].connect("/");
+                let item_path = [path, idx.to_string().as_ref()].join("/");
                 if item.is_object() {
                     let process_state = self.process_object(item, item_path.as_ref(), scope);
                     state.append(process_state);
@@ -210,7 +210,7 @@ impl Builder {
             for param in self.requires.iter() {
                 let ref name = param.name;
                 let present = helpers::has_value(object, name);
-                let param_path = [path, name.as_ref()].connect("/");
+                let param_path = [path, name.as_ref()].join("/");
                 if present {
                     let process_result = param.process(object.get_mut(name).unwrap(), param_path.as_ref(), scope);
                     match process_result.value  {
@@ -229,7 +229,7 @@ impl Builder {
             for param in self.optional.iter() {
                 let ref name = param.name;
                 let present = helpers::has_value(object, name);
-                let param_path = [path, name.as_ref()].connect("/");
+                let param_path = [path, name.as_ref()].join("/");
                 if present {
                     let process_result = param.process(object.get_mut(name).unwrap(), param_path.as_ref(), scope);
                     match process_result.value  {

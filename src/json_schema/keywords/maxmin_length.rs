@@ -19,13 +19,13 @@ macro_rules! kw_minmax_integer{
                         })))
                     } else {
                         Err(schema::SchemaError::Malformed {
-                            path: ctx.fragment.connect("/"),
+                            path: ctx.fragment.join("/"),
                             detail: "The value MUST be a positive integer or zero".to_string()
                         })
                     }
                 } else {
                     Err(schema::SchemaError::Malformed {
-                        path: ctx.fragment.connect("/"),
+                        path: ctx.fragment.join("/"),
                         detail: "The value MUST be a positive integer or zero".to_string()
                     })
                 }

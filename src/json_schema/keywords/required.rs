@@ -14,7 +14,7 @@ impl super::Keyword for Required {
 
             if required.len() == 0 {
                 return Err(schema::SchemaError::Malformed {
-                    path: ctx.fragment.connect("/"),
+                    path: ctx.fragment.join("/"),
                     detail: "This array MUST have at least one element.".to_string()
                 })
             }
@@ -25,7 +25,7 @@ impl super::Keyword for Required {
                     items.push(item.as_string().unwrap().to_string())
                 } else {
                     return Err(schema::SchemaError::Malformed {
-                        path: ctx.fragment.connect("/"),
+                        path: ctx.fragment.join("/"),
                         detail: "The values of `required` MUST be strings".to_string()
                     })
                 }
@@ -36,7 +36,7 @@ impl super::Keyword for Required {
             })))
         } else {
             Err(schema::SchemaError::Malformed {
-                path: ctx.fragment.connect("/"),
+                path: ctx.fragment.join("/"),
                 detail: "The value of this keyword MUST be an array.".to_string()
             })
         }

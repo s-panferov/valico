@@ -13,7 +13,7 @@ impl super::Keyword for Dependencies {
 
         if !deps.is_object() {
             return Err(schema::SchemaError::Malformed {
-                path: ctx.fragment.connect("/"),
+                path: ctx.fragment.join("/"),
                 detail: "The value of this keyword MUST be an object.".to_string()
             })
         }
@@ -29,7 +29,7 @@ impl super::Keyword for Dependencies {
                         ctx.escaped_fragment().as_ref(),
                         "dependencies",
                         helpers::encode(key).as_ref()
-                    ].connect("/"))
+                    ].join("/"))
                 ));
 
             } else if item.is_array() {
@@ -38,7 +38,7 @@ impl super::Keyword for Dependencies {
 
                 if item.len() == 0 {
                     return Err(schema::SchemaError::Malformed {
-                        path: ctx.fragment.connect("/"),
+                        path: ctx.fragment.join("/"),
                         detail: "If the value is an array, it MUST have at least one element.".to_string()
                     })
                 }
@@ -50,7 +50,7 @@ impl super::Keyword for Dependencies {
                         keys.push(key.as_string().unwrap().to_string())
                     } else {
                         return Err(schema::SchemaError::Malformed {
-                            path: ctx.fragment.connect("/"),
+                            path: ctx.fragment.join("/"),
                             detail: "Each element MUST be a string, and elements in the array MUST be unique.".to_string()
                         })
                     }
@@ -62,7 +62,7 @@ impl super::Keyword for Dependencies {
 
             } else {
                 return Err(schema::SchemaError::Malformed {
-                    path: ctx.fragment.connect("/"),
+                    path: ctx.fragment.join("/"),
                     detail: "Each value of this object MUST be either an object or an array.".to_string()
                 })
             }

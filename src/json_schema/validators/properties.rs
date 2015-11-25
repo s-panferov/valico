@@ -30,7 +30,7 @@ impl super::Validator for Properties {
                 let url = self.properties.get(key).unwrap();
                 let schema = scope.resolve(url);
                 if schema.is_some() {
-                    let value_path = [path, key.as_ref()].connect("/");
+                    let value_path = [path, key.as_ref()].join("/");
                     state.append(schema.unwrap().validate_in(value, value_path.as_ref()))
                 } else {
                     state.missing.push(url.clone())
@@ -44,7 +44,7 @@ impl super::Validator for Properties {
                 if regex.is_match(key.as_ref()) {
                     let schema = scope.resolve(url);
                     if schema.is_some() {
-                        let value_path = [path, key.as_ref()].connect("/");
+                        let value_path = [path, key.as_ref()].join("/");
                         state.append(schema.unwrap().validate_in(value, value_path.as_ref()));
                         is_pattern_passed = true;
                     } else {
@@ -70,7 +70,7 @@ impl super::Validator for Properties {
                     let schema = scope.resolve(url);
 
                     if schema.is_some() {
-                        let value_path = [path, key.as_ref()].connect("/");
+                        let value_path = [path, key.as_ref()].join("/");
                         state.append(schema.unwrap().validate_in(value, value_path.as_ref()))
                     } else {
                         state.missing.push(url.clone())

@@ -30,11 +30,11 @@ impl super::Keyword for Properties {
                                 ctx.escaped_fragment().as_ref(),
                                 "properties",
                                 helpers::encode(key).as_ref()
-                            ].connect("/"))
+                            ].join("/"))
                         );
                     } else {
                         return Err(schema::SchemaError::Malformed {
-                            path: ctx.fragment.connect("/"),
+                            path: ctx.fragment.join("/"),
                             detail: "Each value of this object MUST be an object".to_string()
                         })
                     }
@@ -42,7 +42,7 @@ impl super::Keyword for Properties {
                 schemes
             } else {
                 return Err(schema::SchemaError::Malformed {
-                    path: ctx.fragment.connect("/"),
+                    path: ctx.fragment.join("/"),
                     detail: "The value of `properties` MUST be an object.".to_string()
                 })
             }
@@ -62,13 +62,13 @@ impl super::Keyword for Properties {
                     helpers::alter_fragment_path(ctx.url.clone(), [
                         ctx.escaped_fragment().as_ref(),
                         "additionalProperties"
-                    ].connect("/"))
+                    ].join("/"))
                 )
 
             } else {
 
                 return Err(schema::SchemaError::Malformed {
-                    path: ctx.fragment.connect("/"),
+                    path: ctx.fragment.join("/"),
                     detail: "The value of `additionalProperties` MUST be a boolean or an object.".to_string()
                 })
 
@@ -92,12 +92,12 @@ impl super::Keyword for Properties {
                                     ctx.escaped_fragment().as_ref(),
                                     "patternProperties",
                                     helpers::encode(key).as_ref()
-                                ].connect("/"));
+                                ].join("/"));
                                 patterns.push((regex, url));
                             },
                             Err(_) => {
                                 return Err(schema::SchemaError::Malformed {
-                                    path: ctx.fragment.connect("/"),
+                                    path: ctx.fragment.join("/"),
                                     detail: "Each property name of this object SHOULD be a valid regular expression.".to_string()
                                 })
                             }
@@ -105,7 +105,7 @@ impl super::Keyword for Properties {
 
                     } else {
                         return Err(schema::SchemaError::Malformed {
-                            path: ctx.fragment.connect("/"),
+                            path: ctx.fragment.join("/"),
                             detail: "Each value of this object MUST be an object".to_string()
                         })
                     }
@@ -115,7 +115,7 @@ impl super::Keyword for Properties {
 
             } else {
                 return Err(schema::SchemaError::Malformed {
-                    path: ctx.fragment.connect("/"),
+                    path: ctx.fragment.join("/"),
                     detail: "The value of `patternProperties` MUST be an object".to_string()
                 })
             }

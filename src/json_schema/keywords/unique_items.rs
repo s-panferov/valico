@@ -17,7 +17,7 @@ impl super::Keyword for UniqueItems {
             }
         } else {
             Err(schema::SchemaError::Malformed {
-                path: ctx.fragment.connect("/"),
+                path: ctx.fragment.join("/"),
                 detail: "The value of pattern MUST be boolean".to_string()
             })
         }

@@ -23,7 +23,7 @@ impl super::Keyword for Items {
                     helpers::alter_fragment_path(ctx.url.clone(), [
                         ctx.escaped_fragment().as_ref(),
                         "items"
-                    ].connect("/"))
+                    ].join("/"))
                 )
 
             } else if items_val.is_array() {
@@ -36,11 +36,11 @@ impl super::Keyword for Items {
                                 ctx.escaped_fragment().as_ref(),
                                 "items",
                                 idx.to_string().as_ref()
-                            ].connect("/"))
+                            ].join("/"))
                         )
                     } else {
                         return Err(schema::SchemaError::Malformed {
-                            path: ctx.fragment.connect("/"),
+                            path: ctx.fragment.join("/"),
                             detail: "Items of this array MUST be objects".to_string()
                         })
                     }
@@ -51,7 +51,7 @@ impl super::Keyword for Items {
             } else {
 
                 return Err(schema::SchemaError::Malformed {
-                    path: ctx.fragment.connect("/"),
+                    path: ctx.fragment.join("/"),
                     detail: "`items` must be an object or an array".to_string()
                 })
 
@@ -72,13 +72,13 @@ impl super::Keyword for Items {
                     helpers::alter_fragment_path(ctx.url.clone(), [
                         ctx.escaped_fragment().as_ref(),
                         "additionalItems"
-                    ].connect("/"))
+                    ].join("/"))
                 )
 
             } else {
 
                 return Err(schema::SchemaError::Malformed {
-                    path: ctx.fragment.connect("/"),
+                    path: ctx.fragment.join("/"),
                     detail: "`additionalItems` must be a boolean or an object".to_string()
                 })
 

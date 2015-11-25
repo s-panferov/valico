@@ -261,7 +261,7 @@ impl ArrayCoercer {
             let sub_coercer = self.sub_coercer.as_ref().unwrap();
             let mut errors = vec![];
             for i in 0..array.len() {
-                let item_path = [path, i.to_string().as_ref()].connect("/");
+                let item_path = [path, i.to_string().as_ref()].join("/");
                 match sub_coercer.coerce(&mut array[i], item_path.as_ref()) {
                     Ok(Some(value)) => {
                         array.remove(i);

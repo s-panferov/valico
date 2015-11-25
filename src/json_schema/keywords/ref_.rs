@@ -19,14 +19,14 @@ impl super::Keyword for Ref {
                 },
                 Err(_) => {
                     Err(schema::SchemaError::Malformed {
-                        path: ctx.fragment.connect("/"),
+                        path: ctx.fragment.join("/"),
                         detail: "The value of $ref MUST be an URI-encoded JSON Pointer".to_string()
                     })
                 }
             }
         } else {
             Err(schema::SchemaError::Malformed {
-                path: ctx.fragment.connect("/"),
+                path: ctx.fragment.join("/"),
                 detail: "The value of multipleOf MUST be a string".to_string()
             })
         }

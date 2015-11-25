@@ -15,11 +15,11 @@ impl super::Keyword for Not {
                 url: helpers::alter_fragment_path(ctx.url.clone(), [
                         ctx.escaped_fragment().as_ref(),
                         "not"
-                     ].connect("/"))
+                     ].join("/"))
             })))
         } else {
             Err(schema::SchemaError::Malformed {
-                path: ctx.fragment.connect("/"),
+                path: ctx.fragment.join("/"),
                 detail: "The value of `not` MUST be an object".to_string()
             })
         }

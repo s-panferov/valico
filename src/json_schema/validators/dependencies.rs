@@ -40,7 +40,7 @@ impl super::Validator for Dependencies {
                             if !object.find(key.as_ref()).is_some() {
                                 state.errors.push(Box::new(
                                     errors::Required {
-                                        path: [path, key.as_ref()].connect("/")
+                                        path: [path, key.as_ref()].join("/")
                                     }
                                 ))
                             }

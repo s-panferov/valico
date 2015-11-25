@@ -17,13 +17,13 @@ impl super::Keyword for Pattern {
                     regex: re
                 }))),
                 Err(err) => Err(schema::SchemaError::Malformed {
-                    path: ctx.fragment.connect("/"),
+                    path: ctx.fragment.join("/"),
                     detail: format!("The value of pattern MUST be a valid RegExp, but {:?}", err)
                 }),
             }
         } else {
             Err(schema::SchemaError::Malformed {
-                path: ctx.fragment.connect("/"),
+                path: ctx.fragment.join("/"),
                 detail: "The value of pattern MUST be a string".to_string()
             })
         }

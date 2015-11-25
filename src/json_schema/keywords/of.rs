@@ -18,7 +18,7 @@ macro_rules! of_keyword{
 
                     if of.len() == 0 {
                         return Err(schema::SchemaError::Malformed {
-                            path: ctx.fragment.connect("/"),
+                            path: ctx.fragment.join("/"),
                             detail: "This array MUST have at least one element.".to_string()
                         })
                     }
@@ -31,11 +31,11 @@ macro_rules! of_keyword{
                                     ctx.escaped_fragment().as_ref(),
                                     $kw,
                                     idx.to_string().as_ref()
-                                ].connect("/"))
+                                ].join("/"))
                             )
                         } else {
                             return Err(schema::SchemaError::Malformed {
-                                path: ctx.fragment.connect("/"),
+                                path: ctx.fragment.join("/"),
                                 detail: "Elements of the array MUST be objects.".to_string()
                             })
                         }
@@ -46,7 +46,7 @@ macro_rules! of_keyword{
                     })))
                 } else {
                     Err(schema::SchemaError::Malformed {
-                        path: ctx.fragment.connect("/"),
+                        path: ctx.fragment.join("/"),
                         detail: "The value of this keyword MUST be an array.".to_string()
                     })
                 }

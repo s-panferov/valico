@@ -17,13 +17,13 @@ impl super::Keyword for MultipleOf {
                 })))
             } else {
                 Err(schema::SchemaError::Malformed {
-                    path: ctx.fragment.connect("/"),
+                    path: ctx.fragment.join("/"),
                     detail: "The value of multipleOf MUST be strictly greater than 0".to_string()
                 })
             }
         } else {
             Err(schema::SchemaError::Malformed {
-                path: ctx.fragment.connect("/"),
+                path: ctx.fragment.join("/"),
                 detail: "The value of multipleOf MUST be a JSON number".to_string()
             })
         }

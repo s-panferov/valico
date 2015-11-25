@@ -81,7 +81,7 @@ impl super::Keyword for Format {
             }
         } else {
             Err(schema::SchemaError::Malformed {
-                path: ctx.fragment.connect("/"),
+                path: ctx.fragment.join("/"),
                 detail: "The value of format MUST be a string".to_string()
             })
         }
