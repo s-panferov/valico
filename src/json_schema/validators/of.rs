@@ -1,4 +1,4 @@
-use rustc_serialize::json;
+use serde_json::{Value};
 use url;
 
 use super::super::errors;
@@ -10,7 +10,7 @@ pub struct AllOf {
 }
 
 impl super::Validator for AllOf {
-    fn validate(&self, val: &json::Json, path: &str, scope: &scope::Scope) -> super::ValidationState {
+    fn validate(&self, val: &Value, path: &str, scope: &scope::Scope) -> super::ValidationState {
         let mut state = super::ValidationState::new();
 
         for url in self.schemes.iter() {
@@ -33,7 +33,7 @@ pub struct AnyOf {
 }
 
 impl super::Validator for AnyOf {
-    fn validate(&self, val: &json::Json, path: &str, scope: &scope::Scope) -> super::ValidationState {
+    fn validate(&self, val: &Value, path: &str, scope: &scope::Scope) -> super::ValidationState {
         let mut state = super::ValidationState::new();
 
         let mut states = vec![];
@@ -77,7 +77,7 @@ pub struct OneOf {
 }
 
 impl super::Validator for OneOf {
-    fn validate(&self, val: &json::Json, path: &str, scope: &scope::Scope) -> super::ValidationState {
+    fn validate(&self, val: &Value, path: &str, scope: &scope::Scope) -> super::ValidationState {
         let mut state = super::ValidationState::new();
 
         let mut states = vec![];

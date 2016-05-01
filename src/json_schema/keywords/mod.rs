@@ -1,4 +1,4 @@
-use rustc_serialize::json;
+use serde_json::{Value};
 use std::fmt;
 use std::rc;
 use std::collections;
@@ -13,11 +13,11 @@ pub type KeywordPairs = Vec<KeywordPair>;
 pub type KeywordMap = collections::HashMap<&'static str, rc::Rc<KeywordConsumer>>;
 
 pub trait Keyword: Sync + any::Any {
-    fn compile(&self, &json::Json, &schema::WalkContext) -> KeywordResult;
+    fn compile(&self, &Value, &schema::WalkContext) -> KeywordResult;
 }
 
-impl<T: 'static + Send + Sync + any::Any> Keyword for T where T: Fn(&json::Json, &schema::WalkContext) -> KeywordResult {
-    fn compile(&self, def: &json::Json, ctx: &schema::WalkContext) -> KeywordResult {
+impl<T: 'static + Send + Sync + any::Any> Keyword for T where T: Fn(&Value, &schema::WalkContext) -> KeywordResult {
+    fn compile(&self, def: &Value, ctx: &schema::WalkContext) -> KeywordResult {
         self(def, ctx)
     }
 }

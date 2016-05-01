@@ -1,11 +1,10 @@
-use serialize::json;
-
+use serde_json::{Value, from_str, to_string};
 use valico::json_dsl;
 use valico::json_schema;
 use valico::common::error;
 
-pub fn test_result(params: &json_dsl::Builder, scope: Option<&json_schema::Scope>, body: &str) -> json::Json {
-    let obj = body.parse::<json::Json>();
+pub fn test_result(params: &json_dsl::Builder, scope: Option<&json_schema::Scope>, body: &str) -> Value {
+    let obj = from_str(body);
     match obj {
         Ok(mut json) => {
             let state = params.process(&mut json, &scope);
@@ -22,7 +21,7 @@ pub fn test_result(params: &json_dsl::Builder, scope: Option<&json_schema::Scope
 }
 
 pub fn get_errors(params: &json_dsl::Builder, scope: Option<&json_schema::Scope>, body: &str) -> Vec<Box<error::ValicoError>> {
-    let obj = body.parse::<json::Json>();
+    let obj = from_str(body);
     match obj {
         Ok(mut json) => {
             let state = params.process(&mut json, &scope);
@@ -39,7 +38,7 @@ pub fn get_errors(params: &json_dsl::Builder, scope: Option<&json_schema::Scope>
 }
 
 pub fn assert_str_eq_with_scope(params: &json_dsl::Builder, scope: Option<&json_schema::Scope>, body: &str, res: &str) {
-    assert_eq!(test_result(params, scope, body).to_string(), res.to_string());
+    assert_eq!(to_string(&test_result(params, scope, body)).unwrap(), res.to_string());
 }
 
 pub fn assert_error_with_scope<T: error::ValicoError + 'static>(params: &json_dsl::Builder, scope: Option<&json_schema::Scope>, body: &str, path: &str) {

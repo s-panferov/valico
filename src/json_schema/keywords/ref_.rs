@@ -1,4 +1,5 @@
-use rustc_serialize::json;
+use serde_json::{Value};
+use url::{Url};
 
 use super::super::schema;
 use super::super::validators;
@@ -6,11 +7,11 @@ use super::super::validators;
 #[allow(missing_copy_implementations)]
 pub struct Ref;
 impl super::Keyword for Ref {
-    fn compile(&self, def: &json::Json, ctx: &schema::WalkContext) -> super::KeywordResult {
+    fn compile(&self, def: &Value, ctx: &schema::WalkContext) -> super::KeywordResult {
         let ref_ = keyword_key_exists!(def, "$ref");
 
         if ref_.is_string() {
-            let url = url_parser!().base_url(ctx.url).parse(ref_.as_string().unwrap());
+            let url = Url::options().base_url(Some(ctx.url)).parse(ref_.as_string().unwrap());
             match url {
                 Ok(url) => {
                     Ok(Some(Box::new(validators::Ref {
@@ -34,9 +35,8 @@ impl super::Keyword for Ref {
 }
 
 #[cfg(test)] use super::super::scope;
-#[cfg(test)] use jsonway;
 #[cfg(test)] use super::super::builder;
-#[cfg(test)] use rustc_serialize::json::{ToJson};
+#[cfg(test)] use serde_json::to_value;
 
 #[test]
 fn validate() {
@@ -53,18 +53,9 @@ fn validate() {
     let array2: Vec<Vec<String>> = vec![vec![], vec![]];
     let array3: Vec<Vec<String>> = vec![vec![], vec![], vec![]];
 
-    assert_eq!(schema.validate(&array.to_json()).is_valid(), true);
-    assert_eq!(schema.validate(&array2.to_json()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&array)).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&array2)).is_valid(), true);
 
-    assert_eq!(schema.validate(&array3.to_json()).is_valid(), false);
-    assert_eq!(schema.validate(&vec![1,2].to_json()).is_valid(), false);
-}
-
-#[test]
-fn malformed() {
-    let mut scope = scope::Scope::new();
-
-    assert!(scope.compile_and_return(jsonway::object(|schema| {
-        schema.set("$ref", "///".to_string());
-    }).unwrap(), true).is_err());
+    assert_eq!(schema.validate(&to_value(&array3)).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&vec![1,2])).is_valid(), false);
 }

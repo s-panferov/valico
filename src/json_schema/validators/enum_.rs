@@ -1,15 +1,15 @@
-use rustc_serialize::json;
+use serde_json::{Value};
 
 use super::super::errors;
 use super::super::scope;
 
 #[allow(missing_copy_implementations)]
 pub struct Enum {
-    pub items: Vec<json::Json>
+    pub items: Vec<Value>
 }
 
 impl super::Validator for Enum {
-    fn validate(&self, val: &json::Json, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
         let mut state = super::ValidationState::new();
 
         let mut contains = false;

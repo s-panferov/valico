@@ -1,12 +1,13 @@
 use std::error::Error;
-use rustc_serialize::json;
 use std::fmt::Debug;
 use typeable::Typeable;
 use traitobject;
 use std::any::TypeId;
 use std::mem;
+use serde::{Serialize, Serializer};
+use serde_json::{Value, to_value};
 
-pub trait ValicoError : Error + Send + Debug + Typeable + json::ToJson {
+pub trait ValicoError : Error + Send + Debug + Typeable {
     fn get_code(&self) -> &str;
     fn get_path(&self) -> &str;
     fn get_title(&self) -> &str;
@@ -27,9 +28,17 @@ impl ValicoError {
     }
 }
 
-impl json::ToJson for Box<ValicoError> {
-    fn to_json(&self) -> json::Json {
-        (**self).to_json()
+impl Serialize for ValicoError {
+    fn serialize<S>(&self, serializer: &mut S) -> Result<(), S::Error> where S: Serializer {
+        let mut map = ::std::collections::BTreeMap::new();
+        map.insert("code".to_string(), to_value(self.get_code()));
+        map.insert("title".to_string(), to_value(self.get_title()));
+        map.insert("path".to_string(), to_value(self.get_path()));
+        match self.get_detail() {
+            Some(ref detail) => { map.insert("detail".to_string(), to_value(detail)); },
+            None => ()
+        }
+        Value::Object(map).serialize(serializer)
     }
 }
 
@@ -85,38 +94,38 @@ macro_rules! impl_err {
     }
 }
 
-macro_rules! impl_to_json{
+macro_rules! impl_serialize{
     ($err:ty) => {
-        impl json::ToJson for $err {
-            fn to_json(&self) -> json::Json {
+        impl Serialize for $err {
+            fn serialize<S>(&self, serializer: &mut S) -> Result<(), S::Error> where S: Serializer {
                 let mut map = ::std::collections::BTreeMap::new();
-                map.insert("code".to_string(), self.get_code().to_json());
-                map.insert("title".to_string(), self.get_title().to_json());
-                map.insert("path".to_string(), self.get_path().to_json());
+                map.insert("code".to_string(), to_value(self.get_code()));
+                map.insert("title".to_string(), to_value(self.get_title()));
+                map.insert("path".to_string(), to_value(self.get_path()));
                 match self.get_detail() {
-                    Some(ref detail) => { map.insert("detail".to_string(), detail.to_json()); },
+                    Some(ref detail) => { map.insert("detail".to_string(), to_value(detail)); },
                     None => ()
                 }
-                json::Json::Object(map)
+                Value::Object(map).serialize(serializer)
             }
         }
     };
     ($err:ty, $($sp:expr),+) => {
-        impl json::ToJson for $err {
-            fn to_json(&self) -> json::Json {
+        impl Serialize for $err {
+            fn serialize<S>(&self, serializer: &mut S) -> Result<(), S::Error> where S: Serializer {
                 let mut map = ::std::collections::BTreeMap::new();
-                map.insert("code".to_string(), self.get_code().to_json());
-                map.insert("title".to_string(), self.get_title().to_json());
-                map.insert("path".to_string(), self.get_path().to_json());
+                map.insert("code".to_string(), to_value(self.get_code()));
+                map.insert("title".to_string(), to_value(self.get_title()));
+                map.insert("path".to_string(), to_value(self.get_path()));
                 match self.get_detail() {
-                    Some(ref detail) => { map.insert("detail".to_string(), detail.to_json()); },
+                    Some(ref detail) => { map.insert("detail".to_string(), to_value(detail)); },
                     None => ()
                 }
                 $({
                     let closure = $sp;
                     closure(self, &mut map);
                 })+
-                json::Json::Object(map)
+                Value::Object(map).serialize(serializer)
             }
         }
     }

@@ -1,13 +1,13 @@
-use rustc_serialize::json;
+use serde_json::{Value};
 
 use super::super::errors;
 
 pub struct RejectedValues {
-    rejected_values: Vec<json::Json>
+    rejected_values: Vec<Value>
 }
 
 impl RejectedValues {
-    pub fn new(values: Vec<json::Json>) -> RejectedValues {
+    pub fn new(values: Vec<Value>) -> RejectedValues {
         RejectedValues {
             rejected_values: values
         }
@@ -15,7 +15,7 @@ impl RejectedValues {
 }
 
 impl super::Validator for RejectedValues {
-    fn validate(&self, val: &json::Json, path: &str) -> super::ValidatorResult {
+    fn validate(&self, val: &Value, path: &str) -> super::ValidatorResult {
         let mut matched = false;
         for rejected_value in self.rejected_values.iter() {
             if val == rejected_value { matched = true; }

@@ -1,13 +1,12 @@
-use rustc_serialize::json;
-
+use serde_json::{Value};
 use super::super::errors;
 
 pub struct AllowedValues {
-    allowed_values: Vec<json::Json>
+    allowed_values: Vec<Value>
 }
 
 impl AllowedValues {
-    pub fn new(values: Vec<json::Json>) -> AllowedValues {
+    pub fn new(values: Vec<Value>) -> AllowedValues {
         AllowedValues {
             allowed_values: values
         }
@@ -15,7 +14,7 @@ impl AllowedValues {
 }
 
 impl super::Validator for AllowedValues {
-    fn validate(&self, val: &json::Json, path: &str) -> super::ValidatorResult {
+    fn validate(&self, val: &Value, path: &str) -> super::ValidatorResult {
         let mut matched = false;
         for allowed_value in self.allowed_values.iter() {
             if val == allowed_value { matched = true; }

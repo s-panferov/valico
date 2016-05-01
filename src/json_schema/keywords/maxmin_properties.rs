@@ -1,4 +1,4 @@
-use rustc_serialize::json;
+use serde_json::{Value};
 
 use super::super::schema;
 use super::super::validators;
@@ -9,7 +9,7 @@ kw_minmax_integer!(MinProperties, "minProperties");
 #[cfg(test)] use super::super::scope;
 #[cfg(test)] use jsonway;
 #[cfg(test)] use super::super::builder;
-#[cfg(test)] use rustc_serialize::json::{ToJson};
+#[cfg(test)] use serde_json::to_value;
 
 #[test]
 fn validate_max_properties() {
@@ -39,15 +39,15 @@ fn malformed_max_properties() {
     let mut scope = scope::Scope::new();
 
     assert!(scope.compile_and_return(jsonway::object(|schema| {
-        schema.set("maxProperties", (-1).to_json());
+        schema.set("maxProperties", to_value(&-1));
     }).unwrap(), true).is_err());
 
     assert!(scope.compile_and_return(jsonway::object(|schema| {
-        schema.set("maxProperties", "".to_json());
+        schema.set("maxProperties", to_value(&""));
     }).unwrap(), true).is_err());
 
     assert!(scope.compile_and_return(jsonway::object(|schema| {
-        schema.set("maxProperties", (1.1).to_json());
+        schema.set("maxProperties", to_value(&1.1));
     }).unwrap(), true).is_err());
 }
 
@@ -79,14 +79,14 @@ fn malformed_min_properties() {
     let mut scope = scope::Scope::new();
 
     assert!(scope.compile_and_return(jsonway::object(|schema| {
-        schema.set("minProperties", (-1).to_json());
+        schema.set("minProperties", to_value(&-1));
     }).unwrap(), true).is_err());
 
     assert!(scope.compile_and_return(jsonway::object(|schema| {
-        schema.set("minProperties", "".to_json());
+        schema.set("minProperties", to_value(&""));
     }).unwrap(), true).is_err());
 
     assert!(scope.compile_and_return(jsonway::object(|schema| {
-        schema.set("minProperties", (1.1).to_json());
+        schema.set("minProperties", to_value(&1.1));
     }).unwrap(), true).is_err());
 }

@@ -1,6 +1,6 @@
 use url;
 use std::collections;
-use rustc_serialize::json;
+use serde_json::{Value};
 
 use super::schema;
 use super::keywords;
@@ -42,28 +42,28 @@ impl Scope {
         scope
     }
 
-    pub fn compile(&mut self, def: json::Json, ban_unknown: bool) -> Result<url::Url, schema::SchemaError> {
+    pub fn compile(&mut self, def: Value, ban_unknown: bool) -> Result<url::Url, schema::SchemaError> {
         let schema = try!(schema::compile(def, None, schema::CompilationSettings::new(&self.keywords, ban_unknown)));
         let id = schema.id.clone().unwrap();
         try!(self.add(&id, schema));
         Ok(id)
     }
 
-    pub fn compile_with_id(&mut self, id: &url::Url, def: json::Json, ban_unknown: bool)
+    pub fn compile_with_id(&mut self, id: &url::Url, def: Value, ban_unknown: bool)
         -> Result<(), schema::SchemaError>
     {
         let schema = try!(schema::compile(def, Some(id.clone()), schema::CompilationSettings::new(&self.keywords, ban_unknown)));
         self.add(id, schema)
     }
 
-    pub fn compile_and_return<'a>(&'a mut self, def: json::Json, ban_unknown: bool)
+    pub fn compile_and_return<'a>(&'a mut self, def: Value, ban_unknown: bool)
         -> Result<schema::ScopedSchema<'a>, schema::SchemaError>
     {
         let schema = try!(schema::compile(def, None, schema::CompilationSettings::new(&self.keywords, ban_unknown)));
         self.add_and_return(schema.id.clone().as_ref().unwrap(), schema)
     }
 
-    pub fn compile_and_return_with_id<'a>(&'a mut self, id: &url::Url, def: json::Json, ban_unknown: bool)
+    pub fn compile_and_return_with_id<'a>(&'a mut self, id: &url::Url, def: Value, ban_unknown: bool)
         -> Result<schema::ScopedSchema<'a>, schema::SchemaError>
     {
         let schema = try!(schema::compile(def, Some(id.clone()), schema::CompilationSettings::new(&self.keywords, ban_unknown)));

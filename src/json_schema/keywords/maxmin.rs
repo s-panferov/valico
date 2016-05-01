@@ -1,4 +1,4 @@
-use rustc_serialize::json;
+use serde_json::{Value};
 
 use super::super::schema;
 use super::super::validators;
@@ -8,7 +8,7 @@ macro_rules! kw_minmax{
         #[allow(missing_copy_implementations)]
         pub struct $name;
         impl super::Keyword for $name {
-            fn compile(&self, def: &json::Json, ctx: &schema::WalkContext) -> super::KeywordResult {
+            fn compile(&self, def: &Value, ctx: &schema::WalkContext) -> super::KeywordResult {
                 let maybe_value = def.find($keyword);
                 let exclusive = def.find($exclusive);
 
@@ -57,7 +57,7 @@ kw_minmax!(Maximum, "maximum", "exclusiveMaximum");
 #[cfg(test)] use super::super::scope;
 #[cfg(test)] use jsonway;
 #[cfg(test)] use super::super::builder;
-#[cfg(test)] use rustc_serialize::json::{ToJson};
+#[cfg(test)] use serde_json::to_value;
 
 #[test]
 fn validate_maximum() {
@@ -66,9 +66,9 @@ fn validate_maximum() {
         s.maximum(10f64, false);
     }).into_json(), true).ok().unwrap();
 
-    assert_eq!(schema.validate(&9.to_json()).is_valid(), true);
-    assert_eq!(schema.validate(&10.to_json()).is_valid(), true);
-    assert_eq!(schema.validate(&11.to_json()).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&9)).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&10)).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&11)).is_valid(), false);
 }
 
 #[test]
@@ -78,9 +78,9 @@ fn validate_exclusive_maximum() {
         s.maximum(10f64, true);
     }).into_json(), true).ok().unwrap();
 
-    assert_eq!(schema.validate(&9.to_json()).is_valid(), true);
-    assert_eq!(schema.validate(&10.to_json()).is_valid(), false);
-    assert_eq!(schema.validate(&11.to_json()).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&9)).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&10)).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&11)).is_valid(), false);
 }
 
 #[test]
@@ -113,9 +113,9 @@ fn validate_minumum() {
         s.minimum(10f64, false);
     }).into_json(), true).ok().unwrap();
 
-    assert_eq!(schema.validate(&9.to_json()).is_valid(), false);
-    assert_eq!(schema.validate(&10.to_json()).is_valid(), true);
-    assert_eq!(schema.validate(&11.to_json()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&9)).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&10)).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&11)).is_valid(), true);
 }
 
 #[test]
@@ -125,9 +125,9 @@ fn validate_exclusive_minimum() {
         s.minimum(10f64, true);
     }).into_json(), true).ok().unwrap();
 
-    assert_eq!(schema.validate(&9.to_json()).is_valid(), false);
-    assert_eq!(schema.validate(&10.to_json()).is_valid(), false);
-    assert_eq!(schema.validate(&11.to_json()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&9)).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&10)).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&11)).is_valid(), true);
 }
 
 #[test]
@@ -152,4 +152,3 @@ fn mailformed_exclusive_minumum() {
         schema.set("exclusiveMinimum", "".to_string());
     }).unwrap(), true).is_err());
 }
-

@@ -1,9 +1,7 @@
-use rustc_serialize::json::{self, ToJson};
+use serde_json::{Value, to_value};
 use url;
 
-use mutable_json::{MutableJson};
 use super::super::json_schema;
-use super::helpers;
 use super::param;
 use super::coercers;
 use super::validators;
@@ -96,7 +94,7 @@ impl Builder {
         self.validators.push(validator);
     }
 
-    pub fn validate_with<F>(&mut self, validator: F) where F: Fn(&json::Json, &str) -> validators::ValidatorResult + 'static + Send+Sync {
+    pub fn validate_with<F>(&mut self, validator: F) where F: Fn(&Value, &str) -> validators::ValidatorResult + 'static + Send+Sync {
         self.validators.push(Box::new(validator));
     }
 
@@ -127,7 +125,7 @@ impl Builder {
         for param in self.requires.iter_mut().chain(self.optional.iter_mut()) {
             if param.schema_builder.is_some() {
                 let json_schema = json_schema::builder::schema_box(param.schema_builder.take().unwrap());
-                let id = try!(scope.compile(json_schema.to_json(), true));
+                let id = try!(scope.compile(to_value(&json_schema), true));
                 param.schema_id = Some(id);
             }
 
@@ -138,18 +136,18 @@ impl Builder {
 
         if self.schema_builder.is_some() {
             let json_schema = json_schema::builder::schema_box(self.schema_builder.take().unwrap());
-            let id = try!(scope.compile(json_schema.to_json(), true));
+            let id = try!(scope.compile(to_value(&json_schema), true));
             self.schema_id = Some(id);
         }
 
         Ok(())
     }
 
-    pub fn process(&self, val: &mut json::Json, scope: &Option<&json_schema::Scope>) -> json_schema::ValidationState {
+    pub fn process(&self, val: &mut Value, scope: &Option<&json_schema::Scope>) -> json_schema::ValidationState {
         self.process_nest(val, "", scope)
     }
 
-    pub fn process_nest(&self, val: &mut json::Json, path: &str, scope: &Option<&json_schema::Scope>) -> json_schema::ValidationState {
+    pub fn process_nest(&self, val: &mut Value, path: &str, scope: &Option<&json_schema::Scope>) -> json_schema::ValidationState {
         let mut state = if val.is_array() {
             let mut state = json_schema::ValidationState::new();
             let array = val.as_array_mut().unwrap();
@@ -201,7 +199,7 @@ impl Builder {
         state
     }
 
-    fn process_object(&self, val: &mut json::Json, path: &str, scope: &Option<&json_schema::Scope>) -> json_schema::ValidationState  {
+    fn process_object(&self, val: &mut Value, path: &str, scope: &Option<&json_schema::Scope>) -> json_schema::ValidationState  {
 
         let mut state = json_schema::ValidationState::new();
 
@@ -209,7 +207,7 @@ impl Builder {
             let object = val.as_object_mut().expect("We expect object here");
             for param in self.requires.iter() {
                 let ref name = param.name;
-                let present = helpers::has_value(object, name);
+                let present = object.contains_key(name);
                 let param_path = [path, name.as_ref()].join("/");
                 if present {
                     let process_result = param.process(object.get_mut(name).unwrap(), param_path.as_ref(), scope);
@@ -228,7 +226,7 @@ impl Builder {
 
             for param in self.optional.iter() {
                 let ref name = param.name;
-                let present = helpers::has_value(object, name);
+                let present = object.contains_key(name);
                 let param_path = [path, name.as_ref()].join("/");
                 if present {
                     let process_result = param.process(object.get_mut(name).unwrap(), param_path.as_ref(), scope);
@@ -264,7 +262,7 @@ impl Builder {
                 // second pass we need to validate without default values in optionals
                 for param in self.optional.iter() {
                     let ref name = param.name;
-                    let present = helpers::has_value(object, name);
+                    let present = object.contains_key(name);
                     if !present {
                         match param.default.as_ref() {
                             Some(val) => { object.insert(name.clone(), val.clone()); },

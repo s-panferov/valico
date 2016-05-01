@@ -1,10 +1,10 @@
 use std::fs;
 use std::path;
 use std::io::Read;
-use serialize::json;
+use serde_json::{Value, from_str, to_value, to_string_pretty};
 use valico::json_schema;
 
-fn visit_specs<F>(dir: &path::Path, cb: F) where F: Fn(&path::Path, json::Json) {
+fn visit_specs<F>(dir: &path::Path, cb: F) where F: Fn(&path::Path, Value) {
     let contents = fs::read_dir(dir).ok().unwrap();
     for entry in contents {
         let path = entry.unwrap().path();
@@ -15,7 +15,7 @@ fn visit_specs<F>(dir: &path::Path, cb: F) where F: Fn(&path::Path, json::Json) 
                 if metadata.is_file() {
                     let mut content = String::new();
                     file.read_to_string(&mut content).ok().unwrap();
-                    let json: json::Json = content.parse().unwrap();
+                    let json: Value = from_str(&content).unwrap();
                     cb(&path, json);
                 }
             }
@@ -30,9 +30,9 @@ fn test_suite() {
     fs::File::open(&path::Path::new("tests/schema/schema.json")).ok().unwrap()
         .read_to_string(&mut content).ok().unwrap();
 
-    let json_v4_schema: json::Json = content.parse().unwrap();
+    let json_v4_schema: Value = from_str(&content).unwrap();
 
-    visit_specs(&path::Path::new("tests/schema/JSON-Schema-Test-Suite/tests/draft4"), |path, spec_set: json::Json| {
+    visit_specs(&path::Path::new("tests/schema/JSON-Schema-Test-Suite/tests/draft4"), |path, spec_set: Value| {
         let spec_set = spec_set.as_array().unwrap();
 
         let exceptions: Vec<(String, String)> = vec![
@@ -49,6 +49,8 @@ fn test_suite() {
             let mut scope = json_schema::Scope::new();
 
             scope.compile(json_v4_schema.clone(), true).ok().unwrap();
+
+            let spec_desc = spec.get("description").map(|v| v.as_string().unwrap()).unwrap_or("");
 
             let schema = match scope.compile_and_return(spec.get("schema").unwrap().clone(), false) {
                 Ok(schema) => schema,
@@ -71,9 +73,12 @@ fn test_suite() {
 
                 if state.is_valid() != valid {
                     if !&exceptions[..].contains(&(path.file_name().unwrap().to_str().unwrap().to_string(), description.to_string())) {
-                        panic!("Failure: \"{}\" in {}",
+                        panic!("Failure: \"{}\" in \"{}\" -> \"{}\" with state: \n {}",
                             path.file_name().unwrap().to_str().unwrap(),
-                            description.to_string());
+                            spec_desc,
+                            description.to_string(),
+                            to_string_pretty(&to_value(&state)).unwrap()
+                        )
                     }
                 } else {
                     println!("test json_schema::test_suite -> {} .. ok", description);

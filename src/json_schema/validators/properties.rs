@@ -1,4 +1,4 @@
-use rustc_serialize::json;
+use serde_json::{Value};
 use regex;
 use std::collections;
 use url;
@@ -20,7 +20,7 @@ pub struct Properties {
 }
 
 impl super::Validator for Properties {
-    fn validate(&self, val: &json::Json, path: &str, scope: &scope::Scope) -> super::ValidationState {
+    fn validate(&self, val: &Value, path: &str, scope: &scope::Scope) -> super::ValidationState {
         let object = nonstrict_process!(val.as_object(), path);
         let mut state = super::ValidationState::new();
 

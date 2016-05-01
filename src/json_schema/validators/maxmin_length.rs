@@ -1,4 +1,4 @@
-use rustc_serialize::json;
+use serde_json::{Value};
 
 use super::super::errors;
 use super::super::scope;
@@ -9,7 +9,7 @@ pub struct MaxLength {
 }
 
 impl super::Validator for MaxLength {
-    fn validate(&self, val: &json::Json, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
         let string = nonstrict_process!(val.as_string(), path);
 
         if (string.len() as u64) <= self.length {
@@ -30,7 +30,7 @@ pub struct MinLength {
 }
 
 impl super::Validator for MinLength {
-    fn validate(&self, val: &json::Json, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
         let string = nonstrict_process!(val.as_string(), path);
 
         if (string.len() as u64) >= self.length {

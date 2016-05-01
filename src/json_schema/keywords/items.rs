@@ -1,4 +1,4 @@
-use rustc_serialize::json;
+use serde_json::{Value};
 
 use super::super::schema;
 use super::super::validators;
@@ -7,7 +7,7 @@ use super::super::helpers;
 #[allow(missing_copy_implementations)]
 pub struct Items;
 impl super::Keyword for Items {
-    fn compile(&self, def: &json::Json, ctx: &schema::WalkContext) -> super::KeywordResult {
+    fn compile(&self, def: &Value, ctx: &schema::WalkContext) -> super::KeywordResult {
         let maybe_items = def.find("items");
         let maybe_additional = def.find("additionalItems");
 
@@ -97,7 +97,7 @@ impl super::Keyword for Items {
 
 #[cfg(test)] use super::super::scope;
 #[cfg(test)] use super::super::builder;
-#[cfg(test)] use rustc_serialize::json::{ToJson};
+#[cfg(test)] use serde_json::to_value;
 
 #[test]
 fn validate_items_with_schema() {
@@ -109,9 +109,9 @@ fn validate_items_with_schema() {
         });
     }).into_json(), true).ok().unwrap();
 
-    assert_eq!(schema.validate(&[5,6,7,8,9,10].to_json()).is_valid(), true);
-    assert_eq!(schema.validate(&[4,5,6,7,8,9,10].to_json()).is_valid(), false);
-    assert_eq!(schema.validate(&[5,6,7,8,9,10,11].to_json()).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&[5,6,7,8,9,10])).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&[4,5,6,7,8,9,10])).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&[5,6,7,8,9,10,11])).is_valid(), false);
 }
 
 #[test]
@@ -130,12 +130,12 @@ fn validate_items_with_array_of_schemes() {
         })
     }).into_json(), true).ok().unwrap();
 
-    assert_eq!(schema.validate(&[1].to_json()).is_valid(), true);
-    assert_eq!(schema.validate(&[1,3].to_json()).is_valid(), true);
-    assert_eq!(schema.validate(&[1,3,100].to_json()).is_valid(), true);
-    assert_eq!(schema.validate(&[4,3].to_json()).is_valid(), false);
-    assert_eq!(schema.validate(&[1,7].to_json()).is_valid(), false);
-    assert_eq!(schema.validate(&[4,7].to_json()).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&[1])).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&[1,3])).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&[1,3,100])).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&[4,3])).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&[1,7])).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&[4,7])).is_valid(), false);
 }
 
 #[test]
@@ -155,7 +155,7 @@ fn validate_items_with_array_of_schemes_with_additional_bool() {
         s.additional_items(false);
     }).into_json(), true).ok().unwrap();
 
-    assert_eq!(schema.validate(&[1,3,100].to_json()).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&[1,3,100])).is_valid(), false);
 }
 
 #[test]
@@ -177,6 +177,6 @@ fn validate_items_with_array_of_schemes_with_additional_schema() {
         });
     }).into_json(), true).ok().unwrap();
 
-    assert_eq!(schema.validate(&[1,3,100].to_json()).is_valid(), true);
-    assert_eq!(schema.validate(&[1,3,101].to_json()).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&[1,3,100])).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&[1,3,101])).is_valid(), false);
 }

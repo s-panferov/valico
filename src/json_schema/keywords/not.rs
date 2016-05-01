@@ -1,4 +1,4 @@
-use rustc_serialize::json;
+use serde_json::{Value};
 
 use super::super::schema;
 use super::super::validators;
@@ -7,7 +7,7 @@ use super::super::helpers;
 #[allow(missing_copy_implementations)]
 pub struct Not;
 impl super::Keyword for Not {
-    fn compile(&self, def: &json::Json, ctx: &schema::WalkContext) -> super::KeywordResult {
+    fn compile(&self, def: &Value, ctx: &schema::WalkContext) -> super::KeywordResult {
         let not = keyword_key_exists!(def, "not");
 
         if not.is_object() {

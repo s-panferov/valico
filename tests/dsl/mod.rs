@@ -1,5 +1,4 @@
-
-use serialize::json::{self, ToJson};
+use serde_json::{Value};
 use valico::json_dsl;
 use valico::json_schema;
 use valico::json_schema::errors as schema_errors;
@@ -261,8 +260,8 @@ fn is_validates_with_function_validator() {
     let params = json_dsl::Builder::build(|params| {
         params.req("a", |a| {
             a.coerce(json_dsl::u64());
-            a.validate_with(|val: &json::Json, path: &str| {
-                if *val == 2usize.to_json() {
+            a.validate_with(|val: &Value, path: &str| {
+                if *val == Value::U64(2u64) {
                     Ok(())
                 } else {
                     Err(vec![
@@ -400,7 +399,7 @@ fn is_validates_with_function() {
         params.opt_defined("a");
         params.opt_defined("b");
 
-        params.validate_with(|_: &json::Json, path: &str| {
+        params.validate_with(|_: &Value, path: &str| {
             Err(vec![
                 Box::new(errors::WrongType{
                     path: path.to_string(),
@@ -469,6 +468,3 @@ fn it_validates_params_with_schema_and_coercion() {
     assert_error_with_scope::<schema_errors::Maximum>(&params, Some(&scope), r#"{"a":"11"}"#, "/a");
     assert_error_with_scope::<errors::WrongType>(&params, Some(&scope), r#"{"a":"test"}"#, "/a");
 }
-
-
-

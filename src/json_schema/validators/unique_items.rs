@@ -1,4 +1,4 @@
-use rustc_serialize::json;
+use serde_json::{Value};
 
 use super::super::errors;
 use super::super::scope;
@@ -6,7 +6,7 @@ use super::super::scope;
 #[allow(missing_copy_implementations)]
 pub struct UniqueItems;
 impl super::Validator for UniqueItems {
-    fn validate(&self, val: &json::Json, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
         let array = nonstrict_process!(val.as_array(), path);
 
         // TODO we need some quicker algorithm for this

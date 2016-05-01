@@ -1,4 +1,5 @@
-use rustc_serialize::json;
+use serde_json::{Value, to_value};
+use serde::{Serialize, Serializer};
 use std::fmt;
 use url;
 
@@ -105,21 +106,21 @@ impl ValidationState {
     }
 }
 
-impl json::ToJson for ValidationState {
-    fn to_json(&self) -> json::Json {
+impl Serialize for ValidationState {
+    fn serialize<S>(&self, serializer: &mut S) -> Result<(), S::Error> where S: Serializer {
         let mut map = ::std::collections::BTreeMap::new();
-        map.insert("errors".to_string(), json::Json::Array(
-            self.errors.iter().map(|err| err.to_json()).collect::<Vec<json::Json>>()
+        map.insert("errors".to_string(), Value::Array(
+            self.errors.iter().map(|err| to_value(err)).collect::<Vec<Value>>()
         ));
-        map.insert("missing".to_string(), json::Json::Array(
-            self.missing.iter().map(|url| url.serialize().to_json()).collect::<Vec<json::Json>>()
+        map.insert("missing".to_string(), Value::Array(
+            self.missing.iter().map(|url| to_value(&url.to_string())).collect::<Vec<Value>>()
         ));
-        json::Json::Object(map)
+        Value::Object(map).serialize(serializer)
     }
 }
 
 pub trait Validator {
-    fn validate(&self, item: &json::Json, &str, &scope::Scope) -> ValidationState;
+    fn validate(&self, item: &Value, &str, &scope::Scope) -> ValidationState;
 }
 
 impl fmt::Debug for Validator + 'static + Send + Sync {
@@ -131,8 +132,8 @@ impl fmt::Debug for Validator + 'static + Send + Sync {
 pub type BoxedValidator = Box<Validator + 'static + Send + Sync>;
 pub type Validators = Vec<BoxedValidator>;
 
-impl<T> Validator for T where T: Fn(&json::Json, &str, &scope::Scope) -> ValidationState {
-    fn validate(&self, val: &json::Json, path: &str, scope: &scope::Scope) -> ValidationState {
+impl<T> Validator for T where T: Fn(&Value, &str, &scope::Scope) -> ValidationState {
+    fn validate(&self, val: &Value, path: &str, scope: &scope::Scope) -> ValidationState {
         self(val, path, scope)
     }
 }
