@@ -9,6 +9,7 @@
 
     <title>phf - Rust</title>
 
+    <link rel="stylesheet" type="text/css" href="../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../main.css">
 
     
@@ -24,17 +25,17 @@
 
     
 
-    <section class="sidebar">
+    <nav class="sidebar">
         
         <p class='location'></p><script>window.sidebarCurrent = {name: 'phf', ty: 'mod', relpath: '../'};</script>
-    </section>
+    </nav>
 
     <nav class="sub">
         <form class="search-form js-only">
             <div class="search-container">
                 <input class="search-input" name="search"
                        autocomplete="off"
-                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
                        type="search">
             </div>
         </form>
@@ -42,8 +43,10 @@
 
     <section id='main' class="content mod">
 <h1 class='fqn'><span class='in-band'>Crate <a class='mod' href=''>phf</a></span><span class='out-of-band'><span id='render-detail'>
-            <a id="toggle-all-docs" href="#" title="collapse all docs">[&minus;]</a>
-        </span><a id='src-0' class='srclink' href='../src/phf/lib.rs.html#1-25' title='goto source code'>[src]</a></span></h1>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-0' class='srclink' href='../src/phf/lib.rs.html#1-53' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>Compile time optimized maps and sets.</p>
 
 <p>PHF data structures can be generated via the syntax extensions in the
@@ -56,7 +59,6 @@ the documentation of those crates for more details.</p>
                                title='phf::map'>map</a></td>
                         <td class='docblock short'>
                              <p>An immutable map constructed at compile time.</p>
-
                         </td>
                     </tr>
                 
@@ -65,7 +67,6 @@ the documentation of those crates for more details.</p>
                                title='phf::ordered_map'>ordered_map</a></td>
                         <td class='docblock short'>
                              <p>An order-preserving immutable map constructed at compile time.</p>
-
                         </td>
                     </tr>
                 
@@ -74,7 +75,6 @@ the documentation of those crates for more details.</p>
                                title='phf::ordered_set'>ordered_set</a></td>
                         <td class='docblock short'>
                              <p>An order-preserving immutable set constructed at compile time.</p>
-
                         </td>
                     </tr>
                 
@@ -83,7 +83,6 @@ the documentation of those crates for more details.</p>
                                title='phf::set'>set</a></td>
                         <td class='docblock short'>
                              <p>An immutable set constructed at compile time.</p>
-
                         </td>
                     </tr>
                 </table><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
@@ -93,7 +92,6 @@ the documentation of those crates for more details.</p>
                                title='phf::Map'>Map</a></td>
                         <td class='docblock short'>
                              <p>An immutable map constructed at compile time.</p>
-
                         </td>
                     </tr>
                 
@@ -102,7 +100,6 @@ the documentation of those crates for more details.</p>
                                title='phf::OrderedMap'>OrderedMap</a></td>
                         <td class='docblock short'>
                              <p>An order-preserving immutable map constructed at compile time.</p>
-
                         </td>
                     </tr>
                 
@@ -111,7 +108,6 @@ the documentation of those crates for more details.</p>
                                title='phf::OrderedSet'>OrderedSet</a></td>
                         <td class='docblock short'>
                              <p>An order-preserving immutable set constructed at compile time.</p>
-
                         </td>
                     </tr>
                 
@@ -120,7 +116,6 @@ the documentation of those crates for more details.</p>
                                title='phf::Set'>Set</a></td>
                         <td class='docblock short'>
                              <p>An immutable set constructed at compile time.</p>
-
                         </td>
                     </tr>
                 </table><h2 id='traits' class='section-header'><a href="#traits">Traits</a></h2>
@@ -129,8 +124,7 @@ the documentation of those crates for more details.</p>
                         <td><a class='trait' href='trait.PhfHash.html'
                                title='phf::PhfHash'>PhfHash</a></td>
                         <td class='docblock short'>
-                             <p>A trait implemented by types which can be used in PHF data structures</p>
-
+                             <p>A trait implemented by types which can be used in PHF data structures.</p>
                         </td>
                     </tr>
                 </table></section>
@@ -138,36 +132,49 @@ the documentation of those crates for more details.</p>
 
     <section class="footer"></section>
 
-    <div id="help" class="hidden">
-        <div class="shortcuts">
-            <h1>Keyboard shortcuts</h1>
-            <dl>
-                <dt>?</dt>
-                <dd>Show this help dialog</dd>
-                <dt>S</dt>
-                <dd>Focus the search field</dd>
-                <dt>&larrb;</dt>
-                <dd>Move up in search results</dd>
-                <dt>&rarrb;</dt>
-                <dd>Move down in search results</dd>
-                <dt>&#9166;</dt>
-                <dd>Go to active search result</dd>
-            </dl>
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
+                </p>
+            </div>
         </div>
-        <div class="infos">
-            <h1>Search tricks</h1>
-            <p>
-                Prefix searches with a type followed by a colon (e.g.
-                <code>fn:</code>) to restrict the search to a given type.
-            </p>
-            <p>
-                Accepted types are: <code>fn</code>, <code>mod</code>,
-                <code>struct</code>, <code>enum</code>,
-                <code>trait</code>, <code>typedef</code> (or
-                <code>tdef</code>).
-            </p>
-        </div>
-    </div>
+    </aside>
 
     
 
@@ -179,6 +186,6 @@ the documentation of those crates for more details.</p>
     <script src="../jquery.js"></script>
     <script src="../main.js"></script>
     
-    <script async src="../search-index.js"></script>
+    <script defer src="../search-index.js"></script>
 </body>
 </html>

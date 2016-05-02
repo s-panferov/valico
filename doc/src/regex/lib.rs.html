@@ -4,14 +4,15 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/regex-0.1.30/src/lib.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-88ac128001ac3a9a/regex-0.1.69/src/lib.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>lib.rs.html -- source</title>
 
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
 
-    <link rel="shortcut icon" href="http://www.rust-lang.org/favicon.ico">
+    <link rel="shortcut icon" href="https://www.rust-lang.org/favicon.ico">
     
 </head>
 <body class="rustdoc">
@@ -24,17 +25,17 @@
 
     
 
-    <section class="sidebar">
-        <a href='../../regex/index.html'><img src='http://www.rust-lang.org/logos/rust-logo-128x128-blk-v2.png' alt='' width='100'></a>
+    <nav class="sidebar">
+        <a href='../../regex/index.html'><img src='https://www.rust-lang.org/logos/rust-logo-128x128-blk-v2.png' alt='logo' width='100'></a>
         
-    </section>
+    </nav>
 
     <nav class="sub">
         <form class="search-form js-only">
             <div class="search-container">
                 <input class="search-input" name="search"
                        autocomplete="off"
-                       placeholder="Click or press 'S' to search, '?' for more options..."
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
                        type="search">
             </div>
         </form>
@@ -461,8 +462,236 @@
 <span id="419">419</span>
 <span id="420">420</span>
 <span id="421">421</span>
+<span id="422">422</span>
+<span id="423">423</span>
+<span id="424">424</span>
+<span id="425">425</span>
+<span id="426">426</span>
+<span id="427">427</span>
+<span id="428">428</span>
+<span id="429">429</span>
+<span id="430">430</span>
+<span id="431">431</span>
+<span id="432">432</span>
+<span id="433">433</span>
+<span id="434">434</span>
+<span id="435">435</span>
+<span id="436">436</span>
+<span id="437">437</span>
+<span id="438">438</span>
+<span id="439">439</span>
+<span id="440">440</span>
+<span id="441">441</span>
+<span id="442">442</span>
+<span id="443">443</span>
+<span id="444">444</span>
+<span id="445">445</span>
+<span id="446">446</span>
+<span id="447">447</span>
+<span id="448">448</span>
+<span id="449">449</span>
+<span id="450">450</span>
+<span id="451">451</span>
+<span id="452">452</span>
+<span id="453">453</span>
+<span id="454">454</span>
+<span id="455">455</span>
+<span id="456">456</span>
+<span id="457">457</span>
+<span id="458">458</span>
+<span id="459">459</span>
+<span id="460">460</span>
+<span id="461">461</span>
+<span id="462">462</span>
+<span id="463">463</span>
+<span id="464">464</span>
+<span id="465">465</span>
+<span id="466">466</span>
+<span id="467">467</span>
+<span id="468">468</span>
+<span id="469">469</span>
+<span id="470">470</span>
+<span id="471">471</span>
+<span id="472">472</span>
+<span id="473">473</span>
+<span id="474">474</span>
+<span id="475">475</span>
+<span id="476">476</span>
+<span id="477">477</span>
+<span id="478">478</span>
+<span id="479">479</span>
+<span id="480">480</span>
+<span id="481">481</span>
+<span id="482">482</span>
+<span id="483">483</span>
+<span id="484">484</span>
+<span id="485">485</span>
+<span id="486">486</span>
+<span id="487">487</span>
+<span id="488">488</span>
+<span id="489">489</span>
+<span id="490">490</span>
+<span id="491">491</span>
+<span id="492">492</span>
+<span id="493">493</span>
+<span id="494">494</span>
+<span id="495">495</span>
+<span id="496">496</span>
+<span id="497">497</span>
+<span id="498">498</span>
+<span id="499">499</span>
+<span id="500">500</span>
+<span id="501">501</span>
+<span id="502">502</span>
+<span id="503">503</span>
+<span id="504">504</span>
+<span id="505">505</span>
+<span id="506">506</span>
+<span id="507">507</span>
+<span id="508">508</span>
+<span id="509">509</span>
+<span id="510">510</span>
+<span id="511">511</span>
+<span id="512">512</span>
+<span id="513">513</span>
+<span id="514">514</span>
+<span id="515">515</span>
+<span id="516">516</span>
+<span id="517">517</span>
+<span id="518">518</span>
+<span id="519">519</span>
+<span id="520">520</span>
+<span id="521">521</span>
+<span id="522">522</span>
+<span id="523">523</span>
+<span id="524">524</span>
+<span id="525">525</span>
+<span id="526">526</span>
+<span id="527">527</span>
+<span id="528">528</span>
+<span id="529">529</span>
+<span id="530">530</span>
+<span id="531">531</span>
+<span id="532">532</span>
+<span id="533">533</span>
+<span id="534">534</span>
+<span id="535">535</span>
+<span id="536">536</span>
+<span id="537">537</span>
+<span id="538">538</span>
+<span id="539">539</span>
+<span id="540">540</span>
+<span id="541">541</span>
+<span id="542">542</span>
+<span id="543">543</span>
+<span id="544">544</span>
+<span id="545">545</span>
+<span id="546">546</span>
+<span id="547">547</span>
+<span id="548">548</span>
+<span id="549">549</span>
+<span id="550">550</span>
+<span id="551">551</span>
+<span id="552">552</span>
+<span id="553">553</span>
+<span id="554">554</span>
+<span id="555">555</span>
+<span id="556">556</span>
+<span id="557">557</span>
+<span id="558">558</span>
+<span id="559">559</span>
+<span id="560">560</span>
+<span id="561">561</span>
+<span id="562">562</span>
+<span id="563">563</span>
+<span id="564">564</span>
+<span id="565">565</span>
+<span id="566">566</span>
+<span id="567">567</span>
+<span id="568">568</span>
+<span id="569">569</span>
+<span id="570">570</span>
+<span id="571">571</span>
+<span id="572">572</span>
+<span id="573">573</span>
+<span id="574">574</span>
+<span id="575">575</span>
+<span id="576">576</span>
+<span id="577">577</span>
+<span id="578">578</span>
+<span id="579">579</span>
+<span id="580">580</span>
+<span id="581">581</span>
+<span id="582">582</span>
+<span id="583">583</span>
+<span id="584">584</span>
+<span id="585">585</span>
+<span id="586">586</span>
+<span id="587">587</span>
+<span id="588">588</span>
+<span id="589">589</span>
+<span id="590">590</span>
+<span id="591">591</span>
+<span id="592">592</span>
+<span id="593">593</span>
+<span id="594">594</span>
+<span id="595">595</span>
+<span id="596">596</span>
+<span id="597">597</span>
+<span id="598">598</span>
+<span id="599">599</span>
+<span id="600">600</span>
+<span id="601">601</span>
+<span id="602">602</span>
+<span id="603">603</span>
+<span id="604">604</span>
+<span id="605">605</span>
+<span id="606">606</span>
+<span id="607">607</span>
+<span id="608">608</span>
+<span id="609">609</span>
+<span id="610">610</span>
+<span id="611">611</span>
+<span id="612">612</span>
+<span id="613">613</span>
+<span id="614">614</span>
+<span id="615">615</span>
+<span id="616">616</span>
+<span id="617">617</span>
+<span id="618">618</span>
+<span id="619">619</span>
+<span id="620">620</span>
+<span id="621">621</span>
+<span id="622">622</span>
+<span id="623">623</span>
+<span id="624">624</span>
+<span id="625">625</span>
+<span id="626">626</span>
+<span id="627">627</span>
+<span id="628">628</span>
+<span id="629">629</span>
+<span id="630">630</span>
+<span id="631">631</span>
+<span id="632">632</span>
+<span id="633">633</span>
+<span id="634">634</span>
+<span id="635">635</span>
+<span id="636">636</span>
+<span id="637">637</span>
+<span id="638">638</span>
+<span id="639">639</span>
+<span id="640">640</span>
+<span id="641">641</span>
+<span id="642">642</span>
+<span id="643">643</span>
+<span id="644">644</span>
+<span id="645">645</span>
+<span id="646">646</span>
+<span id="647">647</span>
+<span id="648">648</span>
+<span id="649">649</span>
 </pre><pre class='rust '>
-<span class='comment'>// Copyright 2014 The Rust Project Developers. See the COPYRIGHT</span>
+<span class='comment'>// Copyright 2014-2015 The Rust Project Developers. See the COPYRIGHT</span>
 <span class='comment'>// file at the top-level directory of this distribution and at</span>
 <span class='comment'>// http://rust-lang.org/COPYRIGHT.</span>
 <span class='comment'>//</span>
@@ -476,17 +705,31 @@
 <span class='doccomment'>//! heavily based on RE2 both in syntax and in implementation. Notably,</span>
 <span class='doccomment'>//! backreferences and arbitrary lookahead/lookbehind assertions are not</span>
 <span class='doccomment'>//! provided. In return, regular expression searching provided by this package</span>
-<span class='doccomment'>//! has excellent worst case performance. The specific syntax supported is</span>
+<span class='doccomment'>//! has excellent worst-case performance. The specific syntax supported is</span>
 <span class='doccomment'>//! documented further down.</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! This crate&#39;s documentation provides some simple examples, describes Unicode</span>
 <span class='doccomment'>//! support and exhaustively lists the supported syntax. For more specific</span>
-<span class='doccomment'>//! details on the API, please see the documentation for the `Regex` type.</span>
+<span class='doccomment'>//! details on the API, please see the documentation for the</span>
+<span class='doccomment'>//! [`Regex`](struct.Regex.html) type.</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! This crates is [on crates.io](https://crates.io/crates/regex) and can be</span>
-<span class='doccomment'>//! used by adding `regex` to your dependencies in your projects `Cargo.toml`.</span>
+<span class='doccomment'>//! # Usage</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! # First example: find a date</span>
+<span class='doccomment'>//! This crate is [on crates.io](https://crates.io/crates/regex) and can be</span>
+<span class='doccomment'>//! used by adding `regex` to your dependencies in your project&#39;s `Cargo.toml`.</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! ```toml</span>
+<span class='doccomment'>//! [dependencies]</span>
+<span class='doccomment'>//! regex = &quot;0.1&quot;</span>
+<span class='doccomment'>//! ```</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! and this to your crate root:</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! ```rust</span>
+<span class='doccomment'>//! extern crate regex;</span>
+<span class='doccomment'>//! ```</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! # Example: find a date</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! General use of regular expressions in this package involves compiling an</span>
 <span class='doccomment'>//! expression and then using it to search, split or replace text. For example,</span>
@@ -494,11 +737,8 @@
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! ```rust</span>
 <span class='doccomment'>//! use regex::Regex;</span>
-<span class='doccomment'>//! let re = match Regex::new(r&quot;^\d{4}-\d{2}-\d{2}$&quot;) {</span>
-<span class='doccomment'>//!     Ok(re) =&gt; re,</span>
-<span class='doccomment'>//!     Err(err) =&gt; panic!(&quot;{}&quot;, err),</span>
-<span class='doccomment'>//! };</span>
-<span class='doccomment'>//! assert_eq!(re.is_match(&quot;2014-01-01&quot;), true);</span>
+<span class='doccomment'>//! let re = Regex::new(r&quot;^\d{4}-\d{2}-\d{2}$&quot;).unwrap();</span>
+<span class='doccomment'>//! assert!(re.is_match(&quot;2014-01-01&quot;));</span>
 <span class='doccomment'>//! ```</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! Notice the use of the `^` and `$` anchors. In this crate, every expression</span>
@@ -506,24 +746,70 @@
 <span class='doccomment'>//! it to match anywhere in the text. Anchors can be used to ensure that the</span>
 <span class='doccomment'>//! full text matches an expression.</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! This example also demonstrates the utility of [raw</span>
-<span class='doccomment'>//! strings](../reference.html#character-and-string-literals) in Rust, which</span>
+<span class='doccomment'>//! This example also demonstrates the utility of</span>
+<span class='doccomment'>//! [raw strings](https://doc.rust-lang.org/stable/reference.html#raw-string-literals)</span>
+<span class='doccomment'>//! in Rust, which</span>
 <span class='doccomment'>//! are just like regular strings except they are prefixed with an `r` and do</span>
 <span class='doccomment'>//! not process any escape sequences. For example, `&quot;\\d&quot;` is the same</span>
 <span class='doccomment'>//! expression as `r&quot;\d&quot;`.</span>
 <span class='doccomment'>//!</span>
+<span class='doccomment'>//! # Example: Avoid compiling the same regex in a loop</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! It is an anti-pattern to compile the same regular expression in a loop</span>
+<span class='doccomment'>//! since compilation is typically expensive. (It takes anywhere from a few</span>
+<span class='doccomment'>//! microseconds to a few **milliseconds** depending on the size of the</span>
+<span class='doccomment'>//! regex.) Not only is compilation itself expensive, but this also prevents</span>
+<span class='doccomment'>//! optimizations that reuse allocations internally to the matching engines.</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! In Rust, it can sometimes be a pain to pass regular expressions around if</span>
+<span class='doccomment'>//! they&#39;re used from inside a helper function. Instead, we recommend using the</span>
+<span class='doccomment'>//! [`lazy_static`](https://crates.io/crates/lazy_static) crate to ensure that</span>
+<span class='doccomment'>//! regular expressions are compiled exactly once.</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! For example:</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! ```rust</span>
+<span class='doccomment'>//! #[macro_use] extern crate lazy_static;</span>
+<span class='doccomment'>//! extern crate regex;</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! use regex::Regex;</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! fn some_helper_function(text: &amp;str) -&gt; bool {</span>
+<span class='doccomment'>//!     lazy_static! {</span>
+<span class='doccomment'>//!         static ref RE: Regex = Regex::new(&quot;...&quot;).unwrap();</span>
+<span class='doccomment'>//!     }</span>
+<span class='doccomment'>//!     RE.is_match(text)</span>
+<span class='doccomment'>//! }</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! fn main() {}</span>
+<span class='doccomment'>//! ```</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! Specifically, in this example, the regex will be compiled when it is used for</span>
+<span class='doccomment'>//! the first time. On subsequent uses, it will reuse the previous compilation.</span>
+<span class='doccomment'>//!</span>
 <span class='doccomment'>//! # The `regex!` macro</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! Rust&#39;s compile time meta-programming facilities provide a way to write a</span>
+<span class='doccomment'>//! Rust&#39;s compile-time meta-programming facilities provide a way to write a</span>
 <span class='doccomment'>//! `regex!` macro which compiles regular expressions *when your program</span>
 <span class='doccomment'>//! compiles*. Said differently, if you only use `regex!` to build regular</span>
 <span class='doccomment'>//! expressions in your program, then your program cannot compile with an</span>
 <span class='doccomment'>//! invalid regular expression. Moreover, the `regex!` macro compiles the</span>
-<span class='doccomment'>//! given expression to native Rust code, which makes it much faster for</span>
-<span class='doccomment'>//! searching text.</span>
+<span class='doccomment'>//! given expression to native Rust code, which ideally makes it faster.</span>
+<span class='doccomment'>//! Unfortunately (or fortunately), the dynamic implementation has had a lot</span>
+<span class='doccomment'>//! more optimization work put into it currently, so it is faster than</span>
+<span class='doccomment'>//! the `regex!` macro in almost every case.</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! To use the `regex!` macro, you must enable the `plugin` feature and import</span>
-<span class='doccomment'>//! the `regex_macros` crate as a syntax extension:</span>
+<span class='doccomment'>//! To use the `regex!` macro, you must add `regex_macros` to your dependencies</span>
+<span class='doccomment'>//! in your project&#39;s `Cargo.toml`:</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! ```toml</span>
+<span class='doccomment'>//! [dependencies]</span>
+<span class='doccomment'>//! regex = &quot;0.1&quot;</span>
+<span class='doccomment'>//! regex_macros = &quot;0.1&quot;</span>
+<span class='doccomment'>//! ```</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! and then enable the `plugin` feature and import the `regex_macros` crate as</span>
+<span class='doccomment'>//! a syntax extension:</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! ```ignore</span>
 <span class='doccomment'>//! #![feature(plugin)]</span>
@@ -532,7 +818,7 @@
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! fn main() {</span>
 <span class='doccomment'>//!     let re = regex!(r&quot;^\d{4}-\d{2}-\d{2}$&quot;);</span>
-<span class='doccomment'>//!     assert_eq!(re.is_match(&quot;2014-01-01&quot;), true);</span>
+<span class='doccomment'>//!     assert!(re.is_match(&quot;2014-01-01&quot;));</span>
 <span class='doccomment'>//! }</span>
 <span class='doccomment'>//! ```</span>
 <span class='doccomment'>//!</span>
@@ -541,26 +827,15 @@
 <span class='doccomment'>//! Secondly, the `regex` crate *must* be linked with the name `regex` since</span>
 <span class='doccomment'>//! the generated code depends on finding symbols in the `regex` crate.</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! The only downside of using the `regex!` macro is that it can increase the</span>
+<span class='doccomment'>//! One downside of using the `regex!` macro is that it can increase the</span>
 <span class='doccomment'>//! size of your program&#39;s binary since it generates specialized Rust code.</span>
 <span class='doccomment'>//! The extra size probably won&#39;t be significant for a small number of</span>
 <span class='doccomment'>//! expressions, but 100+ calls to `regex!` will probably result in a</span>
 <span class='doccomment'>//! noticeably bigger binary.</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! **NOTE**: This is implemented using a compiler plugin, which will not be</span>
+<span class='doccomment'>//! **NOTE**: This is implemented using a compiler plugin, which is not</span>
 <span class='doccomment'>//! available on the Rust 1.0 beta/stable channels. Therefore, you&#39;ll only</span>
-<span class='doccomment'>//! be able to use `regex!` on the nightlies. If you want to retain the</span>
-<span class='doccomment'>//! `regex!` macro, you can cheat and define this:</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! ```rust</span>
-<span class='doccomment'>//! macro_rules! regex(</span>
-<span class='doccomment'>//!     ($s:expr) =&gt; (regex::Regex::new($s).unwrap());</span>
-<span class='doccomment'>//! );</span>
-<span class='doccomment'>//! ```</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! But this just replaces native regexes with dynamic regexes under the hood.</span>
-<span class='doccomment'>//! Moreover, this will cause your program to panic *at runtime* if an invalid</span>
-<span class='doccomment'>//! regular expression is given.</span>
+<span class='doccomment'>//! be able to use `regex!` on the nightly Rust releases.</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! # Example: iterating over capture groups</span>
 <span class='doccomment'>//!</span>
@@ -610,6 +885,53 @@
 <span class='doccomment'>//! provides more flexibility than is seen here. (See the documentation for</span>
 <span class='doccomment'>//! `Regex::replace` for more details.)</span>
 <span class='doccomment'>//!</span>
+<span class='doccomment'>//! Note that if your regex gets complicated, you can use the `x` flag to</span>
+<span class='doccomment'>//! enable insigificant whitespace mode, which also lets you write comments:</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! ```rust</span>
+<span class='doccomment'>//! # extern crate regex; use regex::Regex;</span>
+<span class='doccomment'>//! # fn main() {</span>
+<span class='doccomment'>//! let re = Regex::new(r&quot;(?x)</span>
+<span class='doccomment'>//!   (?P&lt;y&gt;\d{4}) # the year</span>
+<span class='doccomment'>//!   -</span>
+<span class='doccomment'>//!   (?P&lt;m&gt;\d{2}) # the month</span>
+<span class='doccomment'>//!   -</span>
+<span class='doccomment'>//!   (?P&lt;d&gt;\d{2}) # the day</span>
+<span class='doccomment'>//! &quot;).unwrap();</span>
+<span class='doccomment'>//! let before = &quot;2012-03-14, 2013-01-01 and 2014-07-05&quot;;</span>
+<span class='doccomment'>//! let after = re.replace_all(before, &quot;$m/$d/$y&quot;);</span>
+<span class='doccomment'>//! assert_eq!(after, &quot;03/14/2012, 01/01/2013 and 07/05/2014&quot;);</span>
+<span class='doccomment'>//! # }</span>
+<span class='doccomment'>//! ```</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! # Example: match multiple regular expressions simultaneously</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! This demonstrates how to use a `RegexSet` to match multiple (possibly</span>
+<span class='doccomment'>//! overlapping) regular expressions in a single scan of the search text:</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! ```rust</span>
+<span class='doccomment'>//! use regex::RegexSet;</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! let set = RegexSet::new(&amp;[</span>
+<span class='doccomment'>//!     r&quot;\w+&quot;,</span>
+<span class='doccomment'>//!     r&quot;\d+&quot;,</span>
+<span class='doccomment'>//!     r&quot;\pL+&quot;,</span>
+<span class='doccomment'>//!     r&quot;foo&quot;,</span>
+<span class='doccomment'>//!     r&quot;bar&quot;,</span>
+<span class='doccomment'>//!     r&quot;barfoo&quot;,</span>
+<span class='doccomment'>//!     r&quot;foobar&quot;,</span>
+<span class='doccomment'>//! ]).unwrap();</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! // Iterate over and collect all of the matches.</span>
+<span class='doccomment'>//! let matches: Vec&lt;_&gt; = set.matches(&quot;foobar&quot;).into_iter().collect();</span>
+<span class='doccomment'>//! assert_eq!(matches, vec![0, 2, 3, 4, 6]);</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! // You can also test whether a particular regex matched:</span>
+<span class='doccomment'>//! let matches = set.matches(&quot;foobar&quot;);</span>
+<span class='doccomment'>//! assert!(!matches.matched(5));</span>
+<span class='doccomment'>//! assert!(matches.matched(6));</span>
+<span class='doccomment'>//! ```</span>
+<span class='doccomment'>//!</span>
 <span class='doccomment'>//! # Pay for what you use</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! With respect to searching text with a regular expression, there are three</span>
@@ -630,17 +952,17 @@
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! # Unicode</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! This implementation executes regular expressions **only** on sequences of</span>
-<span class='doccomment'>//! Unicode code points while exposing match locations as byte indices into the</span>
-<span class='doccomment'>//! search string.</span>
+<span class='doccomment'>//! This implementation executes regular expressions **only** on valid UTF-8</span>
+<span class='doccomment'>//! while exposing match locations as byte indices into the search string.</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! Currently, only naive case folding is supported. Namely, when matching</span>
-<span class='doccomment'>//! case insensitively, the characters are first converted to their uppercase</span>
-<span class='doccomment'>//! forms and then compared.</span>
+<span class='doccomment'>//! Only simple case folding is supported. Namely, when matching</span>
+<span class='doccomment'>//! case-insensitively, the characters are first mapped using the [simple case</span>
+<span class='doccomment'>//! folding](ftp://ftp.unicode.org/Public/UNIDATA/CaseFolding.txt) mapping</span>
+<span class='doccomment'>//! before matching.</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! Regular expressions themselves are also **only** interpreted as a sequence</span>
-<span class='doccomment'>//! of Unicode code points. This means you can use Unicode characters</span>
-<span class='doccomment'>//! directly in your expression:</span>
+<span class='doccomment'>//! Regular expressions themselves are **only** interpreted as a sequence of</span>
+<span class='doccomment'>//! Unicode scalar values. This means you can use Unicode characters directly</span>
+<span class='doccomment'>//! in your expression:</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! ```rust</span>
 <span class='doccomment'>//! # extern crate regex; use regex::Regex;</span>
@@ -662,10 +984,27 @@
 <span class='doccomment'>//! # }</span>
 <span class='doccomment'>//! ```</span>
 <span class='doccomment'>//!</span>
+<span class='doccomment'>//! # Opt out of Unicode support</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! The `bytes` sub-module provides a `Regex` type that can be used to match</span>
+<span class='doccomment'>//! on `&amp;[u8]`. By default, text is interpreted as ASCII compatible text with</span>
+<span class='doccomment'>//! all Unicode support disabled (e.g., `.` matches any byte instead of any</span>
+<span class='doccomment'>//! Unicode codepoint). Unicode support can be selectively enabled with the</span>
+<span class='doccomment'>//! `u` flag. See the `bytes` module documentation for more details.</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! Unicode support can also be selectively *disabled* with the main `Regex`</span>
+<span class='doccomment'>//! type that matches on `&amp;str`. For example, `(?-u:\b)` will match an ASCII</span>
+<span class='doccomment'>//! word boundary. Note though that invalid UTF-8 is not allowed to be matched</span>
+<span class='doccomment'>//! even when the `u` flag is disabled. For example, `(?-u:.)` will return an</span>
+<span class='doccomment'>//! error, since `.` matches *any byte* when Unicode support is disabled.</span>
+<span class='doccomment'>//!</span>
 <span class='doccomment'>//! # Syntax</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! The syntax supported in this crate is almost in an exact correspondence</span>
-<span class='doccomment'>//! with the syntax supported by RE2.</span>
+<span class='doccomment'>//! with the syntax supported by RE2. It is documented below.</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! Note that the regular expression parser and abstract syntax are exposed in</span>
+<span class='doccomment'>//! a separate crate, [`regex-syntax`](../regex_syntax/index.html).</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! ## Matching one character</span>
 <span class='doccomment'>//!</span>
@@ -678,9 +1017,9 @@
 <span class='doccomment'>//! \D          not digit</span>
 <span class='doccomment'>//! [:alpha:]   ASCII character class ([A-Za-z])</span>
 <span class='doccomment'>//! [:^alpha:]  Negated ASCII character class ([^A-Za-z])</span>
-<span class='doccomment'>//! \pN         One letter name Unicode character class</span>
+<span class='doccomment'>//! \pN         One-letter name Unicode character class</span>
 <span class='doccomment'>//! \p{Greek}   Unicode character class (general category or script)</span>
-<span class='doccomment'>//! \PN         Negated one letter name Unicode character class</span>
+<span class='doccomment'>//! \PN         Negated one-letter name Unicode character class</span>
 <span class='doccomment'>//! \P{Greek}   negated Unicode character class (general category or script)</span>
 <span class='doccomment'>//! &lt;/pre&gt;</span>
 <span class='doccomment'>//!</span>
@@ -701,14 +1040,14 @@
 <span class='doccomment'>//! x*        zero or more of x (greedy)</span>
 <span class='doccomment'>//! x+        one or more of x (greedy)</span>
 <span class='doccomment'>//! x?        zero or one of x (greedy)</span>
-<span class='doccomment'>//! x*?       zero or more of x (ungreedy)</span>
-<span class='doccomment'>//! x+?       one or more of x (ungreedy)</span>
-<span class='doccomment'>//! x??       zero or one of x (ungreedy)</span>
+<span class='doccomment'>//! x*?       zero or more of x (ungreedy/lazy)</span>
+<span class='doccomment'>//! x+?       one or more of x (ungreedy/lazy)</span>
+<span class='doccomment'>//! x??       zero or one of x (ungreedy/lazy)</span>
 <span class='doccomment'>//! x{n,m}    at least n x and at most m x (greedy)</span>
 <span class='doccomment'>//! x{n,}     at least n x (greedy)</span>
 <span class='doccomment'>//! x{n}      exactly n x</span>
-<span class='doccomment'>//! x{n,m}?   at least n x and at most m x (ungreedy)</span>
-<span class='doccomment'>//! x{n,}?    at least n x (ungreedy)</span>
+<span class='doccomment'>//! x{n,m}?   at least n x and at most m x (ungreedy/lazy)</span>
+<span class='doccomment'>//! x{n,}?    at least n x (ungreedy/lazy)</span>
 <span class='doccomment'>//! x{n}?     exactly n x</span>
 <span class='doccomment'>//! &lt;/pre&gt;</span>
 <span class='doccomment'>//!</span>
@@ -738,16 +1077,18 @@
 <span class='doccomment'>//! the same time: `(?xy)` sets both the `x` and `y` flags and `(?x-y)` sets</span>
 <span class='doccomment'>//! the `x` flag and clears the `y` flag.</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! All flags are by default disabled. They are:</span>
+<span class='doccomment'>//! All flags are by default disabled unless stated otherwise. They are:</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! &lt;pre class=&quot;rust&quot;&gt;</span>
-<span class='doccomment'>//! i     case insensitive</span>
+<span class='doccomment'>//! i     case-insensitive</span>
 <span class='doccomment'>//! m     multi-line mode: ^ and $ match begin/end of line</span>
 <span class='doccomment'>//! s     allow . to match \n</span>
 <span class='doccomment'>//! U     swap the meaning of x* and x*?</span>
+<span class='doccomment'>//! u     Unicode support (enabled by default)</span>
+<span class='doccomment'>//! x     ignore whitespace and allow line comments (starting with `#`)</span>
 <span class='doccomment'>//! &lt;/pre&gt;</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! Here&#39;s an example that matches case insensitively for only part of the</span>
+<span class='doccomment'>//! Here&#39;s an example that matches case-insensitively for only part of the</span>
 <span class='doccomment'>//! expression:</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! ```rust</span>
@@ -761,6 +1102,18 @@
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! Notice that the `a+` matches either `a` or `A`, but the `b+` only matches</span>
 <span class='doccomment'>//! `b`.</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! Here is an example that uses an ASCII word boundary instead of a Unicode</span>
+<span class='doccomment'>//! word boundary:</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! ```rust</span>
+<span class='doccomment'>//! # extern crate regex; use regex::Regex;</span>
+<span class='doccomment'>//! # fn main() {</span>
+<span class='doccomment'>//! let re = Regex::new(r&quot;(?-u:\b).+(?-u:\b)&quot;).unwrap();</span>
+<span class='doccomment'>//! let cap = re.captures(&quot;$$abc$$&quot;).unwrap();</span>
+<span class='doccomment'>//! assert_eq!(cap.at(0), Some(&quot;abc&quot;));</span>
+<span class='doccomment'>//! # }</span>
+<span class='doccomment'>//! ```</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! ## Escape sequences</span>
 <span class='doccomment'>//!</span>
@@ -812,76 +1165,180 @@
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! # Untrusted input</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! There are two factors to consider here: untrusted regular expressions and</span>
-<span class='doccomment'>//! untrusted search text.</span>
+<span class='doccomment'>//! This crate can handle both untrusted regular expressions and untrusted</span>
+<span class='doccomment'>//! search text.</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! Currently, there are no counter-measures in place to prevent a malicious</span>
-<span class='doccomment'>//! user from writing an expression that may use a lot of resources. One such</span>
-<span class='doccomment'>//! example is to repeat counted repetitions: `((a{100}){100}){100}` will try</span>
-<span class='doccomment'>//! to repeat the `a` instruction `100^3` times. Essentially, this means it&#39;s</span>
-<span class='doccomment'>//! very easy for an attacker to exhaust your system&#39;s memory if they are</span>
-<span class='doccomment'>//! allowed to execute arbitrary regular expressions. A possible solution to</span>
-<span class='doccomment'>//! this is to impose a hard limit on the size of a compiled expression, but it</span>
-<span class='doccomment'>//! does not yet exist.</span>
+<span class='doccomment'>//! Untrusted regular expressions are handled by capping the size of a compiled</span>
+<span class='doccomment'>//! regular expression. (See `Regex::with_size_limit`.) Without this, it would</span>
+<span class='doccomment'>//! be trivial for an attacker to exhaust your system&#39;s memory with expressions</span>
+<span class='doccomment'>//! like `a{100}{100}{100}`.</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! The story is a bit better with untrusted search text, since this crate&#39;s</span>
-<span class='doccomment'>//! implementation provides `O(nm)` search where `n` is the number of</span>
-<span class='doccomment'>//! characters in the search text and `m` is the number of instructions in a</span>
-<span class='doccomment'>//! compiled expression.</span>
+<span class='doccomment'>//! Untrusted search text is allowed because the matching engine(s) in this</span>
+<span class='doccomment'>//! crate have time complexity `O(mn)` (with `m ~ regex` and `n ~ search</span>
+<span class='doccomment'>//! text`), which means there&#39;s no way to cause exponential blow-up like with</span>
+<span class='doccomment'>//! some other regular expression engines. (We pay for this by disallowing</span>
+<span class='doccomment'>//! features like arbitrary look-ahead and backreferences.)</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! When a DFA is used, pathological cases with exponential state blow up are</span>
+<span class='doccomment'>//! avoided by constructing the DFA lazily or in an &quot;online&quot; manner. Therefore,</span>
+<span class='doccomment'>//! at most one new state can be created for each byte of input. This satisfies</span>
+<span class='doccomment'>//! our time complexity guarantees, but can lead to unbounded memory growth</span>
+<span class='doccomment'>//! proportional to the size of the input. As a stopgap, the DFA is only</span>
+<span class='doccomment'>//! allowed to store a fixed number of states. (When the limit is reached, its</span>
+<span class='doccomment'>//! states are wiped and continues on, possibly duplicating previous work. If</span>
+<span class='doccomment'>//! the limit is reached too frequently, it gives up and hands control of to</span>
+<span class='doccomment'>//! another matching engine with fixed memory requirements.)</span>
 
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>deny</span>(<span class='ident'>missing_docs</span>)]</span>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>cfg_attr</span>(<span class='ident'>test</span>, <span class='ident'>deny</span>(<span class='ident'>warnings</span>))]</span>
-<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>cfg_attr</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;pattern&quot;</span>, <span class='ident'>feature</span>(<span class='ident'>core</span>))]</span>
-<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>doc</span>(<span class='ident'>html_logo_url</span> <span class='op'>=</span> <span class='string'>&quot;http://www.rust-lang.org/logos/rust-logo-128x128-blk-v2.png&quot;</span>,
-       <span class='ident'>html_favicon_url</span> <span class='op'>=</span> <span class='string'>&quot;http://www.rust-lang.org/favicon.ico&quot;</span>,
-       <span class='ident'>html_root_url</span> <span class='op'>=</span> <span class='string'>&quot;http://doc.rust-lang.org/regex/&quot;</span>)]</span>
+<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>cfg_attr</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;pattern&quot;</span>, <span class='ident'>feature</span>(<span class='ident'>pattern</span>))]</span>
+<span class='attribute'>#<span class='op'>!</span>[<span class='ident'>doc</span>(<span class='ident'>html_logo_url</span> <span class='op'>=</span> <span class='string'>&quot;https://www.rust-lang.org/logos/rust-logo-128x128-blk-v2.png&quot;</span>,
+       <span class='ident'>html_favicon_url</span> <span class='op'>=</span> <span class='string'>&quot;https://www.rust-lang.org/favicon.ico&quot;</span>,
+       <span class='ident'>html_root_url</span> <span class='op'>=</span> <span class='string'>&quot;https://doc.rust-lang.org/regex/&quot;</span>)]</span>
 
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>parse</span>::<span class='ident'>Error</span>;
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>re</span>::{<span class='ident'>Regex</span>, <span class='ident'>Captures</span>, <span class='ident'>SubCaptures</span>, <span class='ident'>SubCapturesPos</span>, <span class='ident'>SubCapturesNamed</span>};
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>re</span>::{<span class='ident'>FindCaptures</span>, <span class='ident'>FindMatches</span>};
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>re</span>::{<span class='ident'>Replacer</span>, <span class='ident'>NoExpand</span>, <span class='ident'>RegexSplits</span>, <span class='ident'>RegexSplitsN</span>};
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>re</span>::{<span class='ident'>quote</span>, <span class='ident'>is_match</span>};
+<span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>aho_corasick</span>;
+<span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>memchr</span>;
+<span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>thread_local</span>;
+<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span> <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>quickcheck</span>;
+<span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>regex_syntax</span> <span class='kw'>as</span> <span class='ident'>syntax</span>;
+<span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>utf8_ranges</span>;
 
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>error</span>::<span class='ident'>Error</span>;
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>re_builder</span>::<span class='ident'>unicode</span>::<span class='op'>*</span>;
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>re_set</span>::<span class='ident'>unicode</span>::<span class='op'>*</span>;
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>re_unicode</span>::{
+    <span class='ident'>Regex</span>, <span class='ident'>Captures</span>, <span class='ident'>SubCaptures</span>, <span class='ident'>SubCapturesPos</span>, <span class='ident'>SubCapturesNamed</span>,
+    <span class='ident'>CaptureNames</span>, <span class='ident'>FindCaptures</span>, <span class='ident'>FindMatches</span>,
+    <span class='ident'>Replacer</span>, <span class='ident'>NoExpand</span>, <span class='ident'>RegexSplits</span>, <span class='ident'>RegexSplitsN</span>,
+    <span class='ident'>quote</span>, <span class='ident'>is_match</span>,
+};
+
+<span class='doccomment'>/**
+Match regular expressions on arbitrary bytes.
+
+This module provides a nearly identical API to the one found in the
+top-level of this crate. There are two important differences:
+
+1. Matching is done on `&amp;[u8]` instead of `&amp;str`. Additionally, `Vec&lt;u8&gt;`
+is used where `String` would have been used.
+2. Regular expressions are compiled with Unicode support *disabled* by
+default. This means that while Unicode regular expressions can only match valid
+UTF-8, regular expressions in this module can match arbitrary bytes. Unicode
+support can be selectively enabled via the `u` flag in regular expressions
+provided by this sub-module.
+
+# Example: match null terminated string
+
+This shows how to find all null-terminated strings in a slice of bytes:
+
+```rust
+# use regex::bytes::Regex;
+let re = Regex::new(r&quot;(?P&lt;cstr&gt;[^\x00]+)\x00&quot;).unwrap();
+let text = b&quot;foo\x00bar\x00baz\x00&quot;;
+
+// Extract all of the strings without the null terminator from each match.
+// The unwrap is OK here since a match requires the `cstr` capture to match.
+let cstrs: Vec&lt;&amp;[u8]&gt; =
+    re.captures_iter(text)
+      .map(|c| c.name(&quot;cstr&quot;).unwrap())
+      .collect();
+assert_eq!(vec![&amp;b&quot;foo&quot;[..], &amp;b&quot;bar&quot;[..], &amp;b&quot;baz&quot;[..]], cstrs);
+```
+
+# Example: selectively enable Unicode support
+
+This shows how to match an arbitrary byte pattern followed by a UTF-8 encoded
+string (e.g., to extract a title from a Matroska file):
+
+```rust
+# use std::str;
+# use regex::bytes::Regex;
+let re = Regex::new(r&quot;\x7b\xa9(?:[\x80-\xfe]|[\x40-\xff].)(?u:(.*))&quot;).unwrap();
+let text = b&quot;\x12\xd0\x3b\x5f\x7b\xa9\x85\xe2\x98\x83\x80\x98\x54\x76\x68\x65&quot;;
+let caps = re.captures(text).unwrap();
+
+// Notice that despite the `.*` at the end, it will only match valid UTF-8
+// because Unicode mode was enabled with the `u` flag. Without the `u` flag,
+// the `.*` would match the rest of the bytes.
+assert_eq!((7, 10), caps.pos(1).unwrap());
+
+// If there was a match, Unicode mode guarantees that `title` is valid UTF-8.
+let title = str::from_utf8(caps.at(1).unwrap()).unwrap();
+assert_eq!(&quot;☃&quot;, title);
+```
+
+In general, if the Unicode flag is enabled in a capture group and that capture
+is part of the overall match, then the capture is *guaranteed* to be valid
+UTF-8.
+
+# Syntax
+
+The supported syntax is pretty much the same as the syntax for Unicode
+regular expressions with a few changes that make sense for matching arbitrary
+bytes:
+
+1. The `u` flag is *disabled* by default, but can be selectively enabled. (The
+opposite is true for the main `Regex` type.) Disabling the `u` flag is said to
+invoke &quot;ASCII compatible&quot; mode.
+2. In ASCII compatible mode, neither Unicode codepoints nor Unicode character
+classes are allowed.
+3. In ASCII compatible mode, Perl character classes (`\w`, `\d` and `\s`)
+revert to their typical ASCII definition. `\w` maps to `[[:word:]]`, `\d` maps
+to `[[:digit:]]` and `\s` maps to `[[:space:]]`.
+4. In ASCII compatible mode, word boundaries use the ASCII compatible `\w` to
+determine whether a byte is a word byte or not.
+5. Hexadecimal notation can be used to specify arbitrary bytes instead of
+Unicode codepoints. For example, in ASCII compatible mode, `\xFF` matches the
+literal byte `\xFF`, while in Unicode mode, `\xFF` is a Unicode codepoint that
+matches its UTF-8 encoding of `\xC3\xBF`. Similarly for octal notation.
+6. `.` matches any *byte* except for `\n` instead of any codepoint. When the
+`s` flag is enabled, `.` matches any byte.
+
+# Performance
+
+In general, one should expect performance on `&amp;[u8]` to be roughly similar to
+performance on `&amp;str`.
+*/</span>
+<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>bytes</span> {
+    <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>re_builder</span>::<span class='ident'>bytes</span>::<span class='op'>*</span>;
+    <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>re_set</span>::<span class='ident'>bytes</span>::<span class='op'>*</span>;
+    <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>re_bytes</span>::<span class='op'>*</span>;
+}
+
+<span class='kw'>mod</span> <span class='ident'>backtrack</span>;
+<span class='kw'>mod</span> <span class='ident'>utf8</span>;
 <span class='kw'>mod</span> <span class='ident'>compile</span>;
-<span class='kw'>mod</span> <span class='ident'>parse</span>;
-<span class='kw'>mod</span> <span class='ident'>re</span>;
-<span class='kw'>mod</span> <span class='ident'>unicode</span>;
-<span class='kw'>mod</span> <span class='ident'>vm</span>;
+<span class='kw'>mod</span> <span class='ident'>dfa</span>;
+<span class='kw'>mod</span> <span class='ident'>error</span>;
+<span class='kw'>mod</span> <span class='ident'>exec</span>;
+<span class='kw'>mod</span> <span class='ident'>expand</span>;
+<span class='kw'>mod</span> <span class='ident'>freqs</span>;
+<span class='kw'>mod</span> <span class='ident'>input</span>;
+<span class='kw'>mod</span> <span class='ident'>literals</span>;
+<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;pattern&quot;</span>)]</span>
+<span class='kw'>mod</span> <span class='ident'>pattern</span>;
+<span class='kw'>mod</span> <span class='ident'>pikevm</span>;
+<span class='kw'>mod</span> <span class='ident'>prog</span>;
+<span class='kw'>mod</span> <span class='ident'>re_builder</span>;
+<span class='kw'>mod</span> <span class='ident'>re_bytes</span>;
+<span class='kw'>mod</span> <span class='ident'>re_plugin</span>;
+<span class='kw'>mod</span> <span class='ident'>re_set</span>;
+<span class='kw'>mod</span> <span class='ident'>re_trait</span>;
+<span class='kw'>mod</span> <span class='ident'>re_unicode</span>;
+<span class='kw'>mod</span> <span class='ident'>sparse</span>;
 
-<span class='doccomment'>/// The `native` module exists to support the `regex!` macro. Do not use.</span>
+<span class='doccomment'>/// The `internal` module exists to support the `regex!` macro and other</span>
+<span class='doccomment'>/// suspicious activity, such as testing different matching engines and</span>
+<span class='doccomment'>/// supporting the `regex-debug` CLI utility.</span>
 <span class='attribute'>#[<span class='ident'>doc</span>(<span class='ident'>hidden</span>)]</span>
-<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>native</span> {
-    <span class='comment'>// Exporting this stuff is bad form, but it&#39;s necessary for two reasons.</span>
-    <span class='comment'>// Firstly, the `regex!` syntax extension is in a different crate and</span>
-    <span class='comment'>// requires access to the representation of a regex (particularly the</span>
-    <span class='comment'>// instruction set) in order to compile to native Rust. This could be</span>
-    <span class='comment'>// mitigated if `regex!` was defined in the same crate, but this has</span>
-    <span class='comment'>// undesirable consequences (such as requiring a dependency on</span>
-    <span class='comment'>// `libsyntax`).</span>
-    <span class='comment'>//</span>
-    <span class='comment'>// Secondly, the code generated by `regex!` must *also* be able</span>
-    <span class='comment'>// to access various functions in this crate to reduce code duplication</span>
-    <span class='comment'>// and to provide a value with precisely the same `Regex` type in this</span>
-    <span class='comment'>// crate. This, AFAIK, is impossible to mitigate.</span>
-    <span class='comment'>//</span>
-    <span class='comment'>// On the bright side, `rustdoc` lets us hide this from the public API</span>
-    <span class='comment'>// documentation.</span>
-    <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>compile</span>::<span class='ident'>Program</span>;
-    <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>compile</span>::<span class='ident'>Inst</span>::{
-        <span class='ident'>Match</span>, <span class='ident'>OneChar</span>, <span class='ident'>CharClass</span>, <span class='ident'>Any</span>, <span class='ident'>EmptyBegin</span>, <span class='ident'>EmptyEnd</span>,
-        <span class='ident'>EmptyWordBoundary</span>, <span class='ident'>Save</span>, <span class='ident'>Jump</span>, <span class='ident'>Split</span>,
-    };
-    <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>parse</span>::{
-        <span class='ident'>FLAG_EMPTY</span>, <span class='ident'>FLAG_NOCASE</span>, <span class='ident'>FLAG_MULTI</span>, <span class='ident'>FLAG_DOTNL</span>,
-        <span class='ident'>FLAG_SWAP_GREED</span>, <span class='ident'>FLAG_NEGATED</span>,
-    };
-    <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>re</span>::{<span class='ident'>ExDynamic</span>, <span class='ident'>ExNative</span>};
-    <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>re</span>::<span class='ident'>Regex</span>::{<span class='ident'>Dynamic</span>, <span class='ident'>Native</span>};
-    <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>vm</span>::{<span class='ident'>CharReader</span>, <span class='ident'>find_prefix</span>, <span class='ident'>simple_case_fold</span>};
-    <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>vm</span>::<span class='ident'>MatchKind</span>::{<span class='self'>self</span>, <span class='ident'>Exists</span>, <span class='ident'>Location</span>, <span class='ident'>Submatches</span>};
-    <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>vm</span>::<span class='ident'>StepState</span>::{
-        <span class='self'>self</span>, <span class='ident'>StepMatchEarlyReturn</span>, <span class='ident'>StepMatch</span>, <span class='ident'>StepContinue</span>,
-    };
+<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>internal</span> {
+    <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>compile</span>::<span class='ident'>Compiler</span>;
+    <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>exec</span>::{<span class='ident'>Exec</span>, <span class='ident'>ExecBuilder</span>};
+    <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>input</span>::{<span class='ident'>Char</span>, <span class='ident'>Input</span>, <span class='ident'>CharInput</span>, <span class='ident'>InputAt</span>};
+    <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>literals</span>::<span class='ident'>LiteralSearcher</span>;
+    <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>prog</span>::{<span class='ident'>Program</span>, <span class='ident'>Inst</span>, <span class='ident'>EmptyLook</span>, <span class='ident'>InstRanges</span>};
+    <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>re_plugin</span>::<span class='ident'>Plugin</span>;
+    <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>re_unicode</span>::<span class='ident'>_Regex</span>;
 }
 </pre>
 </section>
@@ -889,36 +1346,49 @@
 
     <section class="footer"></section>
 
-    <div id="help" class="hidden">
-        <div class="shortcuts">
-            <h1>Keyboard shortcuts</h1>
-            <dl>
-                <dt>?</dt>
-                <dd>Show this help dialog</dd>
-                <dt>S</dt>
-                <dd>Focus the search field</dd>
-                <dt>&larrb;</dt>
-                <dd>Move up in search results</dd>
-                <dt>&rarrb;</dt>
-                <dd>Move down in search results</dd>
-                <dt>&#9166;</dt>
-                <dd>Go to active search result</dd>
-            </dl>
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
+                </p>
+            </div>
         </div>
-        <div class="infos">
-            <h1>Search tricks</h1>
-            <p>
-                Prefix searches with a type followed by a colon (e.g.
-                <code>fn:</code>) to restrict the search to a given type.
-            </p>
-            <p>
-                Accepted types are: <code>fn</code>, <code>mod</code>,
-                <code>struct</code>, <code>enum</code>,
-                <code>trait</code>, <code>typedef</code> (or
-                <code>tdef</code>).
-            </p>
-        </div>
-    </div>
+    </aside>
 
     
 
@@ -930,6 +1400,6 @@
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
     
-    <script async src="../../search-index.js"></script>
+    <script defer src="../../search-index.js"></script>
 </body>
 </html>
