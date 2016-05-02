@@ -12,14 +12,15 @@ build = "build.rs"
 
 [dependencies]
 regex = "0.1"
-lazy_static = "0.1"
-rustc-serialize = "0.3"
-url = "0.5"
-jsonway = "0.3"
-uuid = "0.1"
+lazy_static = "0.2"
+url = "1"
+jsonway = "1"
+uuid = { version = "0.2", features = ["v4"] }
 phf = "0.7"
 typeable = "0.1"
 traitobject = "0.0"
+serde = "0.7"
+serde_json = "0.7"
 
 [build-dependencies.phf_codegen]
 version = "0.7"

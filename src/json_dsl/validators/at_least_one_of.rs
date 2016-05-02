@@ -1,4 +1,4 @@
-use rustc_serialize::json;
+use serde_json::{Value};
 
 use super::super::errors;
 
@@ -15,7 +15,7 @@ impl AtLeastOneOf {
 }
 
 impl super::Validator for AtLeastOneOf {
-    fn validate(&self, val: &json::Json, path: &str) -> super::ValidatorResult {
+    fn validate(&self, val: &Value, path: &str) -> super::ValidatorResult {
 
         let object = strict_process!(val.as_object(), path, "The value must be an object");
 

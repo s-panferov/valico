@@ -1,4 +1,4 @@
-use rustc_serialize::json;
+use serde_json::{Value};
 
 use super::super::schema;
 use super::super::validators;
@@ -8,7 +8,7 @@ macro_rules! kw_minmax_integer{
         #[allow(missing_copy_implementations)]
         pub struct $name;
         impl super::Keyword for $name {
-            fn compile(&self, def: &json::Json, ctx: &schema::WalkContext) -> super::KeywordResult {
+            fn compile(&self, def: &Value, ctx: &schema::WalkContext) -> super::KeywordResult {
                 let length = keyword_key_exists!(def, $keyword);
 
                 if length.is_number() {
@@ -40,7 +40,7 @@ kw_minmax_integer!(MinLength, "minLength");
 #[cfg(test)] use super::super::scope;
 #[cfg(test)] use jsonway;
 #[cfg(test)] use super::super::builder;
-#[cfg(test)] use rustc_serialize::json::{ToJson};
+#[cfg(test)] use serde_json::to_value;
 
 #[test]
 fn validate_max_length() {
@@ -49,9 +49,9 @@ fn validate_max_length() {
         s.max_length(5u64);
     }).into_json(), true).ok().unwrap();;
 
-    assert_eq!(schema.validate(&"1234".to_json()).is_valid(), true);
-    assert_eq!(schema.validate(&"12345".to_json()).is_valid(), true);
-    assert_eq!(schema.validate(&"123456".to_json()).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&"1234")).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&"12345")).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&"123456")).is_valid(), false);
 }
 
 #[test]
@@ -59,15 +59,15 @@ fn malformed_max_length() {
     let mut scope = scope::Scope::new();
 
     assert!(scope.compile_and_return(jsonway::object(|schema| {
-        schema.set("maxLength", (-1).to_json());
+        schema.set("maxLength", to_value(&-1));
     }).unwrap(), true).is_err());
 
     assert!(scope.compile_and_return(jsonway::object(|schema| {
-        schema.set("maxLength", "".to_json());
+        schema.set("maxLength", to_value(&""));
     }).unwrap(), true).is_err());
 
     assert!(scope.compile_and_return(jsonway::object(|schema| {
-        schema.set("maxLength", (1.1).to_json());
+        schema.set("maxLength", to_value(&1.1));
     }).unwrap(), true).is_err());
 }
 
@@ -78,9 +78,9 @@ fn validate_min_length() {
         s.min_length(5u64);
     }).into_json(), true).ok().unwrap();;
 
-    assert_eq!(schema.validate(&"1234".to_json()).is_valid(), false);
-    assert_eq!(schema.validate(&"12345".to_json()).is_valid(), true);
-    assert_eq!(schema.validate(&"123456".to_json()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&"1234")).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&"12345")).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&"123456")).is_valid(), true);
 }
 
 #[test]
@@ -88,14 +88,14 @@ fn malformed_min_length() {
     let mut scope = scope::Scope::new();
 
     assert!(scope.compile_and_return(jsonway::object(|schema| {
-        schema.set("minLength", (-1).to_json());
+        schema.set("minLength", to_value(&-1));
     }).unwrap(), true).is_err());
 
     assert!(scope.compile_and_return(jsonway::object(|schema| {
-        schema.set("minLength", "".to_json());
+        schema.set("minLength", to_value(&""));
     }).unwrap(), true).is_err());
 
     assert!(scope.compile_and_return(jsonway::object(|schema| {
-        schema.set("minLength", (1.1).to_json());
+        schema.set("minLength", to_value(&1.1));
     }).unwrap(), true).is_err());
 }

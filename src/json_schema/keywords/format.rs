@@ -1,4 +1,4 @@
-use rustc_serialize::json;
+use serde_json::{Value};
 use std::collections;
 use regex;
 
@@ -16,27 +16,27 @@ lazy_static! {
 fn default_formats() -> FormatBuilders  {
     let mut map: FormatBuilders = collections::HashMap::new();
 
-    let date_time_builder = Box::new(|_def: &json::Json, _ctx: &schema::WalkContext| {
+    let date_time_builder = Box::new(|_def: &Value, _ctx: &schema::WalkContext| {
         Ok(Some(Box::new(validators::Pattern{ regex: DATE_TIME_REGEX.clone() }) as validators::BoxedValidator))
     });
     map.insert("date-time".to_string(), date_time_builder);
 
-    let ipv4_builder = Box::new(|_def: &json::Json, _ctx: &schema::WalkContext| {
+    let ipv4_builder = Box::new(|_def: &Value, _ctx: &schema::WalkContext| {
         Ok(Some(Box::new(validators::formats::Ipv4) as validators::BoxedValidator))
     });
     map.insert("ipv4".to_string(), ipv4_builder);
 
-    let ipv6_builder = Box::new(|_def: &json::Json, _ctx: &schema::WalkContext| {
+    let ipv6_builder = Box::new(|_def: &Value, _ctx: &schema::WalkContext| {
         Ok(Some(Box::new(validators::formats::Ipv6) as validators::BoxedValidator))
     });
     map.insert("ipv6".to_string(), ipv6_builder);
 
-    let uri_builder = Box::new(|_def: &json::Json, _ctx: &schema::WalkContext| {
+    let uri_builder = Box::new(|_def: &Value, _ctx: &schema::WalkContext| {
         Ok(Some(Box::new(validators::formats::Uri) as validators::BoxedValidator))
     });
     map.insert("uri".to_string(), uri_builder);
 
-    let uuid_builder = Box::new(|_def: &json::Json, _ctx: &schema::WalkContext| {
+    let uuid_builder = Box::new(|_def: &Value, _ctx: &schema::WalkContext| {
         Ok(Some(Box::new(validators::formats::Uuid) as validators::BoxedValidator))
     });
     map.insert("uuid".to_string(), uuid_builder);
@@ -66,7 +66,7 @@ impl Format {
 }
 
 impl super::Keyword for Format {
-    fn compile(&self, def: &json::Json, ctx: &schema::WalkContext) -> super::KeywordResult {
+    fn compile(&self, def: &Value, ctx: &schema::WalkContext) -> super::KeywordResult {
         let format = keyword_key_exists!(def, "format");
 
         if format.is_string() {
@@ -90,7 +90,7 @@ impl super::Keyword for Format {
 
 #[cfg(test)] use super::super::scope;
 #[cfg(test)] use super::super::builder;
-#[cfg(test)] use rustc_serialize::json::{ToJson};
+#[cfg(test)] use serde_json::to_value;
 
 #[test]
 fn validate_date_time() {
@@ -99,9 +99,9 @@ fn validate_date_time() {
         s.format("date-time");
     }).into_json(), true).ok().unwrap();
 
-    assert_eq!(schema.validate(&"2015-01-20T17:35:20-0800".to_json()).is_valid(), true);
-    assert_eq!(schema.validate(&"1944-06-06T04:04:00Z".to_json()).is_valid(), true);
-    assert_eq!(schema.validate(&"Tue, 20 Jan 2015 17:35:20 -0800".to_json()).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&"2015-01-20T17:35:20-0800")).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&"1944-06-06T04:04:00Z")).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&"Tue, 20 Jan 2015 17:35:20 -0800")).is_valid(), false);
 }
 
 #[test]
@@ -111,9 +111,9 @@ fn validate_ipv4() {
         s.format("ipv4");
     }).into_json(), true).ok().unwrap();
 
-    assert_eq!(schema.validate(&"127.0.0.1".to_json()).is_valid(), true);
-    assert_eq!(schema.validate(&"8.8.8.8".to_json()).is_valid(), true);
-    assert_eq!(schema.validate(&"::::0.0.0.0".to_json()).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&"127.0.0.1")).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&"8.8.8.8")).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&"::::0.0.0.0")).is_valid(), false);
 }
 
 #[test]
@@ -123,8 +123,8 @@ fn validate_ipv6() {
         s.format("ipv6");
     }).into_json(), true).ok().unwrap();
 
-    assert_eq!(schema.validate(&"FE80:0000:0000:0000:0202:B3FF:FE1E:8329".to_json()).is_valid(), true);
-    assert_eq!(schema.validate(&"127.0.0.1".to_json()).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&"FE80:0000:0000:0000:0202:B3FF:FE1E:8329")).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&"127.0.0.1")).is_valid(), false);
 }
 
 #[test]
@@ -134,8 +134,8 @@ fn validate_uri() {
         s.format("uri");
     }).into_json(), true).ok().unwrap();
 
-    assert_eq!(schema.validate(&"http://example.com".to_json()).is_valid(), true);
-    assert_eq!(schema.validate(&"some-wrong".to_json()).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&"http://example.com")).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&"some-wrong")).is_valid(), false);
 }
 
 #[test]
@@ -145,7 +145,7 @@ fn validate_uuid() {
         s.format("uuid");
     }).into_json(), true).ok().unwrap();
 
-    assert_eq!(schema.validate(&"2f5a2593-7481-49e2-9911-8fe2ad069aac".to_json()).is_valid(), true);
-    assert_eq!(schema.validate(&"2f5a2593748149e299118fe2ad069aac".to_json()).is_valid(), true);
-    assert_eq!(schema.validate(&"2f5a2593-7481-49e2-9911-8fe2ad06".to_json()).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&"2f5a2593-7481-49e2-9911-8fe2ad069aac")).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&"2f5a2593748149e299118fe2ad069aac")).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&"2f5a2593-7481-49e2-9911-8fe2ad06")).is_valid(), false);
 }

@@ -1,4 +1,4 @@
-use rustc_serialize::json;
+use serde_json::{Value};
 
 use super::super::schema;
 use super::super::validators;
@@ -6,7 +6,7 @@ use super::super::validators;
 #[allow(missing_copy_implementations)]
 pub struct Required;
 impl super::Keyword for Required {
-    fn compile(&self, def: &json::Json, ctx: &schema::WalkContext) -> super::KeywordResult {
+    fn compile(&self, def: &Value, ctx: &schema::WalkContext) -> super::KeywordResult {
         let required = keyword_key_exists!(def, "required");
 
         if required.is_array() {

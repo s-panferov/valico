@@ -1,6 +1,6 @@
 use std::collections;
 use regex;
-use rustc_serialize::json;
+use serde_json::{Value};
 
 use super::super::schema;
 use super::super::validators;
@@ -9,7 +9,7 @@ use super::super::helpers;
 #[allow(missing_copy_implementations)]
 pub struct Properties;
 impl super::Keyword for Properties {
-    fn compile(&self, def: &json::Json, ctx: &schema::WalkContext) -> super::KeywordResult {
+    fn compile(&self, def: &Value, ctx: &schema::WalkContext) -> super::KeywordResult {
         let maybe_properties = def.find("properties");
         let maybe_additional = def.find("additionalProperties");
         let maybe_pattern = def.find("patternProperties");

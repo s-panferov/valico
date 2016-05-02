@@ -1,4 +1,4 @@
-use rustc_serialize::json;
+use serde_json::{Value};
 use std::net;
 use uuid;
 use url;
@@ -10,7 +10,7 @@ use super::super::scope;
 pub struct Ipv4;
 
 impl super::Validator for Ipv4 {
-    fn validate(&self, val: &json::Json, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
         let string = nonstrict_process!(val.as_string(), path);
 
         match string.parse::<net::Ipv4Addr>() {
@@ -31,7 +31,7 @@ impl super::Validator for Ipv4 {
 pub struct Ipv6;
 
 impl super::Validator for Ipv6 {
-    fn validate(&self, val: &json::Json, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
         let string = nonstrict_process!(val.as_string(), path);
 
         match string.parse::<net::Ipv6Addr>() {
@@ -52,7 +52,7 @@ impl super::Validator for Ipv6 {
 pub struct Uuid;
 
 impl super::Validator for Uuid {
-    fn validate(&self, val: &json::Json, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
         let string = nonstrict_process!(val.as_string(), path);
 
         match string.parse::<uuid::Uuid>() {
@@ -73,7 +73,7 @@ impl super::Validator for Uuid {
 pub struct Uri;
 
 impl super::Validator for Uri {
-    fn validate(&self, val: &json::Json, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
         let string = nonstrict_process!(val.as_string(), path);
 
         match url::Url::parse(string) {

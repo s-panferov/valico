@@ -1,6 +1,5 @@
 mod builder;
 mod coercers;
-mod helpers;
 mod param;
 pub mod errors;
 #[macro_use] pub mod validators;

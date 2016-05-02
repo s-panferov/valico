@@ -1,4 +1,4 @@
-use rustc_serialize::json;
+use serde_json::{Value};
 
 use super::super::schema;
 use super::super::validators;
@@ -6,7 +6,7 @@ use super::super::validators;
 #[allow(missing_copy_implementations)]
 pub struct Enum;
 impl super::Keyword for Enum {
-    fn compile(&self, def: &json::Json, ctx: &schema::WalkContext) -> super::KeywordResult {
+    fn compile(&self, def: &Value, ctx: &schema::WalkContext) -> super::KeywordResult {
         let enum_ = keyword_key_exists!(def, "enum");
 
         if enum_.is_array() {
@@ -34,7 +34,7 @@ impl super::Keyword for Enum {
 #[cfg(test)] use super::super::scope;
 #[cfg(test)] use jsonway;
 #[cfg(test)] use super::super::builder;
-#[cfg(test)] use rustc_serialize::json::{ToJson};
+#[cfg(test)] use serde_json::to_value;
 
 #[test]
 fn validate() {
@@ -44,12 +44,12 @@ fn validate() {
             items.push("prop1".to_string());
             items.push("prop2".to_string());
         })
-    }).to_json(), true).ok().unwrap();
+    }).into_json(), true).ok().unwrap();
 
-    assert_eq!(schema.validate(&"prop1".to_json()).is_valid(), true);
-    assert_eq!(schema.validate(&"prop2".to_json()).is_valid(), true);
-    assert_eq!(schema.validate(&"prop3".to_json()).is_valid(), false);
-    assert_eq!(schema.validate(&1.to_json()).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&"prop1")).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&"prop2")).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&"prop3")).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&1)).is_valid(), false);
 }
 
 #[test]

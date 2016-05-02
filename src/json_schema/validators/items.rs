@@ -1,4 +1,4 @@
-use rustc_serialize::json;
+use serde_json::{Value};
 use std::cmp;
 use url;
 
@@ -24,7 +24,7 @@ pub struct Items {
 }
 
 impl super::Validator for Items {
-    fn validate(&self, val: &json::Json, path: &str, scope: &scope::Scope) -> super::ValidationState {
+    fn validate(&self, val: &Value, path: &str, scope: &scope::Scope) -> super::ValidationState {
         let array = nonstrict_process!(val.as_array(), path);
 
         let mut state = super::ValidationState::new();

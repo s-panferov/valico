@@ -1,4 +1,4 @@
-use rustc_serialize::json;
+use serde_json::{Value};
 use std::collections;
 
 use super::super::schema;
@@ -8,7 +8,7 @@ use super::super::helpers;
 #[allow(missing_copy_implementations)]
 pub struct Dependencies;
 impl super::Keyword for Dependencies {
-    fn compile(&self, def: &json::Json, ctx: &schema::WalkContext) -> super::KeywordResult {
+    fn compile(&self, def: &Value, ctx: &schema::WalkContext) -> super::KeywordResult {
         let deps = keyword_key_exists!(def, "dependencies");
 
         if !deps.is_object() {
@@ -77,7 +77,6 @@ impl super::Keyword for Dependencies {
 
 #[cfg(test)] use super::super::scope;
 #[cfg(test)] use super::super::builder;
-#[cfg(test)] use rustc_serialize::json::ToJson;
 #[cfg(test)] use jsonway;
 
 #[test]
@@ -95,7 +94,7 @@ fn validate_dependencies() {
             });
             deps.property("item_id", vec!["item_name".to_string()]);
         });
-    }).to_json(), true).ok().unwrap();
+    }).into_json(), true).ok().unwrap();
 
     assert_eq!(schema.validate(&jsonway::object(|obj| {
         obj.set("isbn", "some_isbn".to_string());

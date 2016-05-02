@@ -1,4 +1,4 @@
-use rustc_serialize::json;
+use serde_json::{Value};
 
 use super::super::schema;
 use super::super::validators;
@@ -6,7 +6,7 @@ use super::super::validators;
 #[allow(missing_copy_implementations)]
 pub struct Type;
 impl super::Keyword for Type {
-    fn compile(&self, def: &json::Json, ctx: &schema::WalkContext) -> super::KeywordResult {
+    fn compile(&self, def: &Value, ctx: &schema::WalkContext) -> super::KeywordResult {
         let type_ = keyword_key_exists!(def, "type");
 
         if type_.is_string() {
@@ -19,7 +19,10 @@ impl super::Keyword for Type {
             } else {
                 Err(schema::SchemaError::Malformed {
                     path: ctx.fragment.join("/"),
-                    detail: format!("String values MUST be one of the seven primitive types defined by the core specification. Unknown type: {}", type_)
+                    detail: format!(
+                        "String values MUST be one of the seven primitive types defined by the core specification. Unknown type: {}",
+                        type_.as_string().unwrap()
+                    )
                 })
             }
 
@@ -42,7 +45,7 @@ impl super::Keyword for Type {
                     } else {
                         return Err(schema::SchemaError::Malformed {
                             path: ctx.fragment.join("/"),
-                            detail: format!("Unknown type: {}", ty)
+                            detail: format!("Unknown type: {}", ty.as_string().unwrap())
                         })
                     }
                 } else {
@@ -68,7 +71,7 @@ impl super::Keyword for Type {
 #[cfg(test)] use super::super::scope;
 #[cfg(test)] use jsonway;
 #[cfg(test)] use super::super::builder;
-#[cfg(test)] use rustc_serialize::json::{ToJson};
+#[cfg(test)] use serde_json::to_value;
 
 // pub enum PrimitiveType {
 //     Array,
@@ -88,7 +91,7 @@ fn validate_array() {
     }).into_json(), true).ok().unwrap();
 
     assert_eq!(schema.validate(&jsonway::array(|_arr| {}).unwrap()).is_valid(), true);
-    assert_eq!(schema.validate(&"string".to_json()).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&"string")).is_valid(), false);
 }
 
 #[test]
@@ -98,9 +101,9 @@ fn validate_boolean() {
         s.boolean();
     }).into_json(), true).ok().unwrap();
 
-    assert_eq!(schema.validate(&true.to_json()).is_valid(), true);
-    assert_eq!(schema.validate(&false.to_json()).is_valid(), true);
-    assert_eq!(schema.validate(&"string".to_json()).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&true)).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&false)).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&"string")).is_valid(), false);
 }
 
 #[test]
@@ -110,10 +113,10 @@ fn validate_integer() {
         s.integer();
     }).into_json(), true).ok().unwrap();
 
-    assert_eq!(schema.validate(&10.to_json()).is_valid(), true);
-    assert_eq!(schema.validate(&(-10).to_json()).is_valid(), true);
-    assert_eq!(schema.validate(&(11.5).to_json()).is_valid(), false);
-    assert_eq!(schema.validate(&"string".to_json()).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&10)).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&-10)).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&11.5)).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&"string")).is_valid(), false);
 }
 
 #[test]
@@ -123,10 +126,10 @@ fn validate_number() {
         s.number();
     }).into_json(), true).ok().unwrap();
 
-    assert_eq!(schema.validate(&10.to_json()).is_valid(), true);
-    assert_eq!(schema.validate(&(-10).to_json()).is_valid(), true);
-    assert_eq!(schema.validate(&(11.5).to_json()).is_valid(), true);
-    assert_eq!(schema.validate(&"string".to_json()).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&10)).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&-10)).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&11.5)).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&"string")).is_valid(), false);
 }
 
 #[test]
@@ -136,8 +139,8 @@ fn validate_null() {
         s.null();
     }).into_json(), true).ok().unwrap();
 
-    assert_eq!(schema.validate(&json::Json::Null).is_valid(), true);
-    assert_eq!(schema.validate(&"string".to_json()).is_valid(), false);
+    assert_eq!(schema.validate(&Value::Null).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&"string")).is_valid(), false);
 }
 
 #[test]
@@ -148,7 +151,7 @@ fn validate_object() {
     }).into_json(), true).ok().unwrap();
 
     assert_eq!(schema.validate(&jsonway::object(|_arr| {}).unwrap()).is_valid(), true);
-    assert_eq!(schema.validate(&"string".to_json()).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&"string")).is_valid(), false);
 }
 
 #[test]
@@ -158,7 +161,7 @@ fn validate_string() {
         s.string();
     }).into_json(), true).ok().unwrap();
 
-    assert_eq!(schema.validate(&"string".to_json()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&"string")).is_valid(), true);
     assert_eq!(schema.validate(&jsonway::object(|_arr| {}).unwrap()).is_valid(), false);
 }
 
@@ -169,10 +172,10 @@ fn validate_set() {
         s.types(&[super::super::PrimitiveType::Integer, super::super::PrimitiveType::String]);
     }).into_json(), true).ok().unwrap();
 
-    assert_eq!(schema.validate(&10.to_json()).is_valid(), true);
-    assert_eq!(schema.validate(&(-11).to_json()).is_valid(), true);
-    assert_eq!(schema.validate(&"string".to_json()).is_valid(), true);
-    assert_eq!(schema.validate(&(11.5).to_json()).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&10)).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&-11)).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&"string")).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&11.5)).is_valid(), false);
     assert_eq!(schema.validate(&jsonway::object(|_arr| {}).unwrap()).is_valid(), false);
 }
 

@@ -1,4 +1,4 @@
-use rustc_serialize::json;
+use serde_json::{Value};
 
 use super::super::errors;
 use super::super::scope;
@@ -16,7 +16,7 @@ pub struct Type {
     pub item: TypeKind
 }
 
-fn check_type(val: &json::Json, ty: &json_schema::PrimitiveType) -> bool {
+fn check_type(val: &Value, ty: &json_schema::PrimitiveType) -> bool {
     match ty {
         &json_schema::PrimitiveType::Array => val.is_array(),
         &json_schema::PrimitiveType::Boolean => val.is_boolean(),
@@ -29,7 +29,7 @@ fn check_type(val: &json::Json, ty: &json_schema::PrimitiveType) -> bool {
 }
 
 impl super::Validator for Type {
-    fn validate(&self, val: &json::Json, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
         let mut state = super::ValidationState::new();
 
         match self.item {

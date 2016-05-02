@@ -1,4 +1,4 @@
-use rustc_serialize::json;
+use serde_json::{Value};
 
 use super::super::schema;
 use super::super::validators;
@@ -10,7 +10,7 @@ macro_rules! of_keyword{
         #[allow(missing_copy_implementations)]
         pub struct $name;
         impl super::Keyword for $name {
-            fn compile(&self, def: &json::Json, ctx: &schema::WalkContext) -> super::KeywordResult {
+            fn compile(&self, def: &Value, ctx: &schema::WalkContext) -> super::KeywordResult {
                 let of = keyword_key_exists!(def, $kw);
 
                 if of.is_array() {
@@ -62,7 +62,7 @@ of_keyword!(OneOf, "oneOf");
 
 #[cfg(test)] use super::super::scope;
 #[cfg(test)] use super::super::builder;
-#[cfg(test)] use rustc_serialize::json::{ToJson};
+#[cfg(test)] use serde_json::to_value;
 
 #[test]
 fn validate_all_of() {
@@ -78,9 +78,9 @@ fn validate_all_of() {
         });
     }).into_json(), true).ok().unwrap();
 
-    assert_eq!(schema.validate(&7.to_json()).is_valid(), true);
-    assert_eq!(schema.validate(&4.to_json()).is_valid(), false);
-    assert_eq!(schema.validate(&11.to_json()).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&7)).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&4)).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&11)).is_valid(), false);
 }
 
 #[test]
@@ -97,9 +97,9 @@ fn validate_any_of() {
         });
     }).into_json(), true).ok().unwrap();
 
-    assert_eq!(schema.validate(&5.to_json()).is_valid(), true);
-    assert_eq!(schema.validate(&10.to_json()).is_valid(), true);
-    assert_eq!(schema.validate(&11.to_json()).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&5)).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&10)).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&11)).is_valid(), false);
 }
 
 #[test]
@@ -116,8 +116,7 @@ fn validate_one_of() {
         });
     }).into_json(), true).ok().unwrap();
 
-    assert_eq!(schema.validate(&5.to_json()).is_valid(), false);
-    assert_eq!(schema.validate(&6.to_json()).is_valid(), true);
-    assert_eq!(schema.validate(&11.to_json()).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&5)).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&6)).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&11)).is_valid(), false);
 }
-

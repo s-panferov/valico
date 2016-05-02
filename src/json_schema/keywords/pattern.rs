@@ -1,4 +1,4 @@
-use rustc_serialize::json;
+use serde_json::{Value};
 use regex;
 
 use super::super::schema;
@@ -7,7 +7,7 @@ use super::super::validators;
 #[allow(missing_copy_implementations)]
 pub struct Pattern;
 impl super::Keyword for Pattern {
-    fn compile(&self, def: &json::Json, ctx: &schema::WalkContext) -> super::KeywordResult {
+    fn compile(&self, def: &Value, ctx: &schema::WalkContext) -> super::KeywordResult {
         let pattern = keyword_key_exists!(def, "pattern");
 
         if pattern.is_string() {
@@ -33,7 +33,7 @@ impl super::Keyword for Pattern {
 #[cfg(test)] use super::super::scope;
 #[cfg(test)] use jsonway;
 #[cfg(test)] use super::super::builder;
-#[cfg(test)] use rustc_serialize::json::{ToJson};
+#[cfg(test)] use serde_json::to_value;
 
 #[test]
 fn validate() {
@@ -42,9 +42,9 @@ fn validate() {
         s.pattern(r"abb.*");
     }).into_json(), true).ok().unwrap();
 
-    assert_eq!(schema.validate(&"abb".to_json()).is_valid(), true);
-    assert_eq!(schema.validate(&"abbd".to_json()).is_valid(), true);
-    assert_eq!(schema.validate(&"abd".to_json()).is_valid(), false);
+    assert_eq!(schema.validate(&to_value("abb")).is_valid(), true);
+    assert_eq!(schema.validate(&to_value("abbd")).is_valid(), true);
+    assert_eq!(schema.validate(&to_value("abd")).is_valid(), false);
 }
 
 #[test]

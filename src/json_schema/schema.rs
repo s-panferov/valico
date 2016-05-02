@@ -1,6 +1,6 @@
 use url;
 use std::collections;
-use rustc_serialize::json::{self};
+use serde_json::{Value};
 use phf;
 use std::ops;
 
@@ -58,11 +58,11 @@ impl<'a> ScopedSchema<'a> {
         }
     }
 
-    pub fn validate(&self, data: &json::Json) -> validators::ValidationState {
+    pub fn validate(&self, data: &Value) -> validators::ValidationState {
         return self.schema.validate_in_scope(data, "", self.scope);
     }
 
-    pub fn validate_in(&self, data: &json::Json, path: &str) -> validators::ValidationState {
+    pub fn validate_in(&self, data: &Value, path: &str) -> validators::ValidationState {
         return self.schema.validate_in_scope(data, path, self.scope);
     }
 }
@@ -72,7 +72,7 @@ impl<'a> ScopedSchema<'a> {
 pub struct Schema {
     pub id: Option<url::Url>,
     schema: Option<url::Url>,
-    original: json::Json,
+    original: Value,
     tree: collections::BTreeMap<String, Schema>,
     validators: validators::Validators,
     scopes: collections::HashMap<String, Vec<String>>
@@ -95,7 +95,7 @@ impl<'a> CompilationSettings<'a> {
 }
 
 impl Schema {
-    fn compile(def: json::Json, external_id: Option<url::Url>, settings: CompilationSettings) -> Result<Schema, SchemaError> {
+    fn compile(def: Value, external_id: Option<url::Url>, settings: CompilationSettings) -> Result<Schema, SchemaError> {
         if !def.is_object() {
             return Err(SchemaError::NotAnObject)
         }
@@ -155,7 +155,7 @@ impl Schema {
         Ok(schema)
     }
 
-    fn compile_keywords(def: &json::Json, context: &WalkContext, settings: &CompilationSettings) -> Result<validators::Validators, SchemaError> {
+    fn compile_keywords(def: &Value, context: &WalkContext, settings: &CompilationSettings) -> Result<validators::Validators, SchemaError> {
         let mut validators = vec![];
         let mut keys: collections::HashSet<&str> = def.as_object().unwrap().keys().map(|key| key.as_ref()).collect();
         let mut not_consumed = collections::HashSet::new();
@@ -196,7 +196,7 @@ impl Schema {
         Ok(validators)
     }
 
-    fn compile_sub(def: json::Json, context: &mut WalkContext, keywords: &CompilationSettings, is_schema: bool) -> Result<Schema, SchemaError> {
+    fn compile_sub(def: Value, context: &mut WalkContext, keywords: &CompilationSettings, is_schema: bool) -> Result<Schema, SchemaError> {
 
         let mut id = None;
         let mut schema = None;
@@ -267,7 +267,7 @@ impl Schema {
         };
 
         if id.is_some() {
-            context.scopes.insert(id.clone().unwrap().serialize(), context.fragment.clone());
+            context.scopes.insert(id.clone().unwrap().into_string(), context.fragment.clone());
         }
 
         let validators = if is_schema && def.is_object() {
@@ -316,7 +316,7 @@ impl Schema {
 }
 
 impl Schema {
-    fn validate_in_scope(&self, data: &json::Json, path: &str, scope: &scope::Scope) -> validators::ValidationState {
+    fn validate_in_scope(&self, data: &Value, path: &str, scope: &scope::Scope) -> validators::ValidationState {
         let mut state = validators::ValidationState::new();
 
         for validator in self.validators.iter() {
@@ -327,11 +327,11 @@ impl Schema {
     }
 }
 
-pub fn compile(def: json::Json, external_id: Option<url::Url>, settings: CompilationSettings) -> Result<Schema, SchemaError> {
+pub fn compile(def: Value, external_id: Option<url::Url>, settings: CompilationSettings) -> Result<Schema, SchemaError> {
     Schema::compile(def, external_id, settings)
 }
 
 #[test]
 fn schema_doesnt_compile_not_object() {
-    assert!(Schema::compile(json::Json::Boolean(true), None, CompilationSettings::new(&keywords::default(), true)).is_err());
+    assert!(Schema::compile(Value::Bool(true), None, CompilationSettings::new(&keywords::default(), true)).is_err());
 }

@@ -1,10 +1,10 @@
-use rustc_serialize::json;
+use serde_json::{Value};
 use regex;
 
 use super::super::errors;
 
 impl super::Validator for regex::Regex {
-    fn validate(&self, val: &json::Json, path: &str) -> super::ValidatorResult {
+    fn validate(&self, val: &Value, path: &str) -> super::ValidatorResult {
 
         let string = strict_process!(val.as_string(), path, "The value must be a string");
 

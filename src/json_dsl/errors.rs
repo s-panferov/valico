@@ -1,7 +1,7 @@
 use std::error::{Error};
 use super::super::common::error::ValicoError;
-use rustc_serialize::json;
-use rustc_serialize::json::ToJson;
+use serde_json::{Value, to_value};
+use serde::{Serialize, Serializer};
 use std::collections;
 
 #[derive(Debug)]
@@ -10,7 +10,7 @@ pub struct Required {
     pub path: String
 }
 impl_err!(Required, "required", "This field is required");
-impl_to_json!(Required);
+impl_serialize!(Required);
 
 
 #[derive(Debug)]
@@ -20,7 +20,7 @@ pub struct WrongType {
     pub detail: String
 }
 impl_err!(WrongType, "wrong_type", "Type of the value is wrong", +detail);
-impl_to_json!(WrongType);
+impl_serialize!(WrongType);
 
 #[derive(Debug)]
 #[allow(missing_copy_implementations)]
@@ -29,7 +29,7 @@ pub struct WrongValue {
     pub detail: Option<String>,
 }
 impl_err!(WrongValue, "wrong_value", "The value is wrong or mailformed", +opt_detail);
-impl_to_json!(WrongValue);
+impl_serialize!(WrongValue);
 
 #[derive(Debug)]
 #[allow(missing_copy_implementations)]
@@ -39,8 +39,8 @@ pub struct MutuallyExclusive {
     pub params: Vec<String>
 }
 impl_err!(MutuallyExclusive, "mutually_exclusive", "The values are mutually exclusive", +opt_detail);
-impl_to_json!(MutuallyExclusive, |err: &MutuallyExclusive, map: &mut collections::BTreeMap<String, json::Json>| {
-    map.insert("params".to_string(), err.params.to_json());
+impl_serialize!(MutuallyExclusive, |err: &MutuallyExclusive, map: &mut collections::BTreeMap<String, Value>| {
+    map.insert("params".to_string(), to_value(&err.params));
 });
 
 #[derive(Debug)]
@@ -51,8 +51,8 @@ pub struct ExactlyOne {
     pub params: Vec<String>
 }
 impl_err!(ExactlyOne, "exactly_one", "Exacly one of the values must be present", +opt_detail);
-impl_to_json!(ExactlyOne, |err: &ExactlyOne, map: &mut collections::BTreeMap<String, json::Json>| {
-    map.insert("params".to_string(), err.params.to_json())
+impl_serialize!(ExactlyOne, |err: &ExactlyOne, map: &mut collections::BTreeMap<String, Value>| {
+    map.insert("params".to_string(), to_value(&err.params))
 });
 
 
@@ -64,6 +64,6 @@ pub struct AtLeastOne {
     pub params: Vec<String>
 }
 impl_err!(AtLeastOne, "at_least_one", "At least one of the values must be present", +opt_detail);
-impl_to_json!(AtLeastOne, |err: &AtLeastOne, map: &mut collections::BTreeMap<String, json::Json>| {
-    map.insert("params".to_string(), err.params.to_json())
+impl_serialize!(AtLeastOne, |err: &AtLeastOne, map: &mut collections::BTreeMap<String, Value>| {
+    map.insert("params".to_string(), to_value(&err.params))
 });

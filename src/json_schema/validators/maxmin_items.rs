@@ -1,4 +1,4 @@
-use rustc_serialize::json;
+use serde_json::{Value};
 
 use super::super::errors;
 use super::super::scope;
@@ -9,7 +9,7 @@ pub struct MaxItems {
 }
 
 impl super::Validator for MaxItems {
-    fn validate(&self, val: &json::Json, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
         let array = nonstrict_process!(val.as_array(), path);
 
         if (array.len() as u64) <= self.length {
@@ -30,7 +30,7 @@ pub struct MinItems {
 }
 
 impl super::Validator for MinItems {
-    fn validate(&self, val: &json::Json, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
         let array = nonstrict_process!(val.as_array(), path);
 
         if (array.len() as u64) >= self.length {

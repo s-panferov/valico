@@ -17,8 +17,7 @@ References:
 
 ```toml
 # Cargo.toml
-[dependencies.valico]
-git = "https://github.com/rustless/valico"
+valico = "1"
 ```
 
 [API docs](http://rustless.org/valico/doc/valico/)
@@ -58,7 +57,7 @@ fn main() {
 
 ### JSON Schema builder
 
-Valico goes with `valico::json_schema::schema(|scheme| { /* .. */ }) -> json::Json` function that allows to use simple DSL to generate your schemes. It allows you not to use strings and raw JSON manipulation. It also prevent some kinds of spelling and type errors. 
+Valico goes with `valico::json_schema::schema(|scheme| { /* .. */ }) -> json::Json` function that allows to use simple DSL to generate your schemes. It allows you not to use strings and raw JSON manipulation. It also prevent some kinds of spelling and type errors.
 
 ~~~rust
 builder::schema(|s| {
@@ -84,7 +83,7 @@ TODO more docs about JSON Schema here
 
 ### Basic Usage
 
-All Valico stuff is making by Builder instance. Below is a simple example showing how one can create and setup Builder: 
+All Valico stuff is making by Builder instance. Below is a simple example showing how one can create and setup Builder:
 
 ~~~rust
 let params = Builder::build(|params| {
@@ -99,7 +98,7 @@ Later `params` instance can be used to process one or more JSON objects with it'
 
 **Note** that Valico will **mutate** borrowed JSON value if some coercion is needed.
 
-Example: 
+Example:
 
 ~~~rust
 
@@ -180,18 +179,18 @@ fn opt(&mut self, name: &str, param_builder: |&mut Param|);
 #### Built-in Coercers
 
 Available list of coercers:
-    
-* json_dsl::i64() 
-* json_dsl::u64() 
-* json_dsl::f64() 
-* json_dsl::string() 
-* json_dsl::boolean() 
-* json_dsl::null() 
-* json_dsl::array() 
-* json_dsl::array_of() 
+
+* json_dsl::i64()
+* json_dsl::u64()
+* json_dsl::f64()
+* json_dsl::string()
+* json_dsl::boolean()
+* json_dsl::null()
+* json_dsl::array()
+* json_dsl::array_of()
 * json_dsl::encoded_array() — use it for string-encoded arrays e.g. "red,green,blue" -> ["red", "green", "blue"]
 * json_dsl::encoded_array_of() — use it for string-encoded arrays of some type e.g. "1,2,3" -> [1, 2, 3]
-* json_dsl::object() 
+* json_dsl::object()
 
 Example of usage:
 
@@ -275,7 +274,7 @@ let params = Builder::build(|params| {
 
         // this allows null to be a valid value
         user.allow_null();
-        
+
         user.nest(|params| {
             params.req_typed("name", json_dsl::string());
             params.opt("kind", |kind| {

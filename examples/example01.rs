@@ -1,8 +1,8 @@
 extern crate valico;
-extern crate rustc_serialize as serialize;
+extern crate serde_json;
 
-use serialize::json::{Json};
 use valico::json_dsl;
+use serde_json::{from_str, to_string_pretty};
 
 fn main() {
 
@@ -13,11 +13,11 @@ fn main() {
         });
     });
 
-    let mut obj = r#"{"user": {"name": "Frodo", "friend_ids": ["1223"]}}"#.parse::<Json>().unwrap();
+    let mut obj = from_str(r#"{"user": {"name": "Frodo", "friend_ids": ["1223"]}}"#).unwrap();
 
     let state = params.process(&mut obj, &None);
     if state.is_valid() {
-        println!("Result object is {}", obj.pretty().to_string());
+        println!("Result object is {}", to_string_pretty(&obj).unwrap());
     } else {
         panic!("Errors during process: {:?}", state);
     }

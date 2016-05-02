@@ -1,4 +1,4 @@
-use rustc_serialize::json;
+use serde_json::{Value};
 use std::fmt;
 
 use common::error;
@@ -35,7 +35,7 @@ mod rejected_values;
 pub type ValidatorResult = Result<(), error::ValicoErrors>;
 
 pub trait Validator {
-    fn validate(&self, item: &json::Json, &str) -> ValidatorResult;
+    fn validate(&self, item: &Value, &str) -> ValidatorResult;
 }
 
 impl fmt::Debug for Validator + 'static {
@@ -47,8 +47,8 @@ impl fmt::Debug for Validator + 'static {
 pub type BoxedValidator = Box<Validator + 'static + Send + Sync>;
 pub type Validators = Vec<BoxedValidator>;
 
-impl<T> Validator for T where T: Fn(&json::Json, &str) -> ValidatorResult {
-    fn validate(&self, val: &json::Json, path: &str) -> ValidatorResult {
+impl<T> Validator for T where T: Fn(&Value, &str) -> ValidatorResult {
+    fn validate(&self, val: &Value, path: &str) -> ValidatorResult {
         self(val, path)
     }
 }

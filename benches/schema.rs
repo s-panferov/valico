@@ -1,24 +1,21 @@
-#![feature(io)]
-#![feature(path)]
 #![feature(test)]
-#![feature(fs)]
 
 extern crate valico;
-extern crate "rustc-serialize" as serialize;
 extern crate test;
+extern crate serde_json;
 
 use std::fs;
 use std::path;
 use std::io::Read;
-use serialize::json;
+use serde_json::{Value, from_str};
 use valico::json_schema;
 
-fn read_schema() -> json::Json {
+fn read_schema() -> Value {
     let mut content = String::new();
     fs::File::open(&path::Path::new("tests/schema/schema.json")).ok().unwrap()
         .read_to_string(&mut content).ok().unwrap();
 
-    content.parse().unwrap()
+    from_str(&content).unwrap()
 }
 
 #[bench]

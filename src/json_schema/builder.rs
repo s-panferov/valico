@@ -1,9 +1,10 @@
 use jsonway;
 use std::collections;
-use rustc_serialize::json::{self, ToJson};
+use serde_json::{Value, to_value};
+use serde::{Serialize, Serializer};
 
 pub struct SchemaArray {
-    items: Vec<json::Json>
+    items: Vec<Value>
 }
 
 impl SchemaArray {
@@ -17,7 +18,7 @@ impl SchemaArray {
 }
 
 pub struct SchemaHash {
-    items: collections::HashMap<String, json::Json>
+    items: collections::HashMap<String, Value>
 }
 
 impl SchemaHash {
@@ -56,22 +57,22 @@ impl Dependencies {
     }
 }
 
-impl json::ToJson for Dependencies {
-    fn to_json(&self) -> json::Json {
-        self.deps.to_json()
+impl Serialize for Dependencies {
+    fn serialize<S>(&self, serializer: &mut S) -> Result<(), S::Error> where S: Serializer {
+        self.deps.serialize(serializer)
     }
 }
 
 pub enum Dependency {
-    Schema(json::Json),
+    Schema(Value),
     Property(Vec<String>)
 }
 
-impl json::ToJson for Dependency {
-    fn to_json(&self) -> json::Json {
+impl Serialize for Dependency {
+    fn serialize<S>(&self, serializer: &mut S) -> Result<(), S::Error> where S: Serializer {
         match self {
-            &Dependency::Schema(ref json) => json.clone(),
-            &Dependency::Property(ref array) => array.to_json()
+            &Dependency::Schema(ref json) => json.serialize(serializer),
+            &Dependency::Property(ref array) => array.serialize(serializer)
         }
     }
 }
@@ -102,7 +103,7 @@ impl Builder {
         self.obj_builder.set("$schema", url.to_string())
     }
 
-    pub fn default<T>(&mut self, default: T) where T: ToJson {
+    pub fn default<T>(&mut self, default: T) where T: Serialize {
         self.obj_builder.set("default", default)
     }
 
@@ -235,7 +236,7 @@ impl Builder {
         self.obj_builder.set("type", type_.to_string())
     }
     pub fn types(&mut self, types: &[super::PrimitiveType]) {
-        self.obj_builder.set("type", types.iter().map(|t| t.to_string()).collect::<Vec<String>>().to_json())
+        self.obj_builder.set("type", to_value(&types.iter().map(|t| t.to_string()).collect::<Vec<String>>()))
     }
 
     pub fn all_of<F>(&mut self, build: F) where F: FnOnce(&mut SchemaArray) {
@@ -266,14 +267,14 @@ impl Builder {
         builder
     }
 
-    pub fn into_json(self) -> json::Json {
+    pub fn into_json(self) -> Value {
         self.obj_builder.unwrap()
     }
 }
 
-impl json::ToJson for Builder {
-    fn to_json(&self) -> json::Json {
-       self.obj_builder.to_json()
+impl Serialize for Builder {
+    fn serialize<S>(&self, serializer: &mut S) -> Result<(), S::Error> where S: Serializer {
+       self.obj_builder.serialize(serializer)
     }
 }
 

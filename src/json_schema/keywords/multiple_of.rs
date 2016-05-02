@@ -1,4 +1,4 @@
-use rustc_serialize::json;
+use serde_json::{Value};
 
 use super::super::schema;
 use super::super::validators;
@@ -6,7 +6,7 @@ use super::super::validators;
 #[allow(missing_copy_implementations)]
 pub struct MultipleOf;
 impl super::Keyword for MultipleOf {
-    fn compile(&self, def: &json::Json, ctx: &schema::WalkContext) -> super::KeywordResult {
+    fn compile(&self, def: &Value, ctx: &schema::WalkContext) -> super::KeywordResult {
         let multiple_of = keyword_key_exists!(def, "multipleOf");
 
         if multiple_of.is_number() {
@@ -33,7 +33,7 @@ impl super::Keyword for MultipleOf {
 #[cfg(test)] use super::super::scope;
 #[cfg(test)] use jsonway;
 #[cfg(test)] use super::super::builder;
-#[cfg(test)] use rustc_serialize::json::{ToJson};
+#[cfg(test)] use serde_json::to_value;
 
 #[test]
 fn validate() {
@@ -42,9 +42,9 @@ fn validate() {
         s.multiple_of(3.5f64);
     }).into_json(), true).ok().unwrap();
 
-    assert_eq!(schema.validate(&"".to_json()).is_valid(), true);
-    assert_eq!(schema.validate(&7.to_json()).is_valid(), true);
-    assert_eq!(schema.validate(&6.to_json()).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&"")).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&7)).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&6)).is_valid(), false);
 }
 
 #[test]
@@ -56,10 +56,10 @@ fn malformed() {
     }).unwrap(), true).is_err());
 
     assert!(scope.compile_and_return(jsonway::object(|schema| {
-        schema.set("multipleOf", 0.to_json());
+        schema.set("multipleOf", to_value(&0));
     }).unwrap(), true).is_err());
 
     assert!(scope.compile_and_return(jsonway::object(|schema| {
-        schema.set("multipleOf", (-1).to_json());
+        schema.set("multipleOf", to_value(&-1));
     }).unwrap(), true).is_err());
 }

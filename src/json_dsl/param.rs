@@ -1,6 +1,7 @@
-use rustc_serialize::json::{self, ToJson};
 use regex;
 use url;
+use serde_json::{Value, to_value};
+use serde::{Serialize};
 
 use super::super::json_schema;
 use super::builder;
@@ -14,7 +15,7 @@ pub struct Param {
     pub description: Option<String>,
     pub allow_null: bool,
     pub validators: validators::Validators,
-    pub default: Option<json::Json>,
+    pub default: Option<Value>,
     pub schema_builder: Option<Box<Fn(&mut json_schema::Builder) + Send + Sync>>,
     pub schema_id: Option<url::Url>
 }
@@ -104,11 +105,11 @@ impl Param {
         self.validators.push(validator);
     }
 
-    pub fn validate_with<F>(&mut self, validator: F) where F: Fn(&json::Json, &str) -> super::validators::ValidatorResult + 'static + Send+Sync {
+    pub fn validate_with<F>(&mut self, validator: F) where F: Fn(&Value, &str) -> super::validators::ValidatorResult + 'static + Send+Sync {
         self.validators.push(Box::new(validator));
     }
 
-    fn process_validators(&self, val: &json::Json, path: &str) -> super::super::ValicoErrors {
+    fn process_validators(&self, val: &Value, path: &str) -> super::super::ValicoErrors {
         let mut errors = vec![];
         for validator in self.validators.iter() {
             match validator.validate(val, path) {
@@ -120,7 +121,7 @@ impl Param {
         errors
     }
 
-    pub fn process(&self, val: &mut json::Json, path: &str, scope: &Option<&json_schema::Scope>) -> super::ExtendedResult<Option<json::Json>> {
+    pub fn process(&self, val: &mut Value, path: &str, scope: &Option<&json_schema::Scope>) -> super::ExtendedResult<Option<Value>> {
         if val.is_null() && self.allow_null {
             return super::ExtendedResult::new(None)
         }
@@ -173,19 +174,19 @@ impl Param {
 }
 
 impl Param {
-    pub fn allow_values<T: json::ToJson>(&mut self, values: &[T]) {
+    pub fn allow_values<T: Serialize>(&mut self, values: &[T]) {
         self.validators.push(Box::new(validators::AllowedValues::new(
-            values.iter().map(|v| v.to_json()).collect()
+            values.iter().map(|v| to_value(v)).collect()
         )));
     }
 
-    pub fn reject_values<T: json::ToJson>(&mut self, values: &[T]) {
+    pub fn reject_values<T: Serialize>(&mut self, values: &[T]) {
         self.validators.push(Box::new(validators::RejectedValues::new(
-            values.iter().map(|v| v.to_json()).collect()
+            values.iter().map(|v| to_value(v)).collect()
         )));
     }
 
-    pub fn default<T: json::ToJson>(&mut self, default: T) {
-        self.default = Some(default.to_json());
+    pub fn default<T: Serialize>(&mut self, default: T) {
+        self.default = Some(to_value(&default));
     }
 }

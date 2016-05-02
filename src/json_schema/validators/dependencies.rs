@@ -1,5 +1,5 @@
 use std::collections;
-use rustc_serialize::json;
+use serde_json::{Value};
 use url;
 
 use super::super::errors;
@@ -17,7 +17,7 @@ pub struct Dependencies {
 }
 
 impl super::Validator for Dependencies {
-    fn validate(&self, object: &json::Json, path: &str, scope: &scope::Scope) -> super::ValidationState {
+    fn validate(&self, object: &Value, path: &str, scope: &scope::Scope) -> super::ValidationState {
         if !object.is_object() {
             return super::ValidationState::new()
         }

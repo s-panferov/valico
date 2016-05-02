@@ -1,4 +1,4 @@
-use rustc_serialize::json;
+use serde_json::{Value};
 
 use super::super::errors;
 use super::super::scope;
@@ -10,7 +10,7 @@ pub struct MultipleOf {
 }
 
 impl super::Validator for MultipleOf {
-    fn validate(&self, val: &json::Json, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
         let number = nonstrict_process!(val.as_f64(), path);
 
         let valid = if (number.fract() == 0f64) && (self.number.fract() == 0f64) {

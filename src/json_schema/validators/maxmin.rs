@@ -1,4 +1,4 @@
-use rustc_serialize::json;
+use serde_json::{Value};
 
 use super::super::errors;
 use super::super::scope;
@@ -10,7 +10,7 @@ pub struct Maximum {
 }
 
 impl super::Validator for Maximum {
-    fn validate(&self, val: &json::Json, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
         let number = nonstrict_process!(val.as_f64(), path);
 
         let valid = if self.exclusive {
@@ -38,7 +38,7 @@ pub struct Minimum {
 }
 
 impl super::Validator for Minimum {
-    fn validate(&self, val: &json::Json, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
         let number = nonstrict_process!(val.as_f64(), path);
 
         let valid = if self.exclusive {
