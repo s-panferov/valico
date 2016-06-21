@@ -300,7 +300,7 @@ Parameters can be restricted to a specific set of values with **allow_values**:
 let params = Builder::build(|params| {
     params.req("kind", |kind| {
         kind.coerce(json_dsl::string());
-        kind.allow_values(["circle".to_string(), "square".to_string()]);
+        kind.allow_values(&["circle".to_string(), "square".to_string()]);
     })
 })
 ~~~
@@ -313,7 +313,7 @@ Some values can be rejected with **reject_values**:
 let params = Builder::build(|params| {
     params.req("user_role", |kind| {
         kind.coerce(json_dsl::string());
-        kind.reject_values(["admin".to_string(), "manager".to_string()]);
+        kind.reject_values(&["admin".to_string(), "manager".to_string()]);
     })
 })
 ~~~
