@@ -30,7 +30,7 @@ See also:
 
 [Rustless]: https://github.com/rustless/rustless
 [queryst]: https://github.com/rustless/queryst
-[Grape]: https://github.com/intridea/grape
+[Grape]: https://github.com/ruby-grape/grape
 [jsonway]: https://github.com/rustless/jsonway
 
 ## JSON Schema
