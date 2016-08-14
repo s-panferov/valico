@@ -11,7 +11,7 @@ impl super::Keyword for Ref {
         let ref_ = keyword_key_exists!(def, "$ref");
 
         if ref_.is_string() {
-            let url = Url::options().base_url(Some(ctx.url)).parse(ref_.as_string().unwrap());
+            let url = Url::options().base_url(Some(ctx.url)).parse(ref_.as_str().unwrap());
             match url {
                 Ok(url) => {
                     Ok(Some(Box::new(validators::Ref {

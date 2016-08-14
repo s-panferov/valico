@@ -11,7 +11,7 @@ impl super::Keyword for Pattern {
         let pattern = keyword_key_exists!(def, "pattern");
 
         if pattern.is_string() {
-            let pattern_val = pattern.as_string().unwrap();
+            let pattern_val = pattern.as_str().unwrap();
             match regex::Regex::new(pattern_val) {
                 Ok(re) => Ok(Some(Box::new(validators::Pattern {
                     regex: re

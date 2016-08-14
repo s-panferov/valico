@@ -64,7 +64,7 @@ impl super::Keyword for Items {
             let additional_val = maybe_additional.unwrap();
             Some(if additional_val.is_boolean() {
 
-                validators::items::AdditionalKind::Boolean(additional_val.as_boolean().unwrap())
+                validators::items::AdditionalKind::Boolean(additional_val.as_bool().unwrap())
 
             } else if additional_val.is_object() {
 

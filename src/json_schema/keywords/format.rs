@@ -70,7 +70,7 @@ impl super::Keyword for Format {
         let format = keyword_key_exists!(def, "format");
 
         if format.is_string() {
-            let format = format.as_string().unwrap();
+            let format = format.as_str().unwrap();
             match self.formats.get(format) {
                 Some(keyword) => {
                     keyword.compile(def, ctx)

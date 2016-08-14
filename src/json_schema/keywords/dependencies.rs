@@ -47,7 +47,7 @@ impl super::Keyword for Dependencies {
 
                 for key in item.iter() {
                     if key.is_string() {
-                        keys.push(key.as_string().unwrap().to_string())
+                        keys.push(key.as_str().unwrap().to_string())
                     } else {
                         return Err(schema::SchemaError::Malformed {
                             path: ctx.fragment.join("/"),

@@ -22,7 +22,7 @@ impl super::Keyword for Required {
             let mut items = vec![];
             for item in required.iter() {
                 if item.is_string() {
-                    items.push(item.as_string().unwrap().to_string())
+                    items.push(item.as_str().unwrap().to_string())
                 } else {
                     return Err(schema::SchemaError::Malformed {
                         path: ctx.fragment.join("/"),

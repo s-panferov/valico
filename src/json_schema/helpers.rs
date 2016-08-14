@@ -30,7 +30,7 @@ pub fn connect(strings: &[&str]) -> String {
 pub fn parse_url_key(key: &str, obj: &Value) -> Result<Option<Url>, schema::SchemaError> {
     match obj.find(key) {
         Some(value) => {
-            match value.as_string() {
+            match value.as_str() {
                 Some(string) => Url::parse(string)
                                 .map(|url| Some(url))
                                 .map_err(|err| schema::SchemaError::UrlParseError(err)),
@@ -44,7 +44,7 @@ pub fn parse_url_key(key: &str, obj: &Value) -> Result<Option<Url>, schema::Sche
 pub fn parse_url_key_with_base(key: &str, obj: &Value, base: &Url) -> Result<Option<Url>, schema::SchemaError> {
     match obj.find(key) {
         Some(value) => {
-            match value.as_string() {
+            match value.as_str() {
                 Some(string) => Url::options()
                                 .base_url(Some(base))
                                 .parse(string)

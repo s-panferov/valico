@@ -11,7 +11,7 @@ pub struct Ipv4;
 
 impl super::Validator for Ipv4 {
     fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
-        let string = nonstrict_process!(val.as_string(), path);
+        let string = nonstrict_process!(val.as_str(), path);
 
         match string.parse::<net::Ipv4Addr>() {
             Ok(_) => super::ValidationState::new(),
@@ -32,7 +32,7 @@ pub struct Ipv6;
 
 impl super::Validator for Ipv6 {
     fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
-        let string = nonstrict_process!(val.as_string(), path);
+        let string = nonstrict_process!(val.as_str(), path);
 
         match string.parse::<net::Ipv6Addr>() {
             Ok(_) => super::ValidationState::new(),
@@ -53,7 +53,7 @@ pub struct Uuid;
 
 impl super::Validator for Uuid {
     fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
-        let string = nonstrict_process!(val.as_string(), path);
+        let string = nonstrict_process!(val.as_str(), path);
 
         match string.parse::<uuid::Uuid>() {
             Ok(_) => super::ValidationState::new(),
@@ -74,7 +74,7 @@ pub struct Uri;
 
 impl super::Validator for Uri {
     fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
-        let string = nonstrict_process!(val.as_string(), path);
+        let string = nonstrict_process!(val.as_str(), path);
 
         match url::Url::parse(string) {
             Ok(_) => super::ValidationState::new(),

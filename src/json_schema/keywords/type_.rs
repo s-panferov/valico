@@ -10,7 +10,7 @@ impl super::Keyword for Type {
         let type_ = keyword_key_exists!(def, "type");
 
         if type_.is_string() {
-            let ty = type_.as_string().unwrap().parse().ok();
+            let ty = type_.as_str().unwrap().parse().ok();
 
             if ty.is_some() {
                 Ok(Some(Box::new(validators::Type {
@@ -21,7 +21,7 @@ impl super::Keyword for Type {
                     path: ctx.fragment.join("/"),
                     detail: format!(
                         "String values MUST be one of the seven primitive types defined by the core specification. Unknown type: {}",
-                        type_.as_string().unwrap()
+                        type_.as_str().unwrap()
                     )
                 })
             }
@@ -39,13 +39,13 @@ impl super::Keyword for Type {
             let mut converted_types = vec![];
             for ty in types.iter() {
                 if ty.is_string() {
-                    let converted_ty = ty.as_string().unwrap().parse().ok();
+                    let converted_ty = ty.as_str().unwrap().parse().ok();
                     if converted_ty.is_some() {
                         converted_types.push(converted_ty.unwrap());
                     } else {
                         return Err(schema::SchemaError::Malformed {
                             path: ctx.fragment.join("/"),
-                            detail: format!("Unknown type: {}", ty.as_string().unwrap())
+                            detail: format!("Unknown type: {}", ty.as_str().unwrap())
                         })
                     }
                 } else {

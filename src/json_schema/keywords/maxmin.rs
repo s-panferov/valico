@@ -29,7 +29,7 @@ macro_rules! kw_minmax{
                             number: value,
                             exclusive: exclusive.is_some() &&
                                        try!(exclusive.unwrap()
-                                            .as_boolean()
+                                            .as_bool()
                                             .ok_or_else(||
                                                 schema::SchemaError::Malformed {
                                                     path: ctx.fragment.join("/"),

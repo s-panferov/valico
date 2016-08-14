@@ -50,13 +50,13 @@ fn test_suite() {
 
             scope.compile(json_v4_schema.clone(), true).ok().unwrap();
 
-            let spec_desc = spec.get("description").map(|v| v.as_string().unwrap()).unwrap_or("");
+            let spec_desc = spec.get("description").map(|v| v.as_str().unwrap()).unwrap_or("");
 
             let schema = match scope.compile_and_return(spec.get("schema").unwrap().clone(), false) {
                 Ok(schema) => schema,
                 Err(err) => panic!("Error in schema {} {}: {:?}",
                     path.file_name().unwrap().to_str().unwrap(),
-                    spec.get("description").unwrap().as_string().unwrap(),
+                    spec.get("description").unwrap().as_str().unwrap(),
                     err
                 )
             };
@@ -65,9 +65,9 @@ fn test_suite() {
 
             for test in tests.iter() {
                 let test = test.as_object().unwrap();
-                let description = test.get("description").unwrap().as_string().unwrap();
+                let description = test.get("description").unwrap().as_str().unwrap();
                 let data = test.get("data").unwrap();
-                let valid = test.get("valid").unwrap().as_boolean().unwrap();
+                let valid = test.get("valid").unwrap().as_bool().unwrap();
 
                 let state = schema.validate(&data);
 

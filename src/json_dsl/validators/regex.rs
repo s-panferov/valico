@@ -6,7 +6,7 @@ use super::super::errors;
 impl super::Validator for regex::Regex {
     fn validate(&self, val: &Value, path: &str) -> super::ValidatorResult {
 
-        let string = strict_process!(val.as_string(), path, "The value must be a string");
+        let string = strict_process!(val.as_str(), path, "The value must be a string");
 
         if self.is_match(string) {
             Ok(())

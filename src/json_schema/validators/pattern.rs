@@ -11,7 +11,7 @@ pub struct Pattern {
 
 impl super::Validator for Pattern {
     fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
-        let string = nonstrict_process!(val.as_string(), path);
+        let string = nonstrict_process!(val.as_str(), path);
 
         if self.regex.is_match(string) {
             super::ValidationState::new()
