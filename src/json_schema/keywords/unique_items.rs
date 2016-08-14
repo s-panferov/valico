@@ -10,7 +10,7 @@ impl super::Keyword for UniqueItems {
         let uniq = keyword_key_exists!(def, "uniqueItems");
 
         if uniq.is_boolean() {
-            if uniq.as_boolean().unwrap() {
+            if uniq.as_bool().unwrap() {
                 Ok(Some(Box::new(validators::UniqueItems)))
             } else {
                 Ok(None)

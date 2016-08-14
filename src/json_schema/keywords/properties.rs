@@ -54,7 +54,7 @@ impl super::Keyword for Properties {
             let additional_val = maybe_additional.unwrap();
             if additional_val.is_boolean() {
 
-                validators::properties::AdditionalKind::Boolean(additional_val.as_boolean().unwrap())
+                validators::properties::AdditionalKind::Boolean(additional_val.as_bool().unwrap())
 
             } else if additional_val.is_object() {
 

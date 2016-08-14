@@ -60,7 +60,7 @@ impl Coercer for I64Coercer {
             let val = val.as_f64().unwrap();
             return Ok(Some(to_value(&(val as i64))));
         } else if val.is_string() {
-            let val = val.as_string().unwrap();
+            let val = val.as_str().unwrap();
             let converted: Option<i64> = val.parse().ok();
             match converted {
                 Some(num) => Ok(Some(to_value(&num))),
@@ -97,7 +97,7 @@ impl Coercer for U64Coercer {
             let val = val.as_f64().unwrap();
             return Ok(Some(to_value(&(val as u64))));
         } else if val.is_string() {
-            let val = val.as_string().unwrap();
+            let val = val.as_str().unwrap();
             let converted: Option<u64> = val.parse().ok();
             match converted {
                 Some(num) => Ok(Some(to_value(&num))),
@@ -134,7 +134,7 @@ impl Coercer for F64Coercer {
             let val = val.as_u64().unwrap();
             return Ok(Some(to_value(&(val as f64))));
         } else if val.is_string() {
-            let val = val.as_string().unwrap();
+            let val = val.as_str().unwrap();
             let converted: Option<f64> = val.parse().ok();
             match converted {
                 Some(num) => Ok(Some(to_value(&num))),
@@ -165,7 +165,7 @@ impl Coercer for BooleanCoercer {
         if val.is_boolean() {
             Ok(None)
         } else if val.is_string() {
-            let val = val.as_string().unwrap();
+            let val = val.as_str().unwrap();
             if val == "true" {
                 Ok(Some(Value::Bool(true)))
             } else if val == "false" {
@@ -198,7 +198,7 @@ impl Coercer for NullCoercer {
         if val.is_null() {
             Ok(None)
         } else if val.is_string() {
-            let val = val.as_string().unwrap();
+            let val = val.as_str().unwrap();
             if val == "" {
                 Ok(Some(Value::Null))
             } else {
@@ -292,7 +292,7 @@ impl Coercer for ArrayCoercer {
             self.coerce_array(val, path)
         } else if val.is_string() && self.separator.is_some() {
             let separator = self.separator.as_ref().unwrap();
-            let string = val.as_string().unwrap();
+            let string = val.as_str().unwrap();
             let mut array = Value::Array(
                 string
                     .split(&separator[..])
