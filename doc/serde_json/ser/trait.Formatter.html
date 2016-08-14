@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
+    
 
     
     
@@ -43,10 +44,10 @@
 
     <section id='main' class="content trait">
 <h1 class='fqn'><span class='in-band'>Trait <a href='../index.html'>serde_json</a>::<wbr><a href='index.html'>ser</a>::<wbr><a class='trait' href=''>Formatter</a></span><span class='out-of-band'><span id='render-detail'>
-            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
-                [<span class='inner'>&#x2212;</span>]
-            </a>
-        </span><a id='src-947' class='srclink' href='../../src/serde_json/ser.rs.html#380-396' title='goto source code'>[src]</a></span></h1>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a id='src-1546' class='srclink' href='../../src/serde_json/ser.rs.html#727-742' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait Formatter {
     fn <a href='#tymethod.open' class='fnname'>open</a>&lt;W&gt;(&amp;mut self, writer: &amp;mut W, ch: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u8.html'>u8</a>) -&gt; <a class='type' href='../../serde_json/error/type.Result.html' title='serde_json::error::Result'>Result</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>&gt; <span class='where'>where W: <a class='trait' href='https://doc.rust-lang.org/nightly/std/io/trait.Write.html' title='std::io::Write'>Write</a></span>;
     fn <a href='#tymethod.comma' class='fnname'>comma</a>&lt;W&gt;(&amp;mut self, writer: &amp;mut W, first: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a>) -&gt; <a class='type' href='../../serde_json/error/type.Result.html' title='serde_json::error::Result'>Result</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>&gt; <span class='where'>where W: <a class='trait' href='https://doc.rust-lang.org/nightly/std/io/trait.Write.html' title='std::io::Write'>Write</a></span>;
@@ -64,11 +65,11 @@ optionally pretty print the JSON output.</p>
 </div></div>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>
-    <li><code>impl <a class='trait' href='../../serde_json/ser/trait.Formatter.html' title='serde_json::ser::Formatter'>Formatter</a> for <a class='struct' href='../../serde_json/ser/struct.CompactFormatter.html' title='serde_json::ser::CompactFormatter'>CompactFormatter</a></code></li>
-<li><code>impl&lt;'a&gt; <a class='trait' href='../../serde_json/ser/trait.Formatter.html' title='serde_json::ser::Formatter'>Formatter</a> for <a class='struct' href='../../serde_json/ser/struct.PrettyFormatter.html' title='serde_json::ser::PrettyFormatter'>PrettyFormatter</a>&lt;'a&gt;</code></li>
+    <li><code>impl Formatter for <a class='struct' href='../../serde_json/ser/struct.CompactFormatter.html' title='serde_json::ser::CompactFormatter'>CompactFormatter</a></code></li>
+<li><code>impl&lt;'a&gt; Formatter for <a class='struct' href='../../serde_json/ser/struct.PrettyFormatter.html' title='serde_json::ser::PrettyFormatter'>PrettyFormatter</a>&lt;'a&gt;</code></li>
 </ul><script type="text/javascript" async
-                              src="../../implementors/serde_json/ser/trait.Formatter.js">
-                      </script></section>
+                         src="../../implementors/serde_json/ser/trait.Formatter.js">
+                 </script></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>
@@ -91,6 +92,8 @@ optionally pretty print the JSON output.</p>
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 

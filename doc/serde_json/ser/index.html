@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
+    
 
     
     
@@ -43,114 +44,95 @@
 
     <section id='main' class="content mod">
 <h1 class='fqn'><span class='in-band'>Module <a href='../index.html'>serde_json</a>::<wbr><a class='mod' href=''>ser</a></span><span class='out-of-band'><span id='render-detail'>
-            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
-                [<span class='inner'>&#x2212;</span>]
-            </a>
-        </span><a id='src-679' class='srclink' href='../../src/serde_json/ser.rs.html#1-650' title='goto source code'>[src]</a></span></h1>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a id='src-1082' class='srclink' href='../../src/serde_json/ser.rs.html#1-1029' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>JSON Serialization</p>
 
 <p>This module provides for JSON serialization with the type <code>Serializer</code>.</p>
 </div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
 <table>
-                    <tr class=' module-item'>
-                        <td><a class='struct' href='struct.CompactFormatter.html'
-                               title='serde_json::ser::CompactFormatter'>CompactFormatter</a></td>
-                        <td class='docblock short'>
-                             <p>This structure compacts a JSON value with no extra whitespace.</p>
-                        </td>
-                    </tr>
-                
-                    <tr class=' module-item'>
-                        <td><a class='struct' href='struct.PrettyFormatter.html'
-                               title='serde_json::ser::PrettyFormatter'>PrettyFormatter</a></td>
-                        <td class='docblock short'>
-                             <p>This structure pretty prints a JSON value to make it human readable.</p>
-                        </td>
-                    </tr>
-                
-                    <tr class=' module-item'>
-                        <td><a class='struct' href='struct.Serializer.html'
-                               title='serde_json::ser::Serializer'>Serializer</a></td>
-                        <td class='docblock short'>
-                             <p>A structure for serializing Rust values into JSON.</p>
-                        </td>
-                    </tr>
-                </table><h2 id='traits' class='section-header'><a href="#traits">Traits</a></h2>
+                       <tr class=' module-item'>
+                           <td><a class='struct' href='struct.CompactFormatter.html'
+                                  title='serde_json::ser::CompactFormatter'>CompactFormatter</a></td>
+                           <td class='docblock short'>
+                                <p>This structure compacts a JSON value with no extra whitespace.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='struct' href='struct.PrettyFormatter.html'
+                                  title='serde_json::ser::PrettyFormatter'>PrettyFormatter</a></td>
+                           <td class='docblock short'>
+                                <p>This structure pretty prints a JSON value to make it human readable.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='struct' href='struct.Serializer.html'
+                                  title='serde_json::ser::Serializer'>Serializer</a></td>
+                           <td class='docblock short'>
+                                <p>A structure for serializing Rust values into JSON.</p>
+                           </td>
+                       </tr></table><h2 id='traits' class='section-header'><a href="#traits">Traits</a></h2>
 <table>
-                    <tr class=' module-item'>
-                        <td><a class='trait' href='trait.Formatter.html'
-                               title='serde_json::ser::Formatter'>Formatter</a></td>
-                        <td class='docblock short'>
-                             <p>This trait abstracts away serializing the JSON control characters, which allows the user to
+                       <tr class=' module-item'>
+                           <td><a class='trait' href='trait.Formatter.html'
+                                  title='serde_json::ser::Formatter'>Formatter</a></td>
+                           <td class='docblock short'>
+                                <p>This trait abstracts away serializing the JSON control characters, which allows the user to
 optionally pretty print the JSON output.</p>
-                        </td>
-                    </tr>
-                </table><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
+                           </td>
+                       </tr></table><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
 <table>
-                    <tr class=' module-item'>
-                        <td><a class='fn' href='fn.escape_bytes.html'
-                               title='serde_json::ser::escape_bytes'>escape_bytes</a></td>
-                        <td class='docblock short'>
-                             <p>Serializes and escapes a <code>&amp;[u8]</code> into a JSON string.</p>
-                        </td>
-                    </tr>
-                
-                    <tr class=' module-item'>
-                        <td><a class='fn' href='fn.escape_str.html'
-                               title='serde_json::ser::escape_str'>escape_str</a></td>
-                        <td class='docblock short'>
-                             <p>Serializes and escapes a <code>&amp;str</code> into a JSON string.</p>
-                        </td>
-                    </tr>
-                
-                    <tr class=' module-item'>
-                        <td><a class='fn' href='fn.to_string.html'
-                               title='serde_json::ser::to_string'>to_string</a></td>
-                        <td class='docblock short'>
-                             <p>Encode the specified struct into a json <code>String</code> buffer.</p>
-                        </td>
-                    </tr>
-                
-                    <tr class=' module-item'>
-                        <td><a class='fn' href='fn.to_string_pretty.html'
-                               title='serde_json::ser::to_string_pretty'>to_string_pretty</a></td>
-                        <td class='docblock short'>
-                             <p>Encode the specified struct into a json <code>String</code> buffer.</p>
-                        </td>
-                    </tr>
-                
-                    <tr class=' module-item'>
-                        <td><a class='fn' href='fn.to_vec.html'
-                               title='serde_json::ser::to_vec'>to_vec</a></td>
-                        <td class='docblock short'>
-                             <p>Encode the specified struct into a json <code>[u8]</code> buffer.</p>
-                        </td>
-                    </tr>
-                
-                    <tr class=' module-item'>
-                        <td><a class='fn' href='fn.to_vec_pretty.html'
-                               title='serde_json::ser::to_vec_pretty'>to_vec_pretty</a></td>
-                        <td class='docblock short'>
-                             <p>Encode the specified struct into a json <code>[u8]</code> buffer.</p>
-                        </td>
-                    </tr>
-                
-                    <tr class=' module-item'>
-                        <td><a class='fn' href='fn.to_writer.html'
-                               title='serde_json::ser::to_writer'>to_writer</a></td>
-                        <td class='docblock short'>
-                             <p>Encode the specified struct into a json <code>[u8]</code> writer.</p>
-                        </td>
-                    </tr>
-                
-                    <tr class=' module-item'>
-                        <td><a class='fn' href='fn.to_writer_pretty.html'
-                               title='serde_json::ser::to_writer_pretty'>to_writer_pretty</a></td>
-                        <td class='docblock short'>
-                             <p>Encode the specified struct into a json <code>[u8]</code> writer.</p>
-                        </td>
-                    </tr>
-                </table></section>
+                       <tr class=' module-item'>
+                           <td><a class='fn' href='fn.escape_str.html'
+                                  title='serde_json::ser::escape_str'>escape_str</a></td>
+                           <td class='docblock short'>
+                                <p>Serializes and escapes a <code>&amp;str</code> into a JSON string.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='fn' href='fn.to_string.html'
+                                  title='serde_json::ser::to_string'>to_string</a></td>
+                           <td class='docblock short'>
+                                <p>Encode the specified struct into a json <code>String</code> buffer.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='fn' href='fn.to_string_pretty.html'
+                                  title='serde_json::ser::to_string_pretty'>to_string_pretty</a></td>
+                           <td class='docblock short'>
+                                <p>Encode the specified struct into a json <code>String</code> buffer.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='fn' href='fn.to_vec.html'
+                                  title='serde_json::ser::to_vec'>to_vec</a></td>
+                           <td class='docblock short'>
+                                <p>Encode the specified struct into a json <code>[u8]</code> buffer.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='fn' href='fn.to_vec_pretty.html'
+                                  title='serde_json::ser::to_vec_pretty'>to_vec_pretty</a></td>
+                           <td class='docblock short'>
+                                <p>Encode the specified struct into a json <code>[u8]</code> buffer.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='fn' href='fn.to_writer.html'
+                                  title='serde_json::ser::to_writer'>to_writer</a></td>
+                           <td class='docblock short'>
+                                <p>Encode the specified struct into a json <code>[u8]</code> writer.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='fn' href='fn.to_writer_pretty.html'
+                                  title='serde_json::ser::to_writer_pretty'>to_writer_pretty</a></td>
+                           <td class='docblock short'>
+                                <p>Encode the specified struct into a json <code>[u8]</code> writer.</p>
+                           </td>
+                       </tr></table></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>
@@ -173,6 +155,8 @@ optionally pretty print the JSON output.</p>
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 

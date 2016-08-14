@@ -4,13 +4,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-88ac128001ac3a9a/url-1.0.0/src/host.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/url-1.2.0/src/host.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>host.rs.html -- source</title>
 
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
+    
 
     
     
@@ -447,6 +448,18 @@
 <span id="404">404</span>
 <span id="405">405</span>
 <span id="406">406</span>
+<span id="407">407</span>
+<span id="408">408</span>
+<span id="409">409</span>
+<span id="410">410</span>
+<span id="411">411</span>
+<span id="412">412</span>
+<span id="413">413</span>
+<span id="414">414</span>
+<span id="415">415</span>
+<span id="416">416</span>
+<span id="417">417</span>
+<span id="418">418</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2013-2016 The rust-url developers.</span>
 <span class='comment'>//</span>
@@ -456,8 +469,9 @@
 <span class='comment'>// option. This file may not be copied, modified, or distributed</span>
 <span class='comment'>// except according to those terms.</span>
 
+<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;heapsize&quot;</span>)]</span> <span class='kw'>use</span> <span class='ident'>heapsize</span>::<span class='ident'>HeapSizeOf</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>cmp</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fmt</span>::{<span class='self'>self</span>, <span class='ident'>Formatter</span>, <span class='ident'>Write</span>};
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fmt</span>::{<span class='self'>self</span>, <span class='ident'>Formatter</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>io</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>net</span>::{<span class='ident'>Ipv4Addr</span>, <span class='ident'>Ipv6Addr</span>, <span class='ident'>SocketAddr</span>, <span class='ident'>SocketAddrV4</span>, <span class='ident'>SocketAddrV6</span>, <span class='ident'>ToSocketAddrs</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>vec</span>;
@@ -466,13 +480,15 @@
 <span class='kw'>use</span> <span class='ident'>idna</span>;
 
 <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Copy</span>, <span class='ident'>Clone</span>, <span class='ident'>Debug</span>, <span class='ident'>Eq</span>, <span class='ident'>PartialEq</span>)]</span>
-<span class='attribute'>#[<span class='ident'>cfg_attr</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;heap_size&quot;</span>, <span class='ident'>derive</span>(<span class='ident'>HeapSizeOf</span>))]</span>
 <span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>HostInternal</span> {
     <span class='prelude-val'>None</span>,
     <span class='ident'>Domain</span>,
     <span class='ident'>Ipv4</span>(<span class='ident'>Ipv4Addr</span>),
     <span class='ident'>Ipv6</span>(<span class='ident'>Ipv6Addr</span>),
 }
+
+<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;heapsize&quot;</span>)]</span>
+<span class='macro'>known_heap_size</span><span class='macro'>!</span>(<span class='number'>0</span>, <span class='ident'>HostInternal</span>);
 
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>S</span><span class='op'>&gt;</span> <span class='ident'>From</span><span class='op'>&lt;</span><span class='ident'>Host</span><span class='op'>&lt;</span><span class='ident'>S</span><span class='op'>&gt;&gt;</span> <span class='kw'>for</span> <span class='ident'>HostInternal</span> {
     <span class='kw'>fn</span> <span class='ident'>from</span>(<span class='ident'>host</span>: <span class='ident'>Host</span><span class='op'>&lt;</span><span class='ident'>S</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='ident'>HostInternal</span> {
@@ -486,7 +502,6 @@
 
 <span class='doccomment'>/// The host name of an URL.</span>
 <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>Debug</span>, <span class='ident'>Eq</span>, <span class='ident'>PartialEq</span>, <span class='ident'>Ord</span>, <span class='ident'>PartialOrd</span>, <span class='ident'>Hash</span>)]</span>
-<span class='attribute'>#[<span class='ident'>cfg_attr</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;heap_size&quot;</span>, <span class='ident'>derive</span>(<span class='ident'>HeapSizeOf</span>))]</span>
 <span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>Host</span><span class='op'>&lt;</span><span class='ident'>S</span><span class='op'>=</span><span class='ident'>String</span><span class='op'>&gt;</span> {
     <span class='doccomment'>/// A DNS domain name, as &#39;.&#39; dot-separated labels.</span>
     <span class='doccomment'>/// Non-ASCII labels are encoded in punycode per IDNA.</span>
@@ -505,6 +520,16 @@
     <span class='ident'>Ipv6</span>(<span class='ident'>Ipv6Addr</span>),
 }
 
+<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;heapsize&quot;</span>)]</span>
+<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>S</span>: <span class='ident'>HeapSizeOf</span><span class='op'>&gt;</span> <span class='ident'>HeapSizeOf</span> <span class='kw'>for</span> <span class='ident'>Host</span><span class='op'>&lt;</span><span class='ident'>S</span><span class='op'>&gt;</span> {
+    <span class='kw'>fn</span> <span class='ident'>heap_size_of_children</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>usize</span> {
+        <span class='kw'>match</span> <span class='op'>*</span><span class='self'>self</span> {
+            <span class='ident'>Host</span>::<span class='ident'>Domain</span>(<span class='kw-2'>ref</span> <span class='ident'>s</span>) <span class='op'>=&gt;</span> <span class='ident'>s</span>.<span class='ident'>heap_size_of_children</span>(),
+            _ <span class='op'>=&gt;</span> <span class='number'>0</span>,
+        }
+    }
+}
+
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> <span class='ident'>Host</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>str</span><span class='op'>&gt;</span> {
     <span class='doccomment'>/// Return a copy of `self` that owns an allocated `String` but does not borrow an `&amp;Url`.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>to_owned</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Host</span><span class='op'>&lt;</span><span class='ident'>String</span><span class='op'>&gt;</span> {
@@ -520,7 +545,7 @@
     <span class='doccomment'>/// Parse a host: either an IPv6 address in [] square brackets, or a domain.</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// https://url.spec.whatwg.org/#host-parsing</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>parse</span>(<span class='ident'>input</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='kw'>Self</span>, <span class='ident'>ParseError</span><span class='op'>&gt;</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>parse</span>(<span class='ident'>input</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='self'>Self</span>, <span class='ident'>ParseError</span><span class='op'>&gt;</span> {
         <span class='kw'>if</span> <span class='ident'>input</span>.<span class='ident'>starts_with</span>(<span class='string'>&quot;[&quot;</span>) {
             <span class='kw'>if</span> <span class='op'>!</span><span class='ident'>input</span>.<span class='ident'>ends_with</span>(<span class='string'>&quot;]&quot;</span>) {
                 <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>ParseError</span>::<span class='ident'>InvalidIpv6Address</span>)
@@ -576,7 +601,7 @@
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>S</span>: <span class='ident'>AsRef</span><span class='op'>&lt;</span><span class='ident'>str</span><span class='op'>&gt;&gt;</span> <span class='ident'>ToSocketAddrs</span> <span class='kw'>for</span> <span class='ident'>HostAndPort</span><span class='op'>&lt;</span><span class='ident'>S</span><span class='op'>&gt;</span> {
     <span class='kw'>type</span> <span class='ident'>Iter</span> <span class='op'>=</span> <span class='ident'>SocketAddrs</span>;
 
-    <span class='kw'>fn</span> <span class='ident'>to_socket_addrs</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>io</span>::<span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>Self</span>::<span class='ident'>Iter</span><span class='op'>&gt;</span> {
+    <span class='kw'>fn</span> <span class='ident'>to_socket_addrs</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>io</span>::<span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='self'>Self</span>::<span class='ident'>Iter</span><span class='op'>&gt;</span> {
         <span class='kw'>let</span> <span class='ident'>port</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>port</span>;
         <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>host</span> {
             <span class='ident'>Host</span>::<span class='ident'>Domain</span>(<span class='kw-2'>ref</span> <span class='ident'>domain</span>) <span class='op'>=&gt;</span> <span class='prelude-val'>Ok</span>(<span class='ident'>SocketAddrs</span> {
@@ -734,7 +759,7 @@
 <span class='kw'>fn</span> <span class='ident'>parse_ipv6addr</span>(<span class='ident'>input</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='ident'>ParseResult</span><span class='op'>&lt;</span><span class='ident'>Ipv6Addr</span><span class='op'>&gt;</span> {
     <span class='kw'>let</span> <span class='ident'>input</span> <span class='op'>=</span> <span class='ident'>input</span>.<span class='ident'>as_bytes</span>();
     <span class='kw'>let</span> <span class='ident'>len</span> <span class='op'>=</span> <span class='ident'>input</span>.<span class='ident'>len</span>();
-    <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>is_ip_v4</span> <span class='op'>=</span> <span class='boolval'>false</span>;
+    <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>is_ip_v4</span> <span class='op'>=</span> <span class='boolvalue'>false</span>;
     <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>pieces</span> <span class='op'>=</span> [<span class='number'>0</span>, <span class='number'>0</span>, <span class='number'>0</span>, <span class='number'>0</span>, <span class='number'>0</span>, <span class='number'>0</span>, <span class='number'>0</span>, <span class='number'>0</span>];
     <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>piece_pointer</span> <span class='op'>=</span> <span class='number'>0</span>;
     <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>compress_pointer</span> <span class='op'>=</span> <span class='prelude-val'>None</span>;
@@ -785,7 +810,7 @@
                         <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>ParseError</span>::<span class='ident'>InvalidIpv6Address</span>)
                     }
                     <span class='ident'>i</span> <span class='op'>=</span> <span class='ident'>start</span>;
-                    <span class='ident'>is_ip_v4</span> <span class='op'>=</span> <span class='boolval'>true</span>;
+                    <span class='ident'>is_ip_v4</span> <span class='op'>=</span> <span class='boolvalue'>true</span>;
                 },
                 <span class='string'>b&#39;:&#39;</span> <span class='op'>=&gt;</span> {
                     <span class='ident'>i</span> <span class='op'>+=</span> <span class='number'>1</span>;
@@ -813,7 +838,7 @@
             <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>value</span> <span class='op'>=</span> <span class='number'>0u16</span>;
             <span class='kw'>while</span> <span class='ident'>i</span> <span class='op'>&lt;</span> <span class='ident'>len</span> {
                 <span class='kw'>let</span> <span class='ident'>digit</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='ident'>input</span>[<span class='ident'>i</span>] {
-                    <span class='ident'>c</span> <span class='kw-2'>@</span> <span class='string'>b&#39;0&#39;</span> ... <span class='string'>b&#39;9&#39;</span> <span class='op'>=&gt;</span> <span class='ident'>c</span> <span class='op'>-</span> <span class='string'>b&#39;0&#39;</span>,
+                    <span class='ident'>c</span> @ <span class='string'>b&#39;0&#39;</span> ... <span class='string'>b&#39;9&#39;</span> <span class='op'>=&gt;</span> <span class='ident'>c</span> <span class='op'>-</span> <span class='string'>b&#39;0&#39;</span>,
                     _ <span class='op'>=&gt;</span> <span class='kw'>break</span>
                 };
                 <span class='ident'>value</span> <span class='op'>=</span> <span class='ident'>value</span> <span class='op'>*</span> <span class='number'>10</span> <span class='op'>+</span> <span class='ident'>digit</span> <span class='kw'>as</span> <span class='ident'>u16</span>;
@@ -878,6 +903,8 @@
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 

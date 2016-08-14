@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../main.css">
+    
 
     
     
@@ -43,14 +44,11 @@
 
     <section id='main' class="content mod">
 <h1 class='fqn'><span class='in-band'>Crate <a class='mod' href=''>url</a></span><span class='out-of-band'><span id='render-detail'>
-            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
-                [<span class='inner'>&#x2212;</span>]
-            </a>
-        </span><a id='src-0' class='srclink' href='../src/url/lib.rs.html#9-1376' title='goto source code'>[src]</a></span></h1>
-<div class='docblock'><p><a href="https://github.com/servo/rust-url"><img style="position: absolute; top: 0; left: 0; border: 0;" src="../github.png" alt="Fork me on GitHub"></a>
-<style>.sidebar { margin-top: 53px }</style></p>
-
-<p>rust-url is an implementation of the <a href="http://url.spec.whatwg.org/">URL Standard</a>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a id='src-0' class='srclink' href='../src/url/lib.rs.html#9-1421' title='goto source code'>[src]</a></span></h1>
+<div class='docblock'><p>rust-url is an implementation of the <a href="http://url.spec.whatwg.org/">URL Standard</a>
 for the <a href="http://rust-lang.org/">Rust</a> programming language.</p>
 
 <p>It builds with <a href="http://crates.io/">Cargo</a>.
@@ -142,128 +140,121 @@ and their &quot;path&quot; is an arbitrary string rather than slash-separated se
 <span class='kw'>let</span> <span class='ident'>css_url</span> <span class='op'>=</span> <span class='ident'>this_document</span>.<span class='ident'>join</span>(<span class='string'>&quot;../main.css&quot;</span>).<span class='ident'>unwrap</span>();
 <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>css_url</span>.<span class='ident'>as_str</span>(), <span class='string'>&quot;http://servo.github.io/rust-url/main.css&quot;</span>)</pre>
 </div><h2 id='reexports' class='section-header'><a href="#reexports">Reexports</a></h2>
-<table><tr><td><code>pub extern crate idna;</code></td></tr></table><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
+<table><tr><td><code>pub extern crate <a class='mod' href='../idna/index.html' title='idna'>idna</a>;</code></td></tr></table><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
 <table>
-                    <tr class=' module-item'>
-                        <td><a class='mod' href='form_urlencoded/index.html'
-                               title='url::form_urlencoded'>form_urlencoded</a></td>
-                        <td class='docblock short'>
-                             <p>Parser and serializer for the <a href="http://url.spec.whatwg.org/#application/x-www-form-urlencoded"><code>application/x-www-form-urlencoded</code> syntax</a>,
+                       <tr class=' module-item'>
+                           <td><a class='mod' href='form_urlencoded/index.html'
+                                  title='url::form_urlencoded'>form_urlencoded</a></td>
+                           <td class='docblock short'>
+                                <p>Parser and serializer for the <a href="http://url.spec.whatwg.org/#application/x-www-form-urlencoded"><code>application/x-www-form-urlencoded</code> syntax</a>,
 as used by HTML forms.</p>
-                        </td>
-                    </tr>
-                
-                    <tr class=' module-item'>
-                        <td><a class='mod' href='percent_encoding/index.html'
-                               title='url::percent_encoding'>percent_encoding</a></td>
-                        <td class='docblock short'>
-                             
-                        </td>
-                    </tr>
-                
-                    <tr class=' module-item'>
-                        <td><a class='mod' href='quirks/index.html'
-                               title='url::quirks'>quirks</a></td>
-                        <td class='docblock short'>
-                             <p>Getters and setters for URL components implemented per <a href="https://url.spec.whatwg.org/#api">https://url.spec.whatwg.org/#api</a></p>
-                        </td>
-                    </tr>
-                </table><h2 id='macros' class='section-header'><a href="#macros">Macros</a></h2>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='mod' href='percent_encoding/index.html'
+                                  title='url::percent_encoding'>percent_encoding</a></td>
+                           <td class='docblock short'>
+                                
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='mod' href='quirks/index.html'
+                                  title='url::quirks'>quirks</a></td>
+                           <td class='docblock short'>
+                                <p>Getters and setters for URL components implemented per <a href="https://url.spec.whatwg.org/#api">https://url.spec.whatwg.org/#api</a></p>
+                           </td>
+                       </tr></table><h2 id='macros' class='section-header'><a href="#macros">Macros</a></h2>
 <table>
-                    <tr class=' module-item'>
-                        <td><a class='macro' href='macro.define_encode_set!.html'
-                               title='url::define_encode_set!'>define_encode_set!</a></td>
-                        <td class='docblock short'>
-                             <p>Define a new struct
+                       <tr class=' module-item'>
+                           <td><a class='macro' href='macro.define_encode_set!.html'
+                                  title='url::define_encode_set!'>define_encode_set!</a></td>
+                           <td class='docblock short'>
+                                <p>Define a new struct
 that implements the <a href="percent_encoding/trait.EncodeSet.html"><code>EncodeSet</code></a> trait,
 for use in <a href="percent_encoding/fn.percent_encode.html"><code>percent_decode()</code></a>
 and related functions.</p>
-                        </td>
-                    </tr>
-                </table><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
+                           </td>
+                       </tr></table><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
 <table>
-                    <tr class=' module-item'>
-                        <td><a class='struct' href='struct.HostAndPort.html'
-                               title='url::HostAndPort'>HostAndPort</a></td>
-                        <td class='docblock short'>
-                             <p>This mostly exists because coherence rules don’t allow us to implement
+                       <tr class=' module-item'>
+                           <td><a class='struct' href='struct.HostAndPort.html'
+                                  title='url::HostAndPort'>HostAndPort</a></td>
+                           <td class='docblock short'>
+                                <p>This mostly exists because coherence rules don’t allow us to implement
 <code>ToSocketAddrs for (Host&lt;S&gt;, u16)</code>.</p>
-                        </td>
-                    </tr>
-                
-                    <tr class=' module-item'>
-                        <td><a class='struct' href='struct.OpaqueOrigin.html'
-                               title='url::OpaqueOrigin'>OpaqueOrigin</a></td>
-                        <td class='docblock short'>
-                             <p>Opaque identifier for URLs that have file or other schemes</p>
-                        </td>
-                    </tr>
-                
-                    <tr class=' module-item'>
-                        <td><a class='struct' href='struct.ParseOptions.html'
-                               title='url::ParseOptions'>ParseOptions</a></td>
-                        <td class='docblock short'>
-                             <p>Full configuration for the URL parser.</p>
-                        </td>
-                    </tr>
-                
-                    <tr class=' module-item'>
-                        <td><a class='struct' href='struct.SocketAddrs.html'
-                               title='url::SocketAddrs'>SocketAddrs</a></td>
-                        <td class='docblock short'>
-                             <p>Socket addresses for an URL.</p>
-                        </td>
-                    </tr>
-                
-                    <tr class=' module-item'>
-                        <td><a class='struct' href='struct.Url.html'
-                               title='url::Url'>Url</a></td>
-                        <td class='docblock short'>
-                             <p>A parsed URL record.</p>
-                        </td>
-                    </tr>
-                
-                    <tr class=' module-item'>
-                        <td><a class='struct' href='struct.UrlQuery.html'
-                               title='url::UrlQuery'>UrlQuery</a></td>
-                        <td class='docblock short'>
-                             <p>Implementation detail of <code>Url::query_pairs_mut</code>. Typically not used directly.</p>
-                        </td>
-                    </tr>
-                </table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='struct' href='struct.OpaqueOrigin.html'
+                                  title='url::OpaqueOrigin'>OpaqueOrigin</a></td>
+                           <td class='docblock short'>
+                                <p>Opaque identifier for URLs that have file or other schemes</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='struct' href='struct.ParseOptions.html'
+                                  title='url::ParseOptions'>ParseOptions</a></td>
+                           <td class='docblock short'>
+                                <p>Full configuration for the URL parser.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='struct' href='struct.PathSegmentsMut.html'
+                                  title='url::PathSegmentsMut'>PathSegmentsMut</a></td>
+                           <td class='docblock short'>
+                                <p>Exposes methods to manipulate the path of an URL that is not cannot-be-base.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='struct' href='struct.SocketAddrs.html'
+                                  title='url::SocketAddrs'>SocketAddrs</a></td>
+                           <td class='docblock short'>
+                                <p>Socket addresses for an URL.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='struct' href='struct.Url.html'
+                                  title='url::Url'>Url</a></td>
+                           <td class='docblock short'>
+                                <p>A parsed URL record.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='struct' href='struct.UrlQuery.html'
+                                  title='url::UrlQuery'>UrlQuery</a></td>
+                           <td class='docblock short'>
+                                <p>Implementation detail of <code>Url::query_pairs_mut</code>. Typically not used directly.</p>
+                           </td>
+                       </tr></table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
 <table>
-                    <tr class=' module-item'>
-                        <td><a class='enum' href='enum.Host.html'
-                               title='url::Host'>Host</a></td>
-                        <td class='docblock short'>
-                             <p>The host name of an URL.</p>
-                        </td>
-                    </tr>
-                
-                    <tr class=' module-item'>
-                        <td><a class='enum' href='enum.Origin.html'
-                               title='url::Origin'>Origin</a></td>
-                        <td class='docblock short'>
-                             <p>The origin of an URL</p>
-                        </td>
-                    </tr>
-                
-                    <tr class=' module-item'>
-                        <td><a class='enum' href='enum.ParseError.html'
-                               title='url::ParseError'>ParseError</a></td>
-                        <td class='docblock short'>
-                             <p>Errors that can occur during parsing.</p>
-                        </td>
-                    </tr>
-                
-                    <tr class=' module-item'>
-                        <td><a class='enum' href='enum.Position.html'
-                               title='url::Position'>Position</a></td>
-                        <td class='docblock short'>
-                             <p>Indicates a position within a URL based on its components.</p>
-                        </td>
-                    </tr>
-                </table></section>
+                       <tr class=' module-item'>
+                           <td><a class='enum' href='enum.Host.html'
+                                  title='url::Host'>Host</a></td>
+                           <td class='docblock short'>
+                                <p>The host name of an URL.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='enum' href='enum.Origin.html'
+                                  title='url::Origin'>Origin</a></td>
+                           <td class='docblock short'>
+                                <p>The origin of an URL</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='enum' href='enum.ParseError.html'
+                                  title='url::ParseError'>ParseError</a></td>
+                           <td class='docblock short'>
+                                <p>Errors that can occur during parsing.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='enum' href='enum.Position.html'
+                                  title='url::Position'>Position</a></td>
+                           <td class='docblock short'>
+                                <p>Indicates a position within a URL based on its components.</p>
+                           </td>
+                       </tr></table></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>
@@ -286,6 +277,8 @@ and related functions.</p>
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 

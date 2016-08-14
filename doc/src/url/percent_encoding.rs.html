@@ -4,13 +4,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-88ac128001ac3a9a/url-1.0.0/src/percent_encoding.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/url-1.2.0/src/percent_encoding.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>percent_encoding.rs.html -- source</title>
 
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
+    
 
     
     
@@ -397,7 +398,7 @@
 <span class='kw'>use</span> <span class='ident'>encoding</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>ascii</span>::<span class='ident'>AsciiExt</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>borrow</span>::<span class='ident'>Cow</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fmt</span>::{<span class='self'>self</span>, <span class='ident'>Write</span>};
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fmt</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>slice</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>str</span>;
 
@@ -450,12 +451,12 @@
         <span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>non_camel_case_types</span>)]</span>
         <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>;
 
-        <span class='kw'>impl</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>crate</span>::<span class='ident'>percent_encoding</span>::<span class='ident'>EncodeSet</span> <span class='kw'>for</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span> {
+        <span class='kw'>impl</span> <span class='macro-nonterminal'>$</span><span class='kw'>crate</span>::<span class='macro-nonterminal'>percent_encoding</span>::<span class='ident'>EncodeSet</span> <span class='kw'>for</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span> {
             <span class='attribute'>#[<span class='ident'>inline</span>]</span>
             <span class='kw'>fn</span> <span class='ident'>contains</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>byte</span>: <span class='ident'>u8</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
                 <span class='kw'>match</span> <span class='ident'>byte</span> <span class='kw'>as</span> <span class='ident'>char</span> {
                     $(
-                        <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ch</span> <span class='op'>=&gt;</span> <span class='boolval'>true</span>,
+                        <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>ch</span> <span class='op'>=&gt;</span> <span class='boolvalue'>true</span>,
                     )<span class='op'>*</span>
                     _ <span class='op'>=&gt;</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>base_set</span>.<span class='ident'>contains</span>(<span class='ident'>byte</span>)
                 }
@@ -550,7 +551,7 @@
     <span class='ident'>percent_encode</span>(<span class='ident'>input</span>.<span class='ident'>as_bytes</span>(), <span class='ident'>encode_set</span>)
 }
 
-<span class='doccomment'>/// The return type of `percent_decode()`.</span>
+<span class='doccomment'>/// The return type of `percent_encode()` and `utf8_percent_encode()`.</span>
 <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>PercentEncode</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>E</span>: <span class='ident'>EncodeSet</span><span class='op'>&gt;</span> {
     <span class='ident'>bytes</span>: <span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> [<span class='ident'>u8</span>],
@@ -605,7 +606,7 @@
 }
 
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>E</span>: <span class='ident'>EncodeSet</span><span class='op'>&gt;</span> <span class='ident'>From</span><span class='op'>&lt;</span><span class='ident'>PercentEncode</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>E</span><span class='op'>&gt;&gt;</span> <span class='kw'>for</span> <span class='ident'>Cow</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>str</span><span class='op'>&gt;</span> {
-    <span class='kw'>fn</span> <span class='ident'>from</span>(<span class='kw-2'>mut</span> <span class='ident'>iter</span>: <span class='ident'>PercentEncode</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>E</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span> {
+    <span class='kw'>fn</span> <span class='ident'>from</span>(<span class='kw-2'>mut</span> <span class='ident'>iter</span>: <span class='ident'>PercentEncode</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>E</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span> {
         <span class='kw'>match</span> <span class='ident'>iter</span>.<span class='ident'>next</span>() {
             <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='string'>&quot;&quot;</span>.<span class='ident'>into</span>(),
             <span class='prelude-val'>Some</span>(<span class='ident'>first</span>) <span class='op'>=&gt;</span> {
@@ -674,7 +675,7 @@
 }
 
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span> <span class='ident'>From</span><span class='op'>&lt;</span><span class='ident'>PercentDecode</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;&gt;</span> <span class='kw'>for</span> <span class='ident'>Cow</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, [<span class='ident'>u8</span>]<span class='op'>&gt;</span> {
-    <span class='kw'>fn</span> <span class='ident'>from</span>(<span class='ident'>iter</span>: <span class='ident'>PercentDecode</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span> {
+    <span class='kw'>fn</span> <span class='ident'>from</span>(<span class='ident'>iter</span>: <span class='ident'>PercentDecode</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span> {
         <span class='kw'>match</span> <span class='ident'>iter</span>.<span class='ident'>if_any</span>() {
             <span class='prelude-val'>Some</span>(<span class='ident'>vec</span>) <span class='op'>=&gt;</span> <span class='ident'>Cow</span>::<span class='ident'>Owned</span>(<span class='ident'>vec</span>),
             <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='ident'>Cow</span>::<span class='ident'>Borrowed</span>(<span class='ident'>iter</span>.<span class='ident'>bytes</span>.<span class='ident'>as_slice</span>()),
@@ -754,6 +755,8 @@
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 
