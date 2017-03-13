@@ -372,7 +372,7 @@ let params = Builder::build(|params| {
     params.opt_defined("vodka");
     params.opt_defined("beer");
 
-    params.mutually_exclusive(["vodka", "beer"]);
+    params.mutually_exclusive(&["vodka", "beer"]);
 });
 ~~~
 
@@ -385,7 +385,7 @@ let params = Builder::build(|params| {
     params.opt_defined("vodka");
     params.opt_defined("beer");
 
-    params.mutually_exclusive(["vodka", "beer"]);
+    params.mutually_exclusive(&["vodka", "beer"]);
 });
 ~~~
 
@@ -395,11 +395,11 @@ Multiple sets can be defined:
 let params = Builder::build(|params| {
     params.opt_defined("vodka");
     params.opt_defined("beer");
-    params.mutually_exclusive(["vodka", "beer"]);
+    params.mutually_exclusive(&["vodka", "beer"]);
 
     params.opt_defined("lard");
     params.opt_defined("jamon");
-    params.mutually_exclusive(["lard", "jamon"]);
+    params.mutually_exclusive(&["lard", "jamon"]);
 });
 ~~~
 
