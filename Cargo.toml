@@ -29,5 +29,4 @@ version = "0.7"
 name = "tests"
 
 [dependencies.jsonway]
-  path = "../jsonway"
-  version = "1.0"
+  git = "ssh://git@github.com/broidHQ/jsonway.git"
