@@ -4,8 +4,9 @@ use typeable::Typeable;
 use traitobject;
 use std::any::TypeId;
 use std::mem;
-use serde::{Serialize, Serializer};
-use serde_json::{Value, to_value};
+// use serde::{Serialize, Serializer};
+use serde::ser::{Serialize, Serializer};
+use serde_json::{Value, to_value, Map};
 
 pub trait ValicoError : Error + Send + Debug + Typeable {
     fn get_code(&self) -> &str;
@@ -29,13 +30,13 @@ impl ValicoError {
 }
 
 impl Serialize for ValicoError {
-    fn serialize<S>(&self, serializer: &mut S) -> Result<(), S::Error> where S: Serializer {
-        let mut map = ::std::collections::BTreeMap::new();
-        map.insert("code".to_string(), to_value(self.get_code()));
-        map.insert("title".to_string(), to_value(self.get_title()));
-        map.insert("path".to_string(), to_value(self.get_path()));
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error> where S: Serializer {
+        let mut map = ::serde_json::Map::new();
+        map.insert("code".to_string(), to_value(self.get_code()).unwrap());
+        map.insert("title".to_string(), to_value(self.get_title()).unwrap());
+        map.insert("path".to_string(), to_value(self.get_path()).unwrap());
         match self.get_detail() {
-            Some(ref detail) => { map.insert("detail".to_string(), to_value(detail)); },
+            Some(ref detail) => { map.insert("detail".to_string(), to_value(detail).unwrap()); },
             None => ()
         }
         Value::Object(map).serialize(serializer)
@@ -97,13 +98,13 @@ macro_rules! impl_err {
 macro_rules! impl_serialize{
     ($err:ty) => {
         impl Serialize for $err {
-            fn serialize<S>(&self, serializer: &mut S) -> Result<(), S::Error> where S: Serializer {
-                let mut map = ::std::collections::BTreeMap::new();
-                map.insert("code".to_string(), to_value(self.get_code()));
-                map.insert("title".to_string(), to_value(self.get_title()));
-                map.insert("path".to_string(), to_value(self.get_path()));
+            fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error> where S: Serializer {
+                let mut map = ::serde_json::Map::new();
+                map.insert("code".to_string(), to_value(self.get_code()).unwrap());
+                map.insert("title".to_string(), to_value(self.get_title()).unwrap());
+                map.insert("path".to_string(), to_value(self.get_path()).unwrap());
                 match self.get_detail() {
-                    Some(ref detail) => { map.insert("detail".to_string(), to_value(detail)); },
+                    Some(ref detail) => { map.insert("detail".to_string(), to_value(detail).unwrap()); },
                     None => ()
                 }
                 Value::Object(map).serialize(serializer)
@@ -112,13 +113,13 @@ macro_rules! impl_serialize{
     };
     ($err:ty, $($sp:expr),+) => {
         impl Serialize for $err {
-            fn serialize<S>(&self, serializer: &mut S) -> Result<(), S::Error> where S: Serializer {
-                let mut map = ::std::collections::BTreeMap::new();
-                map.insert("code".to_string(), to_value(self.get_code()));
-                map.insert("title".to_string(), to_value(self.get_title()));
-                map.insert("path".to_string(), to_value(self.get_path()));
+            fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error> where S: Serializer {
+                let mut map = ::serde_json::Map::new();
+                map.insert("code".to_string(), to_value(self.get_code()).unwrap());
+                map.insert("title".to_string(), to_value(self.get_title()).unwrap());
+                map.insert("path".to_string(), to_value(self.get_path()).unwrap());
                 match self.get_detail() {
-                    Some(ref detail) => { map.insert("detail".to_string(), to_value(detail)); },
+                    Some(ref detail) => { map.insert("detail".to_string(), to_value(detail).unwrap()); },
                     None => ()
                 }
                 $({

@@ -8,8 +8,8 @@ use super::super::helpers;
 pub struct Items;
 impl super::Keyword for Items {
     fn compile(&self, def: &Value, ctx: &schema::WalkContext) -> super::KeywordResult {
-        let maybe_items = def.find("items");
-        let maybe_additional = def.find("additionalItems");
+        let maybe_items = def.get("items");
+        let maybe_additional = def.get("additionalItems");
 
         if !(maybe_items.is_some() || maybe_additional.is_some()) {
             return Ok(None)
@@ -109,9 +109,9 @@ fn validate_items_with_schema() {
         });
     }).into_json(), true).ok().unwrap();
 
-    assert_eq!(schema.validate(&to_value(&[5,6,7,8,9,10])).is_valid(), true);
-    assert_eq!(schema.validate(&to_value(&[4,5,6,7,8,9,10])).is_valid(), false);
-    assert_eq!(schema.validate(&to_value(&[5,6,7,8,9,10,11])).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&[5,6,7,8,9,10]).unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&[4,5,6,7,8,9,10]).unwrap()).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&[5,6,7,8,9,10,11]).unwrap()).is_valid(), false);
 }
 
 #[test]
@@ -130,12 +130,12 @@ fn validate_items_with_array_of_schemes() {
         })
     }).into_json(), true).ok().unwrap();
 
-    assert_eq!(schema.validate(&to_value(&[1])).is_valid(), true);
-    assert_eq!(schema.validate(&to_value(&[1,3])).is_valid(), true);
-    assert_eq!(schema.validate(&to_value(&[1,3,100])).is_valid(), true);
-    assert_eq!(schema.validate(&to_value(&[4,3])).is_valid(), false);
-    assert_eq!(schema.validate(&to_value(&[1,7])).is_valid(), false);
-    assert_eq!(schema.validate(&to_value(&[4,7])).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&[1]).unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&[1,3]).unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&[1,3,100]).unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&[4,3]).unwrap()).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&[1,7]).unwrap()).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&[4,7]).unwrap()).is_valid(), false);
 }
 
 #[test]
@@ -155,7 +155,7 @@ fn validate_items_with_array_of_schemes_with_additional_bool() {
         s.additional_items(false);
     }).into_json(), true).ok().unwrap();
 
-    assert_eq!(schema.validate(&to_value(&[1,3,100])).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&[1,3,100]).unwrap()).is_valid(), false);
 }
 
 #[test]
@@ -177,6 +177,6 @@ fn validate_items_with_array_of_schemes_with_additional_schema() {
         });
     }).into_json(), true).ok().unwrap();
 
-    assert_eq!(schema.validate(&to_value(&[1,3,100])).is_valid(), true);
-    assert_eq!(schema.validate(&to_value(&[1,3,101])).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&[1,3,100]).unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&[1,3,101]).unwrap()).is_valid(), false);
 }

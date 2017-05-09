@@ -42,9 +42,9 @@ fn validate() {
         s.pattern(r"abb.*");
     }).into_json(), true).ok().unwrap();
 
-    assert_eq!(schema.validate(&to_value("abb")).is_valid(), true);
-    assert_eq!(schema.validate(&to_value("abbd")).is_valid(), true);
-    assert_eq!(schema.validate(&to_value("abd")).is_valid(), false);
+    assert_eq!(schema.validate(&to_value("abb").unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value("abbd").unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value("abd").unwrap()).is_valid(), false);
 }
 
 #[test]

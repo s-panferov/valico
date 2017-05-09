@@ -1,8 +1,9 @@
 use std::error::{Error};
 use super::super::common::error::ValicoError;
-use serde_json::{Value, to_value};
-use serde::{Serialize, Serializer};
-use std::collections;
+use serde_json::{Value, to_value, Map};
+// use serde::{Serialize, Serializer};
+use serde::ser::{Serialize, Serializer};
+// use std::collections;
 
 #[derive(Debug)]
 #[allow(missing_copy_implementations)]
@@ -39,8 +40,8 @@ pub struct MutuallyExclusive {
     pub params: Vec<String>
 }
 impl_err!(MutuallyExclusive, "mutually_exclusive", "The values are mutually exclusive", +opt_detail);
-impl_serialize!(MutuallyExclusive, |err: &MutuallyExclusive, map: &mut collections::BTreeMap<String, Value>| {
-    map.insert("params".to_string(), to_value(&err.params));
+impl_serialize!(MutuallyExclusive, |err: &MutuallyExclusive, map: &mut Map<String, Value>| {
+    map.insert("params".to_string(), to_value(&err.params).unwrap());
 });
 
 #[derive(Debug)]
@@ -51,8 +52,8 @@ pub struct ExactlyOne {
     pub params: Vec<String>
 }
 impl_err!(ExactlyOne, "exactly_one", "Exacly one of the values must be present", +opt_detail);
-impl_serialize!(ExactlyOne, |err: &ExactlyOne, map: &mut collections::BTreeMap<String, Value>| {
-    map.insert("params".to_string(), to_value(&err.params))
+impl_serialize!(ExactlyOne, |err: &ExactlyOne, map: &mut Map<String, Value>| {
+    map.insert("params".to_string(), to_value(&err.params).unwrap())
 });
 
 
@@ -64,6 +65,6 @@ pub struct AtLeastOne {
     pub params: Vec<String>
 }
 impl_err!(AtLeastOne, "at_least_one", "At least one of the values must be present", +opt_detail);
-impl_serialize!(AtLeastOne, |err: &AtLeastOne, map: &mut collections::BTreeMap<String, Value>| {
-    map.insert("params".to_string(), to_value(&err.params))
+impl_serialize!(AtLeastOne, |err: &AtLeastOne, map: &mut Map<String, Value>| {
+    map.insert("params".to_string(), to_value(&err.params).unwrap())
 });
