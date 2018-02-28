@@ -176,17 +176,17 @@ impl Param {
 impl Param {
     pub fn allow_values<T: Serialize>(&mut self, values: &[T]) {
         self.validators.push(Box::new(validators::AllowedValues::new(
-            values.iter().map(|v| to_value(v)).collect()
+            values.iter().map(|v| to_value(v).unwrap()).collect()
         )));
     }
 
     pub fn reject_values<T: Serialize>(&mut self, values: &[T]) {
         self.validators.push(Box::new(validators::RejectedValues::new(
-            values.iter().map(|v| to_value(v)).collect()
+            values.iter().map(|v| to_value(v).unwrap()).collect()
         )));
     }
 
     pub fn default<T: Serialize>(&mut self, default: T) {
-        self.default = Some(to_value(&default));
+        self.default = Some(to_value(&default).unwrap());
     }
 }

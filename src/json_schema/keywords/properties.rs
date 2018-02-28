@@ -10,9 +10,9 @@ use super::super::helpers;
 pub struct Properties;
 impl super::Keyword for Properties {
     fn compile(&self, def: &Value, ctx: &schema::WalkContext) -> super::KeywordResult {
-        let maybe_properties = def.find("properties");
-        let maybe_additional = def.find("additionalProperties");
-        let maybe_pattern = def.find("patternProperties");
+        let maybe_properties = def.get("properties");
+        let maybe_additional = def.get("additionalProperties");
+        let maybe_pattern = def.get("patternProperties");
 
         if maybe_properties.is_none() && maybe_additional.is_none() && maybe_pattern.is_none() {
             return Ok(None)

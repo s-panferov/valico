@@ -125,7 +125,7 @@ impl Builder {
         for param in self.requires.iter_mut().chain(self.optional.iter_mut()) {
             if param.schema_builder.is_some() {
                 let json_schema = json_schema::builder::schema_box(param.schema_builder.take().unwrap());
-                let id = try!(scope.compile(to_value(&json_schema), true));
+                let id = try!(scope.compile(to_value(&json_schema).unwrap(), true));
                 param.schema_id = Some(id);
             }
 
@@ -136,7 +136,7 @@ impl Builder {
 
         if self.schema_builder.is_some() {
             let json_schema = json_schema::builder::schema_box(self.schema_builder.take().unwrap());
-            let id = try!(scope.compile(to_value(&json_schema), true));
+            let id = try!(scope.compile(to_value(&json_schema).unwrap(), true));
             self.schema_id = Some(id);
         }
 

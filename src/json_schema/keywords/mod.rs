@@ -30,7 +30,7 @@ impl fmt::Debug for Keyword + 'static {
 
 macro_rules! keyword_key_exists {
     ($val:expr, $key:expr) => {{
-        let maybe_val = $val.find($key);
+        let maybe_val = $val.get($key);
         if maybe_val.is_none() {
             return Ok(None)
         } else {

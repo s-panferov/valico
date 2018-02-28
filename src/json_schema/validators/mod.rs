@@ -107,13 +107,13 @@ impl ValidationState {
 }
 
 impl Serialize for ValidationState {
-    fn serialize<S>(&self, serializer: &mut S) -> Result<(), S::Error> where S: Serializer {
-        let mut map = ::std::collections::BTreeMap::new();
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error> where S: Serializer {
+        let mut map = ::serde_json::Map::new();
         map.insert("errors".to_string(), Value::Array(
-            self.errors.iter().map(|err| to_value(err)).collect::<Vec<Value>>()
+            self.errors.iter().map(|err| to_value(err).unwrap()).collect::<Vec<Value>>()
         ));
         map.insert("missing".to_string(), Value::Array(
-            self.missing.iter().map(|url| to_value(&url.to_string())).collect::<Vec<Value>>()
+            self.missing.iter().map(|url| to_value(&url.to_string()).unwrap()).collect::<Vec<Value>>()
         ));
         Value::Object(map).serialize(serializer)
     }

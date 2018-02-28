@@ -77,7 +77,7 @@ fn test_suite() {
                             path.file_name().unwrap().to_str().unwrap(),
                             spec_desc,
                             description.to_string(),
-                            to_string_pretty(&to_value(&state)).unwrap()
+                            to_string_pretty(&to_value(&state).unwrap()).unwrap()
                         )
                     }
                 } else {

@@ -2,7 +2,6 @@ use std::error::{Error};
 use super::super::common::error::ValicoError;
 use serde_json::{Value, to_value};
 use serde::{Serialize, Serializer};
-use std::collections;
 
 #[derive(Debug)]
 #[allow(missing_copy_implementations)]
@@ -142,8 +141,8 @@ pub struct AnyOf {
     pub states: Vec<super::validators::ValidationState>
 }
 impl_err!(AnyOf, "any_of", "AnyOf conditions are not met");
-impl_serialize!(AnyOf, |err: &AnyOf, map: &mut collections::BTreeMap<String, Value>| {
-    map.insert("states".to_string(), to_value(&err.states))
+impl_serialize!(AnyOf, |err: &AnyOf, map: &mut ::serde_json::Map<String, Value>| {
+    map.insert("states".to_string(), to_value(&err.states).unwrap())
 });
 
 #[derive(Debug)]
@@ -153,8 +152,8 @@ pub struct OneOf {
     pub states: Vec<super::validators::ValidationState>
 }
 impl_err!(OneOf, "one_of", "OneOf conditions are not met");
-impl_serialize!(OneOf, |err: &OneOf, map: &mut collections::BTreeMap<String, Value>| {
-    map.insert("states".to_string(), to_value(&err.states))
+impl_serialize!(OneOf, |err: &OneOf, map: &mut ::serde_json::Map<String, Value>| {
+    map.insert("states".to_string(), to_value(&err.states).unwrap())
 });
 
 #[derive(Debug)]

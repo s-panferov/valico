@@ -99,9 +99,9 @@ fn validate_date_time() {
         s.format("date-time");
     }).into_json(), true).ok().unwrap();
 
-    assert_eq!(schema.validate(&to_value(&"2015-01-20T17:35:20-0800")).is_valid(), true);
-    assert_eq!(schema.validate(&to_value(&"1944-06-06T04:04:00Z")).is_valid(), true);
-    assert_eq!(schema.validate(&to_value(&"Tue, 20 Jan 2015 17:35:20 -0800")).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&"2015-01-20T17:35:20-0800").unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&"1944-06-06T04:04:00Z").unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&"Tue, 20 Jan 2015 17:35:20 -0800").unwrap()).is_valid(), false);
 }
 
 #[test]
@@ -111,9 +111,9 @@ fn validate_ipv4() {
         s.format("ipv4");
     }).into_json(), true).ok().unwrap();
 
-    assert_eq!(schema.validate(&to_value(&"127.0.0.1")).is_valid(), true);
-    assert_eq!(schema.validate(&to_value(&"8.8.8.8")).is_valid(), true);
-    assert_eq!(schema.validate(&to_value(&"::::0.0.0.0")).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&"127.0.0.1").unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&"8.8.8.8").unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&"::::0.0.0.0").unwrap()).is_valid(), false);
 }
 
 #[test]
@@ -123,8 +123,8 @@ fn validate_ipv6() {
         s.format("ipv6");
     }).into_json(), true).ok().unwrap();
 
-    assert_eq!(schema.validate(&to_value(&"FE80:0000:0000:0000:0202:B3FF:FE1E:8329")).is_valid(), true);
-    assert_eq!(schema.validate(&to_value(&"127.0.0.1")).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&"FE80:0000:0000:0000:0202:B3FF:FE1E:8329").unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&"127.0.0.1").unwrap()).is_valid(), false);
 }
 
 #[test]
@@ -134,8 +134,8 @@ fn validate_uri() {
         s.format("uri");
     }).into_json(), true).ok().unwrap();
 
-    assert_eq!(schema.validate(&to_value(&"http://example.com")).is_valid(), true);
-    assert_eq!(schema.validate(&to_value(&"some-wrong")).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&"http://example.com").unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&"some-wrong").unwrap()).is_valid(), false);
 }
 
 #[test]
@@ -145,7 +145,7 @@ fn validate_uuid() {
         s.format("uuid");
     }).into_json(), true).ok().unwrap();
 
-    assert_eq!(schema.validate(&to_value(&"2f5a2593-7481-49e2-9911-8fe2ad069aac")).is_valid(), true);
-    assert_eq!(schema.validate(&to_value(&"2f5a2593748149e299118fe2ad069aac")).is_valid(), true);
-    assert_eq!(schema.validate(&to_value(&"2f5a2593-7481-49e2-9911-8fe2ad06")).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&"2f5a2593-7481-49e2-9911-8fe2ad069aac").unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&"2f5a2593748149e299118fe2ad069aac").unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&"2f5a2593-7481-49e2-9911-8fe2ad06").unwrap()).is_valid(), false);
 }

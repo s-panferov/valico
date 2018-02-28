@@ -33,7 +33,7 @@ impl Coercer for StringCoercer {
         if val.is_string() {
             Ok(None)
         } else if val.is_number() {
-            Ok(Some(to_value(&to_string(&val).unwrap())))
+            Ok(Some(to_value(&to_string(&val).unwrap()).unwrap()))
         } else {
             Err(vec![
                 Box::new(errors::WrongType {
@@ -55,15 +55,15 @@ impl Coercer for I64Coercer {
             return Ok(None)
         } else if val.is_u64() {
             let val = val.as_u64().unwrap();
-            return Ok(Some(to_value(&(val as i64))));
+            return Ok(Some(to_value(&(val as i64)).unwrap()));
         } else if val.is_f64() {
             let val = val.as_f64().unwrap();
-            return Ok(Some(to_value(&(val as i64))));
+            return Ok(Some(to_value(&(val as i64)).unwrap()));
         } else if val.is_string() {
             let val = val.as_str().unwrap();
             let converted: Option<i64> = val.parse().ok();
             match converted {
-                Some(num) => Ok(Some(to_value(&num))),
+                Some(num) => Ok(Some(to_value(&num).unwrap())),
                 None => Err(vec![
                     Box::new(errors::WrongType {
                         path: path.to_string(),
@@ -92,15 +92,15 @@ impl Coercer for U64Coercer {
             return Ok(None)
         } else if val.is_i64() {
             let val = val.as_i64().unwrap();
-            return Ok(Some(to_value(&(val as u64))));
+            return Ok(Some(to_value(&(val as u64)).unwrap()));
         } else if val.is_f64() {
             let val = val.as_f64().unwrap();
-            return Ok(Some(to_value(&(val as u64))));
+            return Ok(Some(to_value(&(val as u64)).unwrap()));
         } else if val.is_string() {
             let val = val.as_str().unwrap();
             let converted: Option<u64> = val.parse().ok();
             match converted {
-                Some(num) => Ok(Some(to_value(&num))),
+                Some(num) => Ok(Some(to_value(&num).unwrap())),
                 None => Err(vec![
                     Box::new(errors::WrongType {
                         path: path.to_string(),
@@ -129,15 +129,15 @@ impl Coercer for F64Coercer {
             return Ok(None)
         } else if val.is_i64() {
             let val = val.as_i64().unwrap();
-            return Ok(Some(to_value(&(val as f64))));
+            return Ok(Some(to_value(&(val as f64)).unwrap()));
         } else if val.is_u64() {
             let val = val.as_u64().unwrap();
-            return Ok(Some(to_value(&(val as f64))));
+            return Ok(Some(to_value(&(val as f64)).unwrap()));
         } else if val.is_string() {
             let val = val.as_str().unwrap();
             let converted: Option<f64> = val.parse().ok();
             match converted {
-                Some(num) => Ok(Some(to_value(&num))),
+                Some(num) => Ok(Some(to_value(&num).unwrap())),
                 None => Err(vec![
                     Box::new(errors::WrongType {
                         path: path.to_string(),
