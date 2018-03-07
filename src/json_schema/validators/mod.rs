@@ -5,6 +5,7 @@ use url;
 
 use super::scope;
 
+#[macro_export]
 macro_rules! strict_process {
     ($val:expr, $path:ident, $err:expr) => {{
         let maybe_val = $val;
