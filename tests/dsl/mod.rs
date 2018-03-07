@@ -261,7 +261,7 @@ fn is_validates_with_function_validator() {
         params.req("a", |a| {
             a.coerce(json_dsl::u64());
             a.validate_with(|val: &Value, path: &str| {
-                if *val == Value::U64(2u64) {
+                if *val == Value::Number(::serde_json::Number::from(2u64)) {
                     Ok(())
                 } else {
                     Err(vec![

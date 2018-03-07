@@ -9,8 +9,8 @@ macro_rules! kw_minmax{
         pub struct $name;
         impl super::Keyword for $name {
             fn compile(&self, def: &Value, ctx: &schema::WalkContext) -> super::KeywordResult {
-                let maybe_value = def.find($keyword);
-                let exclusive = def.find($exclusive);
+                let maybe_value = def.get($keyword);
+                let exclusive = def.get($exclusive);
 
                 if exclusive.is_some() {
                     if !maybe_value.is_some() {
@@ -66,9 +66,9 @@ fn validate_maximum() {
         s.maximum(10f64, false);
     }).into_json(), true).ok().unwrap();
 
-    assert_eq!(schema.validate(&to_value(&9)).is_valid(), true);
-    assert_eq!(schema.validate(&to_value(&10)).is_valid(), true);
-    assert_eq!(schema.validate(&to_value(&11)).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&9).unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&10).unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&11).unwrap()).is_valid(), false);
 }
 
 #[test]
@@ -78,9 +78,9 @@ fn validate_exclusive_maximum() {
         s.maximum(10f64, true);
     }).into_json(), true).ok().unwrap();
 
-    assert_eq!(schema.validate(&to_value(&9)).is_valid(), true);
-    assert_eq!(schema.validate(&to_value(&10)).is_valid(), false);
-    assert_eq!(schema.validate(&to_value(&11)).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&9).unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&10).unwrap()).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&11).unwrap()).is_valid(), false);
 }
 
 #[test]
@@ -113,9 +113,9 @@ fn validate_minumum() {
         s.minimum(10f64, false);
     }).into_json(), true).ok().unwrap();
 
-    assert_eq!(schema.validate(&to_value(&9)).is_valid(), false);
-    assert_eq!(schema.validate(&to_value(&10)).is_valid(), true);
-    assert_eq!(schema.validate(&to_value(&11)).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&9).unwrap()).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&10).unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&11).unwrap()).is_valid(), true);
 }
 
 #[test]
@@ -125,9 +125,9 @@ fn validate_exclusive_minimum() {
         s.minimum(10f64, true);
     }).into_json(), true).ok().unwrap();
 
-    assert_eq!(schema.validate(&to_value(&9)).is_valid(), false);
-    assert_eq!(schema.validate(&to_value(&10)).is_valid(), false);
-    assert_eq!(schema.validate(&to_value(&11)).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&9).unwrap()).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&10).unwrap()).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&11).unwrap()).is_valid(), true);
 }
 
 #[test]

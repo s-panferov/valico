@@ -42,9 +42,9 @@ fn validate() {
         s.multiple_of(3.5f64);
     }).into_json(), true).ok().unwrap();
 
-    assert_eq!(schema.validate(&to_value(&"")).is_valid(), true);
-    assert_eq!(schema.validate(&to_value(&7)).is_valid(), true);
-    assert_eq!(schema.validate(&to_value(&6)).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&"").unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&7).unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&6).unwrap()).is_valid(), false);
 }
 
 #[test]
@@ -56,10 +56,10 @@ fn malformed() {
     }).unwrap(), true).is_err());
 
     assert!(scope.compile_and_return(jsonway::object(|schema| {
-        schema.set("multipleOf", to_value(&0));
+        schema.set("multipleOf", to_value(&0).unwrap());
     }).unwrap(), true).is_err());
 
     assert!(scope.compile_and_return(jsonway::object(|schema| {
-        schema.set("multipleOf", to_value(&-1));
+        schema.set("multipleOf", to_value(&-1).unwrap());
     }).unwrap(), true).is_err());
 }

@@ -91,7 +91,7 @@ fn validate_array() {
     }).into_json(), true).ok().unwrap();
 
     assert_eq!(schema.validate(&jsonway::array(|_arr| {}).unwrap()).is_valid(), true);
-    assert_eq!(schema.validate(&to_value(&"string")).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&"string").unwrap()).is_valid(), false);
 }
 
 #[test]
@@ -101,9 +101,9 @@ fn validate_boolean() {
         s.boolean();
     }).into_json(), true).ok().unwrap();
 
-    assert_eq!(schema.validate(&to_value(&true)).is_valid(), true);
-    assert_eq!(schema.validate(&to_value(&false)).is_valid(), true);
-    assert_eq!(schema.validate(&to_value(&"string")).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&true).unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&false).unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&"string").unwrap()).is_valid(), false);
 }
 
 #[test]
@@ -113,10 +113,10 @@ fn validate_integer() {
         s.integer();
     }).into_json(), true).ok().unwrap();
 
-    assert_eq!(schema.validate(&to_value(&10)).is_valid(), true);
-    assert_eq!(schema.validate(&to_value(&-10)).is_valid(), true);
-    assert_eq!(schema.validate(&to_value(&11.5)).is_valid(), false);
-    assert_eq!(schema.validate(&to_value(&"string")).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&10).unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&-10).unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&11.5).unwrap()).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&"string").unwrap()).is_valid(), false);
 }
 
 #[test]
@@ -126,10 +126,10 @@ fn validate_number() {
         s.number();
     }).into_json(), true).ok().unwrap();
 
-    assert_eq!(schema.validate(&to_value(&10)).is_valid(), true);
-    assert_eq!(schema.validate(&to_value(&-10)).is_valid(), true);
-    assert_eq!(schema.validate(&to_value(&11.5)).is_valid(), true);
-    assert_eq!(schema.validate(&to_value(&"string")).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&10).unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&-10).unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&11.5).unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&"string").unwrap()).is_valid(), false);
 }
 
 #[test]
@@ -140,7 +140,7 @@ fn validate_null() {
     }).into_json(), true).ok().unwrap();
 
     assert_eq!(schema.validate(&Value::Null).is_valid(), true);
-    assert_eq!(schema.validate(&to_value(&"string")).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&"string").unwrap()).is_valid(), false);
 }
 
 #[test]
@@ -151,7 +151,7 @@ fn validate_object() {
     }).into_json(), true).ok().unwrap();
 
     assert_eq!(schema.validate(&jsonway::object(|_arr| {}).unwrap()).is_valid(), true);
-    assert_eq!(schema.validate(&to_value(&"string")).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&"string").unwrap()).is_valid(), false);
 }
 
 #[test]
@@ -161,7 +161,7 @@ fn validate_string() {
         s.string();
     }).into_json(), true).ok().unwrap();
 
-    assert_eq!(schema.validate(&to_value(&"string")).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&"string").unwrap()).is_valid(), true);
     assert_eq!(schema.validate(&jsonway::object(|_arr| {}).unwrap()).is_valid(), false);
 }
 
@@ -172,10 +172,10 @@ fn validate_set() {
         s.types(&[super::super::PrimitiveType::Integer, super::super::PrimitiveType::String]);
     }).into_json(), true).ok().unwrap();
 
-    assert_eq!(schema.validate(&to_value(&10)).is_valid(), true);
-    assert_eq!(schema.validate(&to_value(&-11)).is_valid(), true);
-    assert_eq!(schema.validate(&to_value(&"string")).is_valid(), true);
-    assert_eq!(schema.validate(&to_value(&11.5)).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&10).unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&-11).unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&"string").unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&11.5).unwrap()).is_valid(), false);
     assert_eq!(schema.validate(&jsonway::object(|_arr| {}).unwrap()).is_valid(), false);
 }
 

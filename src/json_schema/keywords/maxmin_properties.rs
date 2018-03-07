@@ -39,15 +39,15 @@ fn malformed_max_properties() {
     let mut scope = scope::Scope::new();
 
     assert!(scope.compile_and_return(jsonway::object(|schema| {
-        schema.set("maxProperties", to_value(&-1));
+        schema.set("maxProperties", to_value(&-1).unwrap());
     }).unwrap(), true).is_err());
 
     assert!(scope.compile_and_return(jsonway::object(|schema| {
-        schema.set("maxProperties", to_value(&""));
+        schema.set("maxProperties", to_value(&"").unwrap());
     }).unwrap(), true).is_err());
 
     assert!(scope.compile_and_return(jsonway::object(|schema| {
-        schema.set("maxProperties", to_value(&1.1));
+        schema.set("maxProperties", to_value(&1.1).unwrap());
     }).unwrap(), true).is_err());
 }
 
@@ -79,14 +79,14 @@ fn malformed_min_properties() {
     let mut scope = scope::Scope::new();
 
     assert!(scope.compile_and_return(jsonway::object(|schema| {
-        schema.set("minProperties", to_value(&-1));
+        schema.set("minProperties", to_value(&-1).unwrap());
     }).unwrap(), true).is_err());
 
     assert!(scope.compile_and_return(jsonway::object(|schema| {
-        schema.set("minProperties", to_value(&""));
+        schema.set("minProperties", to_value(&"").unwrap());
     }).unwrap(), true).is_err());
 
     assert!(scope.compile_and_return(jsonway::object(|schema| {
-        schema.set("minProperties", to_value(&1.1));
+        schema.set("minProperties", to_value(&1.1).unwrap());
     }).unwrap(), true).is_err());
 }

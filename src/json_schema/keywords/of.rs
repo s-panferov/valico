@@ -78,9 +78,9 @@ fn validate_all_of() {
         });
     }).into_json(), true).ok().unwrap();
 
-    assert_eq!(schema.validate(&to_value(&7)).is_valid(), true);
-    assert_eq!(schema.validate(&to_value(&4)).is_valid(), false);
-    assert_eq!(schema.validate(&to_value(&11)).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&7).unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&4).unwrap()).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&11).unwrap()).is_valid(), false);
 }
 
 #[test]
@@ -97,9 +97,9 @@ fn validate_any_of() {
         });
     }).into_json(), true).ok().unwrap();
 
-    assert_eq!(schema.validate(&to_value(&5)).is_valid(), true);
-    assert_eq!(schema.validate(&to_value(&10)).is_valid(), true);
-    assert_eq!(schema.validate(&to_value(&11)).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&5).unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&10).unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&11).unwrap()).is_valid(), false);
 }
 
 #[test]
@@ -116,7 +116,7 @@ fn validate_one_of() {
         });
     }).into_json(), true).ok().unwrap();
 
-    assert_eq!(schema.validate(&to_value(&5)).is_valid(), false);
-    assert_eq!(schema.validate(&to_value(&6)).is_valid(), true);
-    assert_eq!(schema.validate(&to_value(&11)).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&5).unwrap()).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&6).unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&11).unwrap()).is_valid(), false);
 }

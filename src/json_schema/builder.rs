@@ -1,6 +1,6 @@
 use jsonway;
 use std::collections;
-use serde_json::{Value, to_value};
+use serde_json::value::{Value, to_value};
 use serde::{Serialize, Serializer};
 
 pub struct SchemaArray {
@@ -58,7 +58,7 @@ impl Dependencies {
 }
 
 impl Serialize for Dependencies {
-    fn serialize<S>(&self, serializer: &mut S) -> Result<(), S::Error> where S: Serializer {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error> where S: Serializer {
         self.deps.serialize(serializer)
     }
 }
@@ -69,7 +69,7 @@ pub enum Dependency {
 }
 
 impl Serialize for Dependency {
-    fn serialize<S>(&self, serializer: &mut S) -> Result<(), S::Error> where S: Serializer {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error> where S: Serializer {
         match self {
             &Dependency::Schema(ref json) => json.serialize(serializer),
             &Dependency::Property(ref array) => array.serialize(serializer)
@@ -236,7 +236,7 @@ impl Builder {
         self.obj_builder.set("type", type_.to_string())
     }
     pub fn types(&mut self, types: &[super::PrimitiveType]) {
-        self.obj_builder.set("type", to_value(&types.iter().map(|t| t.to_string()).collect::<Vec<String>>()))
+        self.obj_builder.set("type", to_value(&types.iter().map(|t| t.to_string()).collect::<Vec<String>>()).unwrap())
     }
 
     pub fn all_of<F>(&mut self, build: F) where F: FnOnce(&mut SchemaArray) {
@@ -273,7 +273,7 @@ impl Builder {
 }
 
 impl Serialize for Builder {
-    fn serialize<S>(&self, serializer: &mut S) -> Result<(), S::Error> where S: Serializer {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error> where S: Serializer {
        self.obj_builder.serialize(serializer)
     }
 }

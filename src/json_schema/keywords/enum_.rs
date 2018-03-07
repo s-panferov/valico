@@ -46,10 +46,10 @@ fn validate() {
         })
     }).into_json(), true).ok().unwrap();
 
-    assert_eq!(schema.validate(&to_value(&"prop1")).is_valid(), true);
-    assert_eq!(schema.validate(&to_value(&"prop2")).is_valid(), true);
-    assert_eq!(schema.validate(&to_value(&"prop3")).is_valid(), false);
-    assert_eq!(schema.validate(&to_value(&1)).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&"prop1").unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&"prop2").unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&"prop3").unwrap()).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(&1).unwrap()).is_valid(), false);
 }
 
 #[test]
