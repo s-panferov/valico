@@ -15,7 +15,7 @@ regex = "0.1"
 lazy_static = "0.2"
 url = "1"
 jsonway = "2.0"
-uuid = {version = "0.3", features = ["v4"]}
+uuid = {version = "0.6", features = ["v4"]}
 phf = "0.7"
 typeable = "0.1"
 traitobject = "0.0"
