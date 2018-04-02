@@ -2,6 +2,16 @@
 
 You want to contribute? You're awesome! When submitting a Pull Request, please have your commits follow these guidelines:
 
+## Getting source
+
+When cloning, ensure to clone recursively to get the submodules.
+
+    git clone --recurse-submodules git@github.com:rustless/valico.git
+
+If you've already cloned normally, use this to get the submodules:
+
+    git submodule update --init --recursive
+
 ## Git Commit Guidelines
 
 These guidelines have been copied from the [AngularJS](https://github.com/angular/angular.js/blob/master/CONTRIBUTING.md#-git-commit-guidelines)
