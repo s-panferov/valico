@@ -107,6 +107,10 @@ impl Builder {
         self.obj_builder.set("description", text.to_string())
     }
 
+    pub fn title(&mut self, text: &str) {
+        self.obj_builder.set("title", text.to_string())
+    }
+
     pub fn default<T>(&mut self, default: T) where T: Serialize {
         self.obj_builder.set("default", default)
     }
