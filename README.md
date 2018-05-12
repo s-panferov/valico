@@ -17,7 +17,7 @@ References:
 
 ```toml
 # Cargo.toml
-valico = "1"
+valico = "2"
 ```
 
 [API docs](http://rustless.org/valico/doc/valico/)
@@ -40,18 +40,20 @@ It passes the entire [JSON-Schema-Test-Suite](https://github.com/json-schema/JSO
 ### Example
 
 ~~~rust
-use serialize::json;
+extern crate serde_json;
+extern crate valico;
+
+use serde_json::Value;
 use valico::json_schema;
-use std::old_io::fs;
+use std::fs::File;
 
 fn main() {
-    let json_v4_schema: json::Json = fs::File::open(&Path::new("tests/schema/schema.json")).ok().unwrap()
-        .read_to_string().ok().unwrap().parse().unwrap();
+    let json_v4_schema: Value = serde_json::from_reader(File::open("tests/schema/schema.json").unwrap()).unwrap();
 
     let mut scope = json_schema::Scope::new();
-    let schema = scope.compile_and_return(json_v4_schema.clone()).ok().unwrap();
+    let schema = scope.compile_and_return(json_v4_schema.clone(), false).unwrap();
 
-    println!("Is valid: {}", schema.validate(&json_v4_schema).is_valid())
+    println!("Is valid: {}", schema.validate(&json_v4_schema).is_valid());
 }
 ~~~
 
