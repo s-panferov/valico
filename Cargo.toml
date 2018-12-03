@@ -17,8 +17,6 @@ url = "1"
 jsonway = "2.0"
 uuid = {version = "0.7", features = ["v4"]}
 phf = "0.7"
-typeable = "0.1"
-traitobject = "0.0"
 serde = "1.0"
 serde_json = "1.0"
 

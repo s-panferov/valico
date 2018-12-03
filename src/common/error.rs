@@ -1,13 +1,18 @@
 use std::error::Error;
 use std::fmt::Debug;
-use typeable::Typeable;
-use traitobject;
-use std::any::TypeId;
+use std::any::{Any, TypeId};
 use std::mem;
 use serde::{Serialize, Serializer};
 use serde_json::{Value, to_value};
 
-pub trait ValicoError : Error + Send + Debug + Typeable {
+pub trait GetTypeId: Any { fn typeid(&self) -> TypeId { TypeId::of::<Self>() } }
+impl<T: Any> GetTypeId for T {}
+
+pub fn get_data_ptr<T: ?Sized>(d: *const T) -> *const () {
+    d as *const ()
+}
+
+pub trait ValicoError : Error + Send + Debug + GetTypeId {
     fn get_code(&self) -> &str;
     fn get_path(&self) -> &str;
     fn get_title(&self) -> &str;
@@ -16,12 +21,12 @@ pub trait ValicoError : Error + Send + Debug + Typeable {
 
 impl ValicoError {
     /// Is this `Error` object of type `E`?
-    pub fn is<E: ValicoError>(&self) -> bool { self.get_type() == TypeId::of::<E>() }
+    pub fn is<E: ValicoError>(&self) -> bool { self.typeid() == TypeId::of::<E>() }
 
     /// If this error is `E`, downcast this error to `E`, by reference.
     pub fn downcast<E: ValicoError>(&self) -> Option<&E> {
         if self.is::<E>() {
-            unsafe { Some(mem::transmute(traitobject::data(self))) }
+            unsafe { Some(mem::transmute(get_data_ptr(self))) }
         } else {
             None
         }
