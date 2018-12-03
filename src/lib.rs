@@ -4,8 +4,6 @@ extern crate jsonway;
 extern crate uuid;
 extern crate phf;
 #[macro_use] extern crate lazy_static;
-extern crate typeable;
-extern crate traitobject;
 extern crate serde;
 extern crate serde_json;
 
