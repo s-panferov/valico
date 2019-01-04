@@ -14,6 +14,10 @@ pub type KeywordMap = collections::HashMap<&'static str, rc::Rc<KeywordConsumer>
 
 pub trait Keyword: Sync + any::Any {
     fn compile(&self, &Value, &schema::WalkContext) -> KeywordResult;
+
+    fn is_exclusive(&self) -> bool {
+        false
+    }
 }
 
 impl<T: 'static + Send + Sync + any::Any> Keyword for T where T: Fn(&Value, &schema::WalkContext) -> KeywordResult {
