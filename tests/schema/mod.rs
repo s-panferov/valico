@@ -52,12 +52,6 @@ fn test_suite() {
             ("bignum.json".to_string(), "a bignum is an integer".to_string()),
             ("bignum.json".to_string(), "a negative bignum is an integer".to_string()),
             ("ecmascript-regex.json".to_string(), "ECMA 262 has no support for \\Z anchor from .NET".to_string()),
-            ("format.json".to_string(), "a invalid day in date-time string".to_string()),
-            ("format.json".to_string(), "an invalid offset in date-time string".to_string()),
-            ("format.json".to_string(), "an invalid e-mail address".to_string()),
-            ("format.json".to_string(), "a host name starting with an illegal character".to_string()),
-            ("format.json".to_string(), "a host name containing illegal characters".to_string()),
-            ("format.json".to_string(), "a host name with a component too long".to_string()),
         ];
 
         for spec in spec_set.iter() {

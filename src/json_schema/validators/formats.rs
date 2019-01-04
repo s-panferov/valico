@@ -1,10 +1,75 @@
 use serde_json::{Value};
+use chrono;
 use std::net;
 use uuid;
 use url;
+use publicsuffix::List;
 
 use super::super::errors;
 use super::super::scope;
+
+#[allow(missing_copy_implementations)]
+pub struct DateTime;
+
+impl super::Validator for DateTime {
+    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+        let string = nonstrict_process!(val.as_str(), path);
+
+        match chrono::DateTime::parse_from_rfc3339(string) {
+            Ok(_) => super::ValidationState::new(),
+            Err(_) => {
+                val_error!(
+                    errors::Format {
+                        path: path.to_string(),
+                        detail: "Malformed date time".to_string()
+                    }
+                )
+            }
+        }
+    }
+}
+
+#[allow(missing_copy_implementations)]
+pub struct Email;
+
+impl super::Validator for Email {
+    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+        let string = nonstrict_process!(val.as_str(), path);
+
+        match List::empty().parse_email(string) {
+            Ok(_) => super::ValidationState::new(),
+            Err(_) => {
+                val_error!(
+                    errors::Format {
+                        path: path.to_string(),
+                        detail: "Malformed email address".to_string()
+                    }
+                )
+            }
+        }
+    }
+}
+
+#[allow(missing_copy_implementations)]
+pub struct Hostname;
+
+impl super::Validator for Hostname {
+    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+        let string = nonstrict_process!(val.as_str(), path);
+
+        match List::empty().parse_domain(string) {
+            Ok(_) => super::ValidationState::new(),
+            Err(_) => {
+                val_error!(
+                    errors::Format {
+                        path: path.to_string(),
+                        detail: "Malformed email address".to_string()
+                    }
+                )
+            }
+        }
+    }
+}
 
 #[allow(missing_copy_implementations)]
 pub struct Ipv4;
@@ -19,7 +84,7 @@ impl super::Validator for Ipv4 {
                 val_error!(
                     errors::Format {
                         path: path.to_string(),
-                        detail: "Wrong IP address".to_string()
+                        detail: "Malformed IP address".to_string()
                     }
                 )
             }
@@ -40,7 +105,7 @@ impl super::Validator for Ipv6 {
                 val_error!(
                     errors::Format {
                         path: path.to_string(),
-                        detail: "Wrong IP address".to_string()
+                        detail: "Malformed IP address".to_string()
                     }
                 )
             }
