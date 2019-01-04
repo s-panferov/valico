@@ -4,19 +4,24 @@ use std::io::Read;
 use serde_json::{Value, from_str, to_value, to_string_pretty};
 use valico::json_schema;
 
-fn visit_specs<F>(dir: &path::Path, cb: F) where F: Fn(&path::Path, Value) {
+fn visit_specs<F>(dir: &path::Path, cb: F) where F: Fn(&path::Path, Value) + Copy {
     let contents = fs::read_dir(dir).ok().unwrap();
     for entry in contents {
-        let path = entry.unwrap().path();
-        match fs::File::open(&path) {
-            Err(_) => continue,
-            Ok(mut file) => {
-                let metadata = file.metadata().unwrap();
-                if metadata.is_file() {
-                    let mut content = String::new();
-                    file.read_to_string(&mut content).ok().unwrap();
-                    let json: Value = from_str(&content).unwrap();
-                    cb(&path, json);
+        let entry = entry.unwrap();
+        let path = entry.path();
+        if entry.file_type().unwrap().is_dir() {
+            visit_specs(&path, cb);
+        } else {
+            match fs::File::open(&path) {
+                Err(_) => continue,
+                Ok(mut file) => {
+                    let metadata = file.metadata().unwrap();
+                    if metadata.is_file() {
+                        let mut content = String::new();
+                        file.read_to_string(&mut content).ok().unwrap();
+                        let json: Value = from_str(&content).unwrap();
+                        cb(&path, json);
+                    }
                 }
             }
         }
@@ -34,7 +39,6 @@ fn test_suite() {
 
     visit_specs(&path::Path::new("tests/schema/JSON-Schema-Test-Suite/tests/draft4"), |path, spec_set: Value| {
         let spec_set = spec_set.as_array().unwrap();
-
         let exceptions: Vec<(String, String)> = vec![
             ("maxLength.json".to_string(), "two supplementary Unicode code points is long enough".to_string()),
             ("minLength.json".to_string(), "one supplementary Unicode code point is not long enough".to_string()),
@@ -42,6 +46,18 @@ fn test_suite() {
             ("refRemote.json".to_string(), "remote fragment invalid".to_string()),
             ("refRemote.json".to_string(), "ref within ref invalid".to_string()),
             ("refRemote.json".to_string(), "changed scope ref invalid".to_string()),
+            ("refRemote.json".to_string(), "base URI change ref invalid".to_string()),
+            ("refRemote.json".to_string(), "string is invalid".to_string()),
+            ("refRemote.json".to_string(), "object is invalid".to_string()),
+            ("bignum.json".to_string(), "a bignum is an integer".to_string()),
+            ("bignum.json".to_string(), "a negative bignum is an integer".to_string()),
+            ("ecmascript-regex.json".to_string(), "ECMA 262 has no support for \\Z anchor from .NET".to_string()),
+            ("format.json".to_string(), "a invalid day in date-time string".to_string()),
+            ("format.json".to_string(), "an invalid offset in date-time string".to_string()),
+            ("format.json".to_string(), "an invalid e-mail address".to_string()),
+            ("format.json".to_string(), "a host name starting with an illegal character".to_string()),
+            ("format.json".to_string(), "a host name containing illegal characters".to_string()),
+            ("format.json".to_string(), "a host name with a component too long".to_string()),
         ];
 
         for spec in spec_set.iter() {
