@@ -1,25 +1,28 @@
 use serde_json::{Value};
 use std::collections;
-use regex;
 
 use super::super::schema;
 use super::super::validators;
 
 pub type FormatBuilders = collections::HashMap<String, Box<super::Keyword + Send + Sync>>;
 
-lazy_static! {
-    static ref DATE_TIME_REGEX: regex::Regex = {
-       regex::Regex::new(r"^(?i)(\d\d\d\d)-(\d\d)-(\d\d)T(\d\d):(\d\d):(\d\d)(\.\d+)??([+-]\d\d:?\d\d|[A-Z]+)$").unwrap()
-    };
-}
-
-fn default_formats() -> FormatBuilders  {
+fn default_formats() -> FormatBuilders {
     let mut map: FormatBuilders = collections::HashMap::new();
 
     let date_time_builder = Box::new(|_def: &Value, _ctx: &schema::WalkContext| {
-        Ok(Some(Box::new(validators::Pattern{ regex: DATE_TIME_REGEX.clone() }) as validators::BoxedValidator))
+        Ok(Some(Box::new(validators::formats::DateTime) as validators::BoxedValidator))
     });
     map.insert("date-time".to_string(), date_time_builder);
+
+    let email_builder = Box::new(|_def: &Value, _ctx: &schema::WalkContext| {
+        Ok(Some(Box::new(validators::formats::Email) as validators::BoxedValidator))
+    });
+    map.insert("email".to_string(), email_builder);
+
+    let hostname_builder = Box::new(|_def: &Value, _ctx: &schema::WalkContext| {
+        Ok(Some(Box::new(validators::formats::Hostname) as validators::BoxedValidator))
+    });
+    map.insert("hostname".to_string(), hostname_builder);
 
     let ipv4_builder = Box::new(|_def: &Value, _ctx: &schema::WalkContext| {
         Ok(Some(Box::new(validators::formats::Ipv4) as validators::BoxedValidator))
@@ -99,9 +102,33 @@ fn validate_date_time() {
         s.format("date-time");
     }).into_json(), true).ok().unwrap();
 
-    assert_eq!(schema.validate(&to_value(&"2015-01-20T17:35:20-0800").unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&"2015-01-20T17:35:20-08:00").unwrap()).is_valid(), true);
     assert_eq!(schema.validate(&to_value(&"1944-06-06T04:04:00Z").unwrap()).is_valid(), true);
     assert_eq!(schema.validate(&to_value(&"Tue, 20 Jan 2015 17:35:20 -0800").unwrap()).is_valid(), false);
+}
+
+#[test]
+fn validate_email() {
+    let mut scope = scope::Scope::new();
+    let schema = scope.compile_and_return(builder::schema(|s| {
+        s.format("email");
+    }).into_json(), true).ok().unwrap();
+
+    assert_eq!(schema.validate(&to_value(&"ad@ress").unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&"add.ress+fd@domain.co.com").unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&"add:re").unwrap()).is_valid(), false);
+}
+
+#[test]
+fn validate_hostname() {
+    let mut scope = scope::Scope::new();
+    let schema = scope.compile_and_return(builder::schema(|s| {
+        s.format("hostname");
+    }).into_json(), true).ok().unwrap();
+
+    assert_eq!(schema.validate(&to_value(&"example").unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&"example.com").unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(&"ex:ample").unwrap()).is_valid(), false);
 }
 
 #[test]

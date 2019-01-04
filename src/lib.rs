@@ -3,9 +3,10 @@ extern crate url;
 extern crate jsonway;
 extern crate uuid;
 extern crate phf;
-#[macro_use] extern crate lazy_static;
 extern crate serde;
 extern crate serde_json;
+extern crate chrono;
+extern crate publicsuffix;
 
 #[macro_use] pub mod common;
 pub mod json_dsl;
