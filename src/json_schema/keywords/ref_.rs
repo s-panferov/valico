@@ -32,6 +32,10 @@ impl super::Keyword for Ref {
             })
         }
     }
+
+    fn is_exclusive(&self) -> bool {
+        true
+    }
 }
 
 #[cfg(test)] use super::super::scope;

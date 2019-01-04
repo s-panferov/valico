@@ -168,9 +168,21 @@ impl Schema {
                     Some(keyword) => {
                         keyword.consume(&mut keys);
 
+                        let is_exclusive_keyword = keyword.keyword.is_exclusive();
+
                         match try!(keyword.keyword.compile(def, context)) {
-                            Some(validator) => validators.push(validator),
+                            Some(validator) => {
+                                if is_exclusive_keyword {
+                                    validators = vec![validator];
+                                } else {
+                                    validators.push(validator);
+                                }
+                            },
                             None => ()
+                        };
+
+                        if is_exclusive_keyword {
+                            break;
                         }
                     },
                     None => {
