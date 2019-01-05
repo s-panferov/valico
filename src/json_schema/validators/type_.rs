@@ -20,7 +20,11 @@ fn check_type(val: &Value, ty: &json_schema::PrimitiveType) -> bool {
     match ty {
         &json_schema::PrimitiveType::Array => val.is_array(),
         &json_schema::PrimitiveType::Boolean => val.is_boolean(),
-        &json_schema::PrimitiveType::Integer => val.is_u64() || val.is_i64(),
+        &json_schema::PrimitiveType::Integer => {
+            let is_true_integer = val.is_u64() || val.is_i64();
+            let is_integer_float = val.is_f64() && val.as_f64().unwrap().fract() == 0.0;
+            is_true_integer || is_integer_float
+        },
         &json_schema::PrimitiveType::Number => val.is_number(),
         &json_schema::PrimitiveType::Null => val.is_null(),
         &json_schema::PrimitiveType::Object => val.is_object(),
