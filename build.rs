@@ -43,10 +43,12 @@ fn main() {
     phf_codegen::Set::new()
         .entry("definitions")
         .entry("$schema")
-        .entry("id")
+        .entry("$id")
         .entry("default")
+        .entry("title")
         .entry("description")
         .entry("format")
+        .entry("examples")
         .build(&mut file)
         .unwrap();
     write!(&mut file, ";\n").unwrap();

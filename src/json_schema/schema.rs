@@ -103,7 +103,7 @@ impl Schema {
         let id = if external_id.is_some() {
             external_id.unwrap()
         } else {
-            try!(helpers::parse_url_key("id", &def)).clone().unwrap_or_else(|| helpers::generate_id())
+            try!(helpers::parse_url_key("$id", &def)).clone().unwrap_or_else(|| helpers::generate_id())
         };
 
         let schema = try!(helpers::parse_url_key("$schema", &def));
@@ -214,7 +214,7 @@ impl Schema {
         let mut schema = None;
 
         if is_schema {
-            id = try!(helpers::parse_url_key_with_base("id", &def, context.url));
+            id = try!(helpers::parse_url_key_with_base("$id", &def, context.url));
             schema = try!(helpers::parse_url_key("$schema", &def));
         }
 

@@ -144,13 +144,13 @@ fn lookup() {
     let mut scope = Scope::new();
 
     scope.compile(jsonway::object(|schema| {
-        schema.set("id", "http://example.com/schema".to_string())
+        schema.set("$id", "http://example.com/schema".to_string())
     }).unwrap(), false).ok().unwrap();
 
     scope.compile(jsonway::object(|schema| {
-        schema.set("id", "http://example.com/schema#sub".to_string());
+        schema.set("$id", "http://example.com/schema#sub".to_string());
         schema.object("subschema", |subschema| {
-            subschema.set("id", "#subschema".to_string());
+            subschema.set("$id", "#subschema".to_string());
         })
     }).unwrap(), false).ok().unwrap();
 

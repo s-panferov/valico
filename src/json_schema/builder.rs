@@ -92,7 +92,7 @@ impl Builder {
     }
 
     pub fn id(&mut self, url: &str) {
-        self.obj_builder.set("id", url.to_string())
+        self.obj_builder.set("$id", url.to_string())
     }
 
     pub fn ref_(&mut self, url: &str) {
