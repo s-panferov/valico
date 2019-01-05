@@ -66,8 +66,10 @@ pub fn default() -> KeywordMap {
     let mut map = collections::HashMap::new();
 
     decouple_keyword((vec!["multipleOf"], Box::new(multiple_of::MultipleOf)), &mut map);
-    decouple_keyword((vec!["maximum", "exclusiveMaximum"], Box::new(maxmin::Maximum)), &mut map);
-    decouple_keyword((vec!["minimum", "exclusiveMinimum"], Box::new(maxmin::Minimum)), &mut map);
+    decouple_keyword((vec!["maximum"], Box::new(maxmin::Maximum)), &mut map); 
+    decouple_keyword((vec!["exclusiveMaximum"], Box::new(maxmin::ExclusiveMaximum)), &mut map); 
+    decouple_keyword((vec!["minimum"], Box::new(maxmin::Minimum)), &mut map);
+    decouple_keyword((vec!["exclusiveMinimum"], Box::new(maxmin::ExclusiveMinimum)), &mut map);
     decouple_keyword((vec!["maxLength"], Box::new(maxmin_length::MaxLength)), &mut map);
     decouple_keyword((vec!["minLength"], Box::new(maxmin_length::MinLength)), &mut map);
     decouple_keyword((vec!["pattern"], Box::new(pattern::Pattern)), &mut map);

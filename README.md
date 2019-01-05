@@ -378,19 +378,6 @@ let params = Builder::build(|params| {
 });
 ~~~
 
-##### mutually_exclusive
-
-Parameters can be defined as mutually_exclusive, ensuring that they aren't present at the same time in a request.
-
-~~~rust
-let params = Builder::build(|params| {
-    params.opt_defined("vodka");
-    params.opt_defined("beer");
-
-    params.mutually_exclusive(&["vodka", "beer"]);
-});
-~~~
-
 Multiple sets can be defined:
 
 ~~~rust

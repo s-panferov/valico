@@ -104,8 +104,8 @@ fn validate_items_with_schema() {
     let mut scope = scope::Scope::new();
     let schema = scope.compile_and_return(builder::schema(|s| {
         s.items_schema(|items| {
-            items.minimum(5f64, false);
-            items.maximum(10f64, false);
+            items.minimum(5f64);
+            items.maximum(10f64);
         });
     }).into_json(), true).ok().unwrap();
 
@@ -120,12 +120,12 @@ fn validate_items_with_array_of_schemes() {
     let schema = scope.compile_and_return(builder::schema(|s| {
         s.items_array(|items| {
             items.push(|item| {
-                item.minimum(1f64, false);
-                item.maximum(3f64, false);
+                item.minimum(1f64);
+                item.maximum(3f64);
             });
             items.push(|item| {
-                item.minimum(3f64, false);
-                item.maximum(6f64, false);
+                item.minimum(3f64);
+                item.maximum(6f64);
             });
         })
     }).into_json(), true).ok().unwrap();
@@ -144,12 +144,12 @@ fn validate_items_with_array_of_schemes_with_additional_bool() {
     let schema = scope.compile_and_return(builder::schema(|s| {
         s.items_array(|items| {
             items.push(|item| {
-                item.minimum(1f64, false);
-                item.maximum(3f64, false);
+                item.minimum(1f64);
+                item.maximum(3f64);
             });
             items.push(|item| {
-                item.minimum(3f64, false);
-                item.maximum(6f64, false);
+                item.minimum(3f64);
+                item.maximum(6f64);
             });
         });
         s.additional_items(false);
@@ -164,16 +164,16 @@ fn validate_items_with_array_of_schemes_with_additional_schema() {
     let schema = scope.compile_and_return(builder::schema(|s| {
         s.items_array(|items| {
             items.push(|item| {
-                item.minimum(1f64, false);
-                item.maximum(3f64, false);
+                item.minimum(1f64);
+                item.maximum(3f64);
             });
             items.push(|item| {
-                item.minimum(3f64, false);
-                item.maximum(6f64, false);
+                item.minimum(3f64);
+                item.maximum(6f64);
             });
         });
         s.additional_items_schema(|add| {
-           add.maximum(100f64, false)
+           add.maximum(100f64)
         });
     }).into_json(), true).ok().unwrap();
 

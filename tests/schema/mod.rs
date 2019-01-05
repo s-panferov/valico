@@ -35,9 +35,9 @@ fn test_suite() {
     fs::File::open(&path::Path::new("tests/schema/schema.json")).ok().unwrap()
         .read_to_string(&mut content).ok().unwrap();
 
-    let json_v4_schema: Value = from_str(&content).unwrap();
+    let json_v6_schema: Value = from_str(&content).unwrap();
 
-    visit_specs(&path::Path::new("tests/schema/JSON-Schema-Test-Suite/tests/draft4"), |path, spec_set: Value| {
+    visit_specs(&path::Path::new("tests/schema/JSON-Schema-Test-Suite/tests/draft6"), |path, spec_set: Value| {
         let spec_set = spec_set.as_array().unwrap();
         let exceptions: Vec<(String, String)> = vec![
             ("maxLength.json".to_string(), "two supplementary Unicode code points is long enough".to_string()),

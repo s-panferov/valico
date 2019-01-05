@@ -436,7 +436,7 @@ fn it_validates_params_with_schema() {
         params.req("a", |a| {
             a.schema(|schema| {
                 schema.integer();
-                schema.maximum(10f64, false);
+                schema.maximum(10f64);
             })
         });
     });
@@ -455,7 +455,7 @@ fn it_validates_params_with_schema_and_coercion() {
         params.req("a", |a| {
             a.coerce(json_dsl::u64());
             a.schema(|schema| {
-                schema.maximum(10f64, false);
+                schema.maximum(10f64);
             })
         });
     });

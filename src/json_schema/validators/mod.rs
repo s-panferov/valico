@@ -33,7 +33,7 @@ macro_rules! nonstrict_process {
     }}
 }
 
-macro_rules! val_error{
+macro_rules! val_error {
     ($err:expr) => (
         $crate::json_schema::validators::ValidationState{
             errors: vec![
@@ -45,7 +45,7 @@ macro_rules! val_error{
 }
 
 pub use self::multiple_of::{MultipleOf};
-pub use self::maxmin::{Maximum, Minimum};
+pub use self::maxmin::{Maximum, ExclusiveMaximum, Minimum, ExclusiveMinimum};
 pub use self::maxmin_length::{MaxLength, MinLength};
 pub use self::pattern::{Pattern};
 pub use self::maxmin_items::{MaxItems, MinItems};

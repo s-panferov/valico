@@ -3,7 +3,7 @@ use serde_json::{Value};
 use super::super::schema;
 use super::super::validators;
 
-macro_rules! kw_minmax_integer{
+macro_rules! kw_minmax_integer {
     ($name:ident, $keyword:expr) => {
         #[allow(missing_copy_implementations)]
         pub struct $name;

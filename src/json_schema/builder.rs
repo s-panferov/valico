@@ -119,18 +119,20 @@ impl Builder {
         self.obj_builder.set("multipleOf", number)
     }
 
-    pub fn maximum(&mut self, number: f64, exclusive: bool) {
+    pub fn maximum(&mut self, number: f64) {
         self.obj_builder.set("maximum", number);
-        if exclusive {
-            self.obj_builder.set("exclusiveMaximum", exclusive)
-        }
     }
 
-    pub fn minimum(&mut self, number: f64, exclusive: bool) {
+    pub fn exclusive_maximum(&mut self, number: f64) {
+        self.obj_builder.set("exclusiveMaximum", number);
+    }
+
+    pub fn minimum(&mut self, number: f64) {
         self.obj_builder.set("minimum", number);
-        if exclusive {
-            self.obj_builder.set("exclusiveMinimum", exclusive)
-        }
+    }
+
+    pub fn exclusive_minimum(&mut self, number: f64) {
+        self.obj_builder.set("exclusiveMinimum", number);
     }
 
     pub fn max_length(&mut self, number: u64) {

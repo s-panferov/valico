@@ -5,21 +5,35 @@ use super::super::scope;
 
 #[allow(missing_copy_implementations)]
 pub struct Maximum {
-    pub number: f64,
-    pub exclusive: bool
+    pub number: f64
 }
 
 impl super::Validator for Maximum {
     fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
         let number = nonstrict_process!(val.as_f64(), path);
 
-        let valid = if self.exclusive {
-            number < self.number
+        if number <= self.number {
+            super::ValidationState::new()
         } else {
-            number <= self.number
-        };
+            val_error!(
+                errors::Maximum {
+                    path: path.to_string()
+                }
+            )
+        }
+    }
+}
 
-        if valid {
+#[allow(missing_copy_implementations)]
+pub struct ExclusiveMaximum {
+    pub number: f64
+}
+
+impl super::Validator for ExclusiveMaximum {
+    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+        let number = nonstrict_process!(val.as_f64(), path);
+
+        if number < self.number {
             super::ValidationState::new()
         } else {
             val_error!(
@@ -33,21 +47,35 @@ impl super::Validator for Maximum {
 
 #[allow(missing_copy_implementations)]
 pub struct Minimum {
-    pub number: f64,
-    pub exclusive: bool
+    pub number: f64
 }
 
 impl super::Validator for Minimum {
     fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
         let number = nonstrict_process!(val.as_f64(), path);
 
-        let valid = if self.exclusive {
-            number > self.number
+        if number >= self.number {
+            super::ValidationState::new()
         } else {
-            number >= self.number
-        };
+            val_error!(
+                errors::Minimum {
+                    path: path.to_string()
+                }
+            )
+        }
+    }
+}
 
-        if valid {
+#[allow(missing_copy_implementations)]
+pub struct ExclusiveMinimum {
+    pub number: f64
+}
+
+impl super::Validator for ExclusiveMinimum {
+    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+        let number = nonstrict_process!(val.as_f64(), path);
+
+        if number > self.number {
             super::ValidationState::new()
         } else {
             val_error!(
