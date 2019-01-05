@@ -39,6 +39,11 @@ fn default_formats() -> FormatBuilders {
     });
     map.insert("uri".to_string(), uri_builder);
 
+    let uri_reference_builder = Box::new(|_def: &Value, _ctx: &schema::WalkContext| {
+        Ok(Some(Box::new(validators::formats::UriReference) as validators::BoxedValidator))
+    });
+    map.insert("uri-reference".to_string(), uri_reference_builder);
+
     let uuid_builder = Box::new(|_def: &Value, _ctx: &schema::WalkContext| {
         Ok(Some(Box::new(validators::formats::Uuid) as validators::BoxedValidator))
     });
