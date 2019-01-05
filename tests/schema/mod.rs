@@ -66,7 +66,7 @@ fn test_suite() {
             let spec = spec.as_object().unwrap();
             let mut scope = json_schema::Scope::new();
 
-            scope.compile(json_v4_schema.clone(), true).ok().unwrap();
+            scope.compile(json_v6_schema.clone(), true).ok().unwrap();
 
             let spec_desc = spec.get("description").map(|v| v.as_str().unwrap()).unwrap_or("");
 
