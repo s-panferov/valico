@@ -167,9 +167,9 @@ impl Coercer for BooleanCoercer {
         } else if val.is_string() {
             let val = val.as_str().unwrap();
             if val == "true" {
-                Ok(Some(Value::Bool(true)))
+                Ok(Some(json!(true)))
             } else if val == "false" {
-                Ok(Some(Value::Bool(false)))
+                Ok(Some(json!(false)))
             } else {
                 Err(vec![
                     Box::new(errors::WrongType {
@@ -200,7 +200,7 @@ impl Coercer for NullCoercer {
         } else if val.is_string() {
             let val = val.as_str().unwrap();
             if val == "" {
-                Ok(Some(Value::Null))
+                Ok(Some(json!(null)))
             } else {
                 Err(vec![
                     Box::new(errors::WrongType {
