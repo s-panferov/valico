@@ -126,7 +126,7 @@ impl Scope {
         schema.and_then(|schema| {
             match fragment {
                 Some(ref fragment) => {
-                    schema.resolve_fragment(fragment.as_ref()).map(|schema| {
+                    schema.resolve_fragment(fragment).map(|schema| {
                         schema::ScopedSchema::new(self, schema)
                     })
                 },

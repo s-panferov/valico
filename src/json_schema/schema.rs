@@ -96,6 +96,8 @@ impl<'a> CompilationSettings<'a> {
 
 impl Schema {
     fn compile(def: Value, external_id: Option<url::Url>, settings: CompilationSettings) -> Result<Schema, SchemaError> {
+        let def = helpers::convert_boolean_schema(def);
+
         if !def.is_object() {
             return Err(SchemaError::NotAnObject)
         }
@@ -251,8 +253,15 @@ impl Schema {
                 }
             } else if def.is_array() {
                 let array = def.as_array().unwrap();
+                let parent_key = &context.fragment[context.fragment.len() - 1];
 
                 for (idx, value) in array.iter().enumerate() {
+                    let mut value = value.clone();
+
+                    if BOOLEAN_SCHEMA_ARRAY_KEYS.contains(&parent_key[..]) {
+                        value = helpers::convert_boolean_schema(value);
+                    }
+
                     if !value.is_object() && !value.is_array() { continue; }
 
                     let mut current_fragment = context.fragment.clone();
@@ -345,5 +354,10 @@ pub fn compile(def: Value, external_id: Option<url::Url>, settings: CompilationS
 
 #[test]
 fn schema_doesnt_compile_not_object() {
-    assert!(Schema::compile(Value::Bool(true), None, CompilationSettings::new(&keywords::default(), true)).is_err());
+    assert!(Schema::compile(json!(0), None, CompilationSettings::new(&keywords::default(), true)).is_err());
+}
+
+#[test]
+fn schema_compiles_boolean_schema() {
+    assert!(Schema::compile(json!(true), None, CompilationSettings::new(&keywords::default(), true)).is_ok());
 }
