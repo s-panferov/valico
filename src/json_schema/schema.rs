@@ -345,5 +345,5 @@ pub fn compile(def: Value, external_id: Option<url::Url>, settings: CompilationS
 
 #[test]
 fn schema_doesnt_compile_not_object() {
-    assert!(Schema::compile(Value::Bool(true), None, CompilationSettings::new(&keywords::default(), true)).is_err());
+    assert!(Schema::compile(json!(0), None, CompilationSettings::new(&keywords::default(), true)).is_err());
 }
