@@ -211,6 +211,7 @@ impl Schema {
     }
 
     fn compile_sub(def: Value, context: &mut WalkContext, keywords: &CompilationSettings, is_schema: bool) -> Result<Schema, SchemaError> {
+        let def = helpers::convert_boolean_schema(def);
 
         let mut id = None;
         let mut schema = None;
@@ -228,7 +229,7 @@ impl Schema {
                 let parent_key = &context.fragment[context.fragment.len() - 1];
 
                 for (key, value) in obj.iter() {
-                    if !value.is_object() && !value.is_array() { continue; }
+                    if !value.is_object() && !value.is_array() && !value.is_boolean() { continue; }
                     if !PROPERTY_KEYS.contains(&parent_key[..]) && FINAL_KEYS.contains(&key[..]) { continue; }
 
                     let mut current_fragment = context.fragment.clone();
