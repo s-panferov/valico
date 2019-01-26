@@ -44,6 +44,7 @@ macro_rules! val_error {
     )
 }
 
+pub use self::const_::{Const};
 pub use self::contains::{Contains};
 pub use self::dependencies::{Dependencies};
 pub use self::enum_::{Enum};
@@ -62,6 +63,7 @@ pub use self::required::{Required};
 pub use self::type_::{Type};
 pub use self::unique_items::{UniqueItems};
 
+mod const_;
 mod contains;
 mod enum_;
 mod maxmin;

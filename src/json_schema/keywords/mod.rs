@@ -46,6 +46,7 @@ macro_rules! keyword_key_exists {
 #[macro_use]
 pub mod maxmin_length;
 
+pub mod const_;
 pub mod contains;
 pub mod dependencies;
 pub mod enum_;
@@ -70,6 +71,7 @@ pub fn default() -> KeywordMap {
     decouple_keyword((vec!["$ref"], Box::new(ref_::Ref)), &mut map);
     decouple_keyword((vec!["allOf"], Box::new(of::AllOf)), &mut map);
     decouple_keyword((vec!["anyOf"], Box::new(of::AnyOf)), &mut map);
+    decouple_keyword((vec!["const"], Box::new(const_::Const)), &mut map);
     decouple_keyword((vec!["contains"], Box::new(contains::Contains)), &mut map);
     decouple_keyword((vec!["dependencies"], Box::new(dependencies::Dependencies)), &mut map);
     decouple_keyword((vec!["enum"], Box::new(enum_::Enum)), &mut map);

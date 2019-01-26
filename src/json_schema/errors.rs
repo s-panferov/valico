@@ -158,6 +158,14 @@ impl_serialize!(OneOf, |err: &OneOf, map: &mut ::serde_json::Map<String, Value>|
 
 #[derive(Debug)]
 #[allow(missing_copy_implementations)]
+pub struct Const {
+    pub path: String
+}
+impl_err!(Const, "const", "Const condition is not met");
+impl_serialize!(Const);
+
+#[derive(Debug)]
+#[allow(missing_copy_implementations)]
 pub struct Contains {
     pub path: String
 }
