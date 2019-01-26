@@ -36,13 +36,6 @@ impl super::Keyword for Dependencies {
 
                 let item = item.as_array().unwrap();
 
-                if item.len() == 0 {
-                    return Err(schema::SchemaError::Malformed {
-                        path: ctx.fragment.join("/"),
-                        detail: "If the value is an array, it MUST have at least one element.".to_string()
-                    })
-                }
-
                 let mut keys = vec![];
 
                 for key in item.iter() {
