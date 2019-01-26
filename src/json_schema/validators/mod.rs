@@ -44,40 +44,42 @@ macro_rules! val_error {
     )
 }
 
-pub use self::multiple_of::{MultipleOf};
-pub use self::maxmin::{Maximum, ExclusiveMaximum, Minimum, ExclusiveMinimum};
-pub use self::maxmin_length::{MaxLength, MinLength};
-pub use self::pattern::{Pattern};
-pub use self::maxmin_items::{MaxItems, MinItems};
-pub use self::unique_items::{UniqueItems};
-pub use self::items::{Items};
-pub use self::maxmin_properties::{MaxProperties, MinProperties};
-pub use self::required::{Required};
-pub use self::properties::{Properties};
+pub use self::contains::{Contains};
 pub use self::dependencies::{Dependencies};
 pub use self::enum_::{Enum};
-pub use self::type_::{Type};
-pub use self::of::{AllOf, AnyOf, OneOf};
-pub use self::ref_::{Ref};
+pub use self::items::{Items};
+pub use self::maxmin::{Maximum, ExclusiveMaximum, Minimum, ExclusiveMinimum};
+pub use self::maxmin_items::{MaxItems, MinItems};
+pub use self::maxmin_length::{MaxLength, MinLength};
+pub use self::maxmin_properties::{MaxProperties, MinProperties};
+pub use self::multiple_of::{MultipleOf};
 pub use self::not::{Not};
+pub use self::of::{AllOf, AnyOf, OneOf};
+pub use self::pattern::{Pattern};
+pub use self::properties::{Properties};
+pub use self::ref_::{Ref};
+pub use self::required::{Required};
+pub use self::type_::{Type};
+pub use self::unique_items::{UniqueItems};
 
-mod multiple_of;
-mod maxmin;
-mod maxmin_length;
-mod pattern;
-mod maxmin_items;
-mod unique_items;
-pub mod items;
-mod maxmin_properties;
-mod required;
-pub mod properties;
-pub mod dependencies;
+mod contains;
 mod enum_;
-pub mod type_;
-mod of;
-mod ref_;
+mod maxmin;
+mod maxmin_items;
+mod maxmin_length;
+mod maxmin_properties;
+mod multiple_of;
 mod not;
+mod of;
+mod pattern;
+mod ref_;
+mod required;
+mod unique_items;
+pub mod dependencies;
 pub mod formats;
+pub mod items;
+pub mod properties;
+pub mod type_;
 
 #[derive(Debug)]
 pub struct ValidationState {
