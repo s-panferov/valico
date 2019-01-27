@@ -60,6 +60,7 @@ pub mod not;
 pub mod of;
 pub mod pattern;
 pub mod properties;
+pub mod property_names;
 pub mod ref_;
 pub mod required;
 pub mod type_;
@@ -91,6 +92,7 @@ pub fn default() -> KeywordMap {
     decouple_keyword((vec!["oneOf"], Box::new(of::OneOf)), &mut map);
     decouple_keyword((vec!["pattern"], Box::new(pattern::Pattern)), &mut map);
     decouple_keyword((vec!["properties", "additionalProperties", "patternProperties"], Box::new(properties::Properties)), &mut map);
+    decouple_keyword((vec!["propertyNames"], Box::new(property_names::PropertyNames)), &mut map);
     decouple_keyword((vec!["required"], Box::new(required::Required)), &mut map);
     decouple_keyword((vec!["type"], Box::new(type_::Type)), &mut map);
     decouple_keyword((vec!["uniqueItems"], Box::new(unique_items::UniqueItems)), &mut map);

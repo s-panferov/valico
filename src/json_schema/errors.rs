@@ -188,4 +188,3 @@ pub struct Format {
 }
 impl_err!(Format, "format", "Format is wrong", +detail);
 impl_serialize!(Format);
-
