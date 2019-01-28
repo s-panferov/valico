@@ -59,7 +59,6 @@ fn test_suite() {
         let group_exceptions: Vec<(String, String)> = vec![
             ("format.json".to_string(), "validation of JSON-pointers (JSON String Representation)".to_string()),
             ("format.json".to_string(), "format: uri-template".to_string()),
-            ("format.json".to_string(), "validation of JSON-pointers (JSON String Representation)".to_string()),
         ];
 
         for spec in spec_set.iter() {
