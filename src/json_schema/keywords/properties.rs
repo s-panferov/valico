@@ -24,7 +24,7 @@ impl super::Keyword for Properties {
                 let mut schemes = collections::HashMap::new();
                 let properties = properties.as_object().unwrap();
                 for (key, value) in properties.iter() {
-                    if value.is_object() {
+                    if value.is_object() || value.is_boolean() {
                         schemes.insert(key.to_string(),
                             helpers::alter_fragment_path(ctx.url.clone(), [
                                 ctx.escaped_fragment().as_ref(),
@@ -35,7 +35,7 @@ impl super::Keyword for Properties {
                     } else {
                         return Err(schema::SchemaError::Malformed {
                             path: ctx.fragment.join("/"),
-                            detail: "Each value of this object MUST be an object".to_string()
+                            detail: "Each value of this object MUST be an object or a boolean".to_string()
                         })
                     }
                 }
@@ -84,8 +84,7 @@ impl super::Keyword for Properties {
                 let mut patterns = vec![];
 
                 for (key, value) in pattern.iter() {
-                    if value.is_object() {
-
+                    if value.is_object() || value.is_boolean() {
                         match regex::Regex::new(key.as_ref()) {
                             Ok(regex) => {
                                 let url = helpers::alter_fragment_path(ctx.url.clone(), [
@@ -102,11 +101,10 @@ impl super::Keyword for Properties {
                                 })
                             }
                         }
-
                     } else {
                         return Err(schema::SchemaError::Malformed {
                             path: ctx.fragment.join("/"),
-                            detail: "Each value of this object MUST be an object".to_string()
+                            detail: "Each value of this object MUST be an object or a boolean".to_string()
                         })
                     }
                 }

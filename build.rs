@@ -30,6 +30,16 @@ fn main() {
         .unwrap();
     write!(&mut file, ";\n").unwrap();
 
+    write!(&mut file, "static BOOLEAN_SCHEMA_ARRAY_KEYS: phf::Set<&'static str> = ").unwrap();
+    phf_codegen::Set::new()
+        .entry("allOf")
+        .entry("anyOf")
+        .entry("items")
+        .entry("oneOf")
+        .build(&mut file)
+        .unwrap();
+    write!(&mut file, ";\n").unwrap();
+
     write!(&mut file, "static FINAL_KEYS: phf::Set<&'static str> = ").unwrap();
     phf_codegen::Set::new()
         .entry("enum")

@@ -17,7 +17,7 @@ impl super::Keyword for Items {
 
         let items = if maybe_items.is_some() {
             let items_val = maybe_items.unwrap();
-            Some(if items_val.is_object() {
+            Some(if items_val.is_object() || items_val.is_boolean() {
 
                 validators::items::ItemsKind::Schema(
                     helpers::alter_fragment_path(ctx.url.clone(), [
@@ -30,7 +30,7 @@ impl super::Keyword for Items {
 
                 let mut schemas = vec![];
                 for (idx, item) in items_val.as_array().unwrap().iter().enumerate() {
-                    if item.is_object() {
+                    if item.is_object() || item.is_boolean() {
                         schemas.push(
                             helpers::alter_fragment_path(ctx.url.clone(), [
                                 ctx.escaped_fragment().as_ref(),
@@ -41,7 +41,7 @@ impl super::Keyword for Items {
                     } else {
                         return Err(schema::SchemaError::Malformed {
                             path: ctx.fragment.join("/"),
-                            detail: "Items of this array MUST be objects".to_string()
+                            detail: "Items of this array MUST be objects or booleans".to_string()
                         })
                     }
                 }
@@ -52,7 +52,7 @@ impl super::Keyword for Items {
 
                 return Err(schema::SchemaError::Malformed {
                     path: ctx.fragment.join("/"),
-                    detail: "`items` must be an object or an array".to_string()
+                    detail: "`items` must be an object, an array or a boolean".to_string()
                 })
 
             })

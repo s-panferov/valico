@@ -25,7 +25,7 @@ macro_rules! of_keyword {
 
                     let mut schemes = vec![];
                     for (idx, scheme) in of.iter().enumerate() {
-                        if scheme.is_object() {
+                        if scheme.is_object() || scheme.is_boolean() {
                             schemes.push(
                                 helpers::alter_fragment_path(ctx.url.clone(), [
                                     ctx.escaped_fragment().as_ref(),
@@ -36,7 +36,7 @@ macro_rules! of_keyword {
                         } else {
                             return Err(schema::SchemaError::Malformed {
                                 path: ctx.fragment.join("/"),
-                                detail: "Elements of the array MUST be objects.".to_string()
+                                detail: "Elements of the array MUST be objects or booleans.".to_string()
                             })
                         }
                     }

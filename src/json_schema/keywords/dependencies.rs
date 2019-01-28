@@ -22,8 +22,7 @@ impl super::Keyword for Dependencies {
         let mut items = collections::HashMap::new();
 
         for (key, item) in deps.iter() {
-            if item.is_object() {
-
+            if item.is_object() || item.is_boolean() {
                 items.insert(key.clone(), validators::dependencies::DepKind::Schema(
                     helpers::alter_fragment_path(ctx.url.clone(), [
                         ctx.escaped_fragment().as_ref(),
@@ -31,13 +30,9 @@ impl super::Keyword for Dependencies {
                         helpers::encode(key).as_ref()
                     ].join("/"))
                 ));
-
             } else if item.is_array() {
-
                 let item = item.as_array().unwrap();
-
                 let mut keys = vec![];
-
                 for key in item.iter() {
                     if key.is_string() {
                         keys.push(key.as_str().unwrap().to_string())
@@ -48,15 +43,13 @@ impl super::Keyword for Dependencies {
                         })
                     }
                 }
-
                 items.insert(key.clone(), validators::dependencies::DepKind::Property(
                     keys
                 ));
-
             } else {
                 return Err(schema::SchemaError::Malformed {
                     path: ctx.fragment.join("/"),
-                    detail: "Each value of this object MUST be either an object or an array.".to_string()
+                    detail: "Each value of this object MUST be either an object, an array or a boolean.".to_string()
                 })
             }
         }
