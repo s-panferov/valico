@@ -3,56 +3,35 @@ use serde_json::{Value};
 use super::super::schema;
 use super::super::validators;
 
-macro_rules! kw_minmax{
-    ($name:ident, $keyword:expr, $exclusive:expr) => {
+macro_rules! kw_minmax {
+    ($name:ident, $keyword:expr) => {
         #[allow(missing_copy_implementations)]
         pub struct $name;
         impl super::Keyword for $name {
             fn compile(&self, def: &Value, ctx: &schema::WalkContext) -> super::KeywordResult {
-                let maybe_value = def.get($keyword);
-                let exclusive = def.get($exclusive);
+                let value = keyword_key_exists!(def, $keyword);
 
-                if exclusive.is_some() {
-                    if !maybe_value.is_some() {
-                        return Err(schema::SchemaError::Malformed {
-                            path: ctx.fragment.join("/"),
-                            detail: "`exclusiveMinimum/exclusiveMaximum` can't go without minimum/maximum".to_string()
-                        })
-                    }
-                }
-
-                if maybe_value.is_some() {
-                    let value = maybe_value.unwrap();
-                    if value.is_number() {
-                        let value = value.as_f64().unwrap();
-                        Ok(Some(Box::new(validators::$name {
-                            number: value,
-                            exclusive: exclusive.is_some() &&
-                                       try!(exclusive.unwrap()
-                                            .as_bool()
-                                            .ok_or_else(||
-                                                schema::SchemaError::Malformed {
-                                                    path: ctx.fragment.join("/"),
-                                                    detail: "`exclusiveMaximum/exclusiveMaximum` must be boolean".to_string()
-                                                }
-                                            ))
-                        })))
-                    } else {
-                        Err(schema::SchemaError::Malformed {
-                            path: ctx.fragment.join("/"),
-                            detail: "the `minimum/maximum` value must be a number".to_string()
-                        })
-                    }
+                if value.is_number() {
+                    let value = value.as_f64().unwrap();
+                    Ok(Some(Box::new(validators::$name {
+                        number: value
+                    })))
                 } else {
-                    Ok(None)
+                    Err(schema::SchemaError::Malformed {
+                        path: ctx.fragment.join("/"),
+                        detail: "the `minimum/maximum/exclusiveMinimum/exclusiveMaximum` value must be a number".to_string()
+                    })
                 }
             }
         }
     }
 }
 
-kw_minmax!(Minimum, "minimum", "exclusiveMinimum");
-kw_minmax!(Maximum, "maximum", "exclusiveMaximum");
+
+kw_minmax!(Maximum, "maximum");
+kw_minmax!(ExclusiveMaximum, "exclusiveMaximum");
+kw_minmax!(Minimum, "minimum");
+kw_minmax!(ExclusiveMinimum, "exclusiveMinimum");
 
 #[cfg(test)] use super::super::scope;
 #[cfg(test)] use jsonway;
@@ -63,7 +42,7 @@ kw_minmax!(Maximum, "maximum", "exclusiveMaximum");
 fn validate_maximum() {
     let mut scope = scope::Scope::new();
     let schema = scope.compile_and_return(builder::schema(|s| {
-        s.maximum(10f64, false);
+        s.maximum(10f64);
     }).into_json(), true).ok().unwrap();
 
     assert_eq!(schema.validate(&to_value(&9).unwrap()).is_valid(), true);
@@ -75,7 +54,7 @@ fn validate_maximum() {
 fn validate_exclusive_maximum() {
     let mut scope = scope::Scope::new();
     let schema = scope.compile_and_return(builder::schema(|s| {
-        s.maximum(10f64, true);
+        s.exclusive_maximum(10f64);
     }).into_json(), true).ok().unwrap();
 
     assert_eq!(schema.validate(&to_value(&9).unwrap()).is_valid(), true);
@@ -99,18 +78,13 @@ fn mailformed_exclusive_maximum() {
     assert!(scope.compile_and_return(jsonway::object(|schema| {
         schema.set("exclusiveMaximum", true);
     }).unwrap(), true).is_err());
-
-    assert!(scope.compile_and_return(jsonway::object(|schema| {
-        schema.set("maximum", 10);
-        schema.set("exclusiveMaximum", "".to_string());
-    }).unwrap(), true).is_err());
 }
 
 #[test]
 fn validate_minumum() {
     let mut scope = scope::Scope::new();
     let schema = scope.compile_and_return(builder::schema(|s| {
-        s.minimum(10f64, false);
+        s.minimum(10f64);
     }).into_json(), true).ok().unwrap();
 
     assert_eq!(schema.validate(&to_value(&9).unwrap()).is_valid(), false);
@@ -122,7 +96,7 @@ fn validate_minumum() {
 fn validate_exclusive_minimum() {
     let mut scope = scope::Scope::new();
     let schema = scope.compile_and_return(builder::schema(|s| {
-        s.minimum(10f64, true);
+        s.exclusive_minimum(10f64);
     }).into_json(), true).ok().unwrap();
 
     assert_eq!(schema.validate(&to_value(&9).unwrap()).is_valid(), false);
@@ -145,10 +119,5 @@ fn mailformed_exclusive_minumum() {
 
     assert!(scope.compile_and_return(jsonway::object(|schema| {
         schema.set("exclusiveMinimum", true);
-    }).unwrap(), true).is_err());
-
-    assert!(scope.compile_and_return(jsonway::object(|schema| {
-        schema.set("minimum", 10);
-        schema.set("exclusiveMinimum", "".to_string());
     }).unwrap(), true).is_err());
 }

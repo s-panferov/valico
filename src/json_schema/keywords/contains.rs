@@ -5,22 +5,22 @@ use super::super::validators;
 use super::super::helpers;
 
 #[allow(missing_copy_implementations)]
-pub struct Not;
-impl super::Keyword for Not {
+pub struct Contains;
+impl super::Keyword for Contains {
     fn compile(&self, def: &Value, ctx: &schema::WalkContext) -> super::KeywordResult {
-        let not = keyword_key_exists!(def, "not");
+        let contains = keyword_key_exists!(def, "contains");
 
-        if not.is_object() || not.is_boolean() {
-            Ok(Some(Box::new(validators::Not {
+        if contains.is_object() || contains.is_boolean() {
+            Ok(Some(Box::new(validators::Contains {
                 url: helpers::alter_fragment_path(ctx.url.clone(), [
                         ctx.escaped_fragment().as_ref(),
-                        "not"
+                        "contains"
                      ].join("/"))
             })))
         } else {
             Err(schema::SchemaError::Malformed {
                 path: ctx.fragment.join("/"),
-                detail: "The value of `not` MUST be an object or a boolean".to_string()
+                detail: "The value of contains MUST be an object or a boolean".to_string()
             })
         }
     }

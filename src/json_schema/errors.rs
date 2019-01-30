@@ -158,6 +158,22 @@ impl_serialize!(OneOf, |err: &OneOf, map: &mut ::serde_json::Map<String, Value>|
 
 #[derive(Debug)]
 #[allow(missing_copy_implementations)]
+pub struct Const {
+    pub path: String
+}
+impl_err!(Const, "const", "Const condition is not met");
+impl_serialize!(Const);
+
+#[derive(Debug)]
+#[allow(missing_copy_implementations)]
+pub struct Contains {
+    pub path: String
+}
+impl_err!(Contains, "contains", "Contains condition is not met");
+impl_serialize!(Contains);
+
+#[derive(Debug)]
+#[allow(missing_copy_implementations)]
 pub struct Not {
     pub path: String
 }
@@ -172,4 +188,3 @@ pub struct Format {
 }
 impl_err!(Format, "format", "Format is wrong", +detail);
 impl_serialize!(Format);
-

@@ -111,3 +111,10 @@ pub fn serialize_schema_path(url: &Url) -> (String, Option<String>) {
         _ => (url_str, None)
     }
 }
+
+pub fn convert_boolean_schema(val: Value) -> Value  {
+    match val.as_bool() {
+        Some(b) => if b { json!({}) } else { json!({"not": {}}) }
+        None => val
+    }
+}

@@ -4,7 +4,7 @@ extern crate jsonway;
 extern crate uuid;
 extern crate phf;
 extern crate serde;
-extern crate serde_json;
+#[macro_use] extern crate serde_json;
 extern crate chrono;
 extern crate publicsuffix;
 

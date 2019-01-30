@@ -126,7 +126,7 @@ impl Scope {
         schema.and_then(|schema| {
             match fragment {
                 Some(ref fragment) => {
-                    schema.resolve_fragment(fragment.as_ref()).map(|schema| {
+                    schema.resolve_fragment(fragment).map(|schema| {
                         schema::ScopedSchema::new(self, schema)
                     })
                 },
@@ -144,13 +144,13 @@ fn lookup() {
     let mut scope = Scope::new();
 
     scope.compile(jsonway::object(|schema| {
-        schema.set("id", "http://example.com/schema".to_string())
+        schema.set("$id", "http://example.com/schema".to_string())
     }).unwrap(), false).ok().unwrap();
 
     scope.compile(jsonway::object(|schema| {
-        schema.set("id", "http://example.com/schema#sub".to_string());
+        schema.set("$id", "http://example.com/schema#sub".to_string());
         schema.object("subschema", |subschema| {
-            subschema.set("id", "#subschema".to_string());
+            subschema.set("$id", "#subschema".to_string());
         })
     }).unwrap(), false).ok().unwrap();
 

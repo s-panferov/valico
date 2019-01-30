@@ -43,7 +43,6 @@ pub fn assert_str_eq_with_scope(params: &json_dsl::Builder, scope: Option<&json_
 
 pub fn assert_error_with_scope<T: error::ValicoError + 'static>(params: &json_dsl::Builder, scope: Option<&json_schema::Scope>, body: &str, path: &str) {
     let errors = get_errors(params, scope, body);
-    println!("{:?}", errors);
     let error = errors.iter().find(|error| {
         let err = error.downcast::<T>();
         err.is_some() && err.unwrap().get_path() == path

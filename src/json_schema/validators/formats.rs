@@ -154,3 +154,26 @@ impl super::Validator for Uri {
         }
     }
 }
+
+#[allow(missing_copy_implementations)]
+pub struct UriReference;
+
+impl super::Validator for UriReference {
+    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+        let string = nonstrict_process!(val.as_str(), path);
+
+        let base_url = url::Url::parse("http://example.com/").unwrap();
+
+        match base_url.join(string) {
+            Ok(_) => super::ValidationState::new(),
+            Err(err) => {
+                val_error!(
+                    errors::Format {
+                        path: path.to_string(),
+                        detail: format!("Malformed URI reference: {}", err)
+                    }
+                )
+            }
+        }
+    }
+}

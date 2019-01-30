@@ -139,7 +139,7 @@ fn validate_null() {
         s.null();
     }).into_json(), true).ok().unwrap();
 
-    assert_eq!(schema.validate(&Value::Null).is_valid(), true);
+    assert_eq!(schema.validate(&json!(null)).is_valid(), true);
     assert_eq!(schema.validate(&to_value(&"string").unwrap()).is_valid(), false);
 }
 

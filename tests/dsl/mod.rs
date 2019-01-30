@@ -261,7 +261,7 @@ fn is_validates_with_function_validator() {
         params.req("a", |a| {
             a.coerce(json_dsl::u64());
             a.validate_with(|val: &Value, path: &str| {
-                if *val == Value::Number(::serde_json::Number::from(2u64)) {
+                if *val == json!(2) {
                     Ok(())
                 } else {
                     Err(vec![
@@ -436,7 +436,7 @@ fn it_validates_params_with_schema() {
         params.req("a", |a| {
             a.schema(|schema| {
                 schema.integer();
-                schema.maximum(10f64, false);
+                schema.maximum(10f64);
             })
         });
     });
@@ -455,7 +455,7 @@ fn it_validates_params_with_schema_and_coercion() {
         params.req("a", |a| {
             a.coerce(json_dsl::u64());
             a.schema(|schema| {
-                schema.maximum(10f64, false);
+                schema.maximum(10f64);
             })
         });
     });

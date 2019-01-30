@@ -96,6 +96,8 @@ impl<'a> CompilationSettings<'a> {
 
 impl Schema {
     fn compile(def: Value, external_id: Option<url::Url>, settings: CompilationSettings) -> Result<Schema, SchemaError> {
+        let def = helpers::convert_boolean_schema(def);
+
         if !def.is_object() {
             return Err(SchemaError::NotAnObject)
         }
@@ -103,7 +105,7 @@ impl Schema {
         let id = if external_id.is_some() {
             external_id.unwrap()
         } else {
-            try!(helpers::parse_url_key("id", &def)).clone().unwrap_or_else(|| helpers::generate_id())
+            try!(helpers::parse_url_key("$id", &def)).clone().unwrap_or_else(|| helpers::generate_id())
         };
 
         let schema = try!(helpers::parse_url_key("$schema", &def));
@@ -115,7 +117,7 @@ impl Schema {
             let mut scopes = collections::HashMap::new();
 
             for (key, value) in obj.iter() {
-                if !value.is_object() && !value.is_array() { continue; }
+                if !value.is_object() && !value.is_array() && !value.is_boolean() { continue; }
                 if FINAL_KEYS.contains(&key[..]) { continue; }
 
                 let mut context = WalkContext {
@@ -209,12 +211,13 @@ impl Schema {
     }
 
     fn compile_sub(def: Value, context: &mut WalkContext, keywords: &CompilationSettings, is_schema: bool) -> Result<Schema, SchemaError> {
+        let def = helpers::convert_boolean_schema(def);
 
         let mut id = None;
         let mut schema = None;
 
         if is_schema {
-            id = try!(helpers::parse_url_key_with_base("id", &def, context.url));
+            id = try!(helpers::parse_url_key_with_base("$id", &def, context.url));
             schema = try!(helpers::parse_url_key("$schema", &def));
         }
 
@@ -226,7 +229,7 @@ impl Schema {
                 let parent_key = &context.fragment[context.fragment.len() - 1];
 
                 for (key, value) in obj.iter() {
-                    if !value.is_object() && !value.is_array() { continue; }
+                    if !value.is_object() && !value.is_array() && !value.is_boolean() { continue; }
                     if !PROPERTY_KEYS.contains(&parent_key[..]) && FINAL_KEYS.contains(&key[..]) { continue; }
 
                     let mut current_fragment = context.fragment.clone();
@@ -251,8 +254,15 @@ impl Schema {
                 }
             } else if def.is_array() {
                 let array = def.as_array().unwrap();
+                let parent_key = &context.fragment[context.fragment.len() - 1];
 
                 for (idx, value) in array.iter().enumerate() {
+                    let mut value = value.clone();
+
+                    if BOOLEAN_SCHEMA_ARRAY_KEYS.contains(&parent_key[..]) {
+                        value = helpers::convert_boolean_schema(value);
+                    }
+
                     if !value.is_object() && !value.is_array() { continue; }
 
                     let mut current_fragment = context.fragment.clone();
@@ -345,5 +355,10 @@ pub fn compile(def: Value, external_id: Option<url::Url>, settings: CompilationS
 
 #[test]
 fn schema_doesnt_compile_not_object() {
-    assert!(Schema::compile(Value::Bool(true), None, CompilationSettings::new(&keywords::default(), true)).is_err());
+    assert!(Schema::compile(json!(0), None, CompilationSettings::new(&keywords::default(), true)).is_err());
+}
+
+#[test]
+fn schema_compiles_boolean_schema() {
+    assert!(Schema::compile(json!(true), None, CompilationSettings::new(&keywords::default(), true)).is_ok());
 }

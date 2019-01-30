@@ -4,7 +4,7 @@ use super::super::schema;
 use super::super::validators;
 use super::super::helpers;
 
-macro_rules! of_keyword{
+macro_rules! of_keyword {
     ($name:ident, $kw:expr) => {
 
         #[allow(missing_copy_implementations)]
@@ -25,7 +25,7 @@ macro_rules! of_keyword{
 
                     let mut schemes = vec![];
                     for (idx, scheme) in of.iter().enumerate() {
-                        if scheme.is_object() {
+                        if scheme.is_object() || scheme.is_boolean() {
                             schemes.push(
                                 helpers::alter_fragment_path(ctx.url.clone(), [
                                     ctx.escaped_fragment().as_ref(),
@@ -36,7 +36,7 @@ macro_rules! of_keyword{
                         } else {
                             return Err(schema::SchemaError::Malformed {
                                 path: ctx.fragment.join("/"),
-                                detail: "Elements of the array MUST be objects.".to_string()
+                                detail: "Elements of the array MUST be objects or booleans.".to_string()
                             })
                         }
                     }
@@ -70,10 +70,10 @@ fn validate_all_of() {
     let schema = scope.compile_and_return(builder::schema(|s| {
         s.all_of(|all_of| {
             all_of.push(|schema| {
-                schema.minimum(5f64, false);
+                schema.minimum(5f64);
             });
             all_of.push(|schema| {
-                schema.maximum(10f64, false);
+                schema.maximum(10f64);
             });
         });
     }).into_json(), true).ok().unwrap();
@@ -89,10 +89,10 @@ fn validate_any_of() {
     let schema = scope.compile_and_return(builder::schema(|s| {
         s.any_of(|all_of| {
             all_of.push(|schema| {
-                schema.maximum(5f64, false);
+                schema.maximum(5f64);
             });
             all_of.push(|schema| {
-                schema.maximum(10f64, false);
+                schema.maximum(10f64);
             });
         });
     }).into_json(), true).ok().unwrap();
@@ -108,10 +108,10 @@ fn validate_one_of() {
     let schema = scope.compile_and_return(builder::schema(|s| {
         s.one_of(|all_of| {
             all_of.push(|schema| {
-                schema.maximum(5f64, false);
+                schema.maximum(5f64);
             });
             all_of.push(|schema| {
-                schema.maximum(10f64, false);
+                schema.maximum(10f64);
             });
         });
     }).into_json(), true).ok().unwrap();

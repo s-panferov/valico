@@ -99,7 +99,7 @@ macro_rules! impl_err {
     }
 }
 
-macro_rules! impl_serialize{
+macro_rules! impl_serialize {
     ($err:ty) => {
         impl Serialize for $err {
             fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error> where S: Serializer {

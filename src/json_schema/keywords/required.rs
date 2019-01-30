@@ -12,13 +12,6 @@ impl super::Keyword for Required {
         if required.is_array() {
             let required = required.as_array().unwrap();
 
-            if required.len() == 0 {
-                return Err(schema::SchemaError::Malformed {
-                    path: ctx.fragment.join("/"),
-                    detail: "This array MUST have at least one element.".to_string()
-                })
-            }
-
             let mut items = vec![];
             for item in required.iter() {
                 if item.is_string() {
@@ -71,10 +64,6 @@ fn validate() {
 #[test]
 fn malformed() {
     let mut scope = scope::Scope::new();
-
-    assert!(scope.compile_and_return(jsonway::object(|schema| {
-        schema.array("required", |_| {});
-    }).unwrap(), true).is_err());
 
     assert!(scope.compile_and_return(jsonway::object(|schema| {
         schema.array("required", |required| {

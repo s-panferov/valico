@@ -5,22 +5,22 @@ use super::super::validators;
 use super::super::helpers;
 
 #[allow(missing_copy_implementations)]
-pub struct Not;
-impl super::Keyword for Not {
+pub struct PropertyNames;
+impl super::Keyword for PropertyNames {
     fn compile(&self, def: &Value, ctx: &schema::WalkContext) -> super::KeywordResult {
-        let not = keyword_key_exists!(def, "not");
+        let property_names = keyword_key_exists!(def, "propertyNames");
 
-        if not.is_object() || not.is_boolean() {
-            Ok(Some(Box::new(validators::Not {
+        if property_names.is_object() || property_names.is_boolean() {
+            Ok(Some(Box::new(validators::PropertyNames {
                 url: helpers::alter_fragment_path(ctx.url.clone(), [
                         ctx.escaped_fragment().as_ref(),
-                        "not"
+                        "propertyNames"
                      ].join("/"))
             })))
         } else {
             Err(schema::SchemaError::Malformed {
                 path: ctx.fragment.join("/"),
-                detail: "The value of `not` MUST be an object or a boolean".to_string()
+                detail: "The value of propertyNames MUST be an object or a boolean".to_string()
             })
         }
     }

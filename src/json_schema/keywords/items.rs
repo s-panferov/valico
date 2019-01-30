@@ -17,7 +17,7 @@ impl super::Keyword for Items {
 
         let items = if maybe_items.is_some() {
             let items_val = maybe_items.unwrap();
-            Some(if items_val.is_object() {
+            Some(if items_val.is_object() || items_val.is_boolean() {
 
                 validators::items::ItemsKind::Schema(
                     helpers::alter_fragment_path(ctx.url.clone(), [
@@ -30,7 +30,7 @@ impl super::Keyword for Items {
 
                 let mut schemas = vec![];
                 for (idx, item) in items_val.as_array().unwrap().iter().enumerate() {
-                    if item.is_object() {
+                    if item.is_object() || item.is_boolean() {
                         schemas.push(
                             helpers::alter_fragment_path(ctx.url.clone(), [
                                 ctx.escaped_fragment().as_ref(),
@@ -41,7 +41,7 @@ impl super::Keyword for Items {
                     } else {
                         return Err(schema::SchemaError::Malformed {
                             path: ctx.fragment.join("/"),
-                            detail: "Items of this array MUST be objects".to_string()
+                            detail: "Items of this array MUST be objects or booleans".to_string()
                         })
                     }
                 }
@@ -52,7 +52,7 @@ impl super::Keyword for Items {
 
                 return Err(schema::SchemaError::Malformed {
                     path: ctx.fragment.join("/"),
-                    detail: "`items` must be an object or an array".to_string()
+                    detail: "`items` must be an object, an array or a boolean".to_string()
                 })
 
             })
@@ -104,8 +104,8 @@ fn validate_items_with_schema() {
     let mut scope = scope::Scope::new();
     let schema = scope.compile_and_return(builder::schema(|s| {
         s.items_schema(|items| {
-            items.minimum(5f64, false);
-            items.maximum(10f64, false);
+            items.minimum(5f64);
+            items.maximum(10f64);
         });
     }).into_json(), true).ok().unwrap();
 
@@ -120,12 +120,12 @@ fn validate_items_with_array_of_schemes() {
     let schema = scope.compile_and_return(builder::schema(|s| {
         s.items_array(|items| {
             items.push(|item| {
-                item.minimum(1f64, false);
-                item.maximum(3f64, false);
+                item.minimum(1f64);
+                item.maximum(3f64);
             });
             items.push(|item| {
-                item.minimum(3f64, false);
-                item.maximum(6f64, false);
+                item.minimum(3f64);
+                item.maximum(6f64);
             });
         })
     }).into_json(), true).ok().unwrap();
@@ -144,12 +144,12 @@ fn validate_items_with_array_of_schemes_with_additional_bool() {
     let schema = scope.compile_and_return(builder::schema(|s| {
         s.items_array(|items| {
             items.push(|item| {
-                item.minimum(1f64, false);
-                item.maximum(3f64, false);
+                item.minimum(1f64);
+                item.maximum(3f64);
             });
             items.push(|item| {
-                item.minimum(3f64, false);
-                item.maximum(6f64, false);
+                item.minimum(3f64);
+                item.maximum(6f64);
             });
         });
         s.additional_items(false);
@@ -164,16 +164,16 @@ fn validate_items_with_array_of_schemes_with_additional_schema() {
     let schema = scope.compile_and_return(builder::schema(|s| {
         s.items_array(|items| {
             items.push(|item| {
-                item.minimum(1f64, false);
-                item.maximum(3f64, false);
+                item.minimum(1f64);
+                item.maximum(3f64);
             });
             items.push(|item| {
-                item.minimum(3f64, false);
-                item.maximum(6f64, false);
+                item.minimum(3f64);
+                item.maximum(6f64);
             });
         });
         s.additional_items_schema(|add| {
-           add.maximum(100f64, false)
+           add.maximum(100f64)
         });
     }).into_json(), true).ok().unwrap();
 
