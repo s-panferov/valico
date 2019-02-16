@@ -1,24 +1,30 @@
-use url;
-use std::collections;
-use serde_json::{Value};
 use phf;
+use serde_json::Value;
+use std::collections;
 use std::ops;
+use url;
 
 use super::helpers;
-use super::scope;
 use super::keywords;
+use super::scope;
 use super::validators;
 
 #[derive(Debug)]
 pub struct WalkContext<'a> {
     pub url: &'a url::Url,
     pub fragment: Vec<String>,
-    pub scopes: &'a mut collections::HashMap<String, Vec<String>>
+    pub scopes: &'a mut collections::HashMap<String, Vec<String>>,
 }
 
 impl<'a> WalkContext<'a> {
     pub fn escaped_fragment(&self) -> String {
-        helpers::connect(self.fragment.iter().map(|s| s.as_ref()).collect::<Vec<&str>>().as_ref())
+        helpers::connect(
+            self.fragment
+                .iter()
+                .map(|s| s.as_ref())
+                .collect::<Vec<&str>>()
+                .as_ref(),
+        )
     }
 }
 
@@ -30,16 +36,13 @@ pub enum SchemaError {
     NotAnObject,
     UrlParseError(url::ParseError),
     UnknownKey(String),
-    Malformed {
-        path: String,
-        detail: String
-    }
+    Malformed { path: String, detail: String },
 }
 
 #[derive(Debug)]
 pub struct ScopedSchema<'a> {
     scope: &'a scope::Scope,
-    schema: &'a Schema
+    schema: &'a Schema,
 }
 
 impl<'a> ops::Deref for ScopedSchema<'a> {
@@ -52,18 +55,15 @@ impl<'a> ops::Deref for ScopedSchema<'a> {
 
 impl<'a> ScopedSchema<'a> {
     pub fn new(scope: &'a scope::Scope, schema: &'a Schema) -> ScopedSchema<'a> {
-        ScopedSchema {
-            scope: scope,
-            schema: schema
-        }
+        ScopedSchema { scope, schema }
     }
 
     pub fn validate(&self, data: &Value) -> validators::ValidationState {
-        return self.schema.validate_in_scope(data, "", self.scope);
+        self.schema.validate_in_scope(data, "", self.scope)
     }
 
     pub fn validate_in(&self, data: &Value, path: &str) -> validators::ValidationState {
-        return self.schema.validate_in_scope(data, path, self.scope);
+        self.schema.validate_in_scope(data, path, self.scope)
     }
 }
 
@@ -75,40 +75,49 @@ pub struct Schema {
     original: Value,
     tree: collections::BTreeMap<String, Schema>,
     validators: validators::Validators,
-    scopes: collections::HashMap<String, Vec<String>>
+    scopes: collections::HashMap<String, Vec<String>>,
 }
 
 include!(concat!(env!("OUT_DIR"), "/codegen.rs"));
 
 pub struct CompilationSettings<'a> {
     pub keywords: &'a keywords::KeywordMap,
-    pub ban_unknown_keywords: bool
+    pub ban_unknown_keywords: bool,
 }
 
 impl<'a> CompilationSettings<'a> {
-    pub fn new(keywords: &'a keywords::KeywordMap, ban_unknown_keywords: bool) -> CompilationSettings<'a> {
+    pub fn new(
+        keywords: &'a keywords::KeywordMap,
+        ban_unknown_keywords: bool,
+    ) -> CompilationSettings<'a> {
         CompilationSettings {
-            keywords: keywords,
-            ban_unknown_keywords: ban_unknown_keywords,
+            keywords,
+            ban_unknown_keywords,
         }
     }
 }
 
 impl Schema {
-    fn compile(def: Value, external_id: Option<url::Url>, settings: CompilationSettings) -> Result<Schema, SchemaError> {
+    fn compile(
+        def: Value,
+        external_id: Option<url::Url>,
+        settings: CompilationSettings<'_>,
+    ) -> Result<Schema, SchemaError> {
         let def = helpers::convert_boolean_schema(def);
 
         if !def.is_object() {
-            return Err(SchemaError::NotAnObject)
+            return Err(SchemaError::NotAnObject);
         }
 
         let id = if external_id.is_some() {
             external_id.unwrap()
         } else {
-            try!(helpers::parse_url_key("$id", &def)).clone().unwrap_or_else(|| helpers::generate_id())
+            helpers::parse_url_key("$id", &def)?
+                .clone()
+                .unwrap_or_else(helpers::generate_id)
         };
 
-        let schema = try!(helpers::parse_url_key("$schema", &def));
+        let schema = helpers::parse_url_key("$schema", &def)?;
 
         let (tree, mut scopes) = {
             let mut tree = collections::BTreeMap::new();
@@ -117,21 +126,25 @@ impl Schema {
             let mut scopes = collections::HashMap::new();
 
             for (key, value) in obj.iter() {
-                if !value.is_object() && !value.is_array() && !value.is_boolean() { continue; }
-                if FINAL_KEYS.contains(&key[..]) { continue; }
+                if !value.is_object() && !value.is_array() && !value.is_boolean() {
+                    continue;
+                }
+                if FINAL_KEYS.contains(&key[..]) {
+                    continue;
+                }
 
                 let mut context = WalkContext {
                     url: &id,
                     fragment: vec![key.clone()],
-                    scopes: &mut scopes
+                    scopes: &mut scopes,
                 };
 
-                let scheme = try!(Schema::compile_sub(
+                let scheme = Schema::compile_sub(
                     value.clone(),
                     &mut context,
                     &settings,
-                    !NON_SCHEMA_KEYS.contains(&key[..])
-                ));
+                    !NON_SCHEMA_KEYS.contains(&key[..]),
+                )?;
 
                 tree.insert(helpers::encode(key), scheme);
             }
@@ -139,27 +152,40 @@ impl Schema {
             (tree, scopes)
         };
 
-        let validators = try!(Schema::compile_keywords(&def, &WalkContext {
-            url: &id,
-            fragment: vec![],
-            scopes: &mut scopes,
-        }, &settings));
+        let validators = Schema::compile_keywords(
+            &def,
+            &WalkContext {
+                url: &id,
+                fragment: vec![],
+                scopes: &mut scopes,
+            },
+            &settings,
+        )?;
 
         let schema = Schema {
             id: Some(id),
-            schema: schema,
+            schema,
             original: def,
-            tree: tree,
-            validators: validators,
-            scopes: scopes
+            tree,
+            validators,
+            scopes,
         };
 
         Ok(schema)
     }
 
-    fn compile_keywords(def: &Value, context: &WalkContext, settings: &CompilationSettings) -> Result<validators::Validators, SchemaError> {
+    fn compile_keywords(
+        def: &Value,
+        context: &WalkContext<'_>,
+        settings: &CompilationSettings<'_>,
+    ) -> Result<validators::Validators, SchemaError> {
         let mut validators = vec![];
-        let mut keys: collections::HashSet<&str> = def.as_object().unwrap().keys().map(|key| key.as_ref()).collect();
+        let mut keys: collections::HashSet<&str> = def
+            .as_object()
+            .unwrap()
+            .keys()
+            .map(|key| key.as_ref())
+            .collect();
         let mut not_consumed = collections::HashSet::new();
 
         loop {
@@ -172,21 +198,18 @@ impl Schema {
 
                         let is_exclusive_keyword = keyword.keyword.is_exclusive();
 
-                        match try!(keyword.keyword.compile(def, context)) {
-                            Some(validator) => {
-                                if is_exclusive_keyword {
-                                    validators = vec![validator];
-                                } else {
-                                    validators.push(validator);
-                                }
-                            },
-                            None => ()
-                        };
+                        if let Some(validator) = keyword.keyword.compile(def, context)? {
+                            if is_exclusive_keyword {
+                                validators = vec![validator];
+                            } else {
+                                validators.push(validator);
+                            }
+                        }
 
                         if is_exclusive_keyword {
                             break;
                         }
-                    },
+                    }
                     None => {
                         keys.remove(&key);
                         if settings.ban_unknown_keywords {
@@ -199,10 +222,10 @@ impl Schema {
             }
         }
 
-        if settings.ban_unknown_keywords && not_consumed.len() > 0 {
+        if settings.ban_unknown_keywords && !not_consumed.is_empty() {
             for key in not_consumed.iter() {
                 if !ALLOW_NON_CONSUMED_KEYS.contains(&key[..]) {
-                    return Err(SchemaError::UnknownKey(key.to_string()))
+                    return Err(SchemaError::UnknownKey(key.to_string()));
                 }
             }
         }
@@ -210,16 +233,25 @@ impl Schema {
         Ok(validators)
     }
 
-    fn compile_sub(def: Value, context: &mut WalkContext, keywords: &CompilationSettings, is_schema: bool) -> Result<Schema, SchemaError> {
+    fn compile_sub(
+        def: Value,
+        context: &mut WalkContext<'_>,
+        keywords: &CompilationSettings<'_>,
+        is_schema: bool,
+    ) -> Result<Schema, SchemaError> {
         let def = helpers::convert_boolean_schema(def);
 
-        let mut id = None;
-        let mut schema = None;
+        let id = if is_schema {
+            helpers::parse_url_key_with_base("$id", &def, context.url)?
+        } else {
+            None
+        };
 
-        if is_schema {
-            id = try!(helpers::parse_url_key_with_base("$id", &def, context.url));
-            schema = try!(helpers::parse_url_key("$schema", &def));
-        }
+        let schema = if is_schema {
+            helpers::parse_url_key("$schema", &def)?
+        } else {
+            None
+        };
 
         let tree = {
             let mut tree = collections::BTreeMap::new();
@@ -229,26 +261,27 @@ impl Schema {
                 let parent_key = &context.fragment[context.fragment.len() - 1];
 
                 for (key, value) in obj.iter() {
-                    if !value.is_object() && !value.is_array() && !value.is_boolean() { continue; }
-                    if !PROPERTY_KEYS.contains(&parent_key[..]) && FINAL_KEYS.contains(&key[..]) { continue; }
+                    if !value.is_object() && !value.is_array() && !value.is_boolean() {
+                        continue;
+                    }
+                    if !PROPERTY_KEYS.contains(&parent_key[..]) && FINAL_KEYS.contains(&key[..]) {
+                        continue;
+                    }
 
                     let mut current_fragment = context.fragment.clone();
                     current_fragment.push(key.clone());
 
-                    let is_schema = PROPERTY_KEYS.contains(&parent_key[..]) || !NON_SCHEMA_KEYS.contains(&key[..]);
+                    let is_schema = PROPERTY_KEYS.contains(&parent_key[..])
+                        || !NON_SCHEMA_KEYS.contains(&key[..]);
 
                     let mut context = WalkContext {
                         url: id.as_ref().unwrap_or(context.url),
                         fragment: current_fragment,
-                        scopes: context.scopes
+                        scopes: context.scopes,
                     };
 
-                    let scheme = try!(Schema::compile_sub(
-                        value.clone(),
-                        &mut context,
-                        keywords,
-                        is_schema
-                    ));
+                    let scheme =
+                        Schema::compile_sub(value.clone(), &mut context, keywords, is_schema)?;
 
                     tree.insert(helpers::encode(key), scheme);
                 }
@@ -263,7 +296,9 @@ impl Schema {
                         value = helpers::convert_boolean_schema(value);
                     }
 
-                    if !value.is_object() && !value.is_array() { continue; }
+                    if !value.is_object() && !value.is_array() {
+                        continue;
+                    }
 
                     let mut current_fragment = context.fragment.clone();
                     current_fragment.push(idx.to_string().clone());
@@ -271,15 +306,10 @@ impl Schema {
                     let mut context = WalkContext {
                         url: id.as_ref().unwrap_or(context.url),
                         fragment: current_fragment,
-                        scopes: context.scopes
+                        scopes: context.scopes,
                     };
 
-                    let scheme = try!(Schema::compile_sub(
-                        value.clone(),
-                        &mut context,
-                        keywords,
-                        true
-                    ));
+                    let scheme = Schema::compile_sub(value.clone(), &mut context, keywords, true)?;
 
                     tree.insert(idx.to_string().clone(), scheme);
                 }
@@ -289,22 +319,24 @@ impl Schema {
         };
 
         if id.is_some() {
-            context.scopes.insert(id.clone().unwrap().into_string(), context.fragment.clone());
+            context
+                .scopes
+                .insert(id.clone().unwrap().into_string(), context.fragment.clone());
         }
 
         let validators = if is_schema && def.is_object() {
-            try!(Schema::compile_keywords(&def, context, keywords))
+            Schema::compile_keywords(&def, context, keywords)?
         } else {
             vec![]
         };
 
         let schema = Schema {
-            id: id,
-            schema: schema,
+            id,
+            schema,
             original: def,
-            tree: tree,
-            validators: validators,
-            scopes: collections::HashMap::new()
+            tree,
+            validators,
+            scopes: collections::HashMap::new(),
         };
 
         Ok(schema)
@@ -315,21 +347,21 @@ impl Schema {
         path.map(|path| {
             let mut schema = self;
             for item in path.iter() {
-                schema = schema.tree.get(item).unwrap()
+                schema = &schema.tree[item]
             }
             schema
         })
     }
 
     pub fn resolve_fragment(&self, fragment: &str) -> Option<&Schema> {
-        assert!(fragment.starts_with("/"), "Can't resolve id fragments");
+        assert!(fragment.starts_with('/'), "Can't resolve id fragments");
 
-        let parts = fragment[1..].split("/");
+        let parts = fragment[1..].split('/');
         let mut schema = self;
         for part in parts {
             match schema.tree.get(part) {
                 Some(sch) => schema = sch,
-                None => return None
+                None => return None,
             }
         }
 
@@ -338,7 +370,12 @@ impl Schema {
 }
 
 impl Schema {
-    fn validate_in_scope(&self, data: &Value, path: &str, scope: &scope::Scope) -> validators::ValidationState {
+    fn validate_in_scope(
+        &self,
+        data: &Value,
+        path: &str,
+        scope: &scope::Scope,
+    ) -> validators::ValidationState {
         let mut state = validators::ValidationState::new();
 
         for validator in self.validators.iter() {
@@ -349,16 +386,30 @@ impl Schema {
     }
 }
 
-pub fn compile(def: Value, external_id: Option<url::Url>, settings: CompilationSettings) -> Result<Schema, SchemaError> {
+pub fn compile(
+    def: Value,
+    external_id: Option<url::Url>,
+    settings: CompilationSettings<'_>,
+) -> Result<Schema, SchemaError> {
     Schema::compile(def, external_id, settings)
 }
 
 #[test]
 fn schema_doesnt_compile_not_object() {
-    assert!(Schema::compile(json!(0), None, CompilationSettings::new(&keywords::default(), true)).is_err());
+    assert!(Schema::compile(
+        json!(0),
+        None,
+        CompilationSettings::new(&keywords::default(), true)
+    )
+    .is_err());
 }
 
 #[test]
 fn schema_compiles_boolean_schema() {
-    assert!(Schema::compile(json!(true), None, CompilationSettings::new(&keywords::default(), true)).is_ok());
+    assert!(Schema::compile(
+        json!(true),
+        None,
+        CompilationSettings::new(&keywords::default(), true)
+    )
+    .is_ok());
 }

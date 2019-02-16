@@ -1,10 +1,13 @@
+use serde_json::{from_str, to_string_pretty, to_value, Value};
 use std::fs;
-use std::path;
 use std::io::Read;
-use serde_json::{Value, from_str, to_value, to_string_pretty};
+use std::path;
 use valico::json_schema;
 
-fn visit_specs<F>(dir: &path::Path, cb: F) where F: Fn(&path::Path, Value) + Copy {
+fn visit_specs<F>(dir: &path::Path, cb: F)
+where
+    F: Fn(&path::Path, Value) + Copy,
+{
     let contents = fs::read_dir(dir).ok().unwrap();
     for entry in contents {
         let entry = entry.unwrap();
@@ -32,77 +35,144 @@ fn visit_specs<F>(dir: &path::Path, cb: F) where F: Fn(&path::Path, Value) + Cop
 fn test_suite() {
     let mut content = String::new();
 
-    fs::File::open(&path::Path::new("tests/schema/schema.json")).ok().unwrap()
-        .read_to_string(&mut content).ok().unwrap();
+    fs::File::open(&path::Path::new("tests/schema/schema.json"))
+        .ok()
+        .unwrap()
+        .read_to_string(&mut content)
+        .ok()
+        .unwrap();
 
     let json_v6_schema: Value = from_str(&content).unwrap();
 
-    visit_specs(&path::Path::new("tests/schema/JSON-Schema-Test-Suite/tests/draft6"), |path, spec_set: Value| {
-        let spec_set = spec_set.as_array().unwrap();
+    visit_specs(
+        &path::Path::new("tests/schema/JSON-Schema-Test-Suite/tests/draft6"),
+        |path, spec_set: Value| {
+            let spec_set = spec_set.as_array().unwrap();
 
-        let exceptions: Vec<(String, String)> = vec![
-            ("maxLength.json".to_string(), "two supplementary Unicode code points is long enough".to_string()),
-            ("minLength.json".to_string(), "one supplementary Unicode code point is not long enough".to_string()),
-            ("refRemote.json".to_string(), "remote ref invalid".to_string()),
-            ("refRemote.json".to_string(), "remote fragment invalid".to_string()),
-            ("refRemote.json".to_string(), "ref within ref invalid".to_string()),
-            ("refRemote.json".to_string(), "changed scope ref invalid".to_string()),
-            ("refRemote.json".to_string(), "base URI change ref invalid".to_string()),
-            ("refRemote.json".to_string(), "string is invalid".to_string()),
-            ("refRemote.json".to_string(), "object is invalid".to_string()),
-            ("bignum.json".to_string(), "a bignum is an integer".to_string()),
-            ("bignum.json".to_string(), "a negative bignum is an integer".to_string()),
-            ("format.json".to_string(), "an invalid URI Reference".to_string()),
-            ("format.json".to_string(), "an invalid URI fragment".to_string()),
-            ("ecmascript-regex.json".to_string(), "ECMA 262 has no support for \\Z anchor from .NET".to_string()),
-        ];
-        let group_exceptions: Vec<(String, String)> = vec![
-            ("format.json".to_string(), "validation of JSON-pointers (JSON String Representation)".to_string()),
-            ("format.json".to_string(), "format: uri-template".to_string()),
-        ];
+            let exceptions: Vec<(String, String)> = vec![
+                (
+                    "maxLength.json".to_string(),
+                    "two supplementary Unicode code points is long enough".to_string(),
+                ),
+                (
+                    "minLength.json".to_string(),
+                    "one supplementary Unicode code point is not long enough".to_string(),
+                ),
+                (
+                    "refRemote.json".to_string(),
+                    "remote ref invalid".to_string(),
+                ),
+                (
+                    "refRemote.json".to_string(),
+                    "remote fragment invalid".to_string(),
+                ),
+                (
+                    "refRemote.json".to_string(),
+                    "ref within ref invalid".to_string(),
+                ),
+                (
+                    "refRemote.json".to_string(),
+                    "changed scope ref invalid".to_string(),
+                ),
+                (
+                    "refRemote.json".to_string(),
+                    "base URI change ref invalid".to_string(),
+                ),
+                (
+                    "refRemote.json".to_string(),
+                    "string is invalid".to_string(),
+                ),
+                (
+                    "refRemote.json".to_string(),
+                    "object is invalid".to_string(),
+                ),
+                (
+                    "bignum.json".to_string(),
+                    "a bignum is an integer".to_string(),
+                ),
+                (
+                    "bignum.json".to_string(),
+                    "a negative bignum is an integer".to_string(),
+                ),
+                (
+                    "format.json".to_string(),
+                    "an invalid URI Reference".to_string(),
+                ),
+                (
+                    "format.json".to_string(),
+                    "an invalid URI fragment".to_string(),
+                ),
+                (
+                    "ecmascript-regex.json".to_string(),
+                    "ECMA 262 has no support for \\Z anchor from .NET".to_string(),
+                ),
+            ];
+            let group_exceptions: Vec<(String, String)> = vec![
+                (
+                    "format.json".to_string(),
+                    "validation of JSON-pointers (JSON String Representation)".to_string(),
+                ),
+                (
+                    "format.json".to_string(),
+                    "format: uri-template".to_string(),
+                ),
+            ];
 
-        for spec in spec_set.iter() {
-            let spec = spec.as_object().unwrap();
-            let mut scope = json_schema::Scope::new();
+            for spec in spec_set.iter() {
+                let spec = spec.as_object().unwrap();
+                let mut scope = json_schema::Scope::new();
 
-            scope.compile(json_v6_schema.clone(), true).ok().unwrap();
+                scope.compile(json_v6_schema.clone(), true).ok().unwrap();
 
-            let spec_desc = spec.get("description").map(|v| v.as_str().unwrap()).unwrap_or("");
+                let spec_desc = spec
+                    .get("description")
+                    .map(|v| v.as_str().unwrap())
+                    .unwrap_or("");
 
-            let schema = match scope.compile_and_return(spec.get("schema").unwrap().clone(), false) {
-                Ok(schema) => schema,
-                Err(err) => panic!("Error in schema {} {}: {:?}",
-                    path.file_name().unwrap().to_str().unwrap(),
-                    spec.get("description").unwrap().as_str().unwrap(),
-                    err
-                )
-            };
-
-            let tests = spec.get("tests").unwrap().as_array().unwrap();
-
-            for test in tests.iter() {
-                let test = test.as_object().unwrap();
-                let description = test.get("description").unwrap().as_str().unwrap();
-                let data = test.get("data").unwrap();
-                let valid = test.get("valid").unwrap().as_bool().unwrap();
-
-                let state = schema.validate(&data);
-
-                if state.is_valid() != valid {
-                    let exception_found = &exceptions[..].contains(&(path.file_name().unwrap().to_str().unwrap().to_string(), description.to_string()));
-                    let spec_exception_found = &group_exceptions[..].contains(&(path.file_name().unwrap().to_str().unwrap().to_string(), spec_desc.to_string()));
-                    if !exception_found && !spec_exception_found {
-                        panic!("Failure: \"{}\" in \"{}\" -> \"{}\" with state: \n {}",
+                let schema =
+                    match scope.compile_and_return(spec.get("schema").unwrap().clone(), false) {
+                        Ok(schema) => schema,
+                        Err(err) => panic!(
+                            "Error in schema {} {}: {:?}",
                             path.file_name().unwrap().to_str().unwrap(),
-                            spec_desc,
+                            spec.get("description").unwrap().as_str().unwrap(),
+                            err
+                        ),
+                    };
+
+                let tests = spec.get("tests").unwrap().as_array().unwrap();
+
+                for test in tests.iter() {
+                    let test = test.as_object().unwrap();
+                    let description = test.get("description").unwrap().as_str().unwrap();
+                    let data = test.get("data").unwrap();
+                    let valid = test.get("valid").unwrap().as_bool().unwrap();
+
+                    let state = schema.validate(&data);
+
+                    if state.is_valid() != valid {
+                        let exception_found = &exceptions[..].contains(&(
+                            path.file_name().unwrap().to_str().unwrap().to_string(),
                             description.to_string(),
-                            to_string_pretty(&to_value(&state).unwrap()).unwrap()
-                        )
+                        ));
+                        let spec_exception_found = &group_exceptions[..].contains(&(
+                            path.file_name().unwrap().to_str().unwrap().to_string(),
+                            spec_desc.to_string(),
+                        ));
+                        if !exception_found && !spec_exception_found {
+                            panic!(
+                                "Failure: \"{}\" in \"{}\" -> \"{}\" with state: \n {}",
+                                path.file_name().unwrap().to_str().unwrap(),
+                                spec_desc,
+                                description.to_string(),
+                                to_string_pretty(&to_value(&state).unwrap()).unwrap()
+                            )
+                        }
+                    } else {
+                        println!("test json_schema::test_suite -> {} .. ok", description);
                     }
-                } else {
-                    println!("test json_schema::test_suite -> {} .. ok", description);
                 }
             }
-        }
-    })
+        },
+    )
 }

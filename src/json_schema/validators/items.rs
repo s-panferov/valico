@@ -1,4 +1,4 @@
-use serde_json::{Value};
+use serde_json::Value;
 use std::cmp;
 use url;
 
@@ -8,19 +8,19 @@ use super::super::scope;
 #[derive(Debug)]
 pub enum ItemsKind {
     Schema(url::Url),
-    Array(Vec<url::Url>)
+    Array(Vec<url::Url>),
 }
 
 #[derive(Debug)]
 pub enum AdditionalKind {
     Boolean(bool),
-    Schema(url::Url)
+    Schema(url::Url),
 }
 
 #[allow(missing_copy_implementations)]
 pub struct Items {
     pub items: Option<ItemsKind>,
-    pub additional: Option<AdditionalKind>
+    pub additional: Option<AdditionalKind>,
 }
 
 impl super::Validator for Items {
@@ -43,7 +43,7 @@ impl super::Validator for Items {
                 } else {
                     state.missing.push(url.clone());
                 }
-            },
+            }
             Some(ItemsKind::Array(ref urls)) => {
                 let min = cmp::min(urls.len(), array.len());
 
@@ -63,14 +63,12 @@ impl super::Validator for Items {
                 // Validate agains additional items
                 if array.len() > urls.len() {
                     match self.additional {
-                        Some(AdditionalKind::Boolean(allow)) if allow == false => {
-                            state.errors.push(Box::new(
-                                errors::Items {
-                                    path: path.to_string(),
-                                    detail: "Additional items are not allowed".to_string()
-                                }
-                            ))
-                        },
+                        Some(AdditionalKind::Boolean(allow)) if !allow => {
+                            state.errors.push(Box::new(errors::Items {
+                                path: path.to_string(),
+                                detail: "Additional items are not allowed".to_string(),
+                            }))
+                        }
                         Some(AdditionalKind::Schema(ref url)) => {
                             let schema = scope.resolve(url);
                             if schema.is_some() {
@@ -82,12 +80,12 @@ impl super::Validator for Items {
                             } else {
                                 state.missing.push(url.clone())
                             }
-                        },
-                        _ => ()
+                        }
+                        _ => (),
                     }
                 }
             }
-            _ => ()
+            _ => (),
         }
 
         state

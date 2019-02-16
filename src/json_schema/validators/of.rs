@@ -1,4 +1,4 @@
-use serde_json::{Value};
+use serde_json::Value;
 use url;
 
 use super::super::errors;
@@ -50,7 +50,7 @@ impl super::Validator for AnyOf {
                     valid = true;
                     break;
                 } else {
-                   states.push(current_state)
+                    states.push(current_state)
                 }
             } else {
                 state.missing.push(url.clone())
@@ -58,14 +58,11 @@ impl super::Validator for AnyOf {
         }
 
         if !valid {
-            state.errors.push(Box::new(
-                errors::AnyOf {
-                    path: path.to_string(),
-                    states: states
-                }
-            ))
+            state.errors.push(Box::new(errors::AnyOf {
+                path: path.to_string(),
+                states,
+            }))
         }
-
 
         state
     }
@@ -93,7 +90,7 @@ impl super::Validator for OneOf {
                 if current_state.is_valid() {
                     valid += 1;
                 } else {
-                   states.push(current_state)
+                    states.push(current_state)
                 }
             } else {
                 state.missing.push(url.clone())
@@ -101,14 +98,11 @@ impl super::Validator for OneOf {
         }
 
         if valid != 1 {
-            state.errors.push(Box::new(
-                errors::OneOf {
-                    path: path.to_string(),
-                    states: states
-                }
-            ))
+            state.errors.push(Box::new(errors::OneOf {
+                path: path.to_string(),
+                states,
+            }))
         }
-
 
         state
     }

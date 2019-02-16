@@ -1,4 +1,4 @@
-use serde_json::{Value};
+use serde_json::Value;
 use url;
 
 use super::super::errors;
@@ -6,7 +6,7 @@ use super::super::scope;
 
 #[allow(missing_copy_implementations)]
 pub struct Not {
-    pub url: url::Url
+    pub url: url::Url,
 }
 
 impl super::Validator for Not {
@@ -16,11 +16,9 @@ impl super::Validator for Not {
 
         if schema.is_some() {
             if schema.unwrap().validate_in(val, path).is_valid() {
-                state.errors.push(Box::new(
-                    errors::Not {
-                        path: path.to_string()
-                    }
-                ))
+                state.errors.push(Box::new(errors::Not {
+                    path: path.to_string(),
+                }))
             }
         } else {
             state.missing.push(self.url.clone());

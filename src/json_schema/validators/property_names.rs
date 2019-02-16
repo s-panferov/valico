@@ -1,11 +1,11 @@
-use serde_json::{Value};
+use serde_json::Value;
 use url;
 
 use super::super::scope;
 
 #[allow(missing_copy_implementations)]
 pub struct PropertyNames {
-    pub url: url::Url
+    pub url: url::Url,
 }
 
 impl super::Validator for PropertyNames {
