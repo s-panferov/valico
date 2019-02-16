@@ -1,9 +1,9 @@
-use serde_json::{Value};
 use chrono;
-use std::net;
-use uuid;
-use url;
 use publicsuffix::List;
+use serde_json::Value;
+use std::net;
+use url;
+use uuid;
 
 use super::super::errors;
 use super::super::scope;
@@ -17,14 +17,10 @@ impl super::Validator for DateTime {
 
         match chrono::DateTime::parse_from_rfc3339(string) {
             Ok(_) => super::ValidationState::new(),
-            Err(_) => {
-                val_error!(
-                    errors::Format {
-                        path: path.to_string(),
-                        detail: "Malformed date time".to_string()
-                    }
-                )
-            }
+            Err(_) => val_error!(errors::Format {
+                path: path.to_string(),
+                detail: "Malformed date time".to_string()
+            }),
         }
     }
 }
@@ -38,14 +34,10 @@ impl super::Validator for Email {
 
         match List::empty().parse_email(string) {
             Ok(_) => super::ValidationState::new(),
-            Err(_) => {
-                val_error!(
-                    errors::Format {
-                        path: path.to_string(),
-                        detail: "Malformed email address".to_string()
-                    }
-                )
-            }
+            Err(_) => val_error!(errors::Format {
+                path: path.to_string(),
+                detail: "Malformed email address".to_string()
+            }),
         }
     }
 }
@@ -59,14 +51,10 @@ impl super::Validator for Hostname {
 
         match List::empty().parse_domain(string) {
             Ok(_) => super::ValidationState::new(),
-            Err(_) => {
-                val_error!(
-                    errors::Format {
-                        path: path.to_string(),
-                        detail: "Malformed email address".to_string()
-                    }
-                )
-            }
+            Err(_) => val_error!(errors::Format {
+                path: path.to_string(),
+                detail: "Malformed email address".to_string()
+            }),
         }
     }
 }
@@ -80,14 +68,10 @@ impl super::Validator for Ipv4 {
 
         match string.parse::<net::Ipv4Addr>() {
             Ok(_) => super::ValidationState::new(),
-            Err(_) => {
-                val_error!(
-                    errors::Format {
-                        path: path.to_string(),
-                        detail: "Malformed IP address".to_string()
-                    }
-                )
-            }
+            Err(_) => val_error!(errors::Format {
+                path: path.to_string(),
+                detail: "Malformed IP address".to_string()
+            }),
         }
     }
 }
@@ -101,14 +85,10 @@ impl super::Validator for Ipv6 {
 
         match string.parse::<net::Ipv6Addr>() {
             Ok(_) => super::ValidationState::new(),
-            Err(_) => {
-                val_error!(
-                    errors::Format {
-                        path: path.to_string(),
-                        detail: "Malformed IP address".to_string()
-                    }
-                )
-            }
+            Err(_) => val_error!(errors::Format {
+                path: path.to_string(),
+                detail: "Malformed IP address".to_string()
+            }),
         }
     }
 }
@@ -122,14 +102,10 @@ impl super::Validator for Uuid {
 
         match string.parse::<uuid::Uuid>() {
             Ok(_) => super::ValidationState::new(),
-            Err(err) => {
-                val_error!(
-                    errors::Format {
-                        path: path.to_string(),
-                        detail: format!("Malformed UUID: {:?}", err)
-                    }
-                )
-            }
+            Err(err) => val_error!(errors::Format {
+                path: path.to_string(),
+                detail: format!("Malformed UUID: {:?}", err)
+            }),
         }
     }
 }
@@ -143,14 +119,10 @@ impl super::Validator for Uri {
 
         match url::Url::parse(string) {
             Ok(_) => super::ValidationState::new(),
-            Err(err) => {
-                val_error!(
-                    errors::Format {
-                        path: path.to_string(),
-                        detail: format!("Malformed URI: {}", err)
-                    }
-                )
-            }
+            Err(err) => val_error!(errors::Format {
+                path: path.to_string(),
+                detail: format!("Malformed URI: {}", err)
+            }),
         }
     }
 }
@@ -166,14 +138,10 @@ impl super::Validator for UriReference {
 
         match base_url.join(string) {
             Ok(_) => super::ValidationState::new(),
-            Err(err) => {
-                val_error!(
-                    errors::Format {
-                        path: path.to_string(),
-                        detail: format!("Malformed URI reference: {}", err)
-                    }
-                )
-            }
+            Err(err) => val_error!(errors::Format {
+                path: path.to_string(),
+                detail: format!("Malformed URI reference: {}", err)
+            }),
         }
     }
 }

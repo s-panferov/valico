@@ -1,5 +1,5 @@
-use serde_json::{Value};
 use regex;
+use serde_json::Value;
 use std::collections;
 use url;
 
@@ -9,14 +9,14 @@ use super::super::scope;
 #[derive(Debug)]
 pub enum AdditionalKind {
     Boolean(bool),
-    Schema(url::Url)
+    Schema(url::Url),
 }
 
 #[allow(missing_copy_implementations)]
 pub struct Properties {
     pub properties: collections::HashMap<String, url::Url>,
     pub additional: AdditionalKind,
-    pub patterns: Vec<(regex::Regex, url::Url)>
+    pub patterns: Vec<(regex::Regex, url::Url)>,
 }
 
 impl super::Validator for Properties {
@@ -25,9 +25,8 @@ impl super::Validator for Properties {
         let mut state = super::ValidationState::new();
 
         'main: for (key, value) in object.iter() {
-            let mut is_property_passed = false;
-            if self.properties.contains_key(key) {
-                let url = self.properties.get(key).unwrap();
+            let is_property_passed = if self.properties.contains_key(key) {
+                let url = &self.properties[key];
                 let schema = scope.resolve(url);
                 if schema.is_some() {
                     let value_path = [path, key.as_ref()].join("/");
@@ -36,8 +35,10 @@ impl super::Validator for Properties {
                     state.missing.push(url.clone())
                 }
 
-               is_property_passed = true;
-            }
+                true
+            } else {
+                false
+            };
 
             let mut is_pattern_passed = false;
             for &(ref regex, ref url) in self.patterns.iter() {
@@ -58,14 +59,12 @@ impl super::Validator for Properties {
             }
 
             match self.additional {
-                AdditionalKind::Boolean(allowed) if allowed == false => {
-                    state.errors.push(Box::new(
-                        errors::Properties {
-                            path: path.to_string(),
-                            detail: "Additional properties are not allowed".to_string()
-                        }
-                    ))
-                },
+                AdditionalKind::Boolean(allowed) if !allowed => {
+                    state.errors.push(Box::new(errors::Properties {
+                        path: path.to_string(),
+                        detail: "Additional properties are not allowed".to_string(),
+                    }))
+                }
                 AdditionalKind::Schema(ref url) => {
                     let schema = scope.resolve(url);
 
@@ -75,9 +74,9 @@ impl super::Validator for Properties {
                     } else {
                         state.missing.push(url.clone())
                     }
-                },
+                }
                 // Additional are allowed here
-                _ => ()
+                _ => (),
             }
         }
 

@@ -1,28 +1,24 @@
-use serde_json::{Value};
+use regex;
+use serde_json::Value;
 use valico::json_dsl;
+use valico::json_dsl::errors;
 use valico::json_schema;
 use valico::json_schema::errors as schema_errors;
-use valico::json_dsl::errors;
-use regex;
 
 use self::helpers::{
-    assert_str_eq_with_scope,
-    assert_error_with_scope,
-    assert_str_eq,
-    assert_error
+    assert_error, assert_error_with_scope, assert_str_eq, assert_str_eq_with_scope,
 };
 
 mod helpers;
 
 #[test]
 fn is_process_empty_builder() {
-    let params = json_dsl::Builder::build(|_params| { });
+    let params = json_dsl::Builder::build(|_params| {});
     assert_str_eq(&params, r#"{"a":1}"#, r#"{"a":1}"#);
 }
 
 #[test]
 fn is_process_simple_require() {
-
     let params = json_dsl::Builder::build(|params| {
         params.req_defined("a");
     });
@@ -33,7 +29,6 @@ fn is_process_simple_require() {
 
 #[test]
 fn is_process_i64_require() {
-
     let params = json_dsl::Builder::build(|params| {
         params.req_typed("a", json_dsl::i64());
     });
@@ -52,7 +47,6 @@ fn is_process_i64_require() {
 
 #[test]
 fn is_process_string_require() {
-
     let params = json_dsl::Builder::build(|params| {
         params.req_typed("a", json_dsl::string());
     });
@@ -70,7 +64,6 @@ fn is_process_string_require() {
 
 #[test]
 fn is_process_boolean_require() {
-
     let params = json_dsl::Builder::build(|params| {
         params.req_typed("a", json_dsl::boolean());
     });
@@ -87,7 +80,6 @@ fn is_process_boolean_require() {
 
 #[test]
 fn is_process_simple_array_require() {
-
     let params = json_dsl::Builder::build(|params| {
         params.req_typed("a", json_dsl::array());
     });
@@ -103,7 +95,6 @@ fn is_process_simple_array_require() {
 
 #[test]
 fn is_process_typed_array_require() {
-
     let params = json_dsl::Builder::build(|params| {
         params.req_typed("a", json_dsl::array_of(json_dsl::string()));
     });
@@ -116,12 +107,10 @@ fn is_process_typed_array_require() {
 
     // error because element at index(2) is not coersible to string
     assert_error::<errors::WrongType>(&params, r#"{"a": [1,2,{}]}"#, "/a/2");
-
 }
 
 #[test]
 fn is_process_array_with_nested_require() {
-
     let params = json_dsl::Builder::build(|params| {
         params.req_nested("a", json_dsl::array(), |params| {
             params.req_typed("b", json_dsl::string());
@@ -129,14 +118,17 @@ fn is_process_array_with_nested_require() {
         });
     });
 
-    assert_str_eq(&params, r#"{"a":[{"b":1,"c":["1"]}]}"#, r#"{"a":[{"b":"1","c":[1]}]}"#);
+    assert_str_eq(
+        &params,
+        r#"{"a":[{"b":1,"c":["1"]}]}"#,
+        r#"{"a":[{"b":"1","c":[1]}]}"#,
+    );
 
     // error because element in "a" at index(0) is not coersible to string
     assert_error::<errors::WrongType>(&params, r#"{"a":[{"b":{},"c":["1"]}]}"#, "/a/0/b");
 
     // error because element in "a":0:"c":0 is not coersible to string
     assert_error::<errors::WrongType>(&params, r#"{"a":[{"b":1,"c":[{}]}]}"#, "/a/0/c/0");
-
 }
 
 #[test]
@@ -159,7 +151,6 @@ fn it_process_encoded_array_of_type() {
 
 #[test]
 fn is_process_object_require() {
-
     let params = json_dsl::Builder::build(|params| {
         params.req_typed("a", json_dsl::object());
     });
@@ -171,12 +162,10 @@ fn is_process_object_require() {
 
     // error because "a" is string, not object
     assert_error::<errors::WrongType>(&params, r#"{"a":""}"#, "/a");
-
 }
 
 #[test]
 fn is_process_object_with_nested_require() {
-
     let params = json_dsl::Builder::build(|params| {
         params.req_nested("a", json_dsl::object(), |params| {
             params.req_typed("b", json_dsl::f64());
@@ -184,19 +173,21 @@ fn is_process_object_with_nested_require() {
         });
     });
 
-    assert_str_eq(&params, r#"{"a":{"b":"1.22","c":[1.112,""]}}"#, r#"{"a":{"b":1.22,"c":["1.112",""]}}"#);
+    assert_str_eq(
+        &params,
+        r#"{"a":{"b":"1.22","c":[1.112,""]}}"#,
+        r#"{"a":{"b":1.22,"c":["1.112",""]}}"#,
+    );
 
     // error because "a":"b" is not a f64
     assert_error::<errors::WrongType>(&params, r#"{"a":{"b":"not-f64"},"c":[1.112,""]}"#, "/a/b");
 
     // error because "a":"c":"1" is object and can't be coerced to string
     assert_error::<errors::WrongType>(&params, r#"{"a":{"b":"1.22","c":[1.112,{}]}}"#, "/a/c/1");
-
 }
 
 #[test]
 fn is_process_require_allows_null() {
-
     let params = json_dsl::Builder::build(|params| {
         params.req("a", |a| {
             a.coerce(json_dsl::string());
@@ -217,10 +208,8 @@ fn is_process_require_allows_null() {
     assert_str_eq(&params, r#"{"a":null}"#, r#"{"a":null}"#);
 }
 
-
 #[test]
 fn is_validates_allow_values() {
-
     let params = json_dsl::Builder::build(|params| {
         params.req("a", |a| {
             a.coerce(json_dsl::string());
@@ -233,12 +222,10 @@ fn is_validates_allow_values() {
 
     // error because "a" is not in allowed list
     assert_error::<errors::WrongValue>(&params, r#"{"a":"not in allowed"}"#, "/a");
-
 }
 
 #[test]
 fn is_validates_reject_values() {
-
     let params = json_dsl::Builder::build(|params| {
         params.req("a", |a| {
             a.coerce(json_dsl::string());
@@ -251,12 +238,10 @@ fn is_validates_reject_values() {
     // errors because "a" is in reject list
     assert_error::<errors::WrongValue>(&params, r#"{"a":"rejected1"}"#, "/a");
     assert_error::<errors::WrongValue>(&params, r#"{"a":"rejected2"}"#, "/a");
-
 }
 
 #[test]
 fn is_validates_with_function_validator() {
-
     let params = json_dsl::Builder::build(|params| {
         params.req("a", |a| {
             a.coerce(json_dsl::u64());
@@ -264,12 +249,10 @@ fn is_validates_with_function_validator() {
                 if *val == json!(2) {
                     Ok(())
                 } else {
-                    Err(vec![
-                        Box::new(errors::WrongType {
-                            path: path.to_string(),
-                            detail: "Value is not exactly 2".to_string()
-                        })
-                    ])
+                    Err(vec![Box::new(errors::WrongType {
+                        path: path.to_string(),
+                        detail: "Value is not exactly 2".to_string(),
+                    })])
                 }
             });
         })
@@ -278,12 +261,10 @@ fn is_validates_with_function_validator() {
     assert_str_eq(&params, r#"{"a":"2"}"#, r#"{"a":2}"#);
     assert_error::<errors::WrongType>(&params, r#"{"a":3}"#, "/a");
     assert_error::<errors::WrongType>(&params, r#"{"a":"3"}"#, "/a");
-
 }
 
 #[test]
 fn is_validates_with_regex() {
-
     let params = json_dsl::Builder::build(|params| {
         params.req("a", |a| {
             a.coerce(json_dsl::string());
@@ -307,12 +288,10 @@ fn is_validates_with_regex() {
 
     // "a" is valid list but it can't pass regex validation
     assert_error::<errors::WrongType>(&params, r#"{"a":[]}"#, "/a");
-
 }
 
 #[test]
 fn is_validates_opt() {
-
     let params = json_dsl::Builder::build(|params| {
         params.req_defined("a");
         params.opt_typed("b", json_dsl::u64());
@@ -321,12 +300,10 @@ fn is_validates_opt() {
     // ok because a is optional
     assert_str_eq(&params, r#"{"a":"test"}"#, r#"{"a":"test"}"#);
     assert_str_eq(&params, r#"{"a":"test","b":"1"}"#, r#"{"a":"test","b":1}"#);
-
 }
 
 #[test]
 fn is_validates_opt_with_default() {
-
     let params = json_dsl::Builder::build(|params| {
         params.opt("a", |a| {
             a.default("default".to_string());
@@ -335,12 +312,10 @@ fn is_validates_opt_with_default() {
 
     assert_str_eq(&params, r#"{"a":"test"}"#, r#"{"a":"test"}"#);
     assert_str_eq(&params, r#"{}"#, r#"{"a":"default"}"#);
-
 }
 
 #[test]
 fn is_validates_mutually_exclusive() {
-
     let params = json_dsl::Builder::build(|params| {
         params.opt_defined("a");
         params.opt_defined("b");
@@ -353,12 +328,10 @@ fn is_validates_mutually_exclusive() {
     assert_str_eq(&params, r#"{}"#, r#"{}"#);
 
     assert_error::<errors::MutuallyExclusive>(&params, r#"{"a":1,"b":1}"#, "/");
-
 }
 
 #[test]
 fn is_validates_exactly_one_of() {
-
     let params = json_dsl::Builder::build(|params| {
         params.opt_defined("a");
         params.opt_defined("b");
@@ -371,12 +344,10 @@ fn is_validates_exactly_one_of() {
 
     assert_error::<errors::ExactlyOne>(&params, r#"{}"#, "/");
     assert_error::<errors::ExactlyOne>(&params, r#"{"a":1,"b":1}"#, "/");
-
 }
 
 #[test]
 fn is_validates_at_least_one_of() {
-
     let params = json_dsl::Builder::build(|params| {
         params.opt_defined("a");
         params.opt_defined("b");
@@ -389,28 +360,23 @@ fn is_validates_at_least_one_of() {
     assert_str_eq(&params, r#"{"a":1,"b":1}"#, r#"{"a":1,"b":1}"#);
 
     assert_error::<errors::AtLeastOne>(&params, r#"{}"#, "/");
-
 }
 
 #[test]
 fn is_validates_with_function() {
-
     let params = json_dsl::Builder::build(|params| {
         params.opt_defined("a");
         params.opt_defined("b");
 
         params.validate_with(|_: &Value, path: &str| {
-            Err(vec![
-                Box::new(errors::WrongType{
-                    path: path.to_string(),
-                    detail: "You shall not pass!".to_string()
-                })
-            ])
+            Err(vec![Box::new(errors::WrongType {
+                path: path.to_string(),
+                detail: "You shall not pass!".to_string(),
+            })])
         });
     });
 
     assert_error::<errors::WrongType>(&params, r#"{}"#, "/");
-
 }
 
 #[test]
@@ -426,8 +392,18 @@ fn it_validates_with_schema() {
     let mut scope = json_schema::Scope::new();
     params.build_schemes(&mut scope).unwrap();
 
-    assert_str_eq_with_scope(&params, Some(&scope), r#"{"a":1, "b": 1}"#, r#"{"a":1,"b":1}"#);
-    assert_error_with_scope::<schema_errors::MaxProperties>(&params, Some(&scope), r#"{"a":1, "b": 1, "c": 1}"#, "/");
+    assert_str_eq_with_scope(
+        &params,
+        Some(&scope),
+        r#"{"a":1, "b": 1}"#,
+        r#"{"a":1,"b":1}"#,
+    );
+    assert_error_with_scope::<schema_errors::MaxProperties>(
+        &params,
+        Some(&scope),
+        r#"{"a":1, "b": 1, "c": 1}"#,
+        "/",
+    );
 }
 
 #[test]
@@ -446,7 +422,12 @@ fn it_validates_params_with_schema() {
 
     assert_str_eq_with_scope(&params, Some(&scope), r#"{"a":1}"#, r#"{"a":1}"#);
     assert_error_with_scope::<schema_errors::Maximum>(&params, Some(&scope), r#"{"a":11}"#, "/a");
-    assert_error_with_scope::<schema_errors::WrongType>(&params, Some(&scope), r#"{"a":"test"}"#, "/a");
+    assert_error_with_scope::<schema_errors::WrongType>(
+        &params,
+        Some(&scope),
+        r#"{"a":"test"}"#,
+        "/a",
+    );
 }
 
 #[test]

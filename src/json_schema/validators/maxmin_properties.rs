@@ -1,11 +1,11 @@
-use serde_json::{Value};
+use serde_json::Value;
 
 use super::super::errors;
 use super::super::scope;
 
 #[allow(missing_copy_implementations)]
 pub struct MaxProperties {
-    pub length: u64
+    pub length: u64,
 }
 
 impl super::Validator for MaxProperties {
@@ -15,18 +15,16 @@ impl super::Validator for MaxProperties {
         if (object.len() as u64) <= self.length {
             super::ValidationState::new()
         } else {
-            val_error!(
-                errors::MaxProperties {
-                    path: path.to_string()
-                }
-            )
+            val_error!(errors::MaxProperties {
+                path: path.to_string()
+            })
         }
     }
 }
 
 #[allow(missing_copy_implementations)]
 pub struct MinProperties {
-    pub length: u64
+    pub length: u64,
 }
 
 impl super::Validator for MinProperties {
@@ -36,11 +34,9 @@ impl super::Validator for MinProperties {
         if (object.len() as u64) >= self.length {
             super::ValidationState::new()
         } else {
-            val_error!(
-                errors::MinProperties {
-                    path: path.to_string()
-                }
-            )
+            val_error!(errors::MinProperties {
+                path: path.to_string()
+            })
         }
     }
 }

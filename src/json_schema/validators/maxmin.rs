@@ -1,11 +1,11 @@
-use serde_json::{Value};
+use serde_json::Value;
 
 use super::super::errors;
 use super::super::scope;
 
 #[allow(missing_copy_implementations)]
 pub struct Maximum {
-    pub number: f64
+    pub number: f64,
 }
 
 impl super::Validator for Maximum {
@@ -15,18 +15,16 @@ impl super::Validator for Maximum {
         if number <= self.number {
             super::ValidationState::new()
         } else {
-            val_error!(
-                errors::Maximum {
-                    path: path.to_string()
-                }
-            )
+            val_error!(errors::Maximum {
+                path: path.to_string()
+            })
         }
     }
 }
 
 #[allow(missing_copy_implementations)]
 pub struct ExclusiveMaximum {
-    pub number: f64
+    pub number: f64,
 }
 
 impl super::Validator for ExclusiveMaximum {
@@ -36,18 +34,16 @@ impl super::Validator for ExclusiveMaximum {
         if number < self.number {
             super::ValidationState::new()
         } else {
-            val_error!(
-                errors::Maximum {
-                    path: path.to_string()
-                }
-            )
+            val_error!(errors::Maximum {
+                path: path.to_string()
+            })
         }
     }
 }
 
 #[allow(missing_copy_implementations)]
 pub struct Minimum {
-    pub number: f64
+    pub number: f64,
 }
 
 impl super::Validator for Minimum {
@@ -57,18 +53,16 @@ impl super::Validator for Minimum {
         if number >= self.number {
             super::ValidationState::new()
         } else {
-            val_error!(
-                errors::Minimum {
-                    path: path.to_string()
-                }
-            )
+            val_error!(errors::Minimum {
+                path: path.to_string()
+            })
         }
     }
 }
 
 #[allow(missing_copy_implementations)]
 pub struct ExclusiveMinimum {
-    pub number: f64
+    pub number: f64,
 }
 
 impl super::Validator for ExclusiveMinimum {
@@ -78,11 +72,9 @@ impl super::Validator for ExclusiveMinimum {
         if number > self.number {
             super::ValidationState::new()
         } else {
-            val_error!(
-                errors::Minimum {
-                    path: path.to_string()
-                }
-            )
+            val_error!(errors::Minimum {
+                path: path.to_string()
+            })
         }
     }
 }

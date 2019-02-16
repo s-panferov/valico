@@ -1,5 +1,4 @@
 [package]
-
 name = "valico"
 version = "3.0.1-alpha.0"
 authors = ["Stanislav Panferov <fnight.m@gmail.com>"]
@@ -9,6 +8,7 @@ license = "MIT"
 documentation = "http://rustless.org/valico/doc/valico/"
 homepage = "https://github.com/rustless/valico"
 build = "build.rs"
+edition = "2018"
 
 [dependencies]
 regex = "1.0"

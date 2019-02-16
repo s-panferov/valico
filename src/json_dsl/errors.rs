@@ -1,22 +1,21 @@
-use std::error::{Error};
 use super::super::common::error::ValicoError;
-use serde_json::{Value, to_value};
 use serde::{Serialize, Serializer};
+use serde_json::{to_value, Value};
+use std::error::Error;
 
 #[derive(Debug)]
 #[allow(missing_copy_implementations)]
 pub struct Required {
-    pub path: String
+    pub path: String,
 }
 impl_err!(Required, "required", "This field is required");
 impl_serialize!(Required);
-
 
 #[derive(Debug)]
 #[allow(missing_copy_implementations)]
 pub struct WrongType {
     pub path: String,
-    pub detail: String
+    pub detail: String,
 }
 impl_err!(WrongType, "wrong_type", "Type of the value is wrong", +detail);
 impl_serialize!(WrongType);
@@ -35,10 +34,14 @@ impl_serialize!(WrongValue);
 pub struct MutuallyExclusive {
     pub path: String,
     pub detail: Option<String>,
-    pub params: Vec<String>
+    pub params: Vec<String>,
 }
 impl_err!(MutuallyExclusive, "mutually_exclusive", "The values are mutually exclusive", +opt_detail);
-impl_serialize!(MutuallyExclusive, |err: &MutuallyExclusive, map: &mut ::serde_json::Map<String, Value>| {
+impl_serialize!(MutuallyExclusive, |err: &MutuallyExclusive,
+                                    map: &mut ::serde_json::Map<
+    String,
+    Value,
+>| {
     map.insert("params".to_string(), to_value(&err.params).unwrap());
 });
 
@@ -47,22 +50,25 @@ impl_serialize!(MutuallyExclusive, |err: &MutuallyExclusive, map: &mut ::serde_j
 pub struct ExactlyOne {
     pub path: String,
     pub detail: Option<String>,
-    pub params: Vec<String>
+    pub params: Vec<String>,
 }
 impl_err!(ExactlyOne, "exactly_one", "Exacly one of the values must be present", +opt_detail);
-impl_serialize!(ExactlyOne, |err: &ExactlyOne, map: &mut ::serde_json::Map<String, Value>| {
-    map.insert("params".to_string(), to_value(&err.params).unwrap())
-});
-
+impl_serialize!(
+    ExactlyOne,
+    |err: &ExactlyOne, map: &mut ::serde_json::Map<String, Value>| map
+        .insert("params".to_string(), to_value(&err.params).unwrap())
+);
 
 #[derive(Debug)]
 #[allow(missing_copy_implementations)]
 pub struct AtLeastOne {
     pub path: String,
     pub detail: Option<String>,
-    pub params: Vec<String>
+    pub params: Vec<String>,
 }
 impl_err!(AtLeastOne, "at_least_one", "At least one of the values must be present", +opt_detail);
-impl_serialize!(AtLeastOne, |err: &AtLeastOne, map: &mut ::serde_json::Map<String, Value>| {
-    map.insert("params".to_string(), to_value(&err.params).unwrap())
-});
+impl_serialize!(
+    AtLeastOne,
+    |err: &AtLeastOne, map: &mut ::serde_json::Map<String, Value>| map
+        .insert("params".to_string(), to_value(&err.params).unwrap())
+);

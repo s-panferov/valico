@@ -1,11 +1,11 @@
-use serde_json::{Value};
+use serde_json::Value;
 
 use super::super::errors;
 use super::super::scope;
 
 #[allow(missing_copy_implementations)]
 pub struct Const {
-    pub item: Value
+    pub item: Value,
 }
 
 impl super::Validator for Const {
@@ -13,11 +13,9 @@ impl super::Validator for Const {
         let mut state = super::ValidationState::new();
 
         if *val != self.item {
-            state.errors.push(Box::new(
-                errors::Const {
-                    path: path.to_string()
-                }
-            ))
+            state.errors.push(Box::new(errors::Const {
+                path: path.to_string(),
+            }))
         }
 
         state

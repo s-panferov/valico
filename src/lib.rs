@@ -1,15 +1,9 @@
-extern crate regex;
-extern crate url;
-extern crate jsonway;
-extern crate uuid;
-extern crate phf;
-extern crate serde;
-#[macro_use] extern crate serde_json;
-extern crate chrono;
-extern crate publicsuffix;
+#[macro_use]
+extern crate serde_json;
 
-#[macro_use] pub mod common;
+#[macro_use]
+pub mod common;
 pub mod json_dsl;
 pub mod json_schema;
 
-pub use common::error::{ValicoErrors};
+pub use crate::common::error::ValicoErrors;
