@@ -1,13 +1,15 @@
-use url;
-use std::collections;
-use serde_json::{Value};
 use phf;
+use serde_json::Value;
 use std::ops;
+use std::{collections, fmt};
+use url;
 
 use super::helpers;
-use super::scope;
 use super::keywords;
+use super::scope;
 use super::validators;
+use std::error::Error;
+use std::fmt::{Display, Formatter};
 
 #[derive(Debug)]
 pub struct WalkContext<'a> {
@@ -30,11 +32,26 @@ pub enum SchemaError {
     NotAnObject,
     UrlParseError(url::ParseError),
     UnknownKey(String),
-    Malformed {
-        path: String,
-        detail: String
+    Malformed { path: String, detail: String },
+}
+
+impl Display for SchemaError {
+    fn fmt(&self, f: &mut Formatter) -> Result<(), fmt::Error> {
+        match *self {
+            SchemaError::WrongId => write!(f, "wrong id"),
+            SchemaError::IdConflicts => write!(f, "id conflicts"),
+            SchemaError::NotAnObject => write!(f, "not an object"),
+            SchemaError::UrlParseError(ref e) => write!(f, "url parse error: {}", e),
+            SchemaError::UnknownKey(ref k) => write!(f, "unknown key: {}", k),
+            SchemaError::Malformed {
+                ref path,
+                ref detail,
+            } => write!(f, "malformed path: `{}`, details: {}", path, detail),
+        }
     }
 }
+
+impl Error for SchemaError {}
 
 #[derive(Debug)]
 pub struct ScopedSchema<'a> {
