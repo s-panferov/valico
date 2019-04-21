@@ -1,6 +1,7 @@
 use url;
 use std::collections;
 use serde_json::{Value};
+use std::sync::Arc;
 
 use super::schema;
 use super::keywords;
@@ -71,7 +72,7 @@ impl Scope {
     }
 
     pub fn add_keyword<T>(&mut self, keys: Vec<&'static str>, keyword: T) where T: keywords::Keyword + 'static {
-        keywords::decouple_keyword((keys, Box::new(keyword)), &mut self.keywords);
+        keywords::decouple_keyword((keys, Arc::new(keyword)), &mut self.keywords);
     }
 
     fn add(&mut self, id: &url::Url, schema: schema::Schema) -> Result<(), schema::SchemaError> {
