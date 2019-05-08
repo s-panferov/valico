@@ -103,34 +103,28 @@ Later `params` instance can be used to process one or more JSON objects with it'
 Example:
 
 ~~~rust
-
 extern crate valico;
-extern crate serialize;
+extern crate serde_json;
 
-use serialize::json;
-use serialize::json::{ToJson};
-use valico::{Builder, MutableJson};
+use valico::json_dsl;
+use serde_json::{from_str, to_string_pretty};
 
 fn main() {
 
-    let params = Builder::build(|params| {
-        params.req_nested("user", Builder::list(), |params| {
+    let params = json_dsl::Builder::build(|params| {
+        params.req_nested("user", json_dsl::array(), |params| {
             params.req_typed("name", json_dsl::string());
             params.req_typed("friend_ids", json_dsl::array_of(json_dsl::u64()))
         });
     });
 
-    let mut obj = json::from_str(
-        r#"{"user": {"name": "Frodo", "friend_ids": ["1223"]}}"#
-    ).unwrap();
+    let mut obj = from_str(r#"{"user": {"name": "Frodo", "friend_ids": ["1223"]}}"#).unwrap();
 
-    match params.process(obj.as_object_mut().unwrap()) {
-        Ok(()) => {
-            println!("Result object is {}", obj.to_pretty_str());
-        },
-        Err(err) => {
-            panic!("Error during process: {}", err.to_json().to_pretty_str());
-        }
+    let state = params.process(&mut obj, &None);
+    if state.is_valid() {
+        println!("Result object is {}", to_string_pretty(&obj).unwrap());
+    } else {
+        panic!("Errors during process: {:?}", state);
     }
 
 }
