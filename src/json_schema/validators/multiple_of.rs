@@ -1,12 +1,13 @@
-use serde_json::{Value};
+use serde_json::Value;
 
 use super::super::errors;
 use super::super::scope;
+use std::cmp::Ordering;
 use std::f64;
 
 #[allow(missing_copy_implementations)]
 pub struct MultipleOf {
-    pub number: f64
+    pub number: f64,
 }
 
 impl super::Validator for MultipleOf {
@@ -16,18 +17,21 @@ impl super::Validator for MultipleOf {
         let valid = if (number.fract() == 0f64) && (self.number.fract() == 0f64) {
             (number % self.number) == 0f64
         } else {
-            let remainder: f64 = (number/self.number) % 1f64;
-            !(remainder >= f64::EPSILON) && (remainder < (1f64 - f64::EPSILON))
+            let remainder: f64 = (number / self.number) % 1f64;
+            let remainder_less_than_epsilon = match remainder.partial_cmp(&f64::EPSILON) {
+                None | Some(Ordering::Less) => true,
+                _ => false,
+            };
+            let remainder_less_than_one = remainder < (1f64 - f64::EPSILON);
+            remainder_less_than_epsilon && remainder_less_than_one
         };
 
         if valid {
             super::ValidationState::new()
         } else {
-            val_error!(
-                errors::MultipleOf {
-                    path: path.to_string()
-                }
-            )
+            val_error!(errors::MultipleOf {
+                path: path.to_string()
+            })
         }
     }
 }

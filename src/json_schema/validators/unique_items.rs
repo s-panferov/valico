@@ -1,4 +1,4 @@
-use serde_json::{Value};
+use serde_json::Value;
 
 use super::super::errors;
 use super::super::scope;
@@ -31,11 +31,9 @@ impl super::Validator for UniqueItems {
         if unique {
             super::ValidationState::new()
         } else {
-            val_error!(
-                errors::UniqueItems {
-                    path: path.to_string()
-                }
-            )
+            val_error!(errors::UniqueItems {
+                path: path.to_string()
+            })
         }
     }
 }

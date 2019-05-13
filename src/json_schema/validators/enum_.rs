@@ -1,11 +1,11 @@
-use serde_json::{Value};
+use serde_json::Value;
 
 use super::super::errors;
 use super::super::scope;
 
 #[allow(missing_copy_implementations)]
 pub struct Enum {
-    pub items: Vec<Value>
+    pub items: Vec<Value>,
 }
 
 impl super::Validator for Enum {
@@ -21,11 +21,9 @@ impl super::Validator for Enum {
         }
 
         if !contains {
-            state.errors.push(Box::new(
-                errors::Enum {
-                    path: path.to_string()
-                }
-            ))
+            state.errors.push(Box::new(errors::Enum {
+                path: path.to_string(),
+            }))
         }
 
         state

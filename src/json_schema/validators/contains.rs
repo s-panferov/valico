@@ -1,4 +1,4 @@
-use serde_json::{Value};
+use serde_json::Value;
 use url;
 
 use super::super::errors;
@@ -6,7 +6,7 @@ use super::super::scope;
 
 #[allow(missing_copy_implementations)]
 pub struct Contains {
-    pub url: url::Url
+    pub url: url::Url,
 }
 
 impl super::Validator for Contains {
@@ -24,11 +24,9 @@ impl super::Validator for Contains {
             });
 
             if !any_matched {
-                state.errors.push(Box::new(
-                    errors::Contains {
-                        path: path.to_string()
-                    }
-                ))
+                state.errors.push(Box::new(errors::Contains {
+                    path: path.to_string(),
+                }))
             }
         } else {
             state.missing.push(self.url.clone());

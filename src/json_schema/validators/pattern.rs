@@ -1,12 +1,12 @@
 use regex;
-use serde_json::{Value};
+use serde_json::Value;
 
 use super::super::errors;
 use super::super::scope;
 
 #[allow(missing_copy_implementations)]
 pub struct Pattern {
-    pub regex: regex::Regex
+    pub regex: regex::Regex,
 }
 
 impl super::Validator for Pattern {
@@ -16,11 +16,9 @@ impl super::Validator for Pattern {
         if self.regex.is_match(string) {
             super::ValidationState::new()
         } else {
-            val_error!(
-                errors::Pattern {
-                    path: path.to_string()
-                }
-            )
+            val_error!(errors::Pattern {
+                path: path.to_string()
+            })
         }
     }
 }

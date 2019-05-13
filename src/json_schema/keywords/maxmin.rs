@@ -1,4 +1,4 @@
-use serde_json::{Value};
+use serde_json::Value;
 
 use super::super::schema;
 use super::super::validators;
@@ -8,7 +8,7 @@ macro_rules! kw_minmax {
         #[allow(missing_copy_implementations)]
         pub struct $name;
         impl super::Keyword for $name {
-            fn compile(&self, def: &Value, ctx: &schema::WalkContext) -> super::KeywordResult {
+            fn compile(&self, def: &Value, ctx: &schema::WalkContext<'_>) -> super::KeywordResult {
                 let value = keyword_key_exists!(def, $keyword);
 
                 if value.is_number() {
@@ -27,23 +27,33 @@ macro_rules! kw_minmax {
     }
 }
 
-
 kw_minmax!(Maximum, "maximum");
 kw_minmax!(ExclusiveMaximum, "exclusiveMaximum");
 kw_minmax!(Minimum, "minimum");
 kw_minmax!(ExclusiveMinimum, "exclusiveMinimum");
 
-#[cfg(test)] use super::super::scope;
-#[cfg(test)] use jsonway;
-#[cfg(test)] use super::super::builder;
-#[cfg(test)] use serde_json::to_value;
+#[cfg(test)]
+use super::super::builder;
+#[cfg(test)]
+use super::super::scope;
+#[cfg(test)]
+use jsonway;
+#[cfg(test)]
+use serde_json::to_value;
 
 #[test]
 fn validate_maximum() {
     let mut scope = scope::Scope::new();
-    let schema = scope.compile_and_return(builder::schema(|s| {
-        s.maximum(10f64);
-    }).into_json(), true).ok().unwrap();
+    let schema = scope
+        .compile_and_return(
+            builder::schema(|s| {
+                s.maximum(10f64);
+            })
+            .into_json(),
+            true,
+        )
+        .ok()
+        .unwrap();
 
     assert_eq!(schema.validate(&to_value(&9).unwrap()).is_valid(), true);
     assert_eq!(schema.validate(&to_value(&10).unwrap()).is_valid(), true);
@@ -53,9 +63,16 @@ fn validate_maximum() {
 #[test]
 fn validate_exclusive_maximum() {
     let mut scope = scope::Scope::new();
-    let schema = scope.compile_and_return(builder::schema(|s| {
-        s.exclusive_maximum(10f64);
-    }).into_json(), true).ok().unwrap();
+    let schema = scope
+        .compile_and_return(
+            builder::schema(|s| {
+                s.exclusive_maximum(10f64);
+            })
+            .into_json(),
+            true,
+        )
+        .ok()
+        .unwrap();
 
     assert_eq!(schema.validate(&to_value(&9).unwrap()).is_valid(), true);
     assert_eq!(schema.validate(&to_value(&10).unwrap()).is_valid(), false);
@@ -66,26 +83,45 @@ fn validate_exclusive_maximum() {
 fn mailformed_maximum() {
     let mut scope = scope::Scope::new();
 
-    assert!(scope.compile_and_return(jsonway::object(|schema| {
-        schema.set("maximum", true);
-    }).unwrap(), true).is_err());
+    assert!(scope
+        .compile_and_return(
+            jsonway::object(|schema| {
+                schema.set("maximum", true);
+            })
+            .unwrap(),
+            true
+        )
+        .is_err());
 }
 
 #[test]
 fn mailformed_exclusive_maximum() {
     let mut scope = scope::Scope::new();
 
-    assert!(scope.compile_and_return(jsonway::object(|schema| {
-        schema.set("exclusiveMaximum", true);
-    }).unwrap(), true).is_err());
+    assert!(scope
+        .compile_and_return(
+            jsonway::object(|schema| {
+                schema.set("exclusiveMaximum", true);
+            })
+            .unwrap(),
+            true
+        )
+        .is_err());
 }
 
 #[test]
 fn validate_minumum() {
     let mut scope = scope::Scope::new();
-    let schema = scope.compile_and_return(builder::schema(|s| {
-        s.minimum(10f64);
-    }).into_json(), true).ok().unwrap();
+    let schema = scope
+        .compile_and_return(
+            builder::schema(|s| {
+                s.minimum(10f64);
+            })
+            .into_json(),
+            true,
+        )
+        .ok()
+        .unwrap();
 
     assert_eq!(schema.validate(&to_value(&9).unwrap()).is_valid(), false);
     assert_eq!(schema.validate(&to_value(&10).unwrap()).is_valid(), true);
@@ -95,9 +131,16 @@ fn validate_minumum() {
 #[test]
 fn validate_exclusive_minimum() {
     let mut scope = scope::Scope::new();
-    let schema = scope.compile_and_return(builder::schema(|s| {
-        s.exclusive_minimum(10f64);
-    }).into_json(), true).ok().unwrap();
+    let schema = scope
+        .compile_and_return(
+            builder::schema(|s| {
+                s.exclusive_minimum(10f64);
+            })
+            .into_json(),
+            true,
+        )
+        .ok()
+        .unwrap();
 
     assert_eq!(schema.validate(&to_value(&9).unwrap()).is_valid(), false);
     assert_eq!(schema.validate(&to_value(&10).unwrap()).is_valid(), false);
@@ -108,16 +151,28 @@ fn validate_exclusive_minimum() {
 fn mailformed_minumum() {
     let mut scope = scope::Scope::new();
 
-    assert!(scope.compile_and_return(jsonway::object(|schema| {
-        schema.set("minimum", true);
-    }).unwrap(), true).is_err());
+    assert!(scope
+        .compile_and_return(
+            jsonway::object(|schema| {
+                schema.set("minimum", true);
+            })
+            .unwrap(),
+            true
+        )
+        .is_err());
 }
 
 #[test]
 fn mailformed_exclusive_minumum() {
     let mut scope = scope::Scope::new();
 
-    assert!(scope.compile_and_return(jsonway::object(|schema| {
-        schema.set("exclusiveMinimum", true);
-    }).unwrap(), true).is_err());
+    assert!(scope
+        .compile_and_return(
+            jsonway::object(|schema| {
+                schema.set("exclusiveMinimum", true);
+            })
+            .unwrap(),
+            true
+        )
+        .is_err());
 }
