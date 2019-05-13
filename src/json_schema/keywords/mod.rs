@@ -1,6 +1,6 @@
-use serde_json::{Value};
+use serde_json::Value;
 use std::fmt;
-use std::rc;
+use std::sync::Arc;
 use std::collections;
 use std::any;
 
@@ -10,10 +10,10 @@ use super::validators;
 pub type KeywordResult = Result<Option<validators::BoxedValidator>, schema::SchemaError>;
 pub type KeywordPair = (Vec<&'static str>, Box<Keyword + 'static>);
 pub type KeywordPairs = Vec<KeywordPair>;
-pub type KeywordMap = collections::HashMap<&'static str, rc::Rc<KeywordConsumer>>;
+pub type KeywordMap = collections::HashMap<&'static str, Arc<KeywordConsumer>>;
 
-pub trait Keyword: Sync + any::Any {
-    fn compile(&self, &Value, &schema::WalkContext) -> KeywordResult;
+pub trait Keyword: Send + Sync + any::Any {
+    fn compile(&self, def: &Value, ctx: &schema::WalkContext) -> KeywordResult;
 
     fn is_exclusive(&self) -> bool {
         false
@@ -76,13 +76,13 @@ pub fn default() -> KeywordMap {
     decouple_keyword((vec!["contains"], Box::new(contains::Contains)), &mut map);
     decouple_keyword((vec!["dependencies"], Box::new(dependencies::Dependencies)), &mut map);
     decouple_keyword((vec!["enum"], Box::new(enum_::Enum)), &mut map);
-    decouple_keyword((vec!["exclusiveMaximum"], Box::new(maxmin::ExclusiveMaximum)), &mut map); 
+    decouple_keyword((vec!["exclusiveMaximum"], Box::new(maxmin::ExclusiveMaximum)), &mut map);
     decouple_keyword((vec!["exclusiveMinimum"], Box::new(maxmin::ExclusiveMinimum)), &mut map);
     decouple_keyword((vec!["items", "additionalItems"], Box::new(items::Items)), &mut map);
     decouple_keyword((vec!["maxItems"], Box::new(maxmin_items::MaxItems)), &mut map);
     decouple_keyword((vec!["maxLength"], Box::new(maxmin_length::MaxLength)), &mut map);
     decouple_keyword((vec!["maxProperties"], Box::new(maxmin_properties::MaxProperties)), &mut map);
-    decouple_keyword((vec!["maximum"], Box::new(maxmin::Maximum)), &mut map); 
+    decouple_keyword((vec!["maximum"], Box::new(maxmin::Maximum)), &mut map);
     decouple_keyword((vec!["minItems"], Box::new(maxmin_items::MinItems)), &mut map);
     decouple_keyword((vec!["minLength"], Box::new(maxmin_length::MinLength)), &mut map);
     decouple_keyword((vec!["minProperties"], Box::new(maxmin_properties::MinProperties)), &mut map);
@@ -103,7 +103,7 @@ pub fn default() -> KeywordMap {
 #[derive(Debug)]
 pub struct KeywordConsumer {
     pub keys: Vec<&'static str>,
-    pub keyword: Box<Keyword + 'static>
+    pub keyword: Box<Keyword + 'static>,
 }
 
 impl KeywordConsumer {
@@ -119,7 +119,7 @@ impl KeywordConsumer {
 pub fn decouple_keyword(keyword_pair: KeywordPair,
                         map: &mut KeywordMap) {
     let (keys, keyword) = keyword_pair;
-    let consumer = rc::Rc::new(KeywordConsumer { keys: keys.clone(), keyword: keyword });
+    let consumer = Arc::new(KeywordConsumer { keys: keys.clone(), keyword });
     for key in keys.iter() {
         map.insert(key, consumer.clone());
     }
