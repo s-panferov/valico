@@ -1,5 +1,4 @@
 use serde_json::Value;
-use url::percent_encoding;
 use url::Url;
 use uuid::Uuid;
 
@@ -12,13 +11,14 @@ pub fn generate_id() -> Url {
 
 /// http://tools.ietf.org/html/draft-ietf-appsawg-json-pointer-07
 pub fn encode(string: &str) -> String {
+    const QUERY_SET: percent_encoding::AsciiSet =
+        percent_encoding::CONTROLS.add(b' ').add(b'"').add(b'#').add(b'<').add(b'>').add(b'%');
     percent_encoding::percent_encode(
         string
             .replace("~", "~0")
             .replace("/", "~1")
-            .replace("%", "%25")
             .as_bytes(),
-        percent_encoding::QUERY_ENCODE_SET,
+        &QUERY_SET,
     )
     .to_string()
 }
