@@ -51,10 +51,6 @@ fn test_suite() {
 
             let exceptions: Vec<(String, String)> = vec![
                 (
-                    "maxLength.json".to_string(),
-                    "two supplementary Unicode code points is long enough".to_string(),
-                ),
-                (
                     "minLength.json".to_string(),
                     "one supplementary Unicode code point is not long enough".to_string(),
                 ),

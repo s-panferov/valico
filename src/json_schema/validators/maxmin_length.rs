@@ -12,7 +12,7 @@ impl super::Validator for MaxLength {
     fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
         let string = nonstrict_process!(val.as_str(), path);
 
-        if (string.len() as u64) <= self.length {
+        if (string.chars().count() as u64) <= self.length {
             super::ValidationState::new()
         } else {
             val_error!(errors::MaxLength {
@@ -31,7 +31,7 @@ impl super::Validator for MinLength {
     fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
         let string = nonstrict_process!(val.as_str(), path);
 
-        if (string.len() as u64) >= self.length {
+        if (string.chars().count() as u64) >= self.length {
             super::ValidationState::new()
         } else {
             val_error!(errors::MinLength {
