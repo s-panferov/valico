@@ -10,73 +10,63 @@ fn main() {
     let mut file = BufWriter::new(File::create(&path).unwrap());
 
     write!(&mut file, "#[allow(clippy::unreadable_literal)]\n").unwrap();
-    write!(&mut file, "static PROPERTY_KEYS: phf::Set<&'static str> = ").unwrap();
+    write!(&mut file, "static PROPERTY_KEYS: phf::Set<&'static str> = {}",
     phf_codegen::Set::new()
         .entry("properties")
         .entry("patternProperties")
-        .build(&mut file)
-        .unwrap();
+        .build()
+    ).unwrap();
     write!(&mut file, ";\n").unwrap();
 
     write!(&mut file, "#[allow(clippy::unreadable_literal)]\n").unwrap();
     write!(
         &mut file,
-        "static NON_SCHEMA_KEYS: phf::Set<&'static str> = "
-    )
-    .unwrap();
-    phf_codegen::Set::new()
-        .entry("properties")
-        .entry("patternProperties")
-        .entry("dependencies")
-        .entry("definitions")
-        .entry("anyOf")
-        .entry("allOf")
-        .entry("oneOf")
-        .build(&mut file)
-        .unwrap();
-    write!(&mut file, ";\n").unwrap();
+        "static NON_SCHEMA_KEYS: phf::Set<&'static str> = {};",
+        phf_codegen::Set::new()
+            .entry("properties")
+            .entry("patternProperties")
+            .entry("dependencies")
+            .entry("definitions")
+            .entry("anyOf")
+            .entry("allOf")
+            .entry("oneOf")
+            .build()
+    ).unwrap();
 
     write!(&mut file, "#[allow(clippy::unreadable_literal)]\n").unwrap();
     write!(
         &mut file,
-        "static BOOLEAN_SCHEMA_ARRAY_KEYS: phf::Set<&'static str> = "
-    )
-    .unwrap();
-    phf_codegen::Set::new()
-        .entry("allOf")
-        .entry("anyOf")
-        .entry("items")
-        .entry("oneOf")
-        .build(&mut file)
-        .unwrap();
-    write!(&mut file, ";\n").unwrap();
+        "static BOOLEAN_SCHEMA_ARRAY_KEYS: phf::Set<&'static str> = {};",
+        phf_codegen::Set::new()
+            .entry("allOf")
+            .entry("anyOf")
+            .entry("items")
+            .entry("oneOf")
+            .build()
+    ).unwrap();
 
     write!(&mut file, "#[allow(clippy::unreadable_literal)]\n").unwrap();
-    write!(&mut file, "static FINAL_KEYS: phf::Set<&'static str> = ").unwrap();
+    write!(&mut file, "static FINAL_KEYS: phf::Set<&'static str> = {};",
     phf_codegen::Set::new()
         .entry("enum")
         .entry("required")
         .entry("type")
-        .build(&mut file)
-        .unwrap();
-    write!(&mut file, ";\n").unwrap();
+        .build()
+    ).unwrap();
 
     write!(&mut file, "#[allow(clippy::unreadable_literal)]\n").unwrap();
     write!(
         &mut file,
-        "const ALLOW_NON_CONSUMED_KEYS: phf::Set<&'static str> = "
-    )
-    .unwrap();
-    phf_codegen::Set::new()
-        .entry("definitions")
-        .entry("$schema")
-        .entry("$id")
-        .entry("default")
-        .entry("title")
-        .entry("description")
-        .entry("format")
-        .entry("examples")
-        .build(&mut file)
-        .unwrap();
-    write!(&mut file, ";\n").unwrap();
+        "const ALLOW_NON_CONSUMED_KEYS: phf::Set<&'static str> = {};",
+        phf_codegen::Set::new()
+            .entry("definitions")
+            .entry("$schema")
+            .entry("$id")
+            .entry("default")
+            .entry("title")
+            .entry("description")
+            .entry("format")
+            .entry("examples")
+            .build()
+    ).unwrap();
 }
