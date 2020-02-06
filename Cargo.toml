@@ -1,6 +1,6 @@
 [package]
 name = "valico"
-version = "3.2.0"
+version = "3.2.1-alpha.0"
 authors = ["Stanislav Panferov <fnight.m@gmail.com>"]
 description = "JSON Schema validator and JSON coercer"
 keywords = ["json", "validator", "json-schema"]
