@@ -39,7 +39,7 @@ use super::super::builder;
 #[cfg(test)]
 use super::super::scope;
 #[cfg(test)]
-use jsonway;
+
 
 #[test]
 fn validate() {

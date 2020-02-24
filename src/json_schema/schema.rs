@@ -1,8 +1,6 @@
-use phf;
 use serde_json::Value;
 use std::collections;
 use std::ops;
-use url;
 
 use super::helpers;
 use super::keywords;
@@ -130,12 +128,10 @@ impl Schema {
             return Err(SchemaError::NotAnObject);
         }
 
-        let id = if external_id.is_some() {
-            external_id.unwrap()
+        let id = if let Some(id) = external_id {
+            id
         } else {
-            helpers::parse_url_key("$id", &def)?
-                .clone()
-                .unwrap_or_else(helpers::generate_id)
+            helpers::parse_url_key("$id", &def)?.unwrap_or_else(helpers::generate_id)
         };
 
         let schema = helpers::parse_url_key("$schema", &def)?;
@@ -211,8 +207,7 @@ impl Schema {
 
         loop {
             let key = keys.iter().next().cloned();
-            if key.is_some() {
-                let key = key.unwrap();
+            if let Some(key) = key {
                 match settings.keywords.get(&key) {
                     Some(keyword) => {
                         keyword.consume(&mut keys);
@@ -246,7 +241,7 @@ impl Schema {
         if settings.ban_unknown_keywords && !not_consumed.is_empty() {
             for key in not_consumed.iter() {
                 if !ALLOW_NON_CONSUMED_KEYS.contains(&key[..]) {
-                    return Err(SchemaError::UnknownKey(key.to_string()));
+                    return Err(SchemaError::UnknownKey((*key).to_string()));
                 }
             }
         }

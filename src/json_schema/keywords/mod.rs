@@ -1,8 +1,8 @@
 use serde_json::Value;
+use std::any;
+use std::collections;
 use std::fmt;
 use std::sync::Arc;
-use std::collections;
-use std::any;
 
 use super::schema;
 use super::validators;
@@ -37,10 +37,10 @@ impl fmt::Debug for dyn Keyword + 'static {
 macro_rules! keyword_key_exists {
     ($val:expr, $key:expr) => {{
         let maybe_val = $val.get($key);
-        if maybe_val.is_none() {
-            return Ok(None);
+        if let Some(maybe_val) = maybe_val {
+            maybe_val
         } else {
-            maybe_val.unwrap()
+            return Ok(None);
         }
     }};
 }
@@ -81,16 +81,49 @@ pub fn default() -> KeywordMap {
         &mut map,
     );
     decouple_keyword((vec!["enum"], Box::new(enum_::Enum)), &mut map);
-    decouple_keyword((vec!["exclusiveMaximum"], Box::new(maxmin::ExclusiveMaximum)), &mut map);
-    decouple_keyword((vec!["exclusiveMinimum"], Box::new(maxmin::ExclusiveMinimum)), &mut map);
-    decouple_keyword((vec!["items", "additionalItems"], Box::new(items::Items)), &mut map);
-    decouple_keyword((vec!["maxItems"], Box::new(maxmin_items::MaxItems)), &mut map);
-    decouple_keyword((vec!["maxLength"], Box::new(maxmin_length::MaxLength)), &mut map);
-    decouple_keyword((vec!["maxProperties"], Box::new(maxmin_properties::MaxProperties)), &mut map);
+    decouple_keyword(
+        (vec!["exclusiveMaximum"], Box::new(maxmin::ExclusiveMaximum)),
+        &mut map,
+    );
+    decouple_keyword(
+        (vec!["exclusiveMinimum"], Box::new(maxmin::ExclusiveMinimum)),
+        &mut map,
+    );
+    decouple_keyword(
+        (vec!["items", "additionalItems"], Box::new(items::Items)),
+        &mut map,
+    );
+    decouple_keyword(
+        (vec!["maxItems"], Box::new(maxmin_items::MaxItems)),
+        &mut map,
+    );
+    decouple_keyword(
+        (vec!["maxLength"], Box::new(maxmin_length::MaxLength)),
+        &mut map,
+    );
+    decouple_keyword(
+        (
+            vec!["maxProperties"],
+            Box::new(maxmin_properties::MaxProperties),
+        ),
+        &mut map,
+    );
     decouple_keyword((vec!["maximum"], Box::new(maxmin::Maximum)), &mut map);
-    decouple_keyword((vec!["minItems"], Box::new(maxmin_items::MinItems)), &mut map);
-    decouple_keyword((vec!["minLength"], Box::new(maxmin_length::MinLength)), &mut map);
-    decouple_keyword((vec!["minProperties"], Box::new(maxmin_properties::MinProperties)), &mut map);
+    decouple_keyword(
+        (vec!["minItems"], Box::new(maxmin_items::MinItems)),
+        &mut map,
+    );
+    decouple_keyword(
+        (vec!["minLength"], Box::new(maxmin_length::MinLength)),
+        &mut map,
+    );
+    decouple_keyword(
+        (
+            vec!["minProperties"],
+            Box::new(maxmin_properties::MinProperties),
+        ),
+        &mut map,
+    );
     decouple_keyword((vec!["minimum"], Box::new(maxmin::Minimum)), &mut map);
     decouple_keyword(
         (vec!["multipleOf"], Box::new(multiple_of::MultipleOf)),

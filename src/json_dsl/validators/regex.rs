@@ -1,4 +1,4 @@
-use regex;
+
 use serde_json::Value;
 
 use super::super::errors;

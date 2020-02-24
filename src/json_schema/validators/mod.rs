@@ -1,7 +1,6 @@
 use serde::{Serialize, Serializer};
 use serde_json::{to_value, Value};
 use std::fmt;
-use url;
 
 use super::scope;
 

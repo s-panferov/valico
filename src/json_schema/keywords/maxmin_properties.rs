@@ -11,7 +11,6 @@ use super::super::builder;
 #[cfg(test)]
 use super::super::scope;
 #[cfg(test)]
-use jsonway;
 #[cfg(test)]
 use serde_json::to_value;
 
@@ -116,7 +115,7 @@ fn validate_min_properties() {
             true,
         )
         .ok()
-        .unwrap();;
+        .unwrap();
 
     assert_eq!(
         schema

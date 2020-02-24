@@ -1,6 +1,6 @@
 use serde_json::Value;
 use std::collections;
-use url;
+
 
 use super::helpers;
 use super::keywords;
@@ -172,7 +172,7 @@ impl Scope {
 }
 
 #[cfg(test)]
-use jsonway;
+
 
 #[test]
 fn lookup() {

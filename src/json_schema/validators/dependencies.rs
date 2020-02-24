@@ -1,6 +1,5 @@
 use serde_json::Value;
 use std::collections;
-use url;
 
 use super::super::errors;
 use super::super::scope;
@@ -29,8 +28,8 @@ impl super::Validator for Dependencies {
                 match dep {
                     DepKind::Schema(ref url) => {
                         let schema = scope.resolve(url);
-                        if schema.is_some() {
-                            state.append(schema.unwrap().validate_in(object, path));
+                        if let Some(schema) = schema {
+                            state.append(schema.validate_in(object, path));
                         } else {
                             state.missing.push(url.clone())
                         }

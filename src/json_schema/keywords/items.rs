@@ -15,8 +15,7 @@ impl super::Keyword for Items {
             return Ok(None);
         }
 
-        let items = if maybe_items.is_some() {
-            let items_val = maybe_items.unwrap();
+        let items = if let Some(items_val) = maybe_items {
             Some(if items_val.is_object() || items_val.is_boolean() {
                 validators::items::ItemsKind::Schema(helpers::alter_fragment_path(
                     ctx.url.clone(),
@@ -54,8 +53,7 @@ impl super::Keyword for Items {
             None
         };
 
-        let additional_items = if maybe_additional.is_some() {
-            let additional_val = maybe_additional.unwrap();
+        let additional_items = if let Some(additional_val) = maybe_additional {
             Some(if additional_val.is_boolean() {
                 validators::items::AdditionalKind::Boolean(additional_val.as_bool().unwrap())
             } else if additional_val.is_object() {

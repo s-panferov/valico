@@ -9,7 +9,7 @@ pub struct ExactlyOneOf {
 impl ExactlyOneOf {
     pub fn new(params: &[&str]) -> ExactlyOneOf {
         ExactlyOneOf {
-            params: params.iter().map(|s| s.to_string()).collect(),
+            params: params.iter().map(|s| (*s).to_string()).collect(),
         }
     }
 }

@@ -1,3 +1,5 @@
+#![allow(clippy::match_wild_err_arm)]
+
 use serde_json::{from_str, to_string, Value};
 use valico::common::error;
 use valico::json_dsl;
@@ -13,7 +15,7 @@ pub fn test_result(
         Ok(mut json) => {
             let state = params.process(&mut json, scope);
             if state.is_strictly_valid() {
-                return json;
+                json
             } else {
                 panic!("Errors during process: {:?}", state);
             }
@@ -36,7 +38,7 @@ pub fn get_errors(
             if state.is_strictly_valid() {
                 panic!("Success response when we await some errors");
             } else {
-                return state.errors;
+                state.errors
             }
         }
         Err(_) => {

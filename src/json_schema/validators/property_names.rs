@@ -1,5 +1,4 @@
 use serde_json::Value;
-use url;
 
 use super::super::scope;
 
@@ -15,8 +14,7 @@ impl super::Validator for PropertyNames {
         let schema = scope.resolve(&self.url);
         let mut state = super::ValidationState::new();
 
-        if schema.is_some() {
-            let schema = schema.unwrap();
+        if let Some(schema) = schema {
             for key in object.keys() {
                 let item_path = [path, ["[", key.as_ref(), "]"].join("").as_ref()].join("/");
                 state.append(schema.validate_in(&Value::from(key.clone()), item_path.as_ref()));

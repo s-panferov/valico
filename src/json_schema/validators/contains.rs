@@ -1,5 +1,4 @@
 use serde_json::Value;
-use url;
 
 use super::super::errors;
 use super::super::scope;
@@ -16,8 +15,7 @@ impl super::Validator for Contains {
         let schema = scope.resolve(&self.url);
         let mut state = super::ValidationState::new();
 
-        if schema.is_some() {
-            let schema = schema.unwrap();
+        if let Some(schema) = schema {
             let any_matched = array.iter().enumerate().any(|(idx, item)| {
                 let item_path = [path, idx.to_string().as_ref()].join("/");
                 schema.validate_in(item, item_path.as_ref()).is_valid()

@@ -1,6 +1,5 @@
 use serde_json::Value;
 use std::cmp;
-use url;
 
 use super::super::errors;
 use super::super::scope;
@@ -34,8 +33,7 @@ impl super::Validator for Items {
                 // Just validate all items against the schema
 
                 let schema = scope.resolve(url);
-                if schema.is_some() {
-                    let schema = schema.unwrap();
+                if let Some(schema) = schema {
                     for (idx, item) in array.iter().enumerate() {
                         let item_path = [path, idx.to_string().as_ref()].join("/");
                         state.append(schema.validate_in(item, item_path.as_ref()));
@@ -52,9 +50,9 @@ impl super::Validator for Items {
                     let schema = scope.resolve(&urls[idx]);
                     let item = &array[idx];
 
-                    if schema.is_some() {
+                    if let Some(schema) = schema {
                         let item_path = [path, idx.to_string().as_ref()].join("/");
-                        state.append(schema.unwrap().validate_in(item, item_path.as_ref()))
+                        state.append(schema.validate_in(item, item_path.as_ref()))
                     } else {
                         state.missing.push(urls[idx].clone())
                     }
@@ -71,8 +69,7 @@ impl super::Validator for Items {
                         }
                         Some(AdditionalKind::Schema(ref url)) => {
                             let schema = scope.resolve(url);
-                            if schema.is_some() {
-                                let schema = schema.unwrap();
+                            if let Some(schema) = schema {
                                 for (idx, item) in array[urls.len()..].iter().enumerate() {
                                     let item_path = [path, idx.to_string().as_ref()].join("/");
                                     state.append(schema.validate_in(item, item_path.as_ref()))

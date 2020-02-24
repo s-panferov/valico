@@ -1,5 +1,4 @@
 use serde_json::Value;
-use url;
 
 use super::super::errors;
 use super::super::scope;
@@ -14,8 +13,8 @@ impl super::Validator for Not {
         let schema = scope.resolve(&self.url);
         let mut state = super::ValidationState::new();
 
-        if schema.is_some() {
-            if schema.unwrap().validate_in(val, path).is_valid() {
+        if let Some(schema) = schema {
+            if schema.validate_in(val, path).is_valid() {
                 state.errors.push(Box::new(errors::Not {
                     path: path.to_string(),
                 }))
