@@ -1,7 +1,6 @@
 use serde_json::Value;
 use std::collections;
 
-
 use super::helpers;
 use super::keywords;
 use super::schema;
@@ -11,16 +10,13 @@ use super::schema;
 pub struct Scope {
     keywords: keywords::KeywordMap,
     schemes: collections::HashMap<String, schema::Schema>,
+    supply_defaults: bool,
 }
 
 #[allow(dead_code)]
 impl Scope {
     pub fn new() -> Scope {
-        let mut scope = Scope {
-            keywords: keywords::default(),
-            schemes: collections::HashMap::new(),
-        };
-
+        let mut scope = Scope::without_formats();
         scope.add_keyword(vec!["format"], keywords::format::Format::new());
         scope
     }
@@ -29,6 +25,7 @@ impl Scope {
         Scope {
             keywords: keywords::default(),
             schemes: collections::HashMap::new(),
+            supply_defaults: false,
         }
     }
 
@@ -36,16 +33,20 @@ impl Scope {
     where
         F: FnOnce(&mut keywords::format::FormatBuilders),
     {
-        let mut scope = Scope {
-            keywords: keywords::default(),
-            schemes: collections::HashMap::new(),
-        };
-
+        let mut scope = Scope::without_formats();
         scope.add_keyword(
             vec!["format"],
             keywords::format::Format::with(build_formats),
         );
         scope
+    }
+
+    pub fn supply_defaults(self) -> Self {
+        Scope {
+            keywords: self.keywords,
+            schemes: self.schemes,
+            supply_defaults: true,
+        }
     }
 
     pub fn compile(
@@ -56,7 +57,7 @@ impl Scope {
         let schema = schema::compile(
             def,
             None,
-            schema::CompilationSettings::new(&self.keywords, ban_unknown),
+            schema::CompilationSettings::new(&self.keywords, ban_unknown, self.supply_defaults),
         )?;
         let id = schema.id.clone().unwrap();
         self.add(&id, schema)?;
@@ -72,7 +73,7 @@ impl Scope {
         let schema = schema::compile(
             def,
             Some(id.clone()),
-            schema::CompilationSettings::new(&self.keywords, ban_unknown),
+            schema::CompilationSettings::new(&self.keywords, ban_unknown, self.supply_defaults),
         )?;
         self.add(id, schema)
     }
@@ -85,7 +86,7 @@ impl Scope {
         let schema = schema::compile(
             def,
             None,
-            schema::CompilationSettings::new(&self.keywords, ban_unknown),
+            schema::CompilationSettings::new(&self.keywords, ban_unknown, self.supply_defaults),
         )?;
         self.add_and_return(schema.id.clone().as_ref().unwrap(), schema)
     }
@@ -99,7 +100,7 @@ impl Scope {
         let schema = schema::compile(
             def,
             Some(id.clone()),
-            schema::CompilationSettings::new(&self.keywords, ban_unknown),
+            schema::CompilationSettings::new(&self.keywords, ban_unknown, self.supply_defaults),
         )?;
         self.add_and_return(id, schema)
     }
@@ -172,8 +173,6 @@ impl Scope {
 }
 
 #[cfg(test)]
-
-
 #[test]
 fn lookup() {
     let mut scope = Scope::new();

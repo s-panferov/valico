@@ -102,16 +102,19 @@ include!(concat!(env!("OUT_DIR"), "/codegen.rs"));
 pub struct CompilationSettings<'a> {
     pub keywords: &'a keywords::KeywordMap,
     pub ban_unknown_keywords: bool,
+    pub supply_defaults: bool,
 }
 
 impl<'a> CompilationSettings<'a> {
     pub fn new(
         keywords: &'a keywords::KeywordMap,
         ban_unknown_keywords: bool,
+        supply_defaults: bool,
     ) -> CompilationSettings<'a> {
         CompilationSettings {
             keywords,
             ban_unknown_keywords,
+            supply_defaults,
         }
     }
 }
@@ -415,7 +418,7 @@ fn schema_doesnt_compile_not_object() {
     assert!(Schema::compile(
         json!(0),
         None,
-        CompilationSettings::new(&keywords::default(), true)
+        CompilationSettings::new(&keywords::default(), true, false)
     )
     .is_err());
 }
@@ -425,7 +428,7 @@ fn schema_compiles_boolean_schema() {
     assert!(Schema::compile(
         json!(true),
         None,
-        CompilationSettings::new(&keywords::default(), true)
+        CompilationSettings::new(&keywords::default(), true, false)
     )
     .is_ok());
 }
