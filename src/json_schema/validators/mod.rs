@@ -116,6 +116,13 @@ impl ValidationState {
     pub fn replacement_or<'a>(&'a self, data: &'a Value) -> &'a Value {
         self.replacement.as_ref().unwrap_or(data)
     }
+
+    pub fn replace(&mut self, data: &Value, f: impl FnOnce(&mut Value)) {
+        if self.replacement.is_none() {
+            self.replacement = Some(data.clone());
+        }
+        f(self.replacement.as_mut().unwrap());
+    }
 }
 
 impl Serialize for ValidationState {

@@ -121,6 +121,10 @@ impl super::Keyword for Properties {
             patterns,
         })))
     }
+
+    fn place_first(&self) -> bool {
+        true
+    }
 }
 
 #[cfg(test)]

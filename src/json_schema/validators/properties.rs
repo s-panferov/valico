@@ -22,6 +22,19 @@ impl super::Validator for Properties {
         let object = nonstrict_process!(val.as_object(), path);
         let mut state = super::ValidationState::new();
 
+        if scope.supply_defaults {
+            for (key, url) in self.properties.iter() {
+                if let Some(schema) = scope.resolve(url) {
+                    if object.get(key).is_none() && schema.default.is_some() {
+                        state.replace(val, |v| {
+                            v.as_object_mut()
+                                .map(|o| o.insert(key.clone(), schema.default.clone().unwrap()));
+                        });
+                    }
+                }
+            }
+        }
+
         'main: for (key, value) in object.iter() {
             let is_property_passed = if self.properties.contains_key(key) {
                 let url = &self.properties[key];

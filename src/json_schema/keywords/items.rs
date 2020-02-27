@@ -76,6 +76,10 @@ impl super::Keyword for Items {
             additional: additional_items,
         })))
     }
+
+    fn place_first(&self) -> bool {
+        true
+    }
 }
 
 #[cfg(test)]

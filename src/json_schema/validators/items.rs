@@ -25,8 +25,27 @@ pub struct Items {
 impl super::Validator for Items {
     fn validate(&self, val: &Value, path: &str, scope: &scope::Scope) -> super::ValidationState {
         let array = nonstrict_process!(val.as_array(), path);
-
         let mut state = super::ValidationState::new();
+
+        if scope.supply_defaults {
+            if let Some(ItemsKind::Array(urls)) = self.items.as_ref() {
+                for url in urls.iter().skip(array.len()) {
+                    if let Some(schema) = scope.resolve(url) {
+                        if let Some(default) = schema.default.as_ref() {
+                            state.replace(val, |v| {
+                                if let Some(a) = v.as_array_mut() {
+                                    a.push(default.clone())
+                                }
+                            })
+                        } else {
+                            break;
+                        }
+                    } else {
+                        break;
+                    }
+                }
+            }
+        }
 
         match self.items {
             Some(ItemsKind::Schema(ref url)) => {

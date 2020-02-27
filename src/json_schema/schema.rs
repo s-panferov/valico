@@ -96,7 +96,7 @@ pub struct Schema {
     tree: collections::BTreeMap<String, Schema>,
     validators: validators::Validators,
     scopes: collections::HashMap<String, Vec<String>>,
-    default: Option<Value>,
+    pub default: Option<Value>,
 }
 
 include!(concat!(env!("OUT_DIR"), "/codegen.rs"));
@@ -252,23 +252,19 @@ impl Schema {
         {
             let items = self.tree.get("items").unwrap();
             let mut default = vec![];
-            let mut found_one = false;
             for idx in 0.. {
                 if let Some(schema) = items.tree.get(&idx.to_string()) {
-                    let def = schema
-                        .default
-                        .clone()
-                        .map(|v| {
-                            found_one = true;
-                            v
-                        })
-                        .unwrap_or_else(|| json!({}));
-                    default.push(def);
+                    if let Some(def) = schema.default.as_ref() {
+                        default.push(def);
+                    } else {
+                        break;
+                    }
                 } else {
                     break;
                 }
             }
-            if found_one {
+            if default.len() == items.tree.len() {
+                let default = default.into_iter().cloned().collect::<Vec<_>>();
                 self.default = Some(default.into());
                 return;
             }
