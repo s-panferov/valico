@@ -106,12 +106,15 @@ impl Scope {
         def: Value,
         ban_unknown: bool,
     ) -> Result<url::Url, schema::SchemaError> {
-        let schema = schema::compile(
+        let mut schema = schema::compile(
             def,
             None,
             schema::CompilationSettings::new(&self.keywords, ban_unknown, self.supply_defaults),
         )?;
         let id = schema.id.clone().unwrap();
+        if self.supply_defaults {
+            schema.add_defaults(&id, self);
+        }
         self.add(&id, schema)?;
         Ok(id)
     }
@@ -122,11 +125,14 @@ impl Scope {
         def: Value,
         ban_unknown: bool,
     ) -> Result<(), schema::SchemaError> {
-        let schema = schema::compile(
+        let mut schema = schema::compile(
             def,
             Some(id.clone()),
             schema::CompilationSettings::new(&self.keywords, ban_unknown, self.supply_defaults),
         )?;
+        if self.supply_defaults {
+            schema.add_defaults(id, self);
+        }
         self.add(id, schema)
     }
 
@@ -135,12 +141,16 @@ impl Scope {
         def: Value,
         ban_unknown: bool,
     ) -> Result<schema::ScopedSchema<'_>, schema::SchemaError> {
-        let schema = schema::compile(
+        let mut schema = schema::compile(
             def,
             None,
             schema::CompilationSettings::new(&self.keywords, ban_unknown, self.supply_defaults),
         )?;
-        self.add_and_return(schema.id.clone().as_ref().unwrap(), schema)
+        let id = schema.id.clone().unwrap();
+        if self.supply_defaults {
+            schema.add_defaults(&id, self);
+        }
+        self.add_and_return(&id, schema)
     }
 
     pub fn compile_and_return_with_id<'a>(
@@ -149,11 +159,14 @@ impl Scope {
         def: Value,
         ban_unknown: bool,
     ) -> Result<schema::ScopedSchema<'a>, schema::SchemaError> {
-        let schema = schema::compile(
+        let mut schema = schema::compile(
             def,
             Some(id.clone()),
             schema::CompilationSettings::new(&self.keywords, ban_unknown, self.supply_defaults),
         )?;
+        if self.supply_defaults {
+            schema.add_defaults(id, self);
+        }
         self.add_and_return(id, schema)
     }
 

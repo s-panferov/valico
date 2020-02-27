@@ -198,13 +198,14 @@ impl Schema {
     }
 
     pub fn add_defaults(&mut self, id: &Url, scope: &scope::Scope) {
-        // step 1: walk the tree to apply this recursively, and remember child defaults
-        let mut defaults = collections::BTreeMap::<&String, Value>::new();
-        for (key, schema) in self.tree.iter_mut() {
+        // step 0: bail out if we already have a schema (i.e. proof that traversal got here before)
+        if self.default.is_some() {
+            return;
+        }
+
+        // step 1: walk the tree to apply this recursively
+        for (_, schema) in self.tree.iter_mut() {
             schema.add_defaults(id, scope);
-            if let Some(default) = schema.default.clone() {
-                defaults.insert(key, default);
-            }
         }
 
         // step 2: use explicit default if present
@@ -217,11 +218,17 @@ impl Schema {
         // 3a: $ref
         if let Some(ref_) = self.original.get("$ref").and_then(|r| r.as_str()) {
             if let Ok(url) = Url::options().base_url(Some(id)).parse(ref_) {
-                if let Some(schema) = scope.resolve(&url) {
+                // first try to resolve this Url internally so that we can then modify the schema
+                // in case this one has not yet been traversed
+                if let Some(schema) = self.resolve_mut(&url) {
+                    schema.add_defaults(id, scope);
                     self.default = schema.default.clone();
-                    return;
+                } else if let Some(schema) = scope.resolve(&url) {
+                    self.default = schema.default.clone();
                 }
             }
+            // $ref is exclusive, i.e. does not tolerate other keywords to be present
+            return;
         }
         // 3b: properties
         if let Some(properties) = self.tree.get("properties") {
@@ -447,6 +454,43 @@ impl Schema {
             }
             schema
         })
+    }
+
+    fn resolve_mut(&mut self, url: &Url) -> Option<&mut Schema> {
+        if self.id.is_some() && url == self.id.as_ref().unwrap() {
+            Some(self)
+        } else {
+            let (schema_path, fragment) = helpers::serialize_schema_path(url);
+            if let Some(mut path) = self.scopes.get(&schema_path).cloned() {
+                path.reverse();
+                if let Some(schema) = self.resolve_mut_path(path) {
+                    if let Some(fragment) = fragment {
+                        let mut path = fragment
+                            .split("/")
+                            .map(|s| s.to_string())
+                            .collect::<Vec<_>>();
+                        path.reverse();
+                        schema.resolve_mut_path(path)
+                    } else {
+                        Some(schema)
+                    }
+                } else {
+                    None
+                }
+            } else {
+                None
+            }
+        }
+    }
+
+    fn resolve_mut_path(&mut self, mut path: Vec<String>) -> Option<&mut Schema> {
+        if let Some(p) = path.pop() {
+            self.tree
+                .get_mut(&p)
+                .and_then(|schema| schema.resolve_mut_path(path))
+        } else {
+            Some(self)
+        }
     }
 
     pub fn resolve_fragment(&self, fragment: &str) -> Option<&Schema> {
