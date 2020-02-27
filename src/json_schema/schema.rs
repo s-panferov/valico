@@ -1,6 +1,7 @@
 use serde_json::Value;
 use std::collections;
 use std::ops;
+use url::Url;
 
 use super::helpers;
 use super::keywords;
@@ -68,7 +69,7 @@ impl<'a> ops::Deref for ScopedSchema<'a> {
     type Target = Schema;
 
     fn deref(&self) -> &Schema {
-        &self.schema
+        self.schema
     }
 }
 
@@ -95,6 +96,7 @@ pub struct Schema {
     tree: collections::BTreeMap<String, Schema>,
     validators: validators::Validators,
     scopes: collections::HashMap<String, Vec<String>>,
+    default: Option<Value>,
 }
 
 include!(concat!(env!("OUT_DIR"), "/codegen.rs"));
@@ -123,7 +125,7 @@ impl Schema {
     fn compile(
         def: Value,
         external_id: Option<url::Url>,
-        settings: CompilationSettings<'_>,
+        settings: CompilationSettings,
     ) -> Result<Schema, SchemaError> {
         let def = helpers::convert_boolean_schema(def);
 
@@ -189,15 +191,87 @@ impl Schema {
             tree,
             validators,
             scopes,
+            default: None,
         };
 
         Ok(schema)
     }
 
+    pub fn add_defaults(&mut self, id: &Url, scope: &scope::Scope) {
+        // step 1: walk the tree to apply this recursively, and remember child defaults
+        let mut defaults = collections::BTreeMap::<&String, Value>::new();
+        for (key, schema) in self.tree.iter_mut() {
+            schema.add_defaults(id, scope);
+            if let Some(default) = schema.default.clone() {
+                defaults.insert(key, default);
+            }
+        }
+
+        // step 2: use explicit default if present
+        if let Some(default) = self.original.get("default") {
+            self.default = Some(default.clone());
+            return;
+        }
+
+        // step 3: propagate defaults according to the rules
+        // 3a: $ref
+        if let Some(ref_) = self.original.get("$ref").and_then(|r| r.as_str()) {
+            if let Ok(url) = Url::options().base_url(Some(id)).parse(ref_) {
+                if let Some(schema) = scope.resolve(&url) {
+                    self.default = schema.default.clone();
+                    return;
+                }
+            }
+        }
+        // 3b: properties
+        if let Some(properties) = self.tree.get("properties") {
+            let mut default = serde_json::Map::default();
+            for (key, schema) in properties.tree.iter() {
+                if let Some(value) = &schema.default {
+                    default.insert(key.clone(), value.clone());
+                }
+            }
+            if !default.is_empty() {
+                self.default = Some(default.into());
+                return;
+            }
+        }
+        // 3c: items, if array
+        if self
+            .original
+            .get("items")
+            .map(|i| i.is_array())
+            .unwrap_or(false)
+        {
+            let items = self.tree.get("items").unwrap();
+            let mut default = vec![];
+            let mut found_one = false;
+            for idx in 0.. {
+                if let Some(schema) = items.tree.get(&idx.to_string()) {
+                    let def = schema
+                        .default
+                        .clone()
+                        .map(|v| {
+                            found_one = true;
+                            v
+                        })
+                        .unwrap_or_else(|| json!({}));
+                    default.push(def);
+                } else {
+                    break;
+                }
+            }
+            if found_one {
+                self.default = Some(default.into());
+                return;
+            }
+        }
+    }
+
     fn compile_keywords(
         def: &Value,
-        context: &WalkContext<'_>,
-        settings: &CompilationSettings<'_>,
+        context: &WalkContext,
+        settings: &CompilationSettings,
     ) -> Result<validators::Validators, SchemaError> {
         let mut validators = vec![];
         let mut keys: collections::HashSet<&str> = def
@@ -220,6 +294,8 @@ impl Schema {
                         if let Some(validator) = keyword.keyword.compile(def, context)? {
                             if is_exclusive_keyword {
                                 validators = vec![validator];
+                            } else if keyword.keyword.place_first() {
+                                validators.splice(0..0, std::iter::once(validator));
                             } else {
                                 validators.push(validator);
                             }
@@ -254,8 +330,8 @@ impl Schema {
 
     fn compile_sub(
         def: Value,
-        context: &mut WalkContext<'_>,
-        keywords: &CompilationSettings<'_>,
+        context: &mut WalkContext,
+        keywords: &CompilationSettings,
         is_schema: bool,
     ) -> Result<Schema, SchemaError> {
         let def = helpers::convert_boolean_schema(def);
@@ -356,6 +432,7 @@ impl Schema {
             tree,
             validators,
             scopes: collections::HashMap::new(),
+            default: None,
         };
 
         Ok(schema)
@@ -377,6 +454,7 @@ impl Schema {
 
         let parts = fragment[1..].split('/');
         let mut schema = self;
+        // FIXME what about path segments that were changed by helpers::encode()?
         for part in parts {
             match schema.tree.get(part) {
                 Some(sch) => schema = sch,
@@ -398,7 +476,7 @@ impl Schema {
         let mut state = validators::ValidationState::new();
 
         for validator in self.validators.iter() {
-            state.append(validator.validate(data, path, scope))
+            state.append(validator.validate(state.replacement_or(data), path, scope))
         }
 
         state

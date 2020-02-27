@@ -78,6 +78,7 @@ impl<T> ExtendedResult<T> {
             state: json_schema::ValidationState {
                 errors,
                 missing: vec![],
+                replacement: None,
             },
         }
     }

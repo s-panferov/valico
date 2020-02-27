@@ -17,6 +17,9 @@ pub trait Keyword: Send + Sync + any::Any {
     fn is_exclusive(&self) -> bool {
         false
     }
+    fn place_first(&self) -> bool {
+        false
+    }
 }
 
 impl<T: 'static + Send + Sync + any::Any> Keyword for T

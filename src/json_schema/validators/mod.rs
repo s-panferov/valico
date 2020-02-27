@@ -35,6 +35,7 @@ macro_rules! val_error {
         $crate::json_schema::validators::ValidationState {
             errors: vec![Box::new($err)],
             missing: vec![],
+            replacement: None,
         }
     };
 }
@@ -84,6 +85,7 @@ mod unique_items;
 pub struct ValidationState {
     pub errors: super::super::common::error::ValicoErrors,
     pub missing: Vec<url::Url>,
+    pub replacement: Option<Value>,
 }
 
 impl ValidationState {
@@ -91,6 +93,7 @@ impl ValidationState {
         ValidationState {
             errors: vec![],
             missing: vec![],
+            replacement: None,
         }
     }
 
@@ -102,9 +105,16 @@ impl ValidationState {
         self.errors.is_empty() && self.missing.is_empty()
     }
 
-    pub fn append(&mut self, second: ValidationState) {
+    pub fn append(&mut self, mut second: ValidationState) {
         self.errors.extend(second.errors);
         self.missing.extend(second.missing);
+        if second.replacement.is_some() {
+            self.replacement = second.replacement.take();
+        }
+    }
+
+    pub fn replacement_or<'a>(&'a self, data: &'a Value) -> &'a Value {
+        self.replacement.as_ref().unwrap_or(data)
     }
 }
 

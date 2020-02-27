@@ -7,7 +7,7 @@ use super::super::validators;
 #[allow(missing_copy_implementations)]
 pub struct Contains;
 impl super::Keyword for Contains {
-    fn compile(&self, def: &Value, ctx: &schema::WalkContext<'_>) -> super::KeywordResult {
+    fn compile(&self, def: &Value, ctx: &schema::WalkContext) -> super::KeywordResult {
         let contains = keyword_key_exists!(def, "contains");
 
         if contains.is_object() || contains.is_boolean() {

@@ -18,9 +18,8 @@ impl super::Keyword for Properties {
         }
 
         let properties = if let Some(properties) = maybe_properties {
-            if properties.is_object() {
+            if let Some(properties) = properties.as_object() {
                 let mut schemes = collections::HashMap::new();
-                let properties = properties.as_object().unwrap();
                 for (key, value) in properties.iter() {
                     if value.is_object() || value.is_boolean() {
                         schemes.insert(
