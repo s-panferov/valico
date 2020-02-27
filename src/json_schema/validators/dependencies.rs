@@ -1,4 +1,5 @@
 use serde_json::Value;
+use std::borrow::Cow;
 use std::collections;
 
 use super::super::errors;
@@ -16,20 +17,24 @@ pub struct Dependencies {
 }
 
 impl super::Validator for Dependencies {
-    fn validate(&self, object: &Value, path: &str, scope: &scope::Scope) -> super::ValidationState {
-        if !object.is_object() {
-            return super::ValidationState::new();
-        }
-
+    fn validate(&self, val: &Value, path: &str, scope: &scope::Scope) -> super::ValidationState {
         let mut state = super::ValidationState::new();
+        if !val.is_object() {
+            return state;
+        }
+        let mut object = Cow::Borrowed(val);
 
         for (key, dep) in self.items.iter() {
-            if object.get(&key).is_some() {
+            if object.get(key).is_some() {
                 match dep {
                     DepKind::Schema(ref url) => {
                         let schema = scope.resolve(url);
                         if let Some(schema) = schema {
-                            state.append(schema.validate_in(object, path));
+                            let mut result = schema.validate_in(&object, path);
+                            if result.is_valid() && result.replacement.is_some() {
+                                *object.to_mut() = result.replacement.take().unwrap();
+                            }
+                            state.append(result);
                         } else {
                             state.missing.push(url.clone())
                         }
@@ -47,6 +52,7 @@ impl super::Validator for Dependencies {
             }
         }
 
+        state.set_replacement(object);
         state
     }
 }

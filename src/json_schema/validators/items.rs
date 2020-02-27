@@ -1,4 +1,5 @@
 use serde_json::Value;
+use std::borrow::Cow;
 use std::cmp;
 
 use super::super::errors;
@@ -24,7 +25,7 @@ pub struct Items {
 
 impl super::Validator for Items {
     fn validate(&self, val: &Value, path: &str, scope: &scope::Scope) -> super::ValidationState {
-        let array = nonstrict_process!(val.as_array(), path);
+        let mut array = Cow::Borrowed(nonstrict_process!(val.as_array(), path));
         let mut state = super::ValidationState::new();
 
         if scope.supply_defaults {
@@ -32,11 +33,7 @@ impl super::Validator for Items {
                 for url in urls.iter().skip(array.len()) {
                     if let Some(schema) = scope.resolve(url) {
                         if let Some(default) = schema.default.as_ref() {
-                            state.replace(val, |v| {
-                                if let Some(a) = v.as_array_mut() {
-                                    a.push(default.clone())
-                                }
-                            })
+                            array.to_mut().push(default.clone());
                         } else {
                             break;
                         }
@@ -53,9 +50,14 @@ impl super::Validator for Items {
 
                 let schema = scope.resolve(url);
                 if let Some(schema) = schema {
-                    for (idx, item) in array.iter().enumerate() {
+                    for idx in 0..array.len() {
+                        let item = &array[idx];
                         let item_path = [path, idx.to_string().as_ref()].join("/");
-                        state.append(schema.validate_in(item, item_path.as_ref()));
+                        let mut result = schema.validate_in(item, item_path.as_ref());
+                        if result.is_valid() && result.replacement.is_some() {
+                            array.to_mut()[idx] = result.replacement.take().unwrap();
+                        }
+                        state.append(result);
                     }
                 } else {
                     state.missing.push(url.clone());
@@ -71,7 +73,11 @@ impl super::Validator for Items {
 
                     if let Some(schema) = schema {
                         let item_path = [path, idx.to_string().as_ref()].join("/");
-                        state.append(schema.validate_in(item, item_path.as_ref()))
+                        let mut result = schema.validate_in(item, item_path.as_ref());
+                        if result.is_valid() && result.replacement.is_some() {
+                            array.to_mut()[idx] = result.replacement.take().unwrap();
+                        }
+                        state.append(result);
                     } else {
                         state.missing.push(urls[idx].clone())
                     }
@@ -89,9 +95,14 @@ impl super::Validator for Items {
                         Some(AdditionalKind::Schema(ref url)) => {
                             let schema = scope.resolve(url);
                             if let Some(schema) = schema {
-                                for (idx, item) in array[urls.len()..].iter().enumerate() {
+                                for idx in urls.len()..array.len() {
+                                    let item = &array[idx];
                                     let item_path = [path, idx.to_string().as_ref()].join("/");
-                                    state.append(schema.validate_in(item, item_path.as_ref()))
+                                    let mut result = schema.validate_in(item, item_path.as_ref());
+                                    if result.is_valid() && result.replacement.is_some() {
+                                        array.to_mut()[idx] = result.replacement.take().unwrap();
+                                    }
+                                    state.append(result);
                                 }
                             } else {
                                 state.missing.push(url.clone())
@@ -104,6 +115,7 @@ impl super::Validator for Items {
             _ => (),
         }
 
+        state.set_replacement(array);
         state
     }
 }

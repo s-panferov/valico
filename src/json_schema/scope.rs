@@ -42,9 +42,11 @@ pub struct Scope {
     ///
     /// The following validators interact additionally with the defaults:
     ///
-    ///  - `contains`: if the object in the array that validates the supplied schema,
+    ///  - `contains`: if there is an object in the array that validates the supplied schema,
     ///    then that object is outfitted with the defaults of that schema; all other
     ///    array elements remain unchanged (i.e. only the first match gets defaults)
+    ///  - `dependencies`: if the instance triggers a dependent schema and validates it,
+    ///    then that schema’s defaults will be applied
     ///  - `not`: the supplied schema is used to validate a copy of the instance with
     ///    defaults added to determine whether to reject the original instance, but
     ///    the enriched instance is then discarded

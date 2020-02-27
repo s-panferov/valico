@@ -1,4 +1,5 @@
 use serde_json::Value;
+use std::borrow::Cow;
 use std::collections;
 use std::ops;
 use url::Url;
@@ -462,7 +463,7 @@ impl Schema {
                 if let Some(schema) = self.resolve_mut_path(path) {
                     if let Some(fragment) = fragment {
                         let mut path = fragment
-                            .split("/")
+                            .split('/')
                             .map(|s| s.to_string())
                             .collect::<Vec<_>>();
                         path.reverse();
@@ -514,11 +515,19 @@ impl Schema {
         scope: &scope::Scope,
     ) -> validators::ValidationState {
         let mut state = validators::ValidationState::new();
+        let mut data = Cow::Borrowed(data);
 
         for validator in self.validators.iter() {
-            state.append(validator.validate(state.replacement_or(data), path, scope))
+            let mut result = validator.validate(&data, path, scope);
+            if result.is_valid() {
+                if let Some(d) = result.replacement.take() {
+                    *data.to_mut() = d;
+                }
+            }
+            state.append(result);
         }
 
+        state.set_replacement(data);
         state
     }
 }

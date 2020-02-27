@@ -1,5 +1,6 @@
 use serde::{Serialize, Serializer};
 use serde_json::{to_value, Value};
+use std::borrow::Cow;
 use std::fmt;
 
 use super::scope;
@@ -105,23 +106,18 @@ impl ValidationState {
         self.errors.is_empty() && self.missing.is_empty()
     }
 
-    pub fn append(&mut self, mut second: ValidationState) {
+    pub fn append(&mut self, second: ValidationState) {
         self.errors.extend(second.errors);
         self.missing.extend(second.missing);
-        if second.replacement.is_some() {
-            self.replacement = second.replacement.take();
-        }
     }
 
-    pub fn replacement_or<'a>(&'a self, data: &'a Value) -> &'a Value {
-        self.replacement.as_ref().unwrap_or(data)
-    }
-
-    pub fn replace(&mut self, data: &Value, f: impl FnOnce(&mut Value)) {
-        if self.replacement.is_none() {
-            self.replacement = Some(data.clone());
+    pub fn set_replacement<T: Clone + Into<Value>>(&mut self, data: Cow<T>) {
+        if !self.is_valid() {
+            return;
         }
-        f(self.replacement.as_mut().unwrap());
+        if let Cow::Owned(data) = data {
+            self.replacement = Some(data.into());
+        }
     }
 }
 

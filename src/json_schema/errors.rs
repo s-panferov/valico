@@ -198,6 +198,18 @@ impl_serialize!(Not);
 
 #[derive(Debug)]
 #[allow(missing_copy_implementations)]
+pub struct DivergentDefaults {
+    pub path: String,
+}
+impl_err!(
+    DivergentDefaults,
+    "default",
+    "Application of defaults did not converge"
+);
+impl_serialize!(DivergentDefaults);
+
+#[derive(Debug)]
+#[allow(missing_copy_implementations)]
 pub struct Format {
     pub path: String,
     pub detail: String,
