@@ -131,7 +131,7 @@ impl super::Keyword for Properties {
 use super::super::builder;
 #[cfg(test)]
 use super::super::scope;
-#[cfg(test)]
+
 #[test]
 fn validate_properties() {
     let mut scope = scope::Scope::new();

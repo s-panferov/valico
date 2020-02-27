@@ -8,7 +8,7 @@ fn visit_specs<F>(dir: &path::Path, cb: F)
 where
     F: Fn(&path::Path, Value) + Copy,
 {
-    let contents = fs::read_dir(dir).ok().unwrap();
+    let contents = fs::read_dir(dir).expect(&*format!("cannot list directory {:?}", dir));
     for entry in contents {
         let entry = entry.unwrap();
         let path = entry.path();

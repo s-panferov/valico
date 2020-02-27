@@ -1,5 +1,6 @@
 use serde_json::Value;
 use std::borrow::Cow;
+use std::cell::UnsafeCell;
 use std::collections;
 use std::ops;
 use url::Url;
@@ -97,7 +98,7 @@ pub struct Schema {
     tree: collections::BTreeMap<String, Schema>,
     validators: validators::Validators,
     scopes: collections::HashMap<String, Vec<String>>,
-    pub default: Option<Value>,
+    default: UnsafeCell<Option<Value>>,
 }
 
 include!(concat!(env!("OUT_DIR"), "/codegen.rs"));
@@ -192,26 +193,58 @@ impl Schema {
             tree,
             validators,
             scopes,
-            default: None,
+            default: UnsafeCell::new(None),
         };
 
         Ok(schema)
     }
 
+    /// This troublesome fella poops on the party because it is impossible to explain
+    /// to the Rust borrow checker that I’m traversing a tree, mutating it at the same
+    /// time, and need to occasionally jump back to the root — which is safe in this
+    /// particular case because the tree structure is not touched!
+    fn unsafe_set_default(&self, default: Option<Value>) {
+        unsafe {
+            *self.default.get() = default;
+        }
+    }
+
+    /// Getting references to internally mutable memory is finicky business, we must
+    /// not allow these references to escape. Therefore only internal code is allowed
+    /// to use this function to
+    ///
+    ///  - take a peek at the value, to see whether the option is set, or
+    ///  - take a peek at the value just long enough to clone it.
+    unsafe fn unsafe_get_default(&self) -> &Option<Value> {
+        &*self.default.get()
+    }
+
+    pub fn get_default(&self) -> Option<Value> {
+        unsafe { self.unsafe_get_default().clone() }
+    }
+
+    pub fn has_default(&self) -> bool {
+        unsafe { self.unsafe_get_default().is_some() }
+    }
+
     pub fn add_defaults(&mut self, id: &Url, scope: &scope::Scope) {
+        self.add_defaults_recursive(self, id, scope);
+    }
+
+    fn add_defaults_recursive(&self, top: &Schema, id: &Url, scope: &scope::Scope) {
         // step 0: bail out if we already have a schema (i.e. proof that traversal got here before)
-        if self.default.is_some() {
+        if self.has_default() {
             return;
         }
 
         // step 1: walk the tree to apply this recursively
-        for (_, schema) in self.tree.iter_mut() {
-            schema.add_defaults(id, scope);
+        for (_, schema) in self.tree.iter() {
+            schema.add_defaults_recursive(top, id, scope);
         }
 
         // step 2: use explicit default if present
         if let Some(default) = self.original.get("default") {
-            self.default = Some(default.clone());
+            self.unsafe_set_default(Some(default.clone()));
             return;
         }
 
@@ -221,11 +254,11 @@ impl Schema {
             if let Ok(url) = Url::options().base_url(Some(id)).parse(ref_) {
                 // first try to resolve this Url internally so that we can then modify the schema
                 // in case this one has not yet been traversed
-                if let Some(schema) = self.resolve_mut(&url) {
-                    schema.add_defaults(id, scope);
-                    self.default = schema.default.clone();
+                if let Some(schema) = top.resolve_internal(&url) {
+                    schema.add_defaults_recursive(top, id, scope);
+                    self.unsafe_set_default(schema.get_default());
                 } else if let Some(schema) = scope.resolve(&url) {
-                    self.default = schema.default.clone();
+                    self.unsafe_set_default(schema.get_default());
                 }
             }
             // $ref is exclusive, i.e. does not tolerate other keywords to be present
@@ -235,12 +268,12 @@ impl Schema {
         if let Some(properties) = self.tree.get("properties") {
             let mut default = serde_json::Map::default();
             for (key, schema) in properties.tree.iter() {
-                if let Some(value) = &schema.default {
-                    default.insert(key.clone(), value.clone());
+                if let Some(value) = schema.get_default() {
+                    default.insert(key.clone(), value);
                 }
             }
             if !default.is_empty() {
-                self.default = Some(default.into());
+                self.unsafe_set_default(Some(default.into()));
                 return;
             }
         }
@@ -255,7 +288,7 @@ impl Schema {
             let mut default = vec![];
             for idx in 0.. {
                 if let Some(schema) = items.tree.get(&idx.to_string()) {
-                    if let Some(def) = schema.default.as_ref() {
+                    if let Some(def) = schema.get_default() {
                         default.push(def);
                     } else {
                         break;
@@ -265,8 +298,7 @@ impl Schema {
                 }
             }
             if default.len() == items.tree.len() {
-                let default = default.into_iter().cloned().collect::<Vec<_>>();
-                self.default = Some(default.into());
+                self.unsafe_set_default(Some(default.into()));
                 return;
             }
         }
@@ -436,7 +468,7 @@ impl Schema {
             tree,
             validators,
             scopes: collections::HashMap::new(),
-            default: None,
+            default: UnsafeCell::new(None),
         };
 
         Ok(schema)
@@ -453,40 +485,26 @@ impl Schema {
         })
     }
 
-    fn resolve_mut(&mut self, url: &Url) -> Option<&mut Schema> {
-        if self.id.is_some() && url == self.id.as_ref().unwrap() {
-            Some(self)
-        } else {
-            let (schema_path, fragment) = helpers::serialize_schema_path(url);
-            if let Some(mut path) = self.scopes.get(&schema_path).cloned() {
-                path.reverse();
-                if let Some(schema) = self.resolve_mut_path(path) {
-                    if let Some(fragment) = fragment {
-                        let mut path = fragment
-                            .split('/')
-                            .map(|s| s.to_string())
-                            .collect::<Vec<_>>();
-                        path.reverse();
-                        schema.resolve_mut_path(path)
-                    } else {
-                        Some(schema)
-                    }
-                } else {
-                    None
-                }
+    fn resolve_internal(&self, url: &Url) -> Option<&Schema> {
+        let (schema_path, fragment) = helpers::serialize_schema_path(url);
+        if self.id.is_some() && schema_path.as_str() == self.id.as_ref().unwrap().as_str() {
+            if let Some(fragment) = fragment {
+                self.resolve_fragment(fragment.as_str())
             } else {
-                None
+                Some(self)
             }
-        }
-    }
-
-    fn resolve_mut_path(&mut self, mut path: Vec<String>) -> Option<&mut Schema> {
-        if let Some(p) = path.pop() {
-            self.tree
-                .get_mut(&p)
-                .and_then(|schema| schema.resolve_mut_path(path))
+        } else if let Some(id_path) = self.scopes.get(&schema_path) {
+            let mut schema = self;
+            for item in id_path.iter() {
+                schema = &schema.tree[item]
+            }
+            if let Some(fragment) = fragment {
+                schema.resolve_fragment(fragment.as_str())
+            } else {
+                Some(schema)
+            }
         } else {
-            Some(self)
+            None
         }
     }
 

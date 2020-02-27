@@ -32,8 +32,8 @@ impl super::Validator for Items {
             if let Some(ItemsKind::Array(urls)) = self.items.as_ref() {
                 for url in urls.iter().skip(array.len()) {
                     if let Some(schema) = scope.resolve(url) {
-                        if let Some(default) = schema.default.as_ref() {
-                            array.to_mut().push(default.clone());
+                        if let Some(default) = schema.get_default() {
+                            array.to_mut().push(default);
                         } else {
                             break;
                         }

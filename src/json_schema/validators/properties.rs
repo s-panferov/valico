@@ -26,10 +26,10 @@ impl super::Validator for Properties {
         if scope.supply_defaults {
             for (key, url) in self.properties.iter() {
                 if let Some(schema) = scope.resolve(url) {
-                    if object.get(key).is_none() && schema.default.is_some() {
+                    if object.get(key).is_none() && schema.has_default() {
                         object
                             .to_mut()
-                            .insert(key.clone(), schema.default.clone().unwrap());
+                            .insert(key.clone(), schema.get_default().unwrap());
                     }
                 }
             }
