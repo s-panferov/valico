@@ -104,7 +104,6 @@ fn default_when_needed() {
     let mut scope = scope::Scope::new().supply_defaults();
     let schema = scope.compile_and_return(mk_schema(), true).unwrap();
     let result = schema.validate(&json!({"a":[true],"b":[true],"c":{}}));
-    println!("{:?}", result);
     assert!(result.is_strictly_valid());
     assert_eq!(
         result.replacement,
