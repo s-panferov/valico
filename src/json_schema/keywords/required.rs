@@ -38,8 +38,6 @@ impl super::Keyword for Required {
 use super::super::builder;
 #[cfg(test)]
 use super::super::scope;
-#[cfg(test)]
-
 
 #[test]
 fn validate() {

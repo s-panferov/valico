@@ -73,7 +73,6 @@ use super::super::builder;
 #[cfg(test)]
 use super::super::scope;
 #[cfg(test)]
-#[cfg(test)]
 use serde_json::to_value;
 
 // pub enum PrimitiveType {

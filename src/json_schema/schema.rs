@@ -1,6 +1,6 @@
 use serde_json::Value;
 use std::borrow::Cow;
-use std::cell::UnsafeCell;
+use std::cell::{Ref, RefCell};
 use std::collections;
 use std::ops;
 use url::Url;
@@ -15,7 +15,7 @@ use std::fmt::{Display, Formatter};
 
 #[derive(Debug)]
 pub struct WalkContext<'a> {
-    pub url: &'a url::Url,
+    pub url: &'a Url,
     pub fragment: Vec<String>,
     pub scopes: &'a mut collections::HashMap<String, Vec<String>>,
 }
@@ -92,13 +92,13 @@ impl<'a> ScopedSchema<'a> {
 #[derive(Debug)]
 #[allow(dead_code)]
 pub struct Schema {
-    pub id: Option<url::Url>,
-    schema: Option<url::Url>,
+    pub id: Option<Url>,
+    schema: Option<Url>,
     original: Value,
     tree: collections::BTreeMap<String, Schema>,
     validators: validators::Validators,
     scopes: collections::HashMap<String, Vec<String>>,
-    default: UnsafeCell<Option<Value>>,
+    default: RefCell<Option<Value>>,
 }
 
 include!(concat!(env!("OUT_DIR"), "/codegen.rs"));
@@ -106,19 +106,16 @@ include!(concat!(env!("OUT_DIR"), "/codegen.rs"));
 pub struct CompilationSettings<'a> {
     pub keywords: &'a keywords::KeywordMap,
     pub ban_unknown_keywords: bool,
-    pub supply_defaults: bool,
 }
 
 impl<'a> CompilationSettings<'a> {
     pub fn new(
         keywords: &'a keywords::KeywordMap,
         ban_unknown_keywords: bool,
-        supply_defaults: bool,
     ) -> CompilationSettings<'a> {
         CompilationSettings {
             keywords,
             ban_unknown_keywords,
-            supply_defaults,
         }
     }
 }
@@ -126,7 +123,7 @@ impl<'a> CompilationSettings<'a> {
 impl Schema {
     fn compile(
         def: Value,
-        external_id: Option<url::Url>,
+        external_id: Option<Url>,
         settings: CompilationSettings,
     ) -> Result<Schema, SchemaError> {
         let def = helpers::convert_boolean_schema(def);
@@ -193,7 +190,7 @@ impl Schema {
             tree,
             validators,
             scopes,
-            default: UnsafeCell::new(None),
+            default: RefCell::new(None),
         };
 
         Ok(schema)
@@ -204,9 +201,7 @@ impl Schema {
     /// time, and need to occasionally jump back to the root — which is safe in this
     /// particular case because the tree structure is not touched!
     fn unsafe_set_default(&self, default: Option<Value>) {
-        unsafe {
-            *self.default.get() = default;
-        }
+        self.default.replace(default);
     }
 
     /// Getting references to internally mutable memory is finicky business, we must
@@ -215,16 +210,16 @@ impl Schema {
     ///
     ///  - take a peek at the value, to see whether the option is set, or
     ///  - take a peek at the value just long enough to clone it.
-    unsafe fn unsafe_get_default(&self) -> &Option<Value> {
-        &*self.default.get()
+    fn unsafe_get_default(&self) -> Ref<Option<Value>> {
+        self.default.borrow()
     }
 
     pub fn get_default(&self) -> Option<Value> {
-        unsafe { self.unsafe_get_default().clone() }
+        self.unsafe_get_default().clone()
     }
 
     pub fn has_default(&self) -> bool {
-        unsafe { self.unsafe_get_default().is_some() }
+        self.unsafe_get_default().is_some()
     }
 
     pub fn add_defaults(&mut self, id: &Url, scope: &scope::Scope) {
@@ -468,7 +463,7 @@ impl Schema {
             tree,
             validators,
             scopes: collections::HashMap::new(),
-            default: UnsafeCell::new(None),
+            default: RefCell::new(None),
         };
 
         Ok(schema)
@@ -513,7 +508,6 @@ impl Schema {
 
         let parts = fragment[1..].split('/');
         let mut schema = self;
-        // FIXME what about path segments that were changed by helpers::encode()?
         for part in parts {
             match schema.tree.get(part) {
                 Some(sch) => schema = sch,
@@ -537,10 +531,8 @@ impl Schema {
 
         for validator in self.validators.iter() {
             let mut result = validator.validate(&data, path, scope);
-            if result.is_valid() {
-                if let Some(d) = result.replacement.take() {
-                    *data.to_mut() = d;
-                }
+            if result.is_valid() && result.replacement.is_some() {
+                *data.to_mut() = result.replacement.take().unwrap();
             }
             state.append(result);
         }
@@ -552,7 +544,7 @@ impl Schema {
 
 pub fn compile(
     def: Value,
-    external_id: Option<url::Url>,
+    external_id: Option<Url>,
     settings: CompilationSettings<'_>,
 ) -> Result<Schema, SchemaError> {
     Schema::compile(def, external_id, settings)
@@ -563,7 +555,7 @@ fn schema_doesnt_compile_not_object() {
     assert!(Schema::compile(
         json!(0),
         None,
-        CompilationSettings::new(&keywords::default(), true, false)
+        CompilationSettings::new(&keywords::default(), true)
     )
     .is_err());
 }
@@ -573,7 +565,7 @@ fn schema_compiles_boolean_schema() {
     assert!(Schema::compile(
         json!(true),
         None,
-        CompilationSettings::new(&keywords::default(), true, false)
+        CompilationSettings::new(&keywords::default(), true)
     )
     .is_ok());
 }

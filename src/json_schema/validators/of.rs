@@ -50,13 +50,13 @@ impl super::Validator for AllOf {
                 }
                 state.append(result);
             }
-            if !state.is_valid() {
-                return state;
-            }
             if let Cow::Owned(_) = second {
                 state.errors.push(Box::new(errors::DivergentDefaults {
                     path: path.to_string(),
                 }));
+            }
+            if !state.is_valid() {
+                return state;
             }
             val = Cow::Owned(v);
         }

@@ -1,4 +1,3 @@
-
 use serde_json::Value;
 
 use super::super::schema;
@@ -32,8 +31,6 @@ impl super::Keyword for Pattern {
 use super::super::builder;
 #[cfg(test)]
 use super::super::scope;
-#[cfg(test)]
-
 #[cfg(test)]
 use serde_json::to_value;
 

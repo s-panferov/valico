@@ -10,60 +10,6 @@ use super::schema;
 pub struct Scope {
     keywords: keywords::KeywordMap,
     schemes: collections::HashMap<String, schema::Schema>,
-    /// ### use `default` values to compute an enriched version of the input
-    ///
-    /// JSON schema foresees the `default` attribute in any schema but does not assign
-    /// it a specific semantics; it is merely suggested that it may be used to supply
-    /// default values, e.g. for use in an interactive editor. The only specification
-    /// is that the value of a `default` attribute shall be a JSON value that SHOULD
-    /// validate its schema if supplied.
-    ///
-    /// This feature activates defaults as a mechanism for schema authors to include
-    /// defaults such that consuming programs can rely upon the presence of such paths
-    /// even if the validated JSON object does not contain values at these paths. This
-    /// allows for example non-`required` properties to be parsed as mandatory by
-    /// supplying the fallback within the schema.
-    ///
-    /// The most basic usage is to add defaults to scalar properties (like strings or
-    /// numbers). A more interesting aspect is that defaults bubble up through the
-    /// property tree:
-    ///
-    ///  - an element of `properties` with a default value will create a default value
-    ///    for its parent unless that one declares a default itself
-    ///  - if an array is given as the value of an `items` property, any default value
-    ///    for one of its contents triggers creation of a default array of the same length
-    ///    unless the array has a default itself
-    ///  - the default of a `$ref` schema is the defaults of its referenced schema
-    ///
-    /// When validating an instance against the thus enriched schema, each path that
-    /// has a default in the schema and no value in the instance will have the default
-    /// added at that path (a copy will be made and returned within the ValidationState
-    /// structure).
-    ///
-    /// The following validators interact additionally with the defaults:
-    ///
-    ///  - `contains`: if there is an object in the array that validates the supplied schema,
-    ///    then that object is outfitted with the defaults of that schema; all other
-    ///    array elements remain unchanged (i.e. only the first match gets defaults)
-    ///  - `dependencies`: if the instance triggers a dependent schema and validates it,
-    ///    then that schema’s defaults will be applied
-    ///  - `not`: the supplied schema is used to validate a copy of the instance with
-    ///    defaults added to determine whether to reject the original instance, but
-    ///    the enriched instance is then discarded
-    ///  - `anyOf`: the search of a schema for which the supplied instance is valid is
-    ///    conducted with enriched instances according to the schema being tried; the
-    ///    first enrichted instance that validates the schema is returned
-    ///  - `oneOf`: just as for `anyOf`, apart from checking that the instance does not
-    ///    validate the remaining schemas
-    ///  - `allOf`: first, make one pass over the supplied schemas, handing each one the
-    ///    enriched instance from the previous (aborting in case of errors); second,
-    ///    another such pass, starting with the result from the first; third, a check
-    ///    whether the enrichment results from the two passes match (it is an error
-    ///    if they are different — this is an approximation, but a reasonable one)
-    ///
-    /// Please note that supplying default values this way can lead to a schema that
-    /// equates to the `false` schema, i.e. does not match any instance, so don’t try
-    /// to be too clever, especially with the `not`, `allOf`, and `oneOf` validators.
     pub supply_defaults: bool,
 }
 
@@ -95,6 +41,68 @@ impl Scope {
         scope
     }
 
+    /// ### use `default` values to compute an enriched version of the input
+    ///
+    /// JSON schema foresees the `default` attribute in any schema but does not assign
+    /// it a specific semantics; it is merely suggested that it may be used to supply
+    /// default values, e.g. for use in an interactive editor. The only specification
+    /// is that the value of a `default` attribute shall be a JSON value that SHOULD
+    /// validate its schema if supplied.
+    ///
+    /// This feature activates defaults as a mechanism for schema authors to include
+    /// defaults such that consuming programs can rely upon the presence of such paths
+    /// even if the validated JSON object does not contain values at these paths. This
+    /// allows for example non-`required` properties to be parsed as mandatory by
+    /// supplying the fallback within the schema.
+    ///
+    /// The most basic usage is to add defaults to scalar properties (like strings or
+    /// numbers). A more interesting aspect is that defaults bubble up through the
+    /// property tree:
+    ///
+    ///  - an element of `properties` with a default value will create a default value
+    ///    for its parent unless that one declares a default itself
+    ///  - if an array is given as the value of an `items` property and all schemas in
+    ///    that array provide a default, then a default is created for the schema
+    ///    containing the `items` clause unless that schema declares a default itself
+    ///  - the default of a `$ref` schema is the default of its referenced schema
+    ///
+    /// When validating an instance against the thus enriched schema, each path that
+    /// has a default in the schema and no value in the instance will have the default
+    /// added at that path (a copy will be made and returned within the ValidationState
+    /// structure).
+    ///
+    /// The following validators interact additionally with the defaults:
+    ///
+    ///  - `contains`: if there is an object in the array that validates the supplied schema,
+    ///    then that object is outfitted with the defaults of that schema; all other
+    ///    array elements remain unchanged (i.e. only the first match gets defaults)
+    ///  - `dependencies`: if the instance triggers a dependent schema and validates it,
+    ///    then that schema’s defaults will be applied
+    ///  - `not`: the supplied schema is used to validate a copy of the instance with
+    ///    defaults added to determine whether to reject the original instance, but
+    ///    the enriched instance is then discarded
+    ///  - `anyOf`: the search of a schema for which the supplied instance is valid is
+    ///    conducted with enriched instances according to the schema being tried; the
+    ///    first enrichted instance that validates the schema is returned
+    ///  - `oneOf`: just as for `anyOf`, apart from checking that the instance does not
+    ///    validate the remaining schemas
+    ///  - `allOf`: first, make one pass over the supplied schemas, handing each one the
+    ///    enriched instance from the previous (aborting in case of errors); second,
+    ///    another such pass, starting with the result from the first; third, a check
+    ///    whether the enrichment results from the two passes match (it is an error
+    ///    if they are different — this is an approximation, but a reasonable one)
+    ///
+    /// Please note that supplying default values this way can lead to a schema that
+    /// equates to the `false` schema, i.e. does not match any instance, so don’t try
+    /// to be too clever, especially with the `not`, `allOf`, and `oneOf` validators.
+    ///
+    /// ### Caveat emptor
+    ///
+    /// The order in which validators are applied to an instance is UNDEFINED apart from
+    /// the rule that `properties` and `items` will be moved to the front (but the order
+    /// between these is UNDEFINED as well). Therefore, if one validator depends on the
+    /// fact that a default value has been injected by processing another validator, then
+    /// the result is UNDEFINED (with the exception stated in the previous sentence).
     pub fn supply_defaults(self) -> Self {
         Scope {
             keywords: self.keywords,
@@ -111,7 +119,7 @@ impl Scope {
         let mut schema = schema::compile(
             def,
             None,
-            schema::CompilationSettings::new(&self.keywords, ban_unknown, self.supply_defaults),
+            schema::CompilationSettings::new(&self.keywords, ban_unknown),
         )?;
         let id = schema.id.clone().unwrap();
         if self.supply_defaults {
@@ -130,7 +138,7 @@ impl Scope {
         let mut schema = schema::compile(
             def,
             Some(id.clone()),
-            schema::CompilationSettings::new(&self.keywords, ban_unknown, self.supply_defaults),
+            schema::CompilationSettings::new(&self.keywords, ban_unknown),
         )?;
         if self.supply_defaults {
             schema.add_defaults(id, self);
@@ -146,7 +154,7 @@ impl Scope {
         let mut schema = schema::compile(
             def,
             None,
-            schema::CompilationSettings::new(&self.keywords, ban_unknown, self.supply_defaults),
+            schema::CompilationSettings::new(&self.keywords, ban_unknown),
         )?;
         let id = schema.id.clone().unwrap();
         if self.supply_defaults {
@@ -164,7 +172,7 @@ impl Scope {
         let mut schema = schema::compile(
             def,
             Some(id.clone()),
-            schema::CompilationSettings::new(&self.keywords, ban_unknown, self.supply_defaults),
+            schema::CompilationSettings::new(&self.keywords, ban_unknown),
         )?;
         if self.supply_defaults {
             schema.add_defaults(id, self);
@@ -239,7 +247,6 @@ impl Scope {
     }
 }
 
-#[cfg(test)]
 #[test]
 fn lookup() {
     let mut scope = Scope::new();
