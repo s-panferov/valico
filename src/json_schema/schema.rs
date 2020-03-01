@@ -273,6 +273,7 @@ impl Schema {
             }
         }
         // 3c: items, if array
+        // only create a default, if there are defaults given for all items
         if self
             .original
             .get("items")
