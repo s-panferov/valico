@@ -118,6 +118,7 @@ fn mk_schema() -> Value {
 fn default_for_schema() {
     let mut scope = scope::Scope::new().supply_defaults();
     let schema = scope.compile_and_return(mk_schema(), true).unwrap();
+    // the "a" branch does not get a default since items is not an array
     assert_eq!(schema.get_default(), Some(json!({"b": [{"x": true}, 42]})));
 }
 
