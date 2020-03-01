@@ -227,7 +227,7 @@ impl Schema {
     }
 
     fn add_defaults_recursive(&self, top: &Schema, id: &Url, scope: &scope::Scope) {
-        // step 0: bail out if we already have a schema (i.e. proof that traversal got here before)
+        // step 0: bail out if we already have a default (i.e. proof that traversal got here before)
         if self.has_default() {
             return;
         }
