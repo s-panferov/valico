@@ -133,6 +133,68 @@ fn no_default_otherwise() {
 }
 
 #[test]
+fn conflicting_defaults() {
+    let mut scope = scope::Scope::new().supply_defaults();
+    let schema = scope
+        .compile_and_return(
+            json!({
+                "allOf": [
+                    {
+                        "properties": {
+                            "a": { "type": "number" }
+                        },
+                    },
+                    {
+                        "properties": {
+                            "a": { "default": "hello" }
+                        }
+                    }
+                ]
+            }),
+            true,
+        )
+        .unwrap();
+    let result = schema.validate(&json!({}));
+    assert!(!result.is_valid());
+    assert_eq!(&*format!("{:?}", result),
+      "ValidationState { errors: [WrongType { path: \"/a\", detail: \"The value must be number\" }], missing: [], replacement: None }");
+}
+
+#[test]
+fn divergent_defaults() {
+    let mut scope = scope::Scope::new().supply_defaults();
+    let schema = scope
+        .compile_and_return(
+            json!({
+                "allOf": [
+                    {
+                        "properties": {
+                            "a": {
+                                "anyOf": [{
+                                    "properties": {
+                                        "b": { "default": 42 }
+                                    }
+                                }]
+                            }
+                        },
+                    },
+                    {
+                        "properties": {
+                            "a": { "default": {} }
+                        }
+                    }
+                ]
+            }),
+            true,
+        )
+        .unwrap();
+    let result = schema.validate(&json!({}));
+    assert!(!result.is_valid());
+    assert_eq!(&*format!("{:?}", result),
+      "ValidationState { errors: [DivergentDefaults { path: \"\" }], missing: [], replacement: None }");
+}
+
+#[test]
 fn validate_all_of() {
     let mut scope = scope::Scope::new();
     let schema = scope
