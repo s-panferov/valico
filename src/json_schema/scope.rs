@@ -10,7 +10,7 @@ use super::schema;
 pub struct Scope {
     keywords: keywords::KeywordMap,
     schemes: collections::HashMap<String, schema::Schema>,
-    pub supply_defaults: bool,
+    pub(crate) supply_defaults: bool,
 }
 
 #[allow(dead_code)]
