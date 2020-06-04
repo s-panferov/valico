@@ -1,4 +1,5 @@
 use serde_json::Value;
+use serde_json::Value::Number;
 use url::Url;
 use uuid::Uuid;
 
@@ -128,5 +129,15 @@ pub fn convert_boolean_schema(val: Value) -> Value {
             }
         }
         None => val,
+    }
+}
+
+pub fn is_matching(va: &Value, vb: &Value) -> bool {
+    match va {
+        Number(a) => match vb {
+            Number(b) => a.as_f64().unwrap() == b.as_f64().unwrap(),
+            _ => false,
+        },
+        _ => *va == *vb,
     }
 }

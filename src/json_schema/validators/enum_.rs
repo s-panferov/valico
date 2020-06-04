@@ -1,6 +1,7 @@
 use serde_json::Value;
 
 use super::super::errors;
+use super::super::helpers::is_matching;
 use super::super::scope;
 
 #[allow(missing_copy_implementations)]
@@ -14,7 +15,7 @@ impl super::Validator for Enum {
 
         let mut contains = false;
         for value in self.items.iter() {
-            if val == value {
+            if is_matching(val, value) {
                 contains = true;
                 break;
             }
