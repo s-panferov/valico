@@ -102,6 +102,14 @@ fn test_suite() {
                     "ecmascript-regex.json".to_string(),
                     "ECMA 262 has no support for \\Z anchor from .NET".to_string(),
                 ),
+                (
+                    "ecmascript-regex.json".to_string(),
+                    "latin-1 non-breaking-space does not match (unlike e.g. Python)".to_string(),
+                ),
+                (
+                    "ecmascript-regex.json".to_string(),
+                    "latin-1 non-breaking-space matches (unlike e.g. Python)".to_string(),
+                ),
             ];
             let group_exceptions: Vec<(String, String)> = vec![
                 (
@@ -111,6 +119,30 @@ fn test_suite() {
                 (
                     "format.json".to_string(),
                     "format: uri-template".to_string(),
+                ),
+                (
+                    "ecmascript-regex.json".to_string(),
+                    "ECMA 262 regex escapes control codes with \\c and upper letter".to_string(),
+                ),
+                (
+                    "ecmascript-regex.json".to_string(),
+                    "ECMA 262 regex escapes control codes with \\c and lower letter".to_string(),
+                ),
+                (
+                    "ecmascript-regex.json".to_string(),
+                    "ECMA 262 \\d matches ascii digits only".to_string(),
+                ),
+                (
+                    "ecmascript-regex.json".to_string(),
+                    "ECMA 262 \\D matches everything but ascii digits".to_string(),
+                ),
+                (
+                    "ecmascript-regex.json".to_string(),
+                    "ECMA 262 \\w matches ascii letters only".to_string(),
+                ),
+                (
+                    "ecmascript-regex.json".to_string(),
+                    "ECMA 262 \\w matches everything but ascii letters".to_string(),
                 ),
             ];
 
@@ -124,6 +156,14 @@ fn test_suite() {
                     .get("description")
                     .map(|v| v.as_str().unwrap())
                     .unwrap_or("");
+                let spec_exception_found = group_exceptions[..].contains(&(
+                    path.file_name().unwrap().to_str().unwrap().to_string(),
+                    spec_desc.to_string(),
+                ));
+                if spec_exception_found {
+                    println!("test json_schema::test_suite -> {} .. skipped", spec_desc);
+                    continue;
+                }
 
                 let schema =
                     match scope.compile_and_return(spec.get("schema").unwrap().clone(), false) {
@@ -144,28 +184,33 @@ fn test_suite() {
                     let data = test.get("data").unwrap();
                     let valid = test.get("valid").unwrap().as_bool().unwrap();
 
+                    let exception_found = exceptions[..].contains(&(
+                        path.file_name().unwrap().to_str().unwrap().to_string(),
+                        description.to_string(),
+                    ));
+                    if exception_found {
+                        println!(
+                            "test json_schema::test_suite -> {} -> {} .. skipped",
+                            spec_desc, description
+                        );
+                        continue;
+                    }
+
                     let state = schema.validate(&data);
 
                     if state.is_valid() != valid {
-                        let exception_found = &exceptions[..].contains(&(
-                            path.file_name().unwrap().to_str().unwrap().to_string(),
+                        panic!(
+                            "Failure: \"{}\" in \"{}\" -> \"{}\" with state: \n {}",
+                            path.file_name().unwrap().to_str().unwrap(),
+                            spec_desc,
                             description.to_string(),
-                        ));
-                        let spec_exception_found = &group_exceptions[..].contains(&(
-                            path.file_name().unwrap().to_str().unwrap().to_string(),
-                            spec_desc.to_string(),
-                        ));
-                        if !exception_found && !spec_exception_found {
-                            panic!(
-                                "Failure: \"{}\" in \"{}\" -> \"{}\" with state: \n {}",
-                                path.file_name().unwrap().to_str().unwrap(),
-                                spec_desc,
-                                description.to_string(),
-                                to_string_pretty(&to_value(&state).unwrap()).unwrap()
-                            )
-                        }
+                            to_string_pretty(&to_value(&state).unwrap()).unwrap()
+                        )
                     } else {
-                        println!("test json_schema::test_suite -> {} .. ok", description);
+                        println!(
+                            "test json_schema::test_suite -> {} -> {} .. ok",
+                            spec_desc, description
+                        );
                     }
                 }
             }
