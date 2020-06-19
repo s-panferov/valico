@@ -37,7 +37,7 @@ fn validate_unique_items() {
     let schema = scope
         .compile_and_return(builder::schema(|s| s.unique_items(true)).into_json(), true)
         .ok()
-        .unwrap();;
+        .unwrap();
 
     assert_eq!(
         schema

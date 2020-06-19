@@ -58,7 +58,7 @@ fn validate_max_length() {
             true,
         )
         .ok()
-        .unwrap();;
+        .unwrap();
 
     assert_eq!(
         schema.validate(&to_value(&"1234").unwrap()).is_valid(),
@@ -121,7 +121,7 @@ fn validate_min_length() {
             true,
         )
         .ok()
-        .unwrap();;
+        .unwrap();
 
     assert_eq!(
         schema.validate(&to_value(&"1234").unwrap()).is_valid(),

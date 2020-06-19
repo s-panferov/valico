@@ -27,7 +27,7 @@ fn validate_max_items() {
             true,
         )
         .ok()
-        .unwrap();;
+        .unwrap();
 
     assert_eq!(
         schema
@@ -96,7 +96,7 @@ fn validate_min_items() {
             true,
         )
         .ok()
-        .unwrap();;
+        .unwrap();
 
     assert_eq!(
         schema
