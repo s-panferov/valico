@@ -71,7 +71,7 @@ impl super::Validator for Hostname {
             Ok(_) => super::ValidationState::new(),
             Err(_) => val_error!(errors::Format {
                 path: path.to_string(),
-                detail: "Malformed email address".to_string()
+                detail: "Malformed hostname".to_string()
             }),
         }
     }

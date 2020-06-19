@@ -37,6 +37,13 @@ fn default_formats() -> FormatBuilders {
     });
     map.insert("hostname".to_string(), hostname_builder);
 
+    let idn_hostname_builder = Box::new(|_def: &Value, _ctx: &schema::WalkContext<'_>| {
+        Ok(Some(
+            Box::new(validators::formats::Hostname) as validators::BoxedValidator
+        ))
+    });
+    map.insert("idn-hostname".to_string(), idn_hostname_builder);
+
     let ipv4_builder = Box::new(|_def: &Value, _ctx: &schema::WalkContext<'_>| {
         Ok(Some(
             Box::new(validators::formats::Ipv4) as validators::BoxedValidator

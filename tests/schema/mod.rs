@@ -122,6 +122,10 @@ fn test_suite() {
                     "json-pointer.json".to_string(),
                     "not a valid JSON-pointer (URI Fragment Identifier) #3".to_string(),
                 ),
+                (
+                    "idn-hostname.json".to_string(),
+                    "contains illegal char U+302E Hangul single dot tone mark".to_string(),
+                ),
             ];
             let group_exceptions: Vec<(String, String)> = vec![
                 (
