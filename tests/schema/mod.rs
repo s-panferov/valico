@@ -110,6 +110,18 @@ fn test_suite() {
                     "ecmascript-regex.json".to_string(),
                     "latin-1 non-breaking-space matches (unlike e.g. Python)".to_string(),
                 ),
+                (
+                    "json-pointer.json".to_string(),
+                    "not a valid JSON-pointer (URI Fragment Identifier) #1".to_string(),
+                ),
+                (
+                    "json-pointer.json".to_string(),
+                    "not a valid JSON-pointer (URI Fragment Identifier) #2".to_string(),
+                ),
+                (
+                    "json-pointer.json".to_string(),
+                    "not a valid JSON-pointer (URI Fragment Identifier) #3".to_string(),
+                ),
             ];
             let group_exceptions: Vec<(String, String)> = vec![
                 (

@@ -21,6 +21,7 @@ serde_json = "1.0"
 chrono = "0.4.6"
 publicsuffix = { version = "1.5.2", default-features = false }
 percent-encoding = "2.1"
+json-pointer = "0.3"
 
 [build-dependencies.phf_codegen]
 version = "0.8"

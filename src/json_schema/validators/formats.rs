@@ -1,4 +1,5 @@
 use chrono;
+use json_pointer;
 use publicsuffix::List;
 use serde_json::Value;
 use std::net;
@@ -105,6 +106,23 @@ impl super::Validator for Ipv6 {
             Err(_) => val_error!(errors::Format {
                 path: path.to_string(),
                 detail: "Malformed IP address".to_string()
+            }),
+        }
+    }
+}
+
+#[allow(missing_copy_implementations)]
+pub struct JsonPointer;
+
+impl super::Validator for JsonPointer {
+    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+        let string = nonstrict_process!(val.as_str(), path);
+
+        match string.parse::<json_pointer::JsonPointer<_, _>>() {
+            Ok(_) => super::ValidationState::new(),
+            Err(_) => val_error!(errors::Format {
+                path: path.to_string(),
+                detail: "Malformed JSON pointer".to_string()
             }),
         }
     }

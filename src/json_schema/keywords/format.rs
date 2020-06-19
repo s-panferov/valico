@@ -51,6 +51,13 @@ fn default_formats() -> FormatBuilders {
     });
     map.insert("ipv6".to_string(), ipv6_builder);
 
+    let json_pointer_builder = Box::new(|_def: &Value, _ctx: &schema::WalkContext<'_>| {
+        Ok(Some(
+            Box::new(validators::formats::JsonPointer) as validators::BoxedValidator
+        ))
+    });
+    map.insert("json-pointer".to_string(), json_pointer_builder);
+
     let time_builder = Box::new(|_def: &Value, _ctx: &schema::WalkContext<'_>| {
         Ok(Some(
             Box::new(validators::formats::Time) as validators::BoxedValidator
@@ -336,6 +343,30 @@ fn validate_ipv6() {
     );
     assert_eq!(
         schema.validate(&to_value(&"127.0.0.1").unwrap()).is_valid(),
+        false
+    );
+}
+
+#[test]
+fn validate_json_pointer() {
+    let mut scope = scope::Scope::new();
+    let schema = scope
+        .compile_and_return(
+            builder::schema(|s| {
+                s.format("json-pointer");
+            })
+            .into_json(),
+            true,
+        )
+        .ok()
+        .unwrap();
+
+    assert_eq!(
+        schema.validate(&to_value(&"/foo/bar").unwrap()).is_valid(),
+        true
+    );
+    assert_eq!(
+        schema.validate(&to_value(&"pointer").unwrap()).is_valid(),
         false
     );
 }
