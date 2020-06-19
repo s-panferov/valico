@@ -7,7 +7,7 @@ Valico is a validation and coercion tool for JSON objects, written in Rust. It d
 Valico has two features:
 
 * **DSL** — a set of simple validators and coercers inspired by [Grape]. It has built-in support for common coercers, validators and can return detailed error messages if something goes wrong.
-* **JSON Schema** — An implementation of JSON Schema, based on IETF's draft v6.
+* **JSON Schema** — An implementation of JSON Schema, based on IETF's draft v7.
 
 References:
 

@@ -9,6 +9,13 @@ pub type FormatBuilders = collections::HashMap<String, Box<dyn super::Keyword + 
 fn default_formats() -> FormatBuilders {
     let mut map: FormatBuilders = collections::HashMap::new();
 
+    let date_builder = Box::new(|_def: &Value, _ctx: &schema::WalkContext<'_>| {
+        Ok(Some(
+            Box::new(validators::formats::Date) as validators::BoxedValidator
+        ))
+    });
+    map.insert("date".to_string(), date_builder);
+
     let date_time_builder = Box::new(|_def: &Value, _ctx: &schema::WalkContext<'_>| {
         Ok(Some(
             Box::new(validators::formats::DateTime) as validators::BoxedValidator
@@ -43,6 +50,13 @@ fn default_formats() -> FormatBuilders {
         ))
     });
     map.insert("ipv6".to_string(), ipv6_builder);
+
+    let time_builder = Box::new(|_def: &Value, _ctx: &schema::WalkContext<'_>| {
+        Ok(Some(
+            Box::new(validators::formats::Time) as validators::BoxedValidator
+        ))
+    });
+    map.insert("time".to_string(), time_builder);
 
     let uri_builder = Box::new(|_def: &Value, _ctx: &schema::WalkContext<'_>| {
         Ok(Some(
@@ -145,6 +159,66 @@ fn validate_date_time() {
     assert_eq!(
         schema
             .validate(&to_value(&"Tue, 20 Jan 2015 17:35:20 -0800").unwrap())
+            .is_valid(),
+        false
+    );
+}
+
+#[test]
+fn validate_time() {
+    let mut scope = scope::Scope::new();
+    let schema = scope
+        .compile_and_return(
+            builder::schema(|s| {
+                s.format("time");
+            })
+            .into_json(),
+            true,
+        )
+        .ok()
+        .unwrap();
+
+    assert_eq!(
+        schema
+            .validate(&to_value(&"17:35:20-08:00").unwrap())
+            .is_valid(),
+        true
+    );
+    // assert_eq!(
+    //     schema.validate(&to_value(&"04:04:00Z").unwrap()).is_valid(),
+    //     true
+    // );
+    assert_eq!(
+        schema
+            .validate(&to_value(&"17:35:20 -0800").unwrap())
+            .is_valid(),
+        true
+    );
+}
+
+#[test]
+fn validate_date() {
+    let mut scope = scope::Scope::new();
+    let schema = scope
+        .compile_and_return(
+            builder::schema(|s| {
+                s.format("date");
+            })
+            .into_json(),
+            true,
+        )
+        .ok()
+        .unwrap();
+
+    assert_eq!(
+        schema
+            .validate(&to_value(&"2015-01-20").unwrap())
+            .is_valid(),
+        true
+    );
+    assert_eq!(
+        schema
+            .validate(&to_value(&"Tue, 20 Jan 2015").unwrap())
             .is_valid(),
         false
     );

@@ -45,7 +45,7 @@ fn test_suite() {
     let json_v6_schema: Value = from_str(&content).unwrap();
 
     visit_specs(
-        &path::Path::new("tests/schema/JSON-Schema-Test-Suite/tests/draft6"),
+        &path::Path::new("tests/schema/JSON-Schema-Test-Suite/tests/draft7"),
         |path, spec_set: Value| {
             let spec_set = spec_set.as_array().unwrap();
 
