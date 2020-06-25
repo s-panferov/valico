@@ -40,6 +40,7 @@ macro_rules! val_error {
     };
 }
 
+pub use self::conditional::Conditional;
 pub use self::const_::Const;
 pub use self::contains::Contains;
 pub use self::dependencies::Dependencies;
@@ -60,6 +61,7 @@ pub use self::required::Required;
 pub use self::type_::Type;
 pub use self::unique_items::UniqueItems;
 
+mod conditional;
 mod const_;
 mod contains;
 pub mod dependencies;

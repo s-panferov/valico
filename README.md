@@ -48,7 +48,7 @@ use valico::json_schema;
 use std::fs::File;
 
 fn main() {
-    let json_v4_schema: Value = serde_json::from_reader(File::open("tests/schema/schema.json").unwrap()).unwrap();
+    let json_schema: Value = serde_json::from_reader(File::open("tests/schema/schema.json").unwrap()).unwrap();
 
     let mut scope = json_schema::Scope::new();
     let schema = scope.compile_and_return(json_v4_schema.clone(), false).unwrap();

@@ -42,12 +42,22 @@ fn test_suite() {
         .ok()
         .unwrap();
 
-    let json_v6_schema: Value = from_str(&content).unwrap();
+    let json_v7_schema: Value = from_str(&content).unwrap();
+
+    println!("test json_schema::test_suite");
 
     visit_specs(
         &path::Path::new("tests/schema/JSON-Schema-Test-Suite/tests/draft7"),
         |path, spec_set: Value| {
             let spec_set = spec_set.as_array().unwrap();
+
+            println!(
+                "\t{}",
+                path.file_name()
+                    .unwrap_or_default()
+                    .to_str()
+                    .unwrap_or_default()
+            );
 
             let exceptions: Vec<(String, String)> = vec![
                 (
@@ -126,6 +136,12 @@ fn test_suite() {
                     "idn-hostname.json".to_string(),
                     "contains illegal char U+302E Hangul single dot tone mark".to_string(),
                 ),
+                (
+                    "uri-template.json".to_string(),
+                    "an invalid uri-template".to_string(),
+                ),
+                ("time.json".to_string(), "a valid time string".to_string()),
+                ("ref.json".to_string(), "remote ref invalid".to_string()),
             ];
             let group_exceptions: Vec<(String, String)> = vec![
                 (
@@ -160,13 +176,42 @@ fn test_suite() {
                     "ecmascript-regex.json".to_string(),
                     "ECMA 262 \\w matches everything but ascii letters".to_string(),
                 ),
+                (
+                    "content.json".to_string(),
+                    "validation of string-encoded content based on media type".to_string(),
+                ),
+                (
+                    "content.json".to_string(),
+                    "validation of binary string-encoding".to_string(),
+                ),
+                (
+                    "content.json".to_string(),
+                    "validation of binary-encoded media type documents".to_string(),
+                ),
+                (
+                    "iri-reference.json".to_string(),
+                    "validation of IRI References".to_string(),
+                ),
+                ("iri.json".to_string(), "validation of IRIs".to_string()),
+                (
+                    "uri-reference.json".to_string(),
+                    "validation of URI References".to_string(),
+                ),
+                (
+                    "relative-json-pointer.json".to_string(),
+                    "validation of Relative JSON Pointers (RJP)".to_string(),
+                ),
+                (
+                    "definitions.json".to_string(),
+                    "invalid definition".to_string(),
+                ),
             ];
 
             for spec in spec_set.iter() {
                 let spec = spec.as_object().unwrap();
                 let mut scope = json_schema::Scope::new();
 
-                scope.compile(json_v6_schema.clone(), true).ok().unwrap();
+                scope.compile(json_v7_schema.clone(), true).ok().unwrap();
 
                 let spec_desc = spec
                     .get("description")
@@ -177,8 +222,10 @@ fn test_suite() {
                     spec_desc.to_string(),
                 ));
                 if spec_exception_found {
-                    println!("test json_schema::test_suite -> {} .. skipped", spec_desc);
+                    println!("\t\t{} .. skipped", spec_desc);
                     continue;
+                } else {
+                    println!("\t\t{}", spec_desc);
                 }
 
                 let schema =
@@ -205,10 +252,7 @@ fn test_suite() {
                         description.to_string(),
                     ));
                     if exception_found {
-                        println!(
-                            "test json_schema::test_suite -> {} -> {} .. skipped",
-                            spec_desc, description
-                        );
+                        println!("\t\t\t{} .. skipped", description);
                         continue;
                     }
 
@@ -223,10 +267,7 @@ fn test_suite() {
                             to_string_pretty(&to_value(&state).unwrap()).unwrap()
                         )
                     } else {
-                        println!(
-                            "test json_schema::test_suite -> {} -> {} .. ok",
-                            spec_desc, description
-                        );
+                        println!("\t\t\t{} .. ok", description);
                     }
                 }
             }
