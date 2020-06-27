@@ -177,18 +177,6 @@ fn test_suite() {
                     "ECMA 262 \\w matches everything but ascii letters".to_string(),
                 ),
                 (
-                    "content.json".to_string(),
-                    "validation of string-encoded content based on media type".to_string(),
-                ),
-                (
-                    "content.json".to_string(),
-                    "validation of binary string-encoding".to_string(),
-                ),
-                (
-                    "content.json".to_string(),
-                    "validation of binary-encoded media type documents".to_string(),
-                ),
-                (
                     "iri-reference.json".to_string(),
                     "validation of IRI References".to_string(),
                 ),

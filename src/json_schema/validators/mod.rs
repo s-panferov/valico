@@ -43,6 +43,7 @@ macro_rules! val_error {
 pub use self::conditional::Conditional;
 pub use self::const_::Const;
 pub use self::contains::Contains;
+pub use self::content_media::ContentMedia;
 pub use self::dependencies::Dependencies;
 pub use self::enum_::Enum;
 pub use self::items::Items;
@@ -64,6 +65,7 @@ pub use self::unique_items::UniqueItems;
 mod conditional;
 mod const_;
 mod contains;
+pub mod content_media;
 pub mod dependencies;
 mod enum_;
 pub mod formats;

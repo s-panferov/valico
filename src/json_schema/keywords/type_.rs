@@ -77,16 +77,6 @@ use jsonway;
 #[cfg(test)]
 use serde_json::to_value;
 
-// pub enum PrimitiveType {
-//     Array,
-//     Boolean,
-//     Integer,
-//     Number,
-//     Null,
-//     Object,
-//     String,
-// }
-
 #[test]
 fn validate_array() {
     let mut scope = scope::Scope::new();

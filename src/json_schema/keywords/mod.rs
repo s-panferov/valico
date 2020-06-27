@@ -51,6 +51,7 @@ pub mod maxmin_length;
 pub mod conditional;
 pub mod const_;
 pub mod contains;
+pub mod content_media;
 pub mod dependencies;
 pub mod enum_;
 pub mod format;
@@ -151,6 +152,14 @@ pub fn default() -> KeywordMap {
     decouple_keyword((vec!["type"], Box::new(type_::Type)), &mut map);
     decouple_keyword(
         (vec!["uniqueItems"], Box::new(unique_items::UniqueItems)),
+        &mut map,
+    );
+
+    decouple_keyword(
+        (
+            vec!["contentMediaType", "contentEncoding"],
+            Box::new(content_media::ContentMedia),
+        ),
         &mut map,
     );
 

@@ -22,6 +22,7 @@ chrono = "0.4.6"
 publicsuffix = { version = "1.5.4", default-features = false }
 percent-encoding = "2.1"
 json-pointer = "0.3"
+base64 = "0.12.3"
 
 [build-dependencies.phf_codegen]
 version = "0.8"
