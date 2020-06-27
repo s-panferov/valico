@@ -65,30 +65,37 @@ fn test_suite() {
                     "one supplementary Unicode code point is not long enough".to_string(),
                 ),
                 (
+                    // TODO implement remote schema download
                     "refRemote.json".to_string(),
                     "remote ref invalid".to_string(),
                 ),
                 (
+                    // TODO implement remote schema download
                     "refRemote.json".to_string(),
                     "remote fragment invalid".to_string(),
                 ),
                 (
+                    // TODO implement remote schema download
                     "refRemote.json".to_string(),
                     "ref within ref invalid".to_string(),
                 ),
                 (
+                    // TODO implement remote schema download
                     "refRemote.json".to_string(),
                     "changed scope ref invalid".to_string(),
                 ),
                 (
+                    // TODO implement remote schema download
                     "refRemote.json".to_string(),
                     "base URI change ref invalid".to_string(),
                 ),
                 (
+                    // TODO implement remote schema download
                     "refRemote.json".to_string(),
                     "string is invalid".to_string(),
                 ),
                 (
+                    // TODO implement remote schema download
                     "refRemote.json".to_string(),
                     "object is invalid".to_string(),
                 ),
@@ -101,11 +108,11 @@ fn test_suite() {
                     "a negative bignum is an integer".to_string(),
                 ),
                 (
-                    "format.json".to_string(),
+                    "uri-reference.json".to_string(),
                     "an invalid URI Reference".to_string(),
                 ),
                 (
-                    "format.json".to_string(),
+                    "uri-reference.json".to_string(),
                     "an invalid URI fragment".to_string(),
                 ),
                 (
@@ -121,37 +128,52 @@ fn test_suite() {
                     "latin-1 non-breaking-space matches (unlike e.g. Python)".to_string(),
                 ),
                 (
+                    // TODO handle these "empty" edge cases in json-pointer
                     "json-pointer.json".to_string(),
                     "not a valid JSON-pointer (URI Fragment Identifier) #1".to_string(),
                 ),
                 (
+                    // TODO handle these "empty" edge cases in json-pointer
                     "json-pointer.json".to_string(),
                     "not a valid JSON-pointer (URI Fragment Identifier) #2".to_string(),
                 ),
                 (
+                    // TODO handle these "empty" edge cases in json-pointer
                     "json-pointer.json".to_string(),
                     "not a valid JSON-pointer (URI Fragment Identifier) #3".to_string(),
                 ),
                 (
+                    // I believe it is trimmed as it is at the beginning, it works when inside.
                     "idn-hostname.json".to_string(),
                     "contains illegal char U+302E Hangul single dot tone mark".to_string(),
                 ),
                 (
+                    // TODO uritemplate needs fixes/changes but the maintainer is inactive.
                     "uri-template.json".to_string(),
                     "an invalid uri-template".to_string(),
                 ),
-                ("time.json".to_string(), "a valid time string".to_string()),
-                ("ref.json".to_string(), "remote ref invalid".to_string()),
+                (
+                    // https://github.com/chronotope/chrono/issues/288
+                    "time.json".to_string(),
+                    "a valid time string".to_string(),
+                ),
+                (
+                    // TODO implement remote schema download
+                    "ref.json".to_string(),
+                    "remote ref invalid".to_string(),
+                ),
+                (
+                    // same as URI
+                    "iri-reference.json".to_string(),
+                    "an invalid IRI Reference".to_string(),
+                ),
+                (
+                    // same as URI
+                    "iri-reference.json".to_string(),
+                    "an invalid IRI fragment".to_string(),
+                ),
             ];
             let group_exceptions: Vec<(String, String)> = vec![
-                (
-                    "format.json".to_string(),
-                    "validation of JSON-pointers (JSON String Representation)".to_string(),
-                ),
-                (
-                    "format.json".to_string(),
-                    "format: uri-template".to_string(),
-                ),
                 (
                     "ecmascript-regex.json".to_string(),
                     "ECMA 262 regex escapes control codes with \\c and upper letter".to_string(),
@@ -177,19 +199,12 @@ fn test_suite() {
                     "ECMA 262 \\w matches everything but ascii letters".to_string(),
                 ),
                 (
-                    "iri-reference.json".to_string(),
-                    "validation of IRI References".to_string(),
-                ),
-                ("iri.json".to_string(), "validation of IRIs".to_string()),
-                (
-                    "uri-reference.json".to_string(),
-                    "validation of URI References".to_string(),
-                ),
-                (
+                    // TODO json-pointer needs to handle relative JSON pointers
                     "relative-json-pointer.json".to_string(),
                     "validation of Relative JSON Pointers (RJP)".to_string(),
                 ),
                 (
+                    // TODO implement remote schema download
                     "definitions.json".to_string(),
                     "invalid definition".to_string(),
                 ),
@@ -246,6 +261,7 @@ fn test_suite() {
 
                     let state = schema.validate(&data);
 
+                    // TODO implement remote schema download for strict validation
                     if state.is_valid() != valid {
                         panic!(
                             "Failure: \"{}\" in \"{}\" -> \"{}\" with state: \n {}",

@@ -37,6 +37,13 @@ fn default_formats() -> FormatBuilders {
     });
     map.insert("hostname".to_string(), hostname_builder);
 
+    let idn_email_builder = Box::new(|_def: &Value, _ctx: &schema::WalkContext<'_>| {
+        Ok(Some(
+            Box::new(validators::formats::Email) as validators::BoxedValidator
+        ))
+    });
+    map.insert("idn-email".to_string(), idn_email_builder);
+
     let idn_hostname_builder = Box::new(|_def: &Value, _ctx: &schema::WalkContext<'_>| {
         Ok(Some(
             Box::new(validators::formats::Hostname) as validators::BoxedValidator
@@ -58,12 +65,43 @@ fn default_formats() -> FormatBuilders {
     });
     map.insert("ipv6".to_string(), ipv6_builder);
 
+    let iri_builder = Box::new(|_def: &Value, _ctx: &schema::WalkContext<'_>| {
+        Ok(Some(
+            Box::new(validators::formats::IRI) as validators::BoxedValidator
+        ))
+    });
+    map.insert("iri".to_string(), iri_builder);
+
+    let iri_reference_builder = Box::new(|_def: &Value, _ctx: &schema::WalkContext<'_>| {
+        Ok(Some(
+            Box::new(validators::formats::IRIReference) as validators::BoxedValidator
+        ))
+    });
+    map.insert("iri-reference".to_string(), iri_reference_builder);
+
     let json_pointer_builder = Box::new(|_def: &Value, _ctx: &schema::WalkContext<'_>| {
         Ok(Some(
             Box::new(validators::formats::JsonPointer) as validators::BoxedValidator
         ))
     });
     map.insert("json-pointer".to_string(), json_pointer_builder);
+
+    let regex_builder = Box::new(|_def: &Value, _ctx: &schema::WalkContext<'_>| {
+        Ok(Some(
+            Box::new(validators::formats::Regex) as validators::BoxedValidator
+        ))
+    });
+    map.insert("regex".to_string(), regex_builder);
+
+    let relative_json_pointer_builder = Box::new(|_def: &Value, _ctx: &schema::WalkContext<'_>| {
+        Ok(Some(
+            Box::new(validators::formats::RelativeJsonPointer) as validators::BoxedValidator
+        ))
+    });
+    map.insert(
+        "relative-json-pointer".to_string(),
+        relative_json_pointer_builder,
+    );
 
     let time_builder = Box::new(|_def: &Value, _ctx: &schema::WalkContext<'_>| {
         Ok(Some(
@@ -85,6 +123,13 @@ fn default_formats() -> FormatBuilders {
         ))
     });
     map.insert("uri-reference".to_string(), uri_reference_builder);
+
+    let uri_template_builder = Box::new(|_def: &Value, _ctx: &schema::WalkContext<'_>| {
+        Ok(Some(
+            Box::new(validators::formats::UriTemplate) as validators::BoxedValidator
+        ))
+    });
+    map.insert("uri-template".to_string(), uri_template_builder);
 
     let uuid_builder = Box::new(|_def: &Value, _ctx: &schema::WalkContext<'_>| {
         Ok(Some(
