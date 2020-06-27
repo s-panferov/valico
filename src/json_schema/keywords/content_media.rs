@@ -40,8 +40,6 @@ pub enum ContentEncoding {
     Base64,
 }
 
-// pub struct DecodeError(String);
-
 impl ContentEncoding {
     pub fn as_str(&self) -> &str {
         match self {
@@ -90,7 +88,8 @@ impl super::Keyword for ContentMedia {
                 if media_type.is_none() {
                     return Err(schema::SchemaError::Malformed {
                         path: ctx.fragment.join("/"),
-                        detail: "contentMediaType MUST be a string.".to_string(),
+                        detail: "contentMediaType MUST be one of [\"application/json\"]"
+                            .to_string(),
                     });
                 } else {
                     type_ = Some(media_type.unwrap());
@@ -112,7 +111,7 @@ impl super::Keyword for ContentMedia {
                 if encoding_.is_none() {
                     return Err(schema::SchemaError::Malformed {
                         path: ctx.fragment.join("/"),
-                        detail: "contentEncoding MUST be a string.".to_string(),
+                        detail: "contentEncoding MUST be one of [\"base64\"]".to_string(),
                     });
                 } else {
                     encoding = Some(encoding_.unwrap());

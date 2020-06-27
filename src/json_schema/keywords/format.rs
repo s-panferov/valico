@@ -241,17 +241,19 @@ fn validate_time() {
         schema
             .validate(&to_value(&"17:35:20-08:00").unwrap())
             .is_valid(),
-        true
+        false
     );
-    // assert_eq!(
-    //     schema.validate(&to_value(&"04:04:00Z").unwrap()).is_valid(),
-    //     true
-    // );
+    assert_eq!(
+        schema
+            .validate(&to_value(&"04:04:00.040404Z").unwrap())
+            .is_valid(),
+        false // https://github.com/chronotope/chrono/issues/288
+    );
     assert_eq!(
         schema
             .validate(&to_value(&"17:35:20 -0800").unwrap())
             .is_valid(),
-        true
+        false
     );
 }
 
