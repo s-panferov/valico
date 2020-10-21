@@ -362,6 +362,38 @@ impl Builder {
     pub fn into_json(self) -> Value {
         self.obj_builder.unwrap()
     }
+
+    pub fn content_media_type(&mut self, type_: super::keywords::content_media::ContentMediaType) {
+        self.obj_builder.set("contentMediaType", type_.as_str())
+    }
+
+    pub fn content_encoding(&mut self, type_: super::keywords::content_media::ContentEncoding) {
+        self.obj_builder.set("contentEncoding", type_.as_str())
+    }
+
+    pub fn if_<F>(&mut self, build: F)
+    where
+        F: FnOnce(&mut Builder),
+    {
+        self.obj_builder
+            .set("if", Builder::build(build).into_json())
+    }
+
+    pub fn then_<F>(&mut self, build: F)
+    where
+        F: FnOnce(&mut Builder),
+    {
+        self.obj_builder
+            .set("then", Builder::build(build).into_json())
+    }
+
+    pub fn else_<F>(&mut self, build: F)
+    where
+        F: FnOnce(&mut Builder),
+    {
+        self.obj_builder
+            .set("else", Builder::build(build).into_json())
+    }
 }
 
 impl Serialize for Builder {

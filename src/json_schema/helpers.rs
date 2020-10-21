@@ -12,13 +12,15 @@ pub fn generate_id() -> Url {
 
 /// http://tools.ietf.org/html/draft-ietf-appsawg-json-pointer-07
 pub fn encode(string: &str) -> String {
-    const QUERY_SET: percent_encoding::AsciiSet =
-        percent_encoding::CONTROLS.add(b' ').add(b'"').add(b'#').add(b'<').add(b'>').add(b'%');
+    const QUERY_SET: percent_encoding::AsciiSet = percent_encoding::CONTROLS
+        .add(b' ')
+        .add(b'"')
+        .add(b'#')
+        .add(b'<')
+        .add(b'>')
+        .add(b'%');
     percent_encoding::percent_encode(
-        string
-            .replace("~", "~0")
-            .replace("/", "~1")
-            .as_bytes(),
+        string.replace("~", "~0").replace("/", "~1").as_bytes(),
         &QUERY_SET,
     )
     .to_string()

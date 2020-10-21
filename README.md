@@ -7,7 +7,7 @@ Valico is a validation and coercion tool for JSON objects, written in Rust. It d
 Valico has two features:
 
 * **DSL** — a set of simple validators and coercers inspired by [Grape]. It has built-in support for common coercers, validators and can return detailed error messages if something goes wrong.
-* **JSON Schema** — An implementation of JSON Schema, based on IETF's draft v6.
+* **JSON Schema** — An implementation of JSON Schema, based on IETF's draft v7.
 
 References:
 
@@ -48,7 +48,7 @@ use valico::json_schema;
 use std::fs::File;
 
 fn main() {
-    let json_v4_schema: Value = serde_json::from_reader(File::open("tests/schema/schema.json").unwrap()).unwrap();
+    let json_schema: Value = serde_json::from_reader(File::open("tests/schema/schema.json").unwrap()).unwrap();
 
     let mut scope = json_schema::Scope::new();
     let schema = scope.compile_and_return(json_v4_schema.clone(), false).unwrap();

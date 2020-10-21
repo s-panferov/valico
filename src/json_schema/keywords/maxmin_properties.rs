@@ -116,7 +116,7 @@ fn validate_min_properties() {
             true,
         )
         .ok()
-        .unwrap();;
+        .unwrap();
 
     assert_eq!(
         schema

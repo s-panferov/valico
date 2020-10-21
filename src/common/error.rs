@@ -60,15 +60,11 @@ pub type ValicoErrors = Vec<Box<dyn ValicoError>>;
 
 macro_rules! impl_basic_err {
     ($err:ty, $code:expr) => {
-        impl ::std::error::Error for $err {
-            fn description(&self) -> &str {
-                $code
-            }
-        }
+        impl ::std::error::Error for $err {}
 
         impl ::std::fmt::Display for $err {
             fn fmt(&self, formatter: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-                self.description().fmt(formatter)
+                write!(formatter, $code)
             }
         }
     };
