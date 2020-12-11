@@ -87,7 +87,7 @@ impl super::Validator for Properties {
                 AdditionalKind::Boolean(allowed) if !allowed => {
                     state.errors.push(Box::new(errors::Properties {
                         path: path.to_string(),
-                        detail: "Additional properties are not allowed".to_string(),
+                        detail: format!("Additional property '{}' is not allowed", key)
                     }))
                 }
                 AdditionalKind::Schema(ref url) => {

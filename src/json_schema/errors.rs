@@ -1,7 +1,6 @@
 use super::super::common::error::ValicoError;
 use serde::{Serialize, Serializer};
 use serde_json::{to_value, Value};
-use std::error::Error;
 
 #[derive(Debug)]
 #[allow(missing_copy_implementations)]

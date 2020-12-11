@@ -1,4 +1,5 @@
 use serde_json::Value;
+use serde_json::Value::Number;
 use url::Url;
 use uuid::Uuid;
 
@@ -11,13 +12,15 @@ pub fn generate_id() -> Url {
 
 /// http://tools.ietf.org/html/draft-ietf-appsawg-json-pointer-07
 pub fn encode(string: &str) -> String {
-    const QUERY_SET: percent_encoding::AsciiSet =
-        percent_encoding::CONTROLS.add(b' ').add(b'"').add(b'#').add(b'<').add(b'>').add(b'%');
+    const QUERY_SET: percent_encoding::AsciiSet = percent_encoding::CONTROLS
+        .add(b' ')
+        .add(b'"')
+        .add(b'#')
+        .add(b'<')
+        .add(b'>')
+        .add(b'%');
     percent_encoding::percent_encode(
-        string
-            .replace("~", "~0")
-            .replace("/", "~1")
-            .as_bytes(),
+        string.replace("~", "~0").replace("/", "~1").as_bytes(),
         &QUERY_SET,
     )
     .to_string()
@@ -128,5 +131,15 @@ pub fn convert_boolean_schema(val: Value) -> Value {
             }
         }
         None => val,
+    }
+}
+
+pub fn is_matching(va: &Value, vb: &Value) -> bool {
+    match va {
+        Number(a) => match vb {
+            Number(b) => a.as_f64().unwrap() == b.as_f64().unwrap(),
+            _ => false,
+        },
+        _ => *va == *vb,
     }
 }
