@@ -196,10 +196,14 @@ impl Schema {
         Ok(schema)
     }
 
-    /// This troublesome fella poops on the party because it is impossible to explain
+    /// The issue here is that it is impossible to explain
     /// to the Rust borrow checker that I’m traversing a tree, mutating it at the same
     /// time, and need to occasionally jump back to the root — which is safe in this
     /// particular case because the tree structure is not touched!
+    ///
+    /// This operation is safe (i.e. it will not panic) as long as it is not called
+    /// while the default value is borrowed, hence unsafe_get_default must not be used
+    /// directly, only via `get_default()` and `has_default()`.
     fn unsafe_set_default(&self, default: Option<Value>) {
         self.default.replace(default);
     }

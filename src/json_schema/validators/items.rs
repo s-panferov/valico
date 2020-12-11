@@ -30,6 +30,8 @@ impl super::Validator for Items {
 
         if scope.supply_defaults {
             if let Some(ItemsKind::Array(urls)) = self.items.as_ref() {
+                // supply default values as long as there are more schema default values
+                // than values in the validated array (but stop at first gap)
                 for url in urls.iter().skip(array.len()) {
                     if let Some(schema) = scope.resolve(url) {
                         if let Some(default) = schema.get_default() {
