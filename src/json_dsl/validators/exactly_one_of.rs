@@ -1,4 +1,5 @@
 use serde_json::Value;
+use std::cmp::Ordering;
 
 use super::super::errors;
 
@@ -9,7 +10,7 @@ pub struct ExactlyOneOf {
 impl ExactlyOneOf {
     pub fn new(params: &[&str]) -> ExactlyOneOf {
         ExactlyOneOf {
-            params: params.iter().map(|s| s.to_string()).collect(),
+            params: params.iter().map(|s| (*s).to_string()).collect(),
         }
     }
 }
@@ -25,21 +26,18 @@ impl super::Validator for ExactlyOneOf {
             }
         }
 
-        let len = matched.len();
-        if len == 1 {
-            Ok(())
-        } else if len > 1 {
-            Err(vec![Box::new(errors::ExactlyOne {
+        match matched.len().cmp(&1) {
+            Ordering::Equal => Ok(()),
+            Ordering::Greater => Err(vec![Box::new(errors::ExactlyOne {
                 path: path.to_string(),
                 detail: Some("Exactly one is allowed at one time".to_string()),
                 params: matched,
-            })])
-        } else {
-            Err(vec![Box::new(errors::ExactlyOne {
+            })]),
+            Ordering::Less => Err(vec![Box::new(errors::ExactlyOne {
                 path: path.to_string(),
                 detail: Some("Exactly one must be present".to_string()),
                 params: self.params.clone(),
-            })])
+            })]),
         }
     }
 }

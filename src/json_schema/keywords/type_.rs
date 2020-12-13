@@ -12,9 +12,9 @@ impl super::Keyword for Type {
         if type_.is_string() {
             let ty = type_.as_str().unwrap().parse().ok();
 
-            if ty.is_some() {
+            if let Some(ty) = ty {
                 Ok(Some(Box::new(validators::Type {
-                    item: validators::type_::TypeKind::Single(ty.unwrap()),
+                    item: validators::type_::TypeKind::Single(ty),
                 })))
             } else {
                 Err(schema::SchemaError::Malformed {
@@ -39,8 +39,8 @@ impl super::Keyword for Type {
             for ty in types.iter() {
                 if ty.is_string() {
                     let converted_ty = ty.as_str().unwrap().parse().ok();
-                    if converted_ty.is_some() {
-                        converted_types.push(converted_ty.unwrap());
+                    if let Some(converted_ty) = converted_ty {
+                        converted_types.push(converted_ty);
                     } else {
                         return Err(schema::SchemaError::Malformed {
                             path: ctx.fragment.join("/"),
@@ -72,8 +72,6 @@ impl super::Keyword for Type {
 use super::super::builder;
 #[cfg(test)]
 use super::super::scope;
-#[cfg(test)]
-use jsonway;
 #[cfg(test)]
 use serde_json::to_value;
 

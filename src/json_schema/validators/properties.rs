@@ -1,7 +1,6 @@
-use regex;
 use serde_json::Value;
+use std::borrow::Cow;
 use std::collections;
-use url;
 
 use super::super::errors;
 use super::super::scope;
@@ -21,16 +20,36 @@ pub struct Properties {
 
 impl super::Validator for Properties {
     fn validate(&self, val: &Value, path: &str, scope: &scope::Scope) -> super::ValidationState {
-        let object = nonstrict_process!(val.as_object(), path);
+        let mut object = Cow::Borrowed(nonstrict_process!(val.as_object(), path));
         let mut state = super::ValidationState::new();
 
-        'main: for (key, value) in object.iter() {
+        if scope.supply_defaults {
+            for (key, url) in self.properties.iter() {
+                if let Some(schema) = scope.resolve(url) {
+                    if object.get(key).is_none() && schema.has_default() {
+                        object
+                            .to_mut()
+                            .insert(key.clone(), schema.get_default().unwrap());
+                    }
+                }
+            }
+        }
+
+        // necessary due to object being mutated in the loop
+        let keys = object.keys().cloned().collect::<Vec<_>>();
+        'main: for key in keys.iter() {
             let is_property_passed = if self.properties.contains_key(key) {
                 let url = &self.properties[key];
                 let schema = scope.resolve(url);
-                if schema.is_some() {
+                if let Some(schema) = schema {
                     let value_path = [path, key.as_ref()].join("/");
-                    state.append(schema.unwrap().validate_in(value, value_path.as_ref()))
+                    let mut result = schema.validate_in(&object[key], value_path.as_ref());
+                    if result.is_valid() && result.replacement.is_some() {
+                        object
+                            .to_mut()
+                            .insert(key.to_string(), result.replacement.take().unwrap());
+                    }
+                    state.append(result);
                 } else {
                     state.missing.push(url.clone())
                 }
@@ -44,9 +63,15 @@ impl super::Validator for Properties {
             for &(ref regex, ref url) in self.patterns.iter() {
                 if regex.is_match(key.as_ref()) {
                     let schema = scope.resolve(url);
-                    if schema.is_some() {
+                    if let Some(schema) = schema {
                         let value_path = [path, key.as_ref()].join("/");
-                        state.append(schema.unwrap().validate_in(value, value_path.as_ref()));
+                        let mut result = schema.validate_in(&object[key], value_path.as_ref());
+                        if result.is_valid() && result.replacement.is_some() {
+                            object
+                                .to_mut()
+                                .insert(key.to_string(), result.replacement.take().unwrap());
+                        }
+                        state.append(result);
                         is_pattern_passed = true;
                     } else {
                         state.missing.push(url.clone())
@@ -68,9 +93,15 @@ impl super::Validator for Properties {
                 AdditionalKind::Schema(ref url) => {
                     let schema = scope.resolve(url);
 
-                    if schema.is_some() {
+                    if let Some(schema) = schema {
                         let value_path = [path, key.as_ref()].join("/");
-                        state.append(schema.unwrap().validate_in(value, value_path.as_ref()))
+                        let mut result = schema.validate_in(&object[key], value_path.as_ref());
+                        if result.is_valid() && result.replacement.is_some() {
+                            object
+                                .to_mut()
+                                .insert(key.to_string(), result.replacement.take().unwrap());
+                        }
+                        state.append(result);
                     } else {
                         state.missing.push(url.clone())
                     }
@@ -80,6 +111,7 @@ impl super::Validator for Properties {
             }
         }
 
+        state.set_replacement(object);
         state
     }
 }

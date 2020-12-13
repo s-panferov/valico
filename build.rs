@@ -1,5 +1,3 @@
-use phf_codegen;
-
 use std::env;
 use std::fs::File;
 use std::io::{BufWriter, Write};
@@ -10,12 +8,15 @@ fn main() {
     let mut file = BufWriter::new(File::create(&path).unwrap());
 
     write!(&mut file, "#[allow(clippy::unreadable_literal)]\n").unwrap();
-    write!(&mut file, "static PROPERTY_KEYS: phf::Set<&'static str> = {}",
-    phf_codegen::Set::new()
-        .entry("properties")
-        .entry("patternProperties")
-        .build()
-    ).unwrap();
+    write!(
+        &mut file,
+        "static PROPERTY_KEYS: phf::Set<&'static str> = {}",
+        phf_codegen::Set::new()
+            .entry("properties")
+            .entry("patternProperties")
+            .build()
+    )
+    .unwrap();
     write!(&mut file, ";\n").unwrap();
 
     write!(&mut file, "#[allow(clippy::unreadable_literal)]\n").unwrap();
@@ -31,7 +32,8 @@ fn main() {
             .entry("allOf")
             .entry("oneOf")
             .build()
-    ).unwrap();
+    )
+    .unwrap();
 
     write!(&mut file, "#[allow(clippy::unreadable_literal)]\n").unwrap();
     write!(
@@ -43,16 +45,21 @@ fn main() {
             .entry("items")
             .entry("oneOf")
             .build()
-    ).unwrap();
+    )
+    .unwrap();
 
     write!(&mut file, "#[allow(clippy::unreadable_literal)]\n").unwrap();
-    write!(&mut file, "static FINAL_KEYS: phf::Set<&'static str> = {};",
-    phf_codegen::Set::new()
-        .entry("enum")
-        .entry("required")
-        .entry("type")
-        .build()
-    ).unwrap();
+    write!(
+        &mut file,
+        "static FINAL_KEYS: phf::Set<&'static str> = {};",
+        phf_codegen::Set::new()
+            .entry("default")
+            .entry("enum")
+            .entry("required")
+            .entry("type")
+            .build()
+    )
+    .unwrap();
 
     write!(&mut file, "#[allow(clippy::unreadable_literal)]\n").unwrap();
     write!(
@@ -68,5 +75,6 @@ fn main() {
             .entry("format")
             .entry("examples")
             .build()
-    ).unwrap();
+    )
+    .unwrap();
 }

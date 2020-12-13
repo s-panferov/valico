@@ -1,4 +1,3 @@
-use regex;
 use serde_json::Value;
 use std::collections;
 
@@ -18,11 +17,9 @@ impl super::Keyword for Properties {
             return Ok(None);
         }
 
-        let properties = if maybe_properties.is_some() {
-            let properties = maybe_properties.unwrap();
-            if properties.is_object() {
+        let properties = if let Some(properties) = maybe_properties {
+            if let Some(properties) = properties.as_object() {
                 let mut schemes = collections::HashMap::new();
-                let properties = properties.as_object().unwrap();
                 for (key, value) in properties.iter() {
                     if value.is_object() || value.is_boolean() {
                         schemes.insert(
@@ -56,8 +53,7 @@ impl super::Keyword for Properties {
             collections::HashMap::new()
         };
 
-        let additional_properties = if maybe_additional.is_some() {
-            let additional_val = maybe_additional.unwrap();
+        let additional_properties = if let Some(additional_val) = maybe_additional {
             if additional_val.is_boolean() {
                 validators::properties::AdditionalKind::Boolean(additional_val.as_bool().unwrap())
             } else if additional_val.is_object() {
@@ -76,8 +72,7 @@ impl super::Keyword for Properties {
             validators::properties::AdditionalKind::Boolean(true)
         };
 
-        let patterns = if maybe_pattern.is_some() {
-            let pattern = maybe_pattern.unwrap();
+        let patterns = if let Some(pattern) = maybe_pattern {
             if pattern.is_object() {
                 let pattern = pattern.as_object().unwrap();
                 let mut patterns = vec![];
@@ -126,14 +121,16 @@ impl super::Keyword for Properties {
             patterns,
         })))
     }
+
+    fn place_first(&self) -> bool {
+        true
+    }
 }
 
 #[cfg(test)]
 use super::super::builder;
 #[cfg(test)]
 use super::super::scope;
-#[cfg(test)]
-use jsonway;
 
 #[test]
 fn validate_properties() {

@@ -15,8 +15,7 @@ impl super::Keyword for Items {
             return Ok(None);
         }
 
-        let items = if maybe_items.is_some() {
-            let items_val = maybe_items.unwrap();
+        let items = if let Some(items_val) = maybe_items {
             Some(if items_val.is_object() || items_val.is_boolean() {
                 validators::items::ItemsKind::Schema(helpers::alter_fragment_path(
                     ctx.url.clone(),
@@ -54,8 +53,7 @@ impl super::Keyword for Items {
             None
         };
 
-        let additional_items = if maybe_additional.is_some() {
-            let additional_val = maybe_additional.unwrap();
+        let additional_items = if let Some(additional_val) = maybe_additional {
             Some(if additional_val.is_boolean() {
                 validators::items::AdditionalKind::Boolean(additional_val.as_bool().unwrap())
             } else if additional_val.is_object() {
@@ -78,6 +76,10 @@ impl super::Keyword for Items {
             additional: additional_items,
         })))
     }
+
+    fn place_first(&self) -> bool {
+        true
+    }
 }
 
 #[cfg(test)]
@@ -86,6 +88,60 @@ use super::super::builder;
 use super::super::scope;
 #[cfg(test)]
 use serde_json::to_value;
+
+#[cfg(test)]
+fn mk_schema() -> Value {
+    json!({
+        "properties": {
+            "a": {
+                "items": {
+                    "properties": {
+                        "x": { "type": "number", "default": 42 }
+                    }
+                }
+            },
+            "b": {
+                "items": [
+                    {
+                        "properties": {
+                            "x": { "type": "boolean", "default": true }
+                        }
+                    },
+                    { "type": "number", "default": 42 }
+                ]
+            }
+        }
+    })
+}
+
+#[test]
+fn default_for_schema() {
+    let mut scope = scope::Scope::new().supply_defaults();
+    let schema = scope.compile_and_return(mk_schema(), true).unwrap();
+    // the "a" branch does not get a default since items is not an array
+    assert_eq!(schema.get_default(), Some(json!({"b": [{"x": true}, 42]})));
+}
+
+#[test]
+fn default_when_needed() {
+    let mut scope = scope::Scope::new().supply_defaults();
+    let schema = scope.compile_and_return(mk_schema(), true).unwrap();
+    let result = schema.validate(&json!({"a": [{}, {"x": 43}], "b": [{"x": false}]}));
+    assert!(result.is_strictly_valid());
+    assert_eq!(
+        result.replacement,
+        Some(json!({"a": [{"x": 42}, {"x": 43}], "b": [{"x": false}, 42]}))
+    );
+}
+
+#[test]
+fn no_default_otherwise() {
+    let mut scope = scope::Scope::new().supply_defaults();
+    let schema = scope.compile_and_return(mk_schema(), true).unwrap();
+    let result = schema.validate(&json!({"a": [], "b": [{"x": false}, 45]}));
+    assert!(result.is_strictly_valid());
+    assert_eq!(result.replacement, None);
+}
 
 #[test]
 fn validate_items_with_schema() {

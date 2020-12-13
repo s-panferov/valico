@@ -41,6 +41,50 @@ use super::super::scope;
 #[cfg(test)]
 use serde_json::to_value;
 
+#[cfg(test)]
+fn mk_schema() -> Value {
+    json!({
+        "a": { "default": 42 },
+        "b": { "properties": { "x": { "default": [1,2,3] } } },
+        "properties": {
+            "y": { "$ref": "#/a" },
+            "z": { "$ref": "#/b" }
+        },
+        "required": [ "y", "z" ]
+    })
+}
+
+#[test]
+fn default_for_schema() {
+    let mut scope = scope::Scope::new().supply_defaults();
+    let schema = scope.compile_and_return(mk_schema(), false).unwrap();
+    assert_eq!(
+        schema.get_default(),
+        Some(json!({"y": 42, "z": {"x": [1,2,3]}}))
+    );
+}
+
+#[test]
+fn default_when_needed() {
+    let mut scope = scope::Scope::new().supply_defaults();
+    let schema = scope.compile_and_return(mk_schema(), false).unwrap();
+    let result = schema.validate(&json!({"x": true}));
+    assert!(result.is_strictly_valid());
+    assert_eq!(
+        result.replacement,
+        Some(json!({"x": true, "y": 42, "z": {"x": [1,2,3]}}))
+    );
+}
+
+#[test]
+fn no_default_otherwise() {
+    let mut scope = scope::Scope::new().supply_defaults();
+    let schema = scope.compile_and_return(mk_schema(), false).unwrap();
+    let result = schema.validate(&json!({"y": null, "z": {"x":false}}));
+    assert!(result.is_strictly_valid());
+    assert_eq!(result.replacement, None);
+}
+
 #[test]
 fn validate() {
     let mut scope = scope::Scope::new();

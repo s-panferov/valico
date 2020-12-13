@@ -18,7 +18,16 @@ impl super::Validator for Date {
         let string = nonstrict_process!(val.as_str(), path);
 
         match chrono::NaiveDate::parse_from_str(string, "%Y-%m-%d") {
-            Ok(_) => super::ValidationState::new(),
+            Ok(_) => {
+                if string.len() == 10 {
+                    super::ValidationState::new()
+                } else {
+                    val_error!(errors::Format {
+                        path: path.to_string(),
+                        detail: "Malformed Date".to_string()
+                    })
+                }
+            }
             Err(_) => val_error!(errors::Format {
                 path: path.to_string(),
                 detail: "Malformed date".to_string()

@@ -114,7 +114,7 @@ pub fn serialize_schema_path(url: &Url) -> (String, Option<String>) {
                 };
                 (url_str, fragment)
             } else {
-                (url_str, Some(fragment.to_string()))
+                (url_str, Some((*fragment).to_string()))
             }
         }
         _ => (url_str, None),

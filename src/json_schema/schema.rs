@@ -1,8 +1,9 @@
-use phf;
 use serde_json::Value;
+use std::borrow::Cow;
+use std::cell::{Ref, RefCell};
 use std::collections;
 use std::ops;
-use url;
+use url::Url;
 
 use super::helpers;
 use super::keywords;
@@ -14,7 +15,7 @@ use std::fmt::{Display, Formatter};
 
 #[derive(Debug)]
 pub struct WalkContext<'a> {
-    pub url: &'a url::Url,
+    pub url: &'a Url,
     pub fragment: Vec<String>,
     pub scopes: &'a mut collections::HashMap<String, Vec<String>>,
 }
@@ -70,7 +71,7 @@ impl<'a> ops::Deref for ScopedSchema<'a> {
     type Target = Schema;
 
     fn deref(&self) -> &Schema {
-        &self.schema
+        self.schema
     }
 }
 
@@ -91,12 +92,13 @@ impl<'a> ScopedSchema<'a> {
 #[derive(Debug)]
 #[allow(dead_code)]
 pub struct Schema {
-    pub id: Option<url::Url>,
-    schema: Option<url::Url>,
+    pub id: Option<Url>,
+    schema: Option<Url>,
     original: Value,
     tree: collections::BTreeMap<String, Schema>,
     validators: validators::Validators,
     scopes: collections::HashMap<String, Vec<String>>,
+    default: RefCell<Option<Value>>,
 }
 
 include!(concat!(env!("OUT_DIR"), "/codegen.rs"));
@@ -121,8 +123,8 @@ impl<'a> CompilationSettings<'a> {
 impl Schema {
     fn compile(
         def: Value,
-        external_id: Option<url::Url>,
-        settings: CompilationSettings<'_>,
+        external_id: Option<Url>,
+        settings: CompilationSettings,
     ) -> Result<Schema, SchemaError> {
         let def = helpers::convert_boolean_schema(def);
 
@@ -130,12 +132,10 @@ impl Schema {
             return Err(SchemaError::NotAnObject);
         }
 
-        let id = if external_id.is_some() {
-            external_id.unwrap()
+        let id = if let Some(id) = external_id {
+            id
         } else {
-            helpers::parse_url_key("$id", &def)?
-                .clone()
-                .unwrap_or_else(helpers::generate_id)
+            helpers::parse_url_key("$id", &def)?.unwrap_or_else(helpers::generate_id)
         };
 
         let schema = helpers::parse_url_key("$schema", &def)?;
@@ -190,15 +190,124 @@ impl Schema {
             tree,
             validators,
             scopes,
+            default: RefCell::new(None),
         };
 
         Ok(schema)
     }
 
+    /// The issue here is that it is impossible to explain
+    /// to the Rust borrow checker that I’m traversing a tree, mutating it at the same
+    /// time, and need to occasionally jump back to the root — which is safe in this
+    /// particular case because the tree structure is not touched!
+    ///
+    /// This operation is safe (i.e. it will not panic) as long as it is not called
+    /// while the default value is borrowed, hence unsafe_get_default must not be used
+    /// directly, only via `get_default()` and `has_default()`.
+    fn unsafe_set_default(&self, default: Option<Value>) {
+        self.default.replace(default);
+    }
+
+    /// Getting references to internally mutable memory is finicky business, we must
+    /// not allow these references to escape. Therefore only internal code is allowed
+    /// to use this function to
+    ///
+    ///  - take a peek at the value, to see whether the option is set, or
+    ///  - take a peek at the value just long enough to clone it.
+    fn unsafe_get_default(&self) -> Ref<Option<Value>> {
+        self.default.borrow()
+    }
+
+    pub fn get_default(&self) -> Option<Value> {
+        self.unsafe_get_default().clone()
+    }
+
+    pub fn has_default(&self) -> bool {
+        self.unsafe_get_default().is_some()
+    }
+
+    pub fn add_defaults(&mut self, id: &Url, scope: &scope::Scope) {
+        self.add_defaults_recursive(self, id, scope);
+    }
+
+    fn add_defaults_recursive(&self, top: &Schema, id: &Url, scope: &scope::Scope) {
+        // step 0: bail out if we already have a default (i.e. proof that traversal got here before)
+        if self.has_default() {
+            return;
+        }
+
+        // step 1: walk the tree to apply this recursively
+        for (_, schema) in self.tree.iter() {
+            schema.add_defaults_recursive(top, id, scope);
+        }
+
+        // step 2: use explicit default if present
+        if let Some(default) = self.original.get("default") {
+            self.unsafe_set_default(Some(default.clone()));
+            return;
+        }
+
+        // step 3: propagate defaults according to the rules
+        // 3a: $ref
+        if let Some(ref_) = self.original.get("$ref").and_then(|r| r.as_str()) {
+            if let Ok(url) = Url::options().base_url(Some(id)).parse(ref_) {
+                // first try to resolve this Url internally so that we can then modify the schema
+                // in case this one has not yet been traversed
+                if let Some(schema) = top.resolve_internal(&url) {
+                    schema.add_defaults_recursive(top, id, scope);
+                    self.unsafe_set_default(schema.get_default());
+                } else if let Some(schema) = scope.resolve(&url) {
+                    self.unsafe_set_default(schema.get_default());
+                }
+            }
+            // $ref is exclusive, i.e. does not tolerate other keywords to be present
+            return;
+        }
+        // 3b: properties
+        if let Some(properties) = self.tree.get("properties") {
+            let mut default = serde_json::Map::default();
+            for (key, schema) in properties.tree.iter() {
+                if let Some(value) = schema.get_default() {
+                    default.insert(key.clone(), value);
+                }
+            }
+            if !default.is_empty() {
+                self.unsafe_set_default(Some(default.into()));
+                return;
+            }
+        }
+        // 3c: items, if array
+        // only create a default, if there are defaults given for all items
+        if self
+            .original
+            .get("items")
+            .map(|i| i.is_array())
+            .unwrap_or(false)
+        {
+            let items = self.tree.get("items").unwrap();
+            let mut default = vec![];
+            for idx in 0.. {
+                if let Some(schema) = items.tree.get(&idx.to_string()) {
+                    if let Some(def) = schema.get_default() {
+                        default.push(def);
+                    } else {
+                        break;
+                    }
+                } else {
+                    break;
+                }
+            }
+            if default.len() == items.tree.len() {
+                self.unsafe_set_default(Some(default.into()));
+                return;
+            }
+        }
+    }
+
     fn compile_keywords(
         def: &Value,
-        context: &WalkContext<'_>,
-        settings: &CompilationSettings<'_>,
+        context: &WalkContext,
+        settings: &CompilationSettings,
     ) -> Result<validators::Validators, SchemaError> {
         let mut validators = vec![];
         let mut keys: collections::HashSet<&str> = def
@@ -211,8 +320,7 @@ impl Schema {
 
         loop {
             let key = keys.iter().next().cloned();
-            if key.is_some() {
-                let key = key.unwrap();
+            if let Some(key) = key {
                 match settings.keywords.get(&key) {
                     Some(keyword) => {
                         keyword.consume(&mut keys);
@@ -222,6 +330,8 @@ impl Schema {
                         if let Some(validator) = keyword.keyword.compile(def, context)? {
                             if is_exclusive_keyword {
                                 validators = vec![validator];
+                            } else if keyword.keyword.place_first() {
+                                validators.splice(0..0, std::iter::once(validator));
                             } else {
                                 validators.push(validator);
                             }
@@ -246,7 +356,7 @@ impl Schema {
         if settings.ban_unknown_keywords && !not_consumed.is_empty() {
             for key in not_consumed.iter() {
                 if !ALLOW_NON_CONSUMED_KEYS.contains(&key[..]) {
-                    return Err(SchemaError::UnknownKey(key.to_string()));
+                    return Err(SchemaError::UnknownKey((*key).to_string()));
                 }
             }
         }
@@ -256,8 +366,8 @@ impl Schema {
 
     fn compile_sub(
         def: Value,
-        context: &mut WalkContext<'_>,
-        keywords: &CompilationSettings<'_>,
+        context: &mut WalkContext,
+        keywords: &CompilationSettings,
         is_schema: bool,
     ) -> Result<Schema, SchemaError> {
         let def = helpers::convert_boolean_schema(def);
@@ -358,6 +468,7 @@ impl Schema {
             tree,
             validators,
             scopes: collections::HashMap::new(),
+            default: RefCell::new(None),
         };
 
         Ok(schema)
@@ -372,6 +483,29 @@ impl Schema {
             }
             schema
         })
+    }
+
+    fn resolve_internal(&self, url: &Url) -> Option<&Schema> {
+        let (schema_path, fragment) = helpers::serialize_schema_path(url);
+        if self.id.is_some() && schema_path.as_str() == self.id.as_ref().unwrap().as_str() {
+            if let Some(fragment) = fragment {
+                self.resolve_fragment(fragment.as_str())
+            } else {
+                Some(self)
+            }
+        } else if let Some(id_path) = self.scopes.get(&schema_path) {
+            let mut schema = self;
+            for item in id_path.iter() {
+                schema = &schema.tree[item]
+            }
+            if let Some(fragment) = fragment {
+                schema.resolve_fragment(fragment.as_str())
+            } else {
+                Some(schema)
+            }
+        } else {
+            None
+        }
     }
 
     pub fn resolve_fragment(&self, fragment: &str) -> Option<&Schema> {
@@ -398,18 +532,24 @@ impl Schema {
         scope: &scope::Scope,
     ) -> validators::ValidationState {
         let mut state = validators::ValidationState::new();
+        let mut data = Cow::Borrowed(data);
 
         for validator in self.validators.iter() {
-            state.append(validator.validate(data, path, scope))
+            let mut result = validator.validate(&data, path, scope);
+            if result.is_valid() && result.replacement.is_some() {
+                *data.to_mut() = result.replacement.take().unwrap();
+            }
+            state.append(result);
         }
 
+        state.set_replacement(data);
         state
     }
 }
 
 pub fn compile(
     def: Value,
-    external_id: Option<url::Url>,
+    external_id: Option<Url>,
     settings: CompilationSettings<'_>,
 ) -> Result<Schema, SchemaError> {
     Schema::compile(def, external_id, settings)

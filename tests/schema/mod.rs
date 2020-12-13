@@ -8,7 +8,7 @@ fn visit_specs<F>(dir: &path::Path, cb: F)
 where
     F: Fn(&path::Path, Value) + Copy,
 {
-    let contents = fs::read_dir(dir).ok().unwrap();
+    let contents = fs::read_dir(dir).expect(&*format!("cannot list directory {:?}", dir));
     for entry in contents {
         let entry = entry.unwrap();
         let path = entry.path();
@@ -128,6 +128,14 @@ fn test_suite() {
                     "latin-1 non-breaking-space matches (unlike e.g. Python)".to_string(),
                 ),
                 (
+                    "ecmascript-regex.json".to_string(),
+                    "zero-width whitespace matches".to_string(),
+                ),
+                (
+                    "ecmascript-regex.json".to_string(),
+                    "zero-width whitespace does not match".to_string(),
+                ),
+                (
                     // TODO handle these "empty" edge cases in json-pointer
                     "json-pointer.json".to_string(),
                     "not a valid JSON-pointer (URI Fragment Identifier) #1".to_string(),
@@ -196,7 +204,7 @@ fn test_suite() {
                 ),
                 (
                     "ecmascript-regex.json".to_string(),
-                    "ECMA 262 \\w matches everything but ascii letters".to_string(),
+                    "ECMA 262 \\W matches everything but ascii letters".to_string(),
                 ),
                 (
                     // TODO json-pointer needs to handle relative JSON pointers
@@ -207,6 +215,19 @@ fn test_suite() {
                     // TODO implement remote schema download
                     "definitions.json".to_string(),
                     "invalid definition".to_string(),
+                ),
+                (
+                    "idn-hostname.json".to_string(),
+                    "validation of internationalized host names".to_string(),
+                ),
+                (
+                    "email.json".to_string(),
+                    "validation of e-mail addresses".to_string(),
+                ),
+                (
+                    // optional overflow handling is not implemented
+                    "float-overflow.json".to_string(),
+                    "all integers are multiples of 0.5, if overflow is handled".to_string(),
                 ),
             ];
 

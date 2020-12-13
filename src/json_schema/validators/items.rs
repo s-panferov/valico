@@ -1,6 +1,6 @@
 use serde_json::Value;
+use std::borrow::Cow;
 use std::cmp;
-use url;
 
 use super::super::errors;
 use super::super::scope;
@@ -25,20 +25,41 @@ pub struct Items {
 
 impl super::Validator for Items {
     fn validate(&self, val: &Value, path: &str, scope: &scope::Scope) -> super::ValidationState {
-        let array = nonstrict_process!(val.as_array(), path);
-
+        let mut array = Cow::Borrowed(nonstrict_process!(val.as_array(), path));
         let mut state = super::ValidationState::new();
+
+        if scope.supply_defaults {
+            if let Some(ItemsKind::Array(urls)) = self.items.as_ref() {
+                // supply default values as long as there are more schema default values
+                // than values in the validated array (but stop at first gap)
+                for url in urls.iter().skip(array.len()) {
+                    if let Some(schema) = scope.resolve(url) {
+                        if let Some(default) = schema.get_default() {
+                            array.to_mut().push(default);
+                        } else {
+                            break;
+                        }
+                    } else {
+                        break;
+                    }
+                }
+            }
+        }
 
         match self.items {
             Some(ItemsKind::Schema(ref url)) => {
                 // Just validate all items against the schema
 
                 let schema = scope.resolve(url);
-                if schema.is_some() {
-                    let schema = schema.unwrap();
-                    for (idx, item) in array.iter().enumerate() {
+                if let Some(schema) = schema {
+                    for idx in 0..array.len() {
+                        let item = &array[idx];
                         let item_path = [path, idx.to_string().as_ref()].join("/");
-                        state.append(schema.validate_in(item, item_path.as_ref()));
+                        let mut result = schema.validate_in(item, item_path.as_ref());
+                        if result.is_valid() && result.replacement.is_some() {
+                            array.to_mut()[idx] = result.replacement.take().unwrap();
+                        }
+                        state.append(result);
                     }
                 } else {
                     state.missing.push(url.clone());
@@ -52,9 +73,13 @@ impl super::Validator for Items {
                     let schema = scope.resolve(&urls[idx]);
                     let item = &array[idx];
 
-                    if schema.is_some() {
+                    if let Some(schema) = schema {
                         let item_path = [path, idx.to_string().as_ref()].join("/");
-                        state.append(schema.unwrap().validate_in(item, item_path.as_ref()))
+                        let mut result = schema.validate_in(item, item_path.as_ref());
+                        if result.is_valid() && result.replacement.is_some() {
+                            array.to_mut()[idx] = result.replacement.take().unwrap();
+                        }
+                        state.append(result);
                     } else {
                         state.missing.push(urls[idx].clone())
                     }
@@ -71,11 +96,15 @@ impl super::Validator for Items {
                         }
                         Some(AdditionalKind::Schema(ref url)) => {
                             let schema = scope.resolve(url);
-                            if schema.is_some() {
-                                let schema = schema.unwrap();
-                                for (idx, item) in array[urls.len()..].iter().enumerate() {
+                            if let Some(schema) = schema {
+                                for idx in urls.len()..array.len() {
+                                    let item = &array[idx];
                                     let item_path = [path, idx.to_string().as_ref()].join("/");
-                                    state.append(schema.validate_in(item, item_path.as_ref()))
+                                    let mut result = schema.validate_in(item, item_path.as_ref());
+                                    if result.is_valid() && result.replacement.is_some() {
+                                        array.to_mut()[idx] = result.replacement.take().unwrap();
+                                    }
+                                    state.append(result);
                                 }
                             } else {
                                 state.missing.push(url.clone())
@@ -88,6 +117,7 @@ impl super::Validator for Items {
             _ => (),
         }
 
+        state.set_replacement(array);
         state
     }
 }

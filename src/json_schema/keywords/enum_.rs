@@ -35,8 +35,7 @@ impl super::Keyword for Enum {
 use super::super::builder;
 #[cfg(test)]
 use super::super::scope;
-#[cfg(test)]
-use jsonway;
+
 #[cfg(test)]
 use serde_json::to_value;
 

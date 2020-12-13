@@ -17,6 +17,9 @@ pub trait Keyword: Send + Sync + any::Any {
     fn is_exclusive(&self) -> bool {
         false
     }
+    fn place_first(&self) -> bool {
+        false
+    }
 }
 
 impl<T: 'static + Send + Sync + any::Any> Keyword for T
@@ -37,10 +40,10 @@ impl fmt::Debug for dyn Keyword + 'static {
 macro_rules! keyword_key_exists {
     ($val:expr, $key:expr) => {{
         let maybe_val = $val.get($key);
-        if maybe_val.is_none() {
-            return Ok(None);
+        if let Some(maybe_val) = maybe_val {
+            maybe_val
         } else {
-            maybe_val.unwrap()
+            return Ok(None);
         }
     }};
 }

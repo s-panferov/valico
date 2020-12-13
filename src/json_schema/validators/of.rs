@@ -1,5 +1,5 @@
 use serde_json::Value;
-use url;
+use std::borrow::Cow;
 
 use super::super::errors;
 use super::super::scope;
@@ -12,17 +12,56 @@ pub struct AllOf {
 impl super::Validator for AllOf {
     fn validate(&self, val: &Value, path: &str, scope: &scope::Scope) -> super::ValidationState {
         let mut state = super::ValidationState::new();
+        let mut val = Cow::Borrowed(val);
 
-        for url in self.schemes.iter() {
-            let schema = scope.resolve(url);
+        // first get all relevant schemas
+        let schemas = self
+            .schemes
+            .iter()
+            .map(|url| (url, scope.resolve(url)))
+            .filter_map(|(url, opt)| {
+                if opt.is_none() {
+                    state.missing.push(url.clone())
+                }
+                opt
+            })
+            .collect::<Vec<_>>();
 
-            if schema.is_some() {
-                state.append(schema.unwrap().validate_in(val, path))
-            } else {
-                state.missing.push(url.clone())
+        // first pass to populate all defaults (if enabled)
+        for schema in schemas.iter() {
+            let mut result = schema.validate_in(&val, path);
+            if result.is_valid() && result.replacement.is_some() {
+                *val.to_mut() = result.replacement.take().unwrap();
             }
+            state.append(result);
+        }
+        if !state.is_valid() {
+            return state;
         }
 
+        // second pass if defaults are enabled to check that the result is stable
+        if let Cow::Owned(v) = val {
+            let mut second = Cow::Borrowed(&v);
+
+            for schema in schemas.iter() {
+                let mut result = schema.validate_in(&second, path);
+                if result.is_valid() && result.replacement.is_some() {
+                    *second.to_mut() = result.replacement.take().unwrap();
+                }
+                state.append(result);
+            }
+            if let Cow::Owned(_) = second {
+                state.errors.push(Box::new(errors::DivergentDefaults {
+                    path: path.to_string(),
+                }));
+            }
+            if !state.is_valid() {
+                return state;
+            }
+            val = Cow::Owned(v);
+        }
+
+        state.set_replacement(val);
         state
     }
 }
@@ -35,22 +74,26 @@ pub struct AnyOf {
 impl super::Validator for AnyOf {
     fn validate(&self, val: &Value, path: &str, scope: &scope::Scope) -> super::ValidationState {
         let mut state = super::ValidationState::new();
+        let mut val = Cow::Borrowed(val);
 
         let mut states = vec![];
         let mut valid = false;
         for url in self.schemes.iter() {
             let schema = scope.resolve(url);
 
-            if schema.is_some() {
-                let current_state = schema.unwrap().validate_in(val, path);
+            if let Some(schema) = schema {
+                let mut result = schema.validate_in(&val, path);
 
-                state.missing.extend(current_state.missing.clone());
+                state.missing.extend(result.missing.clone());
 
-                if current_state.is_valid() {
+                if result.is_valid() {
+                    if let Some(result) = result.replacement.take() {
+                        *val.to_mut() = result;
+                    }
                     valid = true;
                     break;
                 } else {
-                    states.push(current_state)
+                    states.push(result)
                 }
             } else {
                 state.missing.push(url.clone())
@@ -64,6 +107,7 @@ impl super::Validator for AnyOf {
             }))
         }
 
+        state.set_replacement(val);
         state
     }
 }
@@ -76,21 +120,25 @@ pub struct OneOf {
 impl super::Validator for OneOf {
     fn validate(&self, val: &Value, path: &str, scope: &scope::Scope) -> super::ValidationState {
         let mut state = super::ValidationState::new();
+        let mut val = Cow::Borrowed(val);
 
         let mut states = vec![];
         let mut valid = 0;
         for url in self.schemes.iter() {
             let schema = scope.resolve(url);
 
-            if schema.is_some() {
-                let current_state = schema.unwrap().validate_in(val, path);
+            if let Some(schema) = schema {
+                let mut result = schema.validate_in(&val, path);
 
-                state.missing.extend(current_state.missing.clone());
+                state.missing.extend(result.missing.clone());
 
-                if current_state.is_valid() {
+                if result.is_valid() {
+                    if let Some(result) = result.replacement.take() {
+                        *val.to_mut() = result;
+                    }
                     valid += 1;
                 } else {
-                    states.push(current_state)
+                    states.push(result)
                 }
             } else {
                 state.missing.push(url.clone())
@@ -104,6 +152,7 @@ impl super::Validator for OneOf {
             }))
         }
 
+        state.set_replacement(val);
         state
     }
 }

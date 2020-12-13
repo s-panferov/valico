@@ -1,7 +1,7 @@
 use serde::{Serialize, Serializer};
 use serde_json::{to_value, Value};
+use std::borrow::Cow;
 use std::fmt;
-use url;
 
 use super::scope;
 
@@ -36,6 +36,7 @@ macro_rules! val_error {
         $crate::json_schema::validators::ValidationState {
             errors: vec![Box::new($err)],
             missing: vec![],
+            replacement: None,
         }
     };
 }
@@ -89,6 +90,7 @@ mod unique_items;
 pub struct ValidationState {
     pub errors: super::super::common::error::ValicoErrors,
     pub missing: Vec<url::Url>,
+    pub replacement: Option<Value>,
 }
 
 impl ValidationState {
@@ -96,6 +98,7 @@ impl ValidationState {
         ValidationState {
             errors: vec![],
             missing: vec![],
+            replacement: None,
         }
     }
 
@@ -110,6 +113,15 @@ impl ValidationState {
     pub fn append(&mut self, second: ValidationState) {
         self.errors.extend(second.errors);
         self.missing.extend(second.missing);
+    }
+
+    pub fn set_replacement<T: Clone + Into<Value>>(&mut self, data: Cow<T>) {
+        if !self.is_valid() {
+            return;
+        }
+        if let Cow::Owned(data) = data {
+            self.replacement = Some(data.into());
+        }
     }
 }
 

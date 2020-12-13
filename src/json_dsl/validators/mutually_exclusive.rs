@@ -9,7 +9,7 @@ pub struct MutuallyExclusive {
 impl MutuallyExclusive {
     pub fn new(params: &[&str]) -> MutuallyExclusive {
         MutuallyExclusive {
-            params: params.iter().map(|s| s.to_string()).collect(),
+            params: params.iter().map(|s| (*s).to_string()).collect(),
         }
     }
 }

@@ -1,5 +1,4 @@
 use serde_json::Value;
-use url;
 
 use super::super::scope;
 
@@ -12,8 +11,8 @@ impl super::Validator for Ref {
     fn validate(&self, val: &Value, path: &str, scope: &scope::Scope) -> super::ValidationState {
         let schema = scope.resolve(&self.url);
 
-        if schema.is_some() {
-            schema.unwrap().validate_in(val, path)
+        if let Some(schema) = schema {
+            schema.validate_in(val, path)
         } else {
             let mut state = super::ValidationState::new();
             state.missing.push(self.url.clone());

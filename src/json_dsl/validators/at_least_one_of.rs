@@ -9,7 +9,7 @@ pub struct AtLeastOneOf {
 impl AtLeastOneOf {
     pub fn new(params: &[&str]) -> AtLeastOneOf {
         AtLeastOneOf {
-            params: params.iter().map(|s| s.to_string()).collect(),
+            params: params.iter().map(|s| (*s).to_string()).collect(),
         }
     }
 }

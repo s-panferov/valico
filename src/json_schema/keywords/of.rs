@@ -66,6 +66,134 @@ use super::super::scope;
 #[cfg(test)]
 use serde_json::to_value;
 
+#[cfg(test)]
+fn mk_schema() -> Value {
+    json!({
+        "properties": {
+            "a": {
+                "oneOf": [
+                    { "type": "array", "items": [{"type":"boolean"},{"default":42}] },
+                    { "type": "object", "properties": {"x": {"default": "buh"}} }
+                ]
+            },
+            "b": {
+                "anyOf": [
+                    { "type": "array", "items": [{"type":"boolean"},{"default":42}] },
+                    { "type": "object", "properties": {"x": {"default": "buh"}} }
+                ]
+            },
+            "c": {
+                "allOf": [
+                    { "properties": {"x": {"default": false}} },
+                    { "properties": {"y": {"default": true}} }
+                ]
+            }
+        }
+    })
+}
+
+#[test]
+fn no_default_for_schema() {
+    let mut scope = scope::Scope::new().supply_defaults();
+    let schema = scope.compile_and_return(mk_schema(), true).unwrap();
+    assert_eq!(schema.get_default(), None);
+}
+
+#[test]
+fn default_when_needed() {
+    let mut scope = scope::Scope::new().supply_defaults();
+    let schema = scope.compile_and_return(mk_schema(), true).unwrap();
+    let result = schema.validate(&json!({"a":[true],"b":[true],"c":{}}));
+    assert!(result.is_strictly_valid());
+    assert_eq!(
+        result.replacement,
+        Some(json!({"a":[true,42],"b":[true,42],"c":{"x":false,"y":true}}))
+    );
+}
+
+#[test]
+fn default_when_needed2() {
+    let mut scope = scope::Scope::new().supply_defaults();
+    let schema = scope.compile_and_return(mk_schema(), true).unwrap();
+    let result = schema.validate(&json!({"a":{},"b":{}}));
+    assert!(result.is_strictly_valid());
+    assert_eq!(
+        result.replacement,
+        Some(json!({"a":{"x":"buh"},"b":{"x":"buh"}}))
+    );
+}
+
+#[test]
+fn no_default_otherwise() {
+    let mut scope = scope::Scope::new().supply_defaults();
+    let schema = scope.compile_and_return(mk_schema(), true).unwrap();
+    let result = schema.validate(&json!({"a":{"x":"x"},"b":[true,0],"c":{"x":1,"y":2}}));
+    assert!(result.is_strictly_valid());
+    assert_eq!(result.replacement, None);
+}
+
+#[test]
+fn conflicting_defaults() {
+    let mut scope = scope::Scope::new().supply_defaults();
+    let schema = scope
+        .compile_and_return(
+            json!({
+                "allOf": [
+                    {
+                        "properties": {
+                            "a": { "type": "number" }
+                        },
+                    },
+                    {
+                        "properties": {
+                            "a": { "default": "hello" }
+                        }
+                    }
+                ]
+            }),
+            true,
+        )
+        .unwrap();
+    let result = schema.validate(&json!({}));
+    assert!(!result.is_valid());
+    assert_eq!(&*format!("{:?}", result),
+      "ValidationState { errors: [WrongType { path: \"/a\", detail: \"The value must be number\" }], missing: [], replacement: None }");
+}
+
+#[test]
+fn divergent_defaults() {
+    let mut scope = scope::Scope::new().supply_defaults();
+    let schema = scope
+        .compile_and_return(
+            json!({
+                "allOf": [
+                    {
+                        "properties": {
+                            "a": {
+                                "anyOf": [{
+                                    "properties": {
+                                        "b": { "default": 42 }
+                                    }
+                                }]
+                            }
+                        },
+                    },
+                    {
+                        "properties": {
+                            "a": { "default": {} }
+                        }
+                    }
+                ]
+            }),
+            true,
+        )
+        .unwrap();
+    let result = schema.validate(&json!({}));
+    assert!(!result.is_valid());
+    assert_eq!(&*format!("{:?}", result),
+      "ValidationState { errors: [DivergentDefaults { path: \"\" }], missing: [], replacement: None }");
+}
+
 #[test]
 fn validate_all_of() {
     let mut scope = scope::Scope::new();
