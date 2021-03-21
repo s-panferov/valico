@@ -1,6 +1,7 @@
+use addr::parser::{DomainName, EmailAddress};
+use addr::psl::List;
 use chrono;
 use json_pointer;
-use publicsuffix::List;
 use serde_json::Value;
 use std::net;
 use uritemplate;
@@ -60,7 +61,7 @@ impl super::Validator for Email {
     fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
         let string = nonstrict_process!(val.as_str(), path);
 
-        match List::empty().parse_email(string) {
+        match List.parse_email_address(string) {
             Ok(_) => super::ValidationState::new(),
             Err(_) => val_error!(errors::Format {
                 path: path.to_string(),
@@ -77,7 +78,7 @@ impl super::Validator for Hostname {
     fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
         let string = nonstrict_process!(val.as_str(), path);
 
-        match List::empty().parse_domain(string) {
+        match List.parse_domain_name(string) {
             Ok(_) => super::ValidationState::new(),
             Err(_) => val_error!(errors::Format {
                 path: path.to_string(),

@@ -19,7 +19,7 @@ phf = "0.8"
 serde = "1"
 serde_json = "1"
 chrono = "0.4.6"
-publicsuffix = { version = "1.5.4", default-features = false }
+addr = "0.11"
 percent-encoding = "2.1"
 json-pointer = "0.3"
 uritemplate-next = "0.2"
