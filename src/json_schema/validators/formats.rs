@@ -10,7 +10,6 @@ use uuid;
 
 use super::super::errors;
 use super::super::scope;
-use std::collections::VecDeque;
 
 #[allow(missing_copy_implementations)]
 pub struct Date;
