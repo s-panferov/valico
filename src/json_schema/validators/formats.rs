@@ -10,6 +10,7 @@ use uuid;
 
 use super::super::errors;
 use super::super::scope;
+use std::collections::VecDeque;
 
 #[allow(missing_copy_implementations)]
 pub struct Date;
@@ -182,12 +183,22 @@ impl super::Validator for Regex {
     fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
         let string = nonstrict_process!(val.as_str(), path);
 
-        match regex::Regex::new(string) {
-            Ok(_) => super::ValidationState::new(),
-            Err(_) => val_error!(errors::Format {
+        // Forward slash ('/') is prefixed with double backslash ('\\')
+        // in a JSON string. Although this is valid in JSON, this will fail
+        // regex parsing in the rust Regex library. This string replacement
+        // ensures that escaped forward slashes do not fail validation.
+        let string = string.replace(r"\/", "/");
+
+        match regex::Regex::new(&string) {
+            Ok(_) => {
+                super::ValidationState::new()
+            }
+            Err(er) => {
+                val_error!(errors::Format {
                 path: path.to_string(),
-                detail: "Malformed regex".to_string()
-            }),
+                detail: format!("Malformed regex - {}", er)
+            })
+            }
         }
     }
 }
@@ -288,5 +299,50 @@ impl super::Validator for UriTemplate {
 
         let _ = uritemplate::UriTemplate::new(string);
         super::ValidationState::new()
+    }
+}
+
+
+#[cfg(test)]
+pub mod tests {
+    use super::Regex;
+    use crate::json_schema::validators::Validator;
+    use crate::json_schema::{Scope, ValidationState};
+
+    #[test]
+    fn validate_valid_empty_regex() {
+        let result = validate_regex("");
+        assert!(result.errors.is_empty())
+    }
+
+    #[test]
+    fn validate_valid_regex_simple() {
+        let result = validate_regex("^[a-z][a-z0-9]{0,10}$");
+        assert!(result.errors.is_empty())
+    }
+
+    #[test]
+    fn validate_valid_regex_with_double_escaped_forward_slash() {
+        let result = validate_regex("\\w+:(\\/?\\/?)[^\\s]+");
+        assert!(result.errors.is_empty())
+    }
+
+    #[test]
+    fn validate_invalid_regex() {
+        let result = validate_regex("FOO\\");
+        assert_eq!(result.errors.len(), 1);
+
+        let only_err = result.errors.get(0);
+        assert!(only_err.is_some());
+
+        let err = only_err.unwrap();
+        assert!(err.get_detail().is_some());
+        assert_eq!(err.get_detail().unwrap(), "Malformed regex - regex parse error:\n    FOO\\\n       ^\nerror: incomplete escape sequence, reached end of pattern prematurely")
+    }
+
+    fn validate_regex(json_string: &str) -> ValidationState {
+        let value = serde_json::value::Value::String(json_string.into());
+        let scope = Scope::new();
+        Regex {}.validate(&value, "/", &scope)
     }
 }
