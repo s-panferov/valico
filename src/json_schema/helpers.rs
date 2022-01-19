@@ -10,7 +10,7 @@ pub fn generate_id() -> Url {
     Url::parse(&format!("json-schema://{}", uuid)).unwrap()
 }
 
-/// http://tools.ietf.org/html/draft-ietf-appsawg-json-pointer-07
+/// <http://tools.ietf.org/html/draft-ietf-appsawg-json-pointer-07>
 pub fn encode(string: &str) -> String {
     const QUERY_SET: percent_encoding::AsciiSet = percent_encoding::CONTROLS
         .add(b' ')
