@@ -103,6 +103,7 @@ impl Scope {
     /// between these is UNDEFINED as well). Therefore, if one validator depends on the
     /// fact that a default value has been injected by processing another validator, then
     /// the result is UNDEFINED (with the exception stated in the previous sentence).
+    #[must_use]
     pub fn supply_defaults(self) -> Self {
         Scope {
             keywords: self.keywords,

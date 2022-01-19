@@ -13,13 +13,13 @@ pub enum ContentMediaType {
 impl ContentMediaType {
     pub fn as_str(&self) -> &str {
         match self {
-            &ContentMediaType::ApplicationJson => "application/json",
+            ContentMediaType::ApplicationJson => "application/json",
         }
     }
 
     pub fn validate(&self, val: &str) -> bool {
         match self {
-            &ContentMediaType::ApplicationJson => serde_json::from_str::<Value>(val),
+            ContentMediaType::ApplicationJson => serde_json::from_str::<Value>(val),
         }
         .is_ok()
     }
@@ -43,13 +43,13 @@ pub enum ContentEncoding {
 impl ContentEncoding {
     pub fn as_str(&self) -> &str {
         match self {
-            &ContentEncoding::Base64 => "base64",
+            ContentEncoding::Base64 => "base64",
         }
     }
 
     pub fn decode_val(&self, val: &str) -> Result<String, String> {
         match self {
-            &ContentEncoding::Base64 => match base64::decode(val) {
+            ContentEncoding::Base64 => match base64::decode(val) {
                 Ok(v) => match str::from_utf8(&v[..]) {
                     Ok(s) => Ok(s.to_string()),
                     Err(e) => Err(e.to_string()),
@@ -76,8 +76,7 @@ impl super::Keyword for ContentMedia {
     fn compile(&self, def: &Value, ctx: &schema::WalkContext<'_>) -> super::KeywordResult {
         let maybe_content_media_type = def.get("contentMediaType");
         let mut type_ = None;
-        if maybe_content_media_type.is_some() {
-            let content_media_type = maybe_content_media_type.unwrap();
+        if let Some(content_media_type) = maybe_content_media_type {
             if !content_media_type.is_string() {
                 return Err(schema::SchemaError::Malformed {
                     path: ctx.fragment.join("/"),
@@ -85,22 +84,21 @@ impl super::Keyword for ContentMedia {
                 });
             } else {
                 let media_type = content_media_type.as_str().unwrap().parse().ok();
-                if media_type.is_none() {
+                if let Some(media_type) = media_type {
+                    type_ = Some(media_type);
+                } else {
                     return Err(schema::SchemaError::Malformed {
                         path: ctx.fragment.join("/"),
                         detail: "contentMediaType MUST be one of [\"application/json\"]"
                             .to_string(),
                     });
-                } else {
-                    type_ = Some(media_type.unwrap());
                 }
             }
         }
 
         let maybe_content_encoding = def.get("contentEncoding");
         let mut encoding = None;
-        if maybe_content_encoding.is_some() {
-            let content_encoding = maybe_content_encoding.unwrap();
+        if let Some(content_encoding) = maybe_content_encoding {
             if !content_encoding.is_string() {
                 return Err(schema::SchemaError::Malformed {
                     path: ctx.fragment.join("/"),
@@ -108,13 +106,13 @@ impl super::Keyword for ContentMedia {
                 });
             } else {
                 let encoding_ = content_encoding.as_str().unwrap().parse().ok();
-                if encoding_.is_none() {
+                if let Some(encoding_) = encoding_ {
+                    encoding = Some(encoding_);
+                } else {
                     return Err(schema::SchemaError::Malformed {
                         path: ctx.fragment.join("/"),
                         detail: "contentEncoding MUST be one of [\"base64\"]".to_string(),
                     });
-                } else {
-                    encoding = Some(encoding_.unwrap());
                 }
             }
         }

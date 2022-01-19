@@ -20,7 +20,7 @@ pub fn encode(string: &str) -> String {
         .add(b'>')
         .add(b'%');
     percent_encoding::percent_encode(
-        string.replace("~", "~0").replace("/", "~1").as_bytes(),
+        string.replace('~', "~0").replace('/', "~1").as_bytes(),
         &QUERY_SET,
     )
     .to_string()
@@ -66,20 +66,20 @@ pub fn parse_url_key_with_base(
 }
 
 pub fn alter_fragment_path(mut url: Url, new_fragment: String) -> Url {
-    let normalized_fragment = if new_fragment.starts_with('/') {
-        &new_fragment[1..]
+    let normalized_fragment = if let Some(prefix) = new_fragment.strip_prefix('/') {
+        prefix
     } else {
         new_fragment.as_ref()
     };
 
     let result_fragment = match url.fragment() {
-        Some(ref fragment) if !fragment.is_empty() => {
+        Some(fragment) if !fragment.is_empty() => {
             if !fragment.starts_with('/') {
                 let mut result_fragment = "".to_string();
                 let mut fragment_parts = fragment.split('/').map(|s| s.to_string());
-                result_fragment.push_str("#");
+                result_fragment.push('#');
                 result_fragment.push_str(fragment_parts.next().unwrap().as_ref());
-                result_fragment.push_str("/");
+                result_fragment.push('/');
                 result_fragment.push_str(normalized_fragment.as_ref());
                 result_fragment
             } else {
@@ -105,7 +105,7 @@ pub fn serialize_schema_path(url: &Url) -> (String, Option<String>) {
                     .split('/')
                     .map(|s| s.to_string())
                     .collect::<Vec<String>>();
-                url_str.push_str("#");
+                url_str.push('#');
                 url_str.push_str(fragment_parts[0].as_ref());
                 let fragment = if fragment_parts.len() > 1 {
                     Some("/".to_string() + fragment_parts[1..].join("/").as_ref())
