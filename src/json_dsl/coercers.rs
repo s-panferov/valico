@@ -195,7 +195,7 @@ impl Coercer for NullCoercer {
             Ok(None)
         } else if val.is_string() {
             let val = val.as_str().unwrap();
-            if val == "" {
+            if val.is_empty() {
                 Ok(Some(json!(null)))
             } else {
                 Err(vec![Box::new(errors::WrongType {

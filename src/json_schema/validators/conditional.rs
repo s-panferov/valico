@@ -15,17 +15,14 @@ impl super::Validator for Conditional {
         let mut state = super::ValidationState::new();
 
         let schema_if_ = scope.resolve(&self.if_);
-        if schema_if_.is_some() {
-            let schema_if = schema_if_.unwrap();
-
+        if let Some(schema_if) = schema_if_ {
             // TODO should the validation be strict?
             let if_path = [path, "if"].join("/");
             if schema_if.validate_in(val, if_path.as_ref()).is_valid() {
                 if self.then_.is_some() {
-                    let schema_then_ = scope.resolve(&self.then_.as_ref().unwrap());
+                    let schema_then_ = scope.resolve(self.then_.as_ref().unwrap());
 
-                    if schema_then_.is_some() {
-                        let schema_then = schema_then_.unwrap();
+                    if let Some(schema_then) = schema_then_ {
                         let then_path = [path, "then"].join("/");
                         state.append(schema_then.validate_in(val, then_path.as_ref()));
                     } else {
@@ -33,10 +30,9 @@ impl super::Validator for Conditional {
                     }
                 }
             } else if self.else_.is_some() {
-                let schema_else_ = scope.resolve(&self.else_.as_ref().unwrap());
+                let schema_else_ = scope.resolve(self.else_.as_ref().unwrap());
 
-                if schema_else_.is_some() {
-                    let schema_else = schema_else_.unwrap();
+                if let Some(schema_else) = schema_else_ {
                     let else_path = [path, "else"].join("/");
                     state.append(schema_else.validate_in(val, else_path.as_ref()));
                 } else {

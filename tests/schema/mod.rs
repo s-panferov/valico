@@ -47,7 +47,7 @@ fn test_suite() {
     println!("test json_schema::test_suite");
 
     visit_specs(
-        &path::Path::new("tests/schema/JSON-Schema-Test-Suite/tests/draft7"),
+        path::Path::new("tests/schema/JSON-Schema-Test-Suite/tests/draft7"),
         |path, spec_set: Value| {
             let spec_set = spec_set.as_array().unwrap();
 
@@ -280,7 +280,7 @@ fn test_suite() {
                         continue;
                     }
 
-                    let state = schema.validate(&data);
+                    let state = schema.validate(data);
 
                     // TODO implement remote schema download for strict validation
                     if state.is_valid() != valid {
@@ -288,7 +288,7 @@ fn test_suite() {
                             "Failure: \"{}\" in \"{}\" -> \"{}\" with state: \n {}",
                             path.file_name().unwrap().to_str().unwrap(),
                             spec_desc,
-                            description.to_string(),
+                            description,
                             to_string_pretty(&to_value(&state).unwrap()).unwrap()
                         )
                     } else {

@@ -101,7 +101,7 @@ impl Param {
 
     pub fn nest<F>(&mut self, nest_def: F)
     where
-        F: FnOnce(&mut builder::Builder) -> (),
+        F: FnOnce(&mut builder::Builder),
     {
         self.nest = Some(builder::Builder::build(nest_def));
     }

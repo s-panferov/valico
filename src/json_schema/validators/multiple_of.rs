@@ -18,10 +18,10 @@ impl super::Validator for MultipleOf {
             (number % self.number) == 0f64
         } else {
             let remainder: f64 = (number / self.number) % 1f64;
-            let remainder_less_than_epsilon = match remainder.partial_cmp(&f64::EPSILON) {
-                None | Some(Ordering::Less) => true,
-                _ => false,
-            };
+            let remainder_less_than_epsilon = matches!(
+                remainder.partial_cmp(&f64::EPSILON),
+                None | Some(Ordering::Less)
+            );
             let remainder_less_than_one = remainder < (1f64 - f64::EPSILON);
             remainder_less_than_epsilon && remainder_less_than_one
         };
