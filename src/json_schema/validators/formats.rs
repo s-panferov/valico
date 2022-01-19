@@ -216,7 +216,7 @@ impl super::Validator for Time {
     fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
         let string = nonstrict_process!(val.as_str(), path);
 
-        match chrono::NaiveTime::parse_from_str(string, "%H:%M:%S%.f%Z") {
+        match chrono::NaiveTime::parse_from_str(string, "%H:%M:%S%.f") {
             Ok(_) => super::ValidationState::new(),
             Err(_) => val_error!(errors::Format {
                 path: path.to_string(),
