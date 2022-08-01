@@ -19,20 +19,14 @@ impl super::Keyword for Conditional {
                 ctx.url.clone(),
                 [ctx.escaped_fragment().as_ref(), "if"].join("/"),
             );
-            let then_ = match maybe_then {
-                Some(_) => Some(helpers::alter_fragment_path(
+            let then_ = maybe_then.map(|_| helpers::alter_fragment_path(
                     ctx.url.clone(),
                     [ctx.escaped_fragment().as_ref(), "then"].join("/"),
-                )),
-                None => None,
-            };
-            let else_ = match maybe_else {
-                Some(_) => Some(helpers::alter_fragment_path(
+                ));
+            let else_ = maybe_else.map(|_| helpers::alter_fragment_path(
                     ctx.url.clone(),
                     [ctx.escaped_fragment().as_ref(), "else"].join("/"),
-                )),
-                None => None,
-            };
+                ));
             Ok(Some(Box::new(validators::Conditional {
                 if_,
                 then_,
@@ -66,7 +60,7 @@ fn validate_if_then() {
         true,
     );
 
-    assert!(!schema.is_err(), schema.err().unwrap().to_string());
+    assert!(schema.is_ok(), "{}", schema.err().unwrap().to_string());
 
     let s = schema.unwrap();
     assert_eq!(s.validate(&to_value(3).unwrap()).is_valid(), true);
@@ -94,7 +88,7 @@ fn validate_if_then_else() {
         true,
     );
 
-    assert!(!schema.is_err(), schema.err().unwrap().to_string());
+    assert!(schema.is_ok(), "{}", schema.err().unwrap().to_string());
 
     let s = schema.unwrap();
     assert_eq!(s.validate(&to_value(3).unwrap()).is_valid(), true);

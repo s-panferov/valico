@@ -22,7 +22,7 @@ impl super::Validator for Conditional {
             let if_path = [path, "if"].join("/");
             if schema_if.validate_in(val, if_path.as_ref()).is_valid() {
                 if self.then_.is_some() {
-                    let schema_then_ = scope.resolve(&self.then_.as_ref().unwrap());
+                    let schema_then_ = scope.resolve(self.then_.as_ref().unwrap());
 
                     if schema_then_.is_some() {
                         let schema_then = schema_then_.unwrap();
@@ -33,7 +33,7 @@ impl super::Validator for Conditional {
                     }
                 }
             } else if self.else_.is_some() {
-                let schema_else_ = scope.resolve(&self.else_.as_ref().unwrap());
+                let schema_else_ = scope.resolve(self.else_.as_ref().unwrap());
 
                 if schema_else_.is_some() {
                     let schema_else = schema_else_.unwrap();

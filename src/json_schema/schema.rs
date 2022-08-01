@@ -299,7 +299,7 @@ impl Schema {
             }
             if default.len() == items.tree.len() {
                 self.unsafe_set_default(Some(default.into()));
-                return;
+                
             }
         }
     }

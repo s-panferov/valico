@@ -218,7 +218,7 @@ impl Builder {
             state
         };
 
-        let path = if path == "" { "/" } else { path };
+        let path = if path.is_empty() { "/" } else { path };
 
         if let Some(ref id) = self.schema_id {
             if let Some(scope) = scope {
@@ -276,7 +276,7 @@ impl Builder {
             }
         }
 
-        let path = if path == "" { "/" } else { path };
+        let path = if path.is_empty() { "/" } else { path };
 
         for validator in self.validators.iter() {
             match validator.validate(val, path) {

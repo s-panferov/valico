@@ -36,18 +36,15 @@ impl super::Validator for ContentMedia {
             val
         };
 
-        if self.type_.is_some() && val_.is_string() {
-            if !self
+        if self.type_.is_some() && val_.is_string() && !self
                 .type_
                 .as_ref()
                 .unwrap()
-                .validate(val_.as_str().unwrap())
-            {
-                return val_error!(errors::Format {
-                    path: path.to_string(),
-                    detail: "".to_string(),
-                });
-            }
+                .validate(val_.as_str().unwrap()) {
+            return val_error!(errors::Format {
+                path: path.to_string(),
+                detail: "".to_string(),
+            });
         }
 
         super::ValidationState::new()
