@@ -19,14 +19,18 @@ impl super::Keyword for Conditional {
                 ctx.url.clone(),
                 [ctx.escaped_fragment().as_ref(), "if"].join("/"),
             );
-            let then_ = maybe_then.map(|_| helpers::alter_fragment_path(
+            let then_ = maybe_then.map(|_| {
+                helpers::alter_fragment_path(
                     ctx.url.clone(),
                     [ctx.escaped_fragment().as_ref(), "then"].join("/"),
-                ));
-            let else_ = maybe_else.map(|_| helpers::alter_fragment_path(
+                )
+            });
+            let else_ = maybe_else.map(|_| {
+                helpers::alter_fragment_path(
                     ctx.url.clone(),
                     [ctx.escaped_fragment().as_ref(), "else"].join("/"),
-                ));
+                )
+            });
             Ok(Some(Box::new(validators::Conditional {
                 if_,
                 then_,
