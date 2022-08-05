@@ -393,6 +393,10 @@ impl Builder {
         self.obj_builder
             .set("else", Builder::build(build).into_json())
     }
+
+    pub fn custom_vocabulary(&mut self, name: &str, value: &str) {
+        self.obj_builder.set(name, value);
+    }
 }
 
 impl Serialize for Builder {
