@@ -452,7 +452,7 @@ impl Schema {
         if id.is_some() {
             context
                 .scopes
-                .insert(id.clone().unwrap().into_string(), context.fragment.clone());
+                .insert(id.clone().unwrap().into(), context.fragment.clone());
         }
 
         let validators = if is_schema && def.is_object() {
