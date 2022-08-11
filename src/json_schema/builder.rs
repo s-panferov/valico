@@ -394,7 +394,7 @@ impl Builder {
             .set("else", Builder::build(build).into_json())
     }
 
-    pub fn custom_vocabulary(&mut self, name: &str, value: &str) {
+    pub fn custom_vocabulary<V: Serialize, N: Into<String>>(&mut self, name: N, value: V) {
         self.obj_builder.set(name, value);
     }
 }
