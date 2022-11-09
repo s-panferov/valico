@@ -482,7 +482,7 @@ fn test_suite_draft201909() {
                 ),
                 (
                     // TODO implement remote schema download
-                    "definitions.json".to_string(),
+                    "defs.json".to_string(),
                     "invalid definition".to_string(),
                 ),
                 (

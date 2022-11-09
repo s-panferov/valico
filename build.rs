@@ -28,6 +28,7 @@ fn main() {
             .entry("patternProperties")
             .entry("dependencies")
             .entry("definitions")
+            .entry("$defs")
             .entry("anyOf")
             .entry("allOf")
             .entry("oneOf")
@@ -67,6 +68,7 @@ fn main() {
         "const ALLOW_NON_CONSUMED_KEYS: phf::Set<&'static str> = {};",
         phf_codegen::Set::new()
             .entry("definitions")
+            .entry("$defs")
             .entry("$schema")
             .entry("$id")
             .entry("default")
