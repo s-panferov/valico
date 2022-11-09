@@ -5,10 +5,10 @@ use std::collections;
 use std::ops;
 use url::Url;
 
-use super::helpers;
 use super::keywords;
 use super::scope;
 use super::validators;
+use super::{helpers, SchemaVersion};
 use std::error::Error;
 use std::fmt;
 use std::fmt::{Display, Formatter};
@@ -18,6 +18,7 @@ pub struct WalkContext<'a> {
     pub url: &'a Url,
     pub fragment: Vec<String>,
     pub scopes: &'a mut collections::HashMap<String, Vec<String>>,
+    pub version: SchemaVersion,
 }
 
 impl<'a> WalkContext<'a> {
@@ -106,16 +107,19 @@ include!(concat!(env!("OUT_DIR"), "/codegen.rs"));
 pub struct CompilationSettings<'a> {
     pub keywords: &'a keywords::KeywordMap,
     pub ban_unknown_keywords: bool,
+    pub schema_version: SchemaVersion,
 }
 
 impl<'a> CompilationSettings<'a> {
     pub fn new(
         keywords: &'a keywords::KeywordMap,
         ban_unknown_keywords: bool,
+        schema_version: SchemaVersion,
     ) -> CompilationSettings<'a> {
         CompilationSettings {
             keywords,
             ban_unknown_keywords,
+            schema_version,
         }
     }
 }
@@ -158,6 +162,7 @@ impl Schema {
                     url: &id,
                     fragment: vec![key.clone()],
                     scopes: &mut scopes,
+                    version: settings.schema_version,
                 };
 
                 let scheme = Schema::compile_sub(
@@ -179,6 +184,7 @@ impl Schema {
                 url: &id,
                 fragment: vec![],
                 scopes: &mut scopes,
+                version: settings.schema_version,
             },
             &settings,
         )?;
@@ -408,6 +414,7 @@ impl Schema {
                         url: id.as_ref().unwrap_or(context.url),
                         fragment: current_fragment,
                         scopes: context.scopes,
+                        version: keywords.schema_version,
                     };
 
                     let scheme =
@@ -437,6 +444,7 @@ impl Schema {
                         url: id.as_ref().unwrap_or(context.url),
                         fragment: current_fragment,
                         scopes: context.scopes,
+                        version: keywords.schema_version,
                     };
 
                     let scheme = Schema::compile_sub(value.clone(), &mut context, keywords, true)?;
@@ -559,7 +567,7 @@ fn schema_doesnt_compile_not_object() {
     assert!(Schema::compile(
         json!(0),
         None,
-        CompilationSettings::new(&keywords::default(), true)
+        CompilationSettings::new(&keywords::default(), true, SchemaVersion::Draft7)
     )
     .is_err());
 }
@@ -569,7 +577,7 @@ fn schema_compiles_boolean_schema() {
     assert!(Schema::compile(
         json!(true),
         None,
-        CompilationSettings::new(&keywords::default(), true)
+        CompilationSettings::new(&keywords::default(), true, SchemaVersion::Draft7)
     )
     .is_ok());
 }
