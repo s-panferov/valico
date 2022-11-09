@@ -16,7 +16,7 @@ pub use self::schema::{Schema, SchemaError};
 pub use self::scope::Scope;
 pub use self::validators::ValidationState;
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Ord, PartialOrd)]
 /// Represents the schema version to use.
 pub enum SchemaVersion {
     /// Use draft 7.

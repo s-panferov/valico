@@ -189,6 +189,18 @@ impl_serialize!(Contains);
 
 #[derive(Debug)]
 #[allow(missing_copy_implementations)]
+pub struct ContainsMinMax {
+    pub path: String,
+}
+impl_err!(
+    ContainsMinMax,
+    "min_contains/max_contains",
+    "Contains minimum/maximum is not met"
+);
+impl_serialize!(ContainsMinMax);
+
+#[derive(Debug)]
+#[allow(missing_copy_implementations)]
 pub struct Not {
     pub path: String,
 }

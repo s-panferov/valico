@@ -80,7 +80,13 @@ pub fn default() -> KeywordMap {
     decouple_keyword((vec!["allOf"], Box::new(of::AllOf)), &mut map);
     decouple_keyword((vec!["anyOf"], Box::new(of::AnyOf)), &mut map);
     decouple_keyword((vec!["const"], Box::new(const_::Const)), &mut map);
-    decouple_keyword((vec!["contains"], Box::new(contains::Contains)), &mut map);
+    decouple_keyword(
+        (
+            vec!["contains", "minContains", "maxContains"],
+            Box::new(contains::Contains),
+        ),
+        &mut map,
+    );
     decouple_keyword(
         (vec!["dependencies"], Box::new(dependencies::Dependencies)),
         &mut map,

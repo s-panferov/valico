@@ -1,5 +1,7 @@
 use serde_json::Value;
 
+use crate::json_schema::SchemaVersion;
+
 use super::super::helpers;
 use super::super::schema;
 use super::super::validators;
@@ -9,6 +11,31 @@ pub struct Contains;
 impl super::Keyword for Contains {
     fn compile(&self, def: &Value, ctx: &schema::WalkContext) -> super::KeywordResult {
         let contains = keyword_key_exists!(def, "contains");
+        let (max_contains, min_contains) = if ctx.version >= SchemaVersion::Draft2019_09 {
+            let max_contains = def
+                .get("maxContains")
+                .map(|v| {
+                    v.as_u64().ok_or_else(|| schema::SchemaError::Malformed {
+                        path: ctx.fragment.join("/"),
+                        detail: "The value of maxContains MUST be a non-negative integer"
+                            .to_string(),
+                    })
+                })
+                .transpose()?;
+            let min_contains = def
+                .get("minContains")
+                .map(|v| {
+                    v.as_u64().ok_or_else(|| schema::SchemaError::Malformed {
+                        path: ctx.fragment.join("/"),
+                        detail: "The value of minContains MUST be a non-negative integer"
+                            .to_string(),
+                    })
+                })
+                .transpose()?;
+            (max_contains, min_contains)
+        } else {
+            (None, None)
+        };
 
         if contains.is_object() || contains.is_boolean() {
             Ok(Some(Box::new(validators::Contains {
@@ -16,6 +43,8 @@ impl super::Keyword for Contains {
                     ctx.url.clone(),
                     [ctx.escaped_fragment().as_ref(), "contains"].join("/"),
                 ),
+                max_contains,
+                min_contains,
             })))
         } else {
             Err(schema::SchemaError::Malformed {
