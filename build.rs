@@ -71,6 +71,7 @@ fn main() {
             .entry("$defs")
             .entry("$schema")
             .entry("$id")
+            .entry("$anchor")
             .entry("default")
             .entry("title")
             .entry("description")

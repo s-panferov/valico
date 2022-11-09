@@ -136,11 +136,21 @@ impl Schema {
             return Err(SchemaError::NotAnObject);
         }
 
-        let id = if let Some(id) = external_id {
+        let mut id = if let Some(id) = external_id {
             id
         } else {
             helpers::parse_url_key("$id", &def)?.unwrap_or_else(helpers::generate_id)
         };
+
+        if settings.schema_version >= SchemaVersion::Draft2019_09 {
+            if let Some(anchor) = def.get("$anchor") {
+                let anchor = anchor.as_str().ok_or_else(|| SchemaError::Malformed {
+                    path: "".to_string(),
+                    detail: "$anchor must be a string".to_string(),
+                })?;
+                id.set_fragment(Some(anchor));
+            };
+        }
 
         let schema = helpers::parse_url_key("$schema", &def)?;
 
@@ -378,7 +388,23 @@ impl Schema {
         let def = helpers::convert_boolean_schema(def);
 
         let id = if is_schema {
-            helpers::parse_url_key_with_base("$id", &def, context.url)?
+            let mut id_url = helpers::parse_url_key_with_base("$id", &def, context.url)?;
+            if keywords.schema_version >= SchemaVersion::Draft2019_09 {
+                if let Some(anchor) = def.get("$anchor") {
+                    let anchor = anchor.as_str().ok_or_else(|| SchemaError::Malformed {
+                        path: "".to_string(),
+                        detail: "$anchor must be a string".to_string(),
+                    })?;
+
+                    // If the "$id" URL is not explicitly overridden, implicitly inherit the parent's URL.
+                    if id_url.is_none() {
+                        id_url = Some(context.url.clone());
+                    }
+
+                    id_url.as_mut().unwrap().set_fragment(Some(anchor));
+                }
+            }
+            id_url
         } else {
             None
         };
