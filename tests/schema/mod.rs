@@ -489,6 +489,11 @@ fn test_suite_draft201909() {
                     "invalid definition".to_string(),
                 ),
                 (
+                    // TODO implement remote schema download
+                    "id.json".to_string(),
+                    "Invalid use of fragments in location-independent $id".to_string(),
+                ),
+                (
                     "idn-hostname.json".to_string(),
                     "validation of internationalized host names".to_string(),
                 ),
@@ -500,6 +505,16 @@ fn test_suite_draft201909() {
                     // optional overflow handling is not implemented
                     "float-overflow.json".to_string(),
                     "all integers are multiples of 0.5, if overflow is handled".to_string(),
+                ),
+                (
+                    // TODO implement duration validation
+                    "duration.json".to_string(),
+                    "validation of duration strings".to_string(),
+                ),
+                (
+                    // TODO implement UUID validation
+                    "uuid.json".to_string(),
+                    "uuid format".to_string(),
                 ),
             ];
 
