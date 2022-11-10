@@ -9,7 +9,13 @@ pub struct Not {
 }
 
 impl super::Validator for Not {
-    fn validate(&self, val: &Value, path: &str, scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let schema = scope.resolve(&self.url);
         let mut state = super::ValidationState::new();
 

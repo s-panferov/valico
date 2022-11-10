@@ -1,6 +1,8 @@
 use serde_json::Value;
 use url::Url;
 
+use crate::json_schema::SchemaVersion;
+
 use super::super::schema;
 use super::super::validators;
 
@@ -29,8 +31,8 @@ impl super::Keyword for Ref {
         }
     }
 
-    fn is_exclusive(&self) -> bool {
-        true
+    fn is_exclusive(&self, version: SchemaVersion) -> bool {
+        version < SchemaVersion::Draft2019_09
     }
 }
 

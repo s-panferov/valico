@@ -11,7 +11,13 @@ pub struct Conditional {
 }
 
 impl super::Validator for Conditional {
-    fn validate(&self, val: &Value, path: &str, scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let mut state = super::ValidationState::new();
 
         let schema_if_ = scope.resolve(&self.if_);
@@ -23,8 +29,7 @@ impl super::Validator for Conditional {
                     let schema_then_ = scope.resolve(self.then_.as_ref().unwrap());
 
                     if let Some(schema_then) = schema_then_ {
-                        let then_path = [path, "then"].join("/");
-                        state.append(schema_then.validate_in(val, then_path.as_ref()));
+                        state.append(schema_then.validate_in(val, path));
                     } else {
                         state.missing.push(self.then_.as_ref().unwrap().clone());
                     }
@@ -33,8 +38,7 @@ impl super::Validator for Conditional {
                 let schema_else_ = scope.resolve(self.else_.as_ref().unwrap());
 
                 if let Some(schema_else) = schema_else_ {
-                    let else_path = [path, "else"].join("/");
-                    state.append(schema_else.validate_in(val, else_path.as_ref()));
+                    state.append(schema_else.validate_in(val, path));
                 } else {
                     state.missing.push(self.else_.as_ref().unwrap().clone());
                 }

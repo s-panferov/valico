@@ -12,7 +12,13 @@ pub struct Contains {
 }
 
 impl super::Validator for Contains {
-    fn validate(&self, val: &Value, path: &str, scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let mut array = Cow::Borrowed(nonstrict_process!(val.as_array(), path));
 
         let schema = scope.resolve(&self.url);

@@ -12,7 +12,13 @@ pub struct ContentMedia {
 }
 
 impl super::Validator for ContentMedia {
-    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        _scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let decoded_val = if self.encoding.is_some() && val.is_string() {
             let v = self
                 .encoding

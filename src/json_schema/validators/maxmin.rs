@@ -9,7 +9,13 @@ pub struct Maximum {
 }
 
 impl super::Validator for Maximum {
-    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        _scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let number = nonstrict_process!(val.as_f64(), path);
 
         if number <= self.number {
@@ -28,7 +34,13 @@ pub struct ExclusiveMaximum {
 }
 
 impl super::Validator for ExclusiveMaximum {
-    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        _scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let number = nonstrict_process!(val.as_f64(), path);
 
         if number < self.number {
@@ -47,7 +59,13 @@ pub struct Minimum {
 }
 
 impl super::Validator for Minimum {
-    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        _scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let number = nonstrict_process!(val.as_f64(), path);
 
         if number >= self.number {
@@ -66,7 +84,13 @@ pub struct ExclusiveMinimum {
 }
 
 impl super::Validator for ExclusiveMinimum {
-    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        _scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let number = nonstrict_process!(val.as_f64(), path);
 
         if number > self.number {

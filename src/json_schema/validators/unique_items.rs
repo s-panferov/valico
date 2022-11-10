@@ -6,7 +6,13 @@ use super::super::scope;
 #[allow(missing_copy_implementations)]
 pub struct UniqueItems;
 impl super::Validator for UniqueItems {
-    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        _scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let array = nonstrict_process!(val.as_array(), path);
 
         // TODO we need some quicker algorithm for this

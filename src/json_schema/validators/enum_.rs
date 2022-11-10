@@ -10,7 +10,13 @@ pub struct Enum {
 }
 
 impl super::Validator for Enum {
-    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        _scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let mut state = super::ValidationState::new();
 
         let mut contains = false;

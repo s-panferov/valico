@@ -17,7 +17,13 @@ pub struct Dependencies {
 }
 
 impl super::Validator for Dependencies {
-    fn validate(&self, val: &Value, path: &str, scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let mut state = super::ValidationState::new();
         if !val.is_object() {
             return state;

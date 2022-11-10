@@ -11,7 +11,13 @@ pub struct MultipleOf {
 }
 
 impl super::Validator for MultipleOf {
-    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        _scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let number = nonstrict_process!(val.as_f64(), path);
 
         let valid = if (number.fract() == 0f64) && (self.number.fract() == 0f64) {

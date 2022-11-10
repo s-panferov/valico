@@ -9,7 +9,13 @@ pub struct Required {
 }
 
 impl super::Validator for Required {
-    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        _scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let object = nonstrict_process!(val.as_object(), path);
         let mut state = super::ValidationState::new();
 

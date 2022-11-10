@@ -33,7 +33,13 @@ fn check_type(val: &Value, ty: json_schema::PrimitiveType) -> bool {
 }
 
 impl super::Validator for Type {
-    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        _scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let mut state = super::ValidationState::new();
 
         match self.item {
@@ -43,6 +49,8 @@ impl super::Validator for Type {
                         path: path.to_string(),
                         detail: format!("The value must be {}", t),
                     }))
+                } else {
+                    state.evaluated.insert(path.to_owned());
                 }
             }
             TypeKind::Set(ref set) => {
@@ -65,6 +73,8 @@ impl super::Validator for Type {
                                 .join(", ")
                         ),
                     }))
+                } else {
+                    state.evaluated.insert(path.to_owned());
                 }
             }
         }

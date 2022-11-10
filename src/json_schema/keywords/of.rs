@@ -157,7 +157,7 @@ fn conflicting_defaults() {
     let result = schema.validate(&json!({}));
     assert!(!result.is_valid());
     assert_eq!(&*format!("{:?}", result),
-      "ValidationState { errors: [WrongType { path: \"/a\", detail: \"The value must be number\" }], missing: [], replacement: None }");
+      "ValidationState { errors: [WrongType { path: \"/a\", detail: \"The value must be number\" }], missing: [], replacement: None, evaluated: {\"/a\"} }");
 }
 
 #[test]
@@ -188,10 +188,11 @@ fn divergent_defaults() {
             true,
         )
         .unwrap();
-    let result = schema.validate(&json!({}));
+    let mut result = schema.validate(&json!({}));
     assert!(!result.is_valid());
+    result.evaluated.clear();
     assert_eq!(&*format!("{:?}", result),
-      "ValidationState { errors: [DivergentDefaults { path: \"\" }], missing: [], replacement: None }");
+      "ValidationState { errors: [DivergentDefaults { path: \"\" }], missing: [], replacement: None, evaluated: {} }");
 }
 
 #[test]

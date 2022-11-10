@@ -19,7 +19,13 @@ pub struct Properties {
 }
 
 impl super::Validator for Properties {
-    fn validate(&self, val: &Value, path: &str, scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let mut object = Cow::Borrowed(nonstrict_process!(val.as_object(), path));
         let mut state = super::ValidationState::new();
 

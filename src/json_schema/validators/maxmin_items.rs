@@ -9,7 +9,13 @@ pub struct MaxItems {
 }
 
 impl super::Validator for MaxItems {
-    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        _scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let array = nonstrict_process!(val.as_array(), path);
 
         if (array.len() as u64) <= self.length {
@@ -28,7 +34,13 @@ pub struct MinItems {
 }
 
 impl super::Validator for MinItems {
-    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        _scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let array = nonstrict_process!(val.as_array(), path);
 
         if (array.len() as u64) >= self.length {

@@ -1,6 +1,7 @@
 use serde::{Serialize, Serializer};
 use serde_json::{to_value, Value};
 use std::borrow::Cow;
+use std::collections::HashSet;
 use std::fmt;
 
 use super::scope;
@@ -37,6 +38,7 @@ macro_rules! val_error {
             errors: vec![Box::new($err)],
             missing: vec![],
             replacement: None,
+            evaluated: Default::default(),
         }
     };
 }
@@ -61,6 +63,7 @@ pub use self::property_names::PropertyNames;
 pub use self::ref_::Ref;
 pub use self::required::Required;
 pub use self::type_::Type;
+pub use self::unevaluated::UnevaluatedItems;
 pub use self::unique_items::UniqueItems;
 
 mod conditional;
@@ -84,6 +87,7 @@ mod property_names;
 mod ref_;
 mod required;
 pub mod type_;
+mod unevaluated;
 mod unique_items;
 
 #[derive(Debug)]
@@ -91,6 +95,9 @@ pub struct ValidationState {
     pub errors: super::super::common::error::ValicoErrors,
     pub missing: Vec<url::Url>,
     pub replacement: Option<Value>,
+    /// Set of paths that have been evaluated so far. Once a path has been evaluated, it should be added
+    /// here so that `unevaluatedItems` and `unevaluatedProperties` work.
+    pub evaluated: HashSet<String>,
 }
 
 impl ValidationState {
@@ -99,6 +106,7 @@ impl ValidationState {
             errors: vec![],
             missing: vec![],
             replacement: None,
+            evaluated: Default::default(),
         }
     }
 
@@ -113,6 +121,7 @@ impl ValidationState {
     pub fn append(&mut self, second: ValidationState) {
         self.errors.extend(second.errors);
         self.missing.extend(second.missing);
+        self.evaluated.extend(second.evaluated);
     }
 
     pub fn set_replacement<T: Clone + Into<Value>>(&mut self, data: Cow<T>) {
@@ -154,7 +163,13 @@ impl Serialize for ValidationState {
 }
 
 pub trait Validator {
-    fn validate(&self, item: &Value, _: &str, _: &scope::Scope) -> ValidationState;
+    fn validate(
+        &self,
+        item: &Value,
+        _: &str,
+        _: &scope::Scope,
+        prev_state: &ValidationState,
+    ) -> ValidationState;
 }
 
 impl fmt::Debug for dyn Validator + 'static + Send + Sync {
@@ -168,9 +183,15 @@ pub type Validators = Vec<BoxedValidator>;
 
 impl<T> Validator for T
 where
-    T: Fn(&Value, &str, &scope::Scope) -> ValidationState,
+    T: Fn(&Value, &str, &scope::Scope, &super::ValidationState) -> ValidationState,
 {
-    fn validate(&self, val: &Value, path: &str, scope: &scope::Scope) -> ValidationState {
-        self(val, path, scope)
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        scope: &scope::Scope,
+        state: &super::ValidationState,
+    ) -> ValidationState {
+        self(val, path, scope, state)
     }
 }

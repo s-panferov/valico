@@ -325,6 +325,7 @@ impl Schema {
         settings: &CompilationSettings,
     ) -> Result<validators::Validators, SchemaError> {
         let mut validators = vec![];
+        let mut end_validators = vec![];
         let mut keys: collections::HashSet<&str> = def
             .as_object()
             .unwrap()
@@ -340,13 +341,17 @@ impl Schema {
                     Some(keyword) => {
                         keyword.consume(&mut keys);
 
-                        let is_exclusive_keyword = keyword.keyword.is_exclusive();
+                        let is_exclusive_keyword =
+                            keyword.keyword.is_exclusive(settings.schema_version);
 
                         if let Some(validator) = keyword.keyword.compile(def, context)? {
                             if is_exclusive_keyword {
                                 validators = vec![validator];
+                                end_validators = vec![];
                             } else if keyword.keyword.place_first() {
                                 validators.splice(0..0, std::iter::once(validator));
+                            } else if keyword.keyword.place_last() {
+                                end_validators.push(validator);
                             } else {
                                 validators.push(validator);
                             }
@@ -376,6 +381,7 @@ impl Schema {
             }
         }
 
+        validators.extend(end_validators);
         Ok(validators)
     }
 
@@ -568,7 +574,7 @@ impl Schema {
         let mut data = Cow::Borrowed(data);
 
         for validator in self.validators.iter() {
-            let mut result = validator.validate(&data, path, scope);
+            let mut result = validator.validate(&data, path, scope, &state);
             if result.is_valid() && result.replacement.is_some() {
                 *data.to_mut() = result.replacement.take().unwrap();
             }

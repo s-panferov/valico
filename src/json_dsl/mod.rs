@@ -79,6 +79,7 @@ impl<T> ExtendedResult<T> {
                 errors,
                 missing: vec![],
                 replacement: None,
+                evaluated: Default::default(),
             },
         }
     }

@@ -15,7 +15,13 @@ use super::super::scope;
 pub struct Date;
 
 impl super::Validator for Date {
-    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        _scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let string = nonstrict_process!(val.as_str(), path);
 
         match chrono::NaiveDate::parse_from_str(string, "%Y-%m-%d") {
@@ -41,7 +47,13 @@ impl super::Validator for Date {
 pub struct DateTime;
 
 impl super::Validator for DateTime {
-    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        _scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let string = nonstrict_process!(val.as_str(), path);
 
         match chrono::DateTime::parse_from_rfc3339(string) {
@@ -58,7 +70,13 @@ impl super::Validator for DateTime {
 pub struct Email;
 
 impl super::Validator for Email {
-    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        _scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let string = nonstrict_process!(val.as_str(), path);
 
         match List.parse_email_address(string) {
@@ -75,7 +93,13 @@ impl super::Validator for Email {
 pub struct Hostname;
 
 impl super::Validator for Hostname {
-    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        _scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let string = nonstrict_process!(val.as_str(), path);
 
         match List.parse_domain_name(string) {
@@ -92,7 +116,13 @@ impl super::Validator for Hostname {
 pub struct Ipv4;
 
 impl super::Validator for Ipv4 {
-    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        _scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let string = nonstrict_process!(val.as_str(), path);
 
         match string.parse::<net::Ipv4Addr>() {
@@ -109,7 +139,13 @@ impl super::Validator for Ipv4 {
 pub struct Ipv6;
 
 impl super::Validator for Ipv6 {
-    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        _scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let string = nonstrict_process!(val.as_str(), path);
 
         match string.parse::<net::Ipv6Addr>() {
@@ -126,7 +162,13 @@ impl super::Validator for Ipv6 {
 pub struct IRI;
 
 impl super::Validator for IRI {
-    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        _scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let string = nonstrict_process!(val.as_str(), path);
 
         match url::Url::parse(string) {
@@ -143,7 +185,13 @@ impl super::Validator for IRI {
 pub struct IRIReference;
 
 impl super::Validator for IRIReference {
-    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        _scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let string = nonstrict_process!(val.as_str(), path);
 
         let base_url = url::Url::parse("http://example.com/").unwrap();
@@ -162,7 +210,13 @@ impl super::Validator for IRIReference {
 pub struct JsonPointer;
 
 impl super::Validator for JsonPointer {
-    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        _scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let string = nonstrict_process!(val.as_str(), path);
 
         match string.parse::<json_pointer::JsonPointer<_, _>>() {
@@ -179,7 +233,13 @@ impl super::Validator for JsonPointer {
 pub struct Regex;
 
 impl super::Validator for Regex {
-    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        _scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let string = nonstrict_process!(val.as_str(), path);
 
         match regex::Regex::new(string) {
@@ -196,7 +256,13 @@ impl super::Validator for Regex {
 pub struct RelativeJsonPointer;
 
 impl super::Validator for RelativeJsonPointer {
-    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        _scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let string = nonstrict_process!(val.as_str(), path);
 
         match string.parse::<json_pointer::JsonPointer<_, _>>() {
@@ -213,7 +279,13 @@ impl super::Validator for RelativeJsonPointer {
 pub struct Time;
 
 impl super::Validator for Time {
-    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        _scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let string = nonstrict_process!(val.as_str(), path);
 
         match chrono::NaiveTime::parse_from_str(string, "%H:%M:%S%.f") {
@@ -230,7 +302,13 @@ impl super::Validator for Time {
 pub struct Uuid;
 
 impl super::Validator for Uuid {
-    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        _scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let string = nonstrict_process!(val.as_str(), path);
 
         match string.parse::<uuid::Uuid>() {
@@ -247,7 +325,13 @@ impl super::Validator for Uuid {
 pub struct Uri;
 
 impl super::Validator for Uri {
-    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        _scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let string = nonstrict_process!(val.as_str(), path);
 
         match url::Url::parse(string) {
@@ -264,7 +348,13 @@ impl super::Validator for Uri {
 pub struct UriReference;
 
 impl super::Validator for UriReference {
-    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        _scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let string = nonstrict_process!(val.as_str(), path);
 
         let base_url = url::Url::parse("http://example.com/").unwrap();
@@ -283,7 +373,13 @@ impl super::Validator for UriReference {
 pub struct UriTemplate;
 
 impl super::Validator for UriTemplate {
-    fn validate(&self, val: &Value, _path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        _path: &str,
+        _scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let string = nonstrict_process!(val.as_str(), path);
 
         let _ = uritemplate::UriTemplate::new(string);
