@@ -34,6 +34,8 @@ fn main() {
             .entry("anyOf")
             .entry("allOf")
             .entry("oneOf")
+            .entry("const")
+            .entry("enum")
             .build()
     )
     .unwrap();
