@@ -91,7 +91,7 @@ impl super::Validator for AnyOf {
 
         let mut invalid_states = vec![];
         // The "best" state is defined as "the one that validates the most items".
-        let mut best_valid_state = None;
+        let mut evaluated: HashSet<String> = HashSet::new();
         let mut valid = false;
         for url in self.schemes.iter() {
             let schema = scope.resolve(url);
@@ -106,14 +106,7 @@ impl super::Validator for AnyOf {
                         *val.to_mut() = result;
                     }
                     valid = true;
-                    if result.evaluated.len()
-                        > best_valid_state
-                            .as_ref()
-                            .map(|v: &super::ValidationState| v.evaluated.len())
-                            .unwrap_or(0)
-                    {
-                        best_valid_state.replace(result);
-                    }
+                    evaluated.extend(result.evaluated);
                     // Cannot short-circuit here as "unevaluatedItems" requires that we find the "best" state.
                 } else {
                     invalid_states.push(result)
@@ -129,11 +122,7 @@ impl super::Validator for AnyOf {
                 states: invalid_states,
             }))
         } else {
-            state.evaluated.extend(
-                best_valid_state
-                    .iter()
-                    .flat_map(|v| v.evaluated.iter().cloned()),
-            );
+            state.evaluated.extend(evaluated);
         }
 
         state.set_replacement(val);

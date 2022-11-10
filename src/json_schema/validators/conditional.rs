@@ -23,8 +23,9 @@ impl super::Validator for Conditional {
         let schema_if_ = scope.resolve(&self.if_);
         if let Some(schema_if) = schema_if_ {
             // TODO should the validation be strict?
-            let if_path = [path, "if"].join("/");
-            if schema_if.validate_in(val, if_path.as_ref()).is_valid() {
+            let if_state = schema_if.validate_in(val, path);
+            if if_state.is_valid() {
+                state.evaluated.extend(if_state.evaluated);
                 if self.then_.is_some() {
                     let schema_then_ = scope.resolve(self.then_.as_ref().unwrap());
 

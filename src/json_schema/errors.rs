@@ -227,3 +227,12 @@ pub struct Format {
 }
 impl_err!(Format, "format", "Format is wrong", +detail);
 impl_serialize!(Format);
+
+#[derive(Debug)]
+#[allow(missing_copy_implementations)]
+pub struct Unevaluated {
+    pub path: String,
+    pub detail: String,
+}
+impl_err!(Unevaluated, "unevaluated", "Unevaluated condition is not met", +detail);
+impl_serialize!(Unevaluated);

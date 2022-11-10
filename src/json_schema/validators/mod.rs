@@ -63,7 +63,7 @@ pub use self::property_names::PropertyNames;
 pub use self::ref_::Ref;
 pub use self::required::Required;
 pub use self::type_::Type;
-pub use self::unevaluated::UnevaluatedItems;
+pub use self::unevaluated::Unevaluated;
 pub use self::unique_items::UniqueItems;
 
 mod conditional;
@@ -87,7 +87,7 @@ mod property_names;
 mod ref_;
 mod required;
 pub mod type_;
-mod unevaluated;
+pub mod unevaluated;
 mod unique_items;
 
 #[derive(Debug)]

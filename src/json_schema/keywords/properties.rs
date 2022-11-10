@@ -69,7 +69,7 @@ impl super::Keyword for Properties {
                 });
             }
         } else {
-            validators::properties::AdditionalKind::Boolean(true)
+            validators::properties::AdditionalKind::Unspecified
         };
 
         let patterns = if let Some(pattern) = maybe_pattern {

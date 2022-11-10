@@ -175,6 +175,14 @@ pub fn default() -> KeywordMap {
         &mut map,
     );
     decouple_keyword(
+        (
+            vec!["unevaluatedProperties"],
+            Box::new(unevaluated::UnevaluatedProperties),
+        ),
+        &mut map,
+    );
+
+    decouple_keyword(
         (vec!["uniqueItems"], Box::new(unique_items::UniqueItems)),
         &mut map,
     );
