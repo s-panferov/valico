@@ -27,6 +27,8 @@ fn main() {
             .entry("properties")
             .entry("patternProperties")
             .entry("dependencies")
+            .entry("dependentSchemas")
+            .entry("dependentRequired")
             .entry("definitions")
             .entry("$defs")
             .entry("anyOf")

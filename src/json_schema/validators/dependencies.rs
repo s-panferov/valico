@@ -1,6 +1,5 @@
 use serde_json::Value;
 use std::borrow::Cow;
-use std::collections;
 
 use super::super::errors;
 use super::super::scope;
@@ -13,7 +12,7 @@ pub enum DepKind {
 
 #[allow(missing_copy_implementations)]
 pub struct Dependencies {
-    pub items: collections::HashMap<String, DepKind>,
+    pub items: Vec<(String, DepKind)>,
 }
 
 impl super::Validator for Dependencies {

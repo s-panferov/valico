@@ -93,7 +93,10 @@ pub fn default() -> KeywordMap {
         &mut map,
     );
     decouple_keyword(
-        (vec!["dependencies"], Box::new(dependencies::Dependencies)),
+        (
+            vec!["dependencies", "dependentRequired", "dependentSchemas"],
+            Box::new(dependencies::Dependencies),
+        ),
         &mut map,
     );
     decouple_keyword((vec!["enum"], Box::new(enum_::Enum)), &mut map);
