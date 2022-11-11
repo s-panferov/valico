@@ -36,7 +36,13 @@ impl super::Keyword for Properties {
                         );
                     } else {
                         return Err(schema::SchemaError::Malformed {
-                            path: ctx.fragment.join("/"),
+                            path: ctx
+                                .fragment
+                                .iter()
+                                .map(String::as_str)
+                                .chain(["properties", key])
+                                .flat_map(|s| s.chars().chain(['/']))
+                                .collect(),
                             detail: "Each value of this object MUST be an object or a boolean"
                                 .to_string(),
                         });
@@ -97,7 +103,7 @@ impl super::Keyword for Properties {
                         }
                     } else {
                         return Err(schema::SchemaError::Malformed {
-                            path: ctx.fragment.join("/"),
+                            path: ctx.fragment.join("/") + "patternProperties",
                             detail: "Each value of this object MUST be an object or a boolean"
                                 .to_string(),
                         });
