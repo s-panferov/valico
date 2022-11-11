@@ -242,7 +242,7 @@ impl super::Validator for Regex {
     ) -> super::ValidationState {
         let string = nonstrict_process!(val.as_str(), path);
 
-        match regex::Regex::new(string) {
+        match fancy_regex::Regex::new(string) {
             Ok(_) => super::ValidationState::new(),
             Err(_) => val_error!(errors::Format {
                 path: path.to_string(),

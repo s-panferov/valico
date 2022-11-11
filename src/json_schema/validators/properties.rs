@@ -16,7 +16,7 @@ pub enum AdditionalKind {
 pub struct Properties {
     pub properties: collections::HashMap<String, url::Url>,
     pub additional: AdditionalKind,
-    pub patterns: Vec<(regex::Regex, url::Url)>,
+    pub patterns: Vec<(fancy_regex::Regex, url::Url)>,
 }
 
 impl super::Validator for Properties {
@@ -71,7 +71,7 @@ impl super::Validator for Properties {
 
             let mut is_pattern_passed = false;
             for &(ref regex, ref url) in self.patterns.iter() {
-                if regex.is_match(key.as_ref()) {
+                if regex.is_match(key.as_ref()).unwrap_or(false) {
                     let schema = scope.resolve(url);
                     if let Some(schema) = schema {
                         let value_path = [path, key.as_ref()].join("/");

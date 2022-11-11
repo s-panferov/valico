@@ -5,7 +5,7 @@ use super::super::scope;
 
 #[allow(missing_copy_implementations)]
 pub struct Pattern {
-    pub regex: regex::Regex,
+    pub regex: fancy_regex::Regex,
 }
 
 impl super::Validator for Pattern {
@@ -18,7 +18,7 @@ impl super::Validator for Pattern {
     ) -> super::ValidationState {
         let string = nonstrict_process!(val.as_str(), path);
 
-        if self.regex.is_match(string) {
+        if self.regex.is_match(string).unwrap_or(false) {
             super::ValidationState::new()
         } else {
             val_error!(errors::Pattern {

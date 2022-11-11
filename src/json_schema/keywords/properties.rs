@@ -79,7 +79,7 @@ impl super::Keyword for Properties {
 
                 for (key, value) in pattern.iter() {
                     if value.is_object() || value.is_boolean() {
-                        match regex::Regex::new(key.as_ref()) {
+                        match fancy_regex::Regex::new(key.as_ref()) {
                             Ok(regex) => {
                                 let url = helpers::alter_fragment_path(ctx.url.clone(), [
                                     ctx.escaped_fragment().as_ref(),

@@ -110,7 +110,7 @@ impl Param {
         self.allow_null = true;
     }
 
-    pub fn regex(&mut self, regex: regex::Regex) {
+    pub fn regex(&mut self, regex: fancy_regex::Regex) {
         self.validators.push(Box::new(regex));
     }
 

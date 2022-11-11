@@ -11,7 +11,7 @@ impl super::Keyword for Pattern {
 
         if pattern.is_string() {
             let pattern_val = pattern.as_str().unwrap();
-            match regex::Regex::new(pattern_val) {
+            match fancy_regex::Regex::new(pattern_val) {
                 Ok(re) => Ok(Some(Box::new(validators::Pattern { regex: re }))),
                 Err(err) => Err(schema::SchemaError::Malformed {
                     path: ctx.fragment.join("/"),

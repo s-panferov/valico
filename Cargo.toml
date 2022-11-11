@@ -11,7 +11,7 @@ build = "build.rs"
 edition = "2018"
 
 [dependencies]
-regex = "1"
+fancy-regex = "0.8"
 url = "2"
 jsonway = "2.0"
 uuid = {version = "0.8", features = ["v4"]}
