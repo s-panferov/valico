@@ -1,6 +1,5 @@
 use serde_json::{to_value, Value};
 
-
 use super::super::json_schema;
 use super::coercers;
 use super::errors;
