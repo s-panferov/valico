@@ -22,7 +22,7 @@ chrono = "0.4.6"
 addr = "0.15"
 percent-encoding = "2.1"
 json-pointer = "0.3"
-uritemplate-next = "0.2"
+datta = "0.1"
 base64 = "0.13"
 
 [build-dependencies.phf_codegen]

@@ -1,10 +1,10 @@
 use addr::parser::{DomainName, EmailAddress};
 use addr::psl::List;
 use chrono;
+use datta;
 use json_pointer;
 use serde_json::Value;
 use std::net;
-use uritemplate;
 use url;
 use uuid;
 
@@ -286,7 +286,7 @@ impl super::Validator for UriTemplate {
     fn validate(&self, val: &Value, _path: &str, _scope: &scope::Scope) -> super::ValidationState {
         let string = nonstrict_process!(val.as_str(), path);
 
-        let _ = uritemplate::UriTemplate::new(string);
+        let _ = datta::UriTemplate::new(string);
         super::ValidationState::new()
     }
 }
