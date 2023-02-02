@@ -11,22 +11,22 @@ build = "build.rs"
 edition = "2018"
 
 [dependencies]
-fancy-regex = "0.8"
+fancy-regex = "0.11"
 url = "2"
-jsonway = "2.0"
-uuid = {version = "0.8", features = ["v4"]}
-phf = "0.10"
+jsonway = "2"
+uuid = { version = "1", features = ["v4"] }
+phf = "0.11"
 serde = "1"
 serde_json = "1"
-chrono = { version = "0.4", default-features = false, features = ["clock", "std"] }
-addr = "0.15"
-percent-encoding = "2.1"
-json-pointer = "0.3"
-uritemplate-next = "0.2"
-base64 = "0.13"
+chrono = { version = "0.4.23", default-features = false, features = ["clock", "std"] }
+addr = "0.15.6"
+percent-encoding = "2.2.0"
+json-pointer = "0.3.4"
+uritemplate-next = "0.2.0"
+base64 = "0.21.0"
 
-[build-dependencies.phf_codegen]
-version = "0.10"
+[build-dependencies]
+phf_codegen= "0.11.1"
 
 [[test]]
 name = "tests"
