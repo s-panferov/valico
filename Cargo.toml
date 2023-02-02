@@ -30,3 +30,6 @@ phf_codegen= "0.11.1"
 
 [[test]]
 name = "tests"
+
+[features]
+js = ["uuid/js"]
