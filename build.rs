@@ -7,7 +7,7 @@ fn main() {
     let path = Path::new(&env::var("OUT_DIR").unwrap()).join("codegen.rs");
     let mut file = BufWriter::new(File::create(&path).unwrap());
 
-    write!(&mut file, "#[allow(clippy::unreadable_literal)]\n").unwrap();
+    writeln!(&mut file, "#[allow(clippy::unreadable_literal)]").unwrap();
     write!(
         &mut file,
         "static PROPERTY_KEYS: phf::Set<&'static str> = {}",
@@ -17,9 +17,9 @@ fn main() {
             .build()
     )
     .unwrap();
-    write!(&mut file, ";\n").unwrap();
+    writeln!(&mut file, ";").unwrap();
 
-    write!(&mut file, "#[allow(clippy::unreadable_literal)]\n").unwrap();
+    writeln!(&mut file, "#[allow(clippy::unreadable_literal)]").unwrap();
     write!(
         &mut file,
         "static NON_SCHEMA_KEYS: phf::Set<&'static str> = {};",
@@ -35,7 +35,7 @@ fn main() {
     )
     .unwrap();
 
-    write!(&mut file, "#[allow(clippy::unreadable_literal)]\n").unwrap();
+    writeln!(&mut file, "#[allow(clippy::unreadable_literal)]").unwrap();
     write!(
         &mut file,
         "static BOOLEAN_SCHEMA_ARRAY_KEYS: phf::Set<&'static str> = {};",
@@ -48,7 +48,7 @@ fn main() {
     )
     .unwrap();
 
-    write!(&mut file, "#[allow(clippy::unreadable_literal)]\n").unwrap();
+    writeln!(&mut file, "#[allow(clippy::unreadable_literal)]").unwrap();
     write!(
         &mut file,
         "static FINAL_KEYS: phf::Set<&'static str> = {};",
@@ -61,7 +61,7 @@ fn main() {
     )
     .unwrap();
 
-    write!(&mut file, "#[allow(clippy::unreadable_literal)]\n").unwrap();
+    writeln!(&mut file, "#[allow(clippy::unreadable_literal)]").unwrap();
     write!(
         &mut file,
         "const ALLOW_NON_CONSUMED_KEYS: phf::Set<&'static str> = {};",

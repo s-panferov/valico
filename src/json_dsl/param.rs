@@ -1,7 +1,5 @@
-
 use serde::Serialize;
 use serde_json::{to_value, Value};
-
 
 use super::super::json_schema;
 use super::builder;
@@ -103,7 +101,7 @@ impl Param {
 
     pub fn nest<F>(&mut self, nest_def: F)
     where
-        F: FnOnce(&mut builder::Builder) -> (),
+        F: FnOnce(&mut builder::Builder),
     {
         self.nest = Some(builder::Builder::build(nest_def));
     }

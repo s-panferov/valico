@@ -43,7 +43,7 @@ macro_rules! of_keyword {
                         }
                     }
 
-                    Ok(Some(Box::new(validators::$name { schemes: schemes })))
+                    Ok(Some(Box::new(validators::$name { schemes })))
                 } else {
                     Err(schema::SchemaError::Malformed {
                         path: ctx.fragment.join("/"),

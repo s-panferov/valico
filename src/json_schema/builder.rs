@@ -1,4 +1,3 @@
-
 use serde::{Serialize, Serializer};
 use serde_json::value::{to_value, Value};
 use std::collections;
@@ -393,6 +392,10 @@ impl Builder {
     {
         self.obj_builder
             .set("else", Builder::build(build).into_json())
+    }
+
+    pub fn custom_vocabulary<V: Serialize, N: Into<String>>(&mut self, name: N, value: V) {
+        self.obj_builder.set(name, value);
     }
 }
 
