@@ -8,7 +8,13 @@ pub struct PropertyNames {
 }
 
 impl super::Validator for PropertyNames {
-    fn validate(&self, val: &Value, path: &str, scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let object = nonstrict_process!(val.as_object(), path);
 
         let schema = scope.resolve(&self.url);

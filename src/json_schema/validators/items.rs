@@ -24,7 +24,13 @@ pub struct Items {
 }
 
 impl super::Validator for Items {
-    fn validate(&self, val: &Value, path: &str, scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let mut array = Cow::Borrowed(nonstrict_process!(val.as_array(), path));
         let mut state = super::ValidationState::new();
 
@@ -56,8 +62,11 @@ impl super::Validator for Items {
                         let item = &array[idx];
                         let item_path = [path, idx.to_string().as_ref()].join("/");
                         let mut result = schema.validate_in(item, item_path.as_ref());
-                        if result.is_valid() && result.replacement.is_some() {
-                            array.to_mut()[idx] = result.replacement.take().unwrap();
+                        if result.is_valid() {
+                            state.evaluated.insert(item_path);
+                            if result.replacement.is_some() {
+                                array.to_mut()[idx] = result.replacement.take().unwrap();
+                            }
                         }
                         state.append(result);
                     }
@@ -76,8 +85,12 @@ impl super::Validator for Items {
                     if let Some(schema) = schema {
                         let item_path = [path, idx.to_string().as_ref()].join("/");
                         let mut result = schema.validate_in(item, item_path.as_ref());
-                        if result.is_valid() && result.replacement.is_some() {
-                            array.to_mut()[idx] = result.replacement.take().unwrap();
+
+                        if result.is_valid() {
+                            state.evaluated.insert(item_path);
+                            if result.replacement.is_some() {
+                                array.to_mut()[idx] = result.replacement.take().unwrap();
+                            }
                         }
                         state.append(result);
                     } else {
@@ -88,11 +101,19 @@ impl super::Validator for Items {
                 // Validate agains additional items
                 if array.len() > urls.len() {
                     match self.additional {
-                        Some(AdditionalKind::Boolean(allow)) if !allow => {
-                            state.errors.push(Box::new(errors::Items {
-                                path: path.to_string(),
-                                detail: "Additional items are not allowed".to_string(),
-                            }))
+                        Some(AdditionalKind::Boolean(allow)) => {
+                            if !allow {
+                                state.errors.push(Box::new(errors::Items {
+                                    path: path.to_string(),
+                                    detail: "Additional items are not allowed".to_string(),
+                                }))
+                            } else {
+                                for idx in urls.len()..array.len() {
+                                    state
+                                        .evaluated
+                                        .insert([path, idx.to_string().as_ref()].join("/"));
+                                }
+                            }
                         }
                         Some(AdditionalKind::Schema(ref url)) => {
                             let schema = scope.resolve(url);
@@ -101,8 +122,12 @@ impl super::Validator for Items {
                                     let item = &array[idx];
                                     let item_path = [path, idx.to_string().as_ref()].join("/");
                                     let mut result = schema.validate_in(item, item_path.as_ref());
-                                    if result.is_valid() && result.replacement.is_some() {
-                                        array.to_mut()[idx] = result.replacement.take().unwrap();
+                                    if result.is_valid() {
+                                        state.evaluated.insert(item_path);
+                                        if result.replacement.is_some() {
+                                            array.to_mut()[idx] =
+                                                result.replacement.take().unwrap();
+                                        }
                                     }
                                     state.append(result);
                                 }

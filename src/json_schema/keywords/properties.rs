@@ -36,7 +36,13 @@ impl super::Keyword for Properties {
                         );
                     } else {
                         return Err(schema::SchemaError::Malformed {
-                            path: ctx.fragment.join("/"),
+                            path: ctx
+                                .fragment
+                                .iter()
+                                .map(String::as_str)
+                                .chain(["properties", key])
+                                .flat_map(|s| s.chars().chain(['/']))
+                                .collect(),
                             detail: "Each value of this object MUST be an object or a boolean"
                                 .to_string(),
                         });
@@ -69,7 +75,7 @@ impl super::Keyword for Properties {
                 });
             }
         } else {
-            validators::properties::AdditionalKind::Boolean(true)
+            validators::properties::AdditionalKind::Unspecified
         };
 
         let patterns = if let Some(pattern) = maybe_pattern {
@@ -79,7 +85,7 @@ impl super::Keyword for Properties {
 
                 for (key, value) in pattern.iter() {
                     if value.is_object() || value.is_boolean() {
-                        match regex::Regex::new(key.as_ref()) {
+                        match fancy_regex::Regex::new(key.as_ref()) {
                             Ok(regex) => {
                                 let url = helpers::alter_fragment_path(ctx.url.clone(), [
                                     ctx.escaped_fragment().as_ref(),
@@ -97,7 +103,7 @@ impl super::Keyword for Properties {
                         }
                     } else {
                         return Err(schema::SchemaError::Malformed {
-                            path: ctx.fragment.join("/"),
+                            path: ctx.fragment.join("/") + "patternProperties",
                             detail: "Each value of this object MUST be an object or a boolean"
                                 .to_string(),
                         });

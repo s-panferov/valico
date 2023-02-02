@@ -1,16 +1,52 @@
 use serde_json::Value;
-use std::collections;
+
+use crate::json_schema::validators::dependencies::DepKind;
 
 use super::super::helpers;
 use super::super::schema;
 use super::super::validators;
 
+enum DepsMode {
+    AllowAny,
+    DependentSchemas,
+    DependentRequired,
+}
+
+impl DepsMode {
+    fn get_error(&self) -> String {
+        match self {
+            DepsMode::AllowAny => {
+                "Each value of dependencies MUST be either an object, an array or a boolean."
+            }
+            DepsMode::DependentSchemas => {
+                "Each value of 'dependentSchemas' MUST be an object or a boolean."
+            }
+            DepsMode::DependentRequired => "Each value of 'dependentRequired' MUST be an array.",
+        }
+        .to_owned()
+    }
+}
+
+impl PartialEq for DepsMode {
+    fn eq(&self, other: &Self) -> bool {
+        match (self, other) {
+            (DepsMode::AllowAny, _) => true,
+            (_, DepsMode::AllowAny) => true,
+            (a, b) => core::mem::discriminant(a) == core::mem::discriminant(b),
+        }
+    }
+}
+
 #[allow(missing_copy_implementations)]
 pub struct Dependencies;
-impl super::Keyword for Dependencies {
-    fn compile(&self, def: &Value, ctx: &schema::WalkContext<'_>) -> super::KeywordResult {
-        let deps = keyword_key_exists!(def, "dependencies");
-
+impl Dependencies {
+    fn extract_dependencies(
+        &self,
+        deps: &Value,
+        ctx: &schema::WalkContext<'_>,
+        deps_key: &str,
+        mode: DepsMode,
+    ) -> Result<Vec<(String, DepKind)>, schema::SchemaError> {
         if !deps.is_object() {
             return Err(schema::SchemaError::Malformed {
                 path: ctx.fragment.join("/"),
@@ -19,23 +55,22 @@ impl super::Keyword for Dependencies {
         }
 
         let deps = deps.as_object().unwrap();
-        let mut items = collections::HashMap::new();
-
+        let mut items = vec![];
         for (key, item) in deps.iter() {
-            if item.is_object() || item.is_boolean() {
-                items.insert(
+            if (item.is_object() || item.is_boolean()) && mode == DepsMode::DependentSchemas {
+                items.push((
                     key.clone(),
                     validators::dependencies::DepKind::Schema(helpers::alter_fragment_path(
                         ctx.url.clone(),
                         [
                             ctx.escaped_fragment().as_ref(),
-                            "dependencies",
+                            deps_key,
                             helpers::encode(key).as_ref(),
                         ]
                         .join("/"),
                     )),
-                );
-            } else if item.is_array() {
+                ));
+            } else if item.is_array() && mode == DepsMode::DependentRequired {
                 let item = item.as_array().unwrap();
                 let mut keys = vec![];
                 for key in item.iter() {
@@ -48,19 +83,68 @@ impl super::Keyword for Dependencies {
                         });
                     }
                 }
-                items.insert(
+                items.push((
                     key.clone(),
                     validators::dependencies::DepKind::Property(keys),
-                );
+                ));
             } else {
                 return Err(schema::SchemaError::Malformed {
                     path: ctx.fragment.join("/"),
-                    detail:
-                        "Each value of this object MUST be either an object, an array or a boolean."
-                            .to_string(),
+                    detail: mode.get_error(),
                 });
             }
         }
+
+        Ok(items)
+    }
+}
+
+impl super::Keyword for Dependencies {
+    fn compile(&self, def: &Value, ctx: &schema::WalkContext<'_>) -> super::KeywordResult {
+        let items = if let Some(deps) = def.get("dependencies") {
+            self.extract_dependencies(deps, ctx, "dependencies", DepsMode::AllowAny)?
+        } else {
+            let required = def.get("dependentRequired");
+            let schemas = def.get("dependentSchemas");
+
+            if required.is_none() && schemas.is_none() {
+                return Err(schema::SchemaError::Malformed {
+                    path: ctx.fragment.join("/"),
+                    detail: "dependencies has changed to dependentRequired and dependentSchemas in Draft 2019-09.".to_string(),
+                });
+            }
+
+            let mut items = vec![];
+            items.extend(
+                required
+                    .map(|v| {
+                        self.extract_dependencies(
+                            v,
+                            ctx,
+                            "dependentRequired",
+                            DepsMode::DependentRequired,
+                        )
+                    })
+                    .transpose()?
+                    .into_iter()
+                    .flatten(),
+            );
+            items.extend(
+                schemas
+                    .map(|v| {
+                        self.extract_dependencies(
+                            v,
+                            ctx,
+                            "dependentSchemas",
+                            DepsMode::DependentSchemas,
+                        )
+                    })
+                    .transpose()?
+                    .into_iter()
+                    .flatten(),
+            );
+            items
+        };
 
         Ok(Some(Box::new(validators::Dependencies { items })))
     }

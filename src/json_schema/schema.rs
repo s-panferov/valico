@@ -5,10 +5,10 @@ use std::collections;
 use std::ops;
 use url::Url;
 
-use super::helpers;
 use super::keywords;
 use super::scope;
 use super::validators;
+use super::{helpers, SchemaVersion};
 use std::error::Error;
 use std::fmt;
 use std::fmt::{Display, Formatter};
@@ -18,6 +18,7 @@ pub struct WalkContext<'a> {
     pub url: &'a Url,
     pub fragment: Vec<String>,
     pub scopes: &'a mut collections::HashMap<String, Vec<String>>,
+    pub version: SchemaVersion,
 }
 
 impl<'a> WalkContext<'a> {
@@ -106,16 +107,19 @@ include!(concat!(env!("OUT_DIR"), "/codegen.rs"));
 pub struct CompilationSettings<'a> {
     pub keywords: &'a keywords::KeywordMap,
     pub ban_unknown_keywords: bool,
+    pub schema_version: SchemaVersion,
 }
 
 impl<'a> CompilationSettings<'a> {
     pub fn new(
         keywords: &'a keywords::KeywordMap,
         ban_unknown_keywords: bool,
+        schema_version: SchemaVersion,
     ) -> CompilationSettings<'a> {
         CompilationSettings {
             keywords,
             ban_unknown_keywords,
+            schema_version,
         }
     }
 }
@@ -132,11 +136,21 @@ impl Schema {
             return Err(SchemaError::NotAnObject);
         }
 
-        let id = if let Some(id) = external_id {
+        let mut id = if let Some(id) = external_id {
             id
         } else {
             helpers::parse_url_key("$id", &def)?.unwrap_or_else(helpers::generate_id)
         };
+
+        if settings.schema_version >= SchemaVersion::Draft2019_09 {
+            if let Some(anchor) = def.get("$anchor") {
+                let anchor = anchor.as_str().ok_or_else(|| SchemaError::Malformed {
+                    path: "".to_string(),
+                    detail: "$anchor must be a string".to_string(),
+                })?;
+                id.set_fragment(Some(anchor));
+            };
+        }
 
         let schema = helpers::parse_url_key("$schema", &def)?;
 
@@ -158,6 +172,7 @@ impl Schema {
                     url: &id,
                     fragment: vec![key.clone()],
                     scopes: &mut scopes,
+                    version: settings.schema_version,
                 };
 
                 let scheme = Schema::compile_sub(
@@ -179,6 +194,7 @@ impl Schema {
                 url: &id,
                 fragment: vec![],
                 scopes: &mut scopes,
+                version: settings.schema_version,
             },
             &settings,
         )?;
@@ -309,6 +325,7 @@ impl Schema {
         settings: &CompilationSettings,
     ) -> Result<validators::Validators, SchemaError> {
         let mut validators = vec![];
+        let mut end_validators = vec![];
         let mut keys: collections::HashSet<&str> = def
             .as_object()
             .unwrap()
@@ -324,13 +341,17 @@ impl Schema {
                     Some(keyword) => {
                         keyword.consume(&mut keys);
 
-                        let is_exclusive_keyword = keyword.keyword.is_exclusive();
+                        let is_exclusive_keyword =
+                            keyword.keyword.is_exclusive(settings.schema_version);
 
                         if let Some(validator) = keyword.keyword.compile(def, context)? {
                             if is_exclusive_keyword {
                                 validators = vec![validator];
+                                end_validators = vec![];
                             } else if keyword.keyword.place_first() {
                                 validators.splice(0..0, std::iter::once(validator));
+                            } else if keyword.keyword.place_last() {
+                                end_validators.push(validator);
                             } else {
                                 validators.push(validator);
                             }
@@ -360,6 +381,7 @@ impl Schema {
             }
         }
 
+        validators.extend(end_validators);
         Ok(validators)
     }
 
@@ -372,7 +394,23 @@ impl Schema {
         let def = helpers::convert_boolean_schema(def);
 
         let id = if is_schema {
-            helpers::parse_url_key_with_base("$id", &def, context.url)?
+            let mut id_url = helpers::parse_url_key_with_base("$id", &def, context.url)?;
+            if keywords.schema_version >= SchemaVersion::Draft2019_09 {
+                if let Some(anchor) = def.get("$anchor") {
+                    let anchor = anchor.as_str().ok_or_else(|| SchemaError::Malformed {
+                        path: "".to_string(),
+                        detail: "$anchor must be a string".to_string(),
+                    })?;
+
+                    // If the "$id" URL is not explicitly overridden, implicitly inherit the parent's URL.
+                    if id_url.is_none() {
+                        id_url = Some(context.url.clone());
+                    }
+
+                    id_url.as_mut().unwrap().set_fragment(Some(anchor));
+                }
+            }
+            id_url
         } else {
             None
         };
@@ -408,6 +446,7 @@ impl Schema {
                         url: id.as_ref().unwrap_or(context.url),
                         fragment: current_fragment,
                         scopes: context.scopes,
+                        version: keywords.schema_version,
                     };
 
                     let scheme =
@@ -437,6 +476,7 @@ impl Schema {
                         url: id.as_ref().unwrap_or(context.url),
                         fragment: current_fragment,
                         scopes: context.scopes,
+                        version: keywords.schema_version,
                     };
 
                     let scheme = Schema::compile_sub(value.clone(), &mut context, keywords, true)?;
@@ -534,7 +574,7 @@ impl Schema {
         let mut data = Cow::Borrowed(data);
 
         for validator in self.validators.iter() {
-            let mut result = validator.validate(&data, path, scope);
+            let mut result = validator.validate(&data, path, scope, &state);
             if result.is_valid() && result.replacement.is_some() {
                 *data.to_mut() = result.replacement.take().unwrap();
             }
@@ -559,7 +599,7 @@ fn schema_doesnt_compile_not_object() {
     assert!(Schema::compile(
         json!(0),
         None,
-        CompilationSettings::new(&keywords::default(), true)
+        CompilationSettings::new(&keywords::default(), true, SchemaVersion::Draft7)
     )
     .is_err());
 }
@@ -569,7 +609,7 @@ fn schema_compiles_boolean_schema() {
     assert!(Schema::compile(
         json!(true),
         None,
-        CompilationSettings::new(&keywords::default(), true)
+        CompilationSettings::new(&keywords::default(), true, SchemaVersion::Draft7)
     )
     .is_ok());
 }

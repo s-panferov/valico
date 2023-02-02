@@ -9,7 +9,13 @@ pub struct MaxLength {
 }
 
 impl super::Validator for MaxLength {
-    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        _scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let string = nonstrict_process!(val.as_str(), path);
 
         if (string.chars().count() as u64) <= self.length {
@@ -28,7 +34,13 @@ pub struct MinLength {
 }
 
 impl super::Validator for MinLength {
-    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        _scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let string = nonstrict_process!(val.as_str(), path);
 
         if (string.chars().count() as u64) >= self.length {

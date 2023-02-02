@@ -15,7 +15,13 @@ use super::super::scope;
 pub struct Date;
 
 impl super::Validator for Date {
-    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        _scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let string = nonstrict_process!(val.as_str(), path);
 
         match chrono::NaiveDate::parse_from_str(string, "%Y-%m-%d") {
@@ -41,7 +47,13 @@ impl super::Validator for Date {
 pub struct DateTime;
 
 impl super::Validator for DateTime {
-    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        _scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let string = nonstrict_process!(val.as_str(), path);
 
         match chrono::DateTime::parse_from_rfc3339(string) {
@@ -58,7 +70,13 @@ impl super::Validator for DateTime {
 pub struct Email;
 
 impl super::Validator for Email {
-    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        _scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let string = nonstrict_process!(val.as_str(), path);
 
         match List.parse_email_address(string) {
@@ -75,7 +93,13 @@ impl super::Validator for Email {
 pub struct Hostname;
 
 impl super::Validator for Hostname {
-    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        _scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let string = nonstrict_process!(val.as_str(), path);
 
         match List.parse_domain_name(string) {
@@ -92,7 +116,13 @@ impl super::Validator for Hostname {
 pub struct Ipv4;
 
 impl super::Validator for Ipv4 {
-    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        _scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let string = nonstrict_process!(val.as_str(), path);
 
         match string.parse::<net::Ipv4Addr>() {
@@ -109,7 +139,13 @@ impl super::Validator for Ipv4 {
 pub struct Ipv6;
 
 impl super::Validator for Ipv6 {
-    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        _scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let string = nonstrict_process!(val.as_str(), path);
 
         match string.parse::<net::Ipv6Addr>() {
@@ -126,7 +162,13 @@ impl super::Validator for Ipv6 {
 pub struct IRI;
 
 impl super::Validator for IRI {
-    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        _scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let string = nonstrict_process!(val.as_str(), path);
 
         match url::Url::parse(string) {
@@ -143,7 +185,13 @@ impl super::Validator for IRI {
 pub struct IRIReference;
 
 impl super::Validator for IRIReference {
-    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        _scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let string = nonstrict_process!(val.as_str(), path);
 
         let base_url = url::Url::parse("http://example.com/").unwrap();
@@ -162,7 +210,13 @@ impl super::Validator for IRIReference {
 pub struct JsonPointer;
 
 impl super::Validator for JsonPointer {
-    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        _scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let string = nonstrict_process!(val.as_str(), path);
 
         match string.parse::<json_pointer::JsonPointer<_, _>>() {
@@ -179,7 +233,13 @@ impl super::Validator for JsonPointer {
 pub struct Regex;
 
 impl super::Validator for Regex {
-    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        _scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let string = nonstrict_process!(val.as_str(), path);
 
         // Forward slash ('/') is prefixed with double backslash ('\\')
@@ -188,15 +248,13 @@ impl super::Validator for Regex {
         // ensures that escaped forward slashes do not fail validation.
         let string = string.replace(r"\/", "/");
 
-        match regex::Regex::new(&string) {
-            Ok(_) => {
-                super::ValidationState::new()
-            }
+        match fancy_regex::Regex::new(&string) {
+            Ok(_) => super::ValidationState::new(),
             Err(er) => {
                 val_error!(errors::Format {
-                path: path.to_string(),
-                detail: format!("Malformed regex - {}", er)
-            })
+                    path: path.to_string(),
+                    detail: format!("Malformed regex - {}", er)
+                })
             }
         }
     }
@@ -206,7 +264,13 @@ impl super::Validator for Regex {
 pub struct RelativeJsonPointer;
 
 impl super::Validator for RelativeJsonPointer {
-    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        _scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let string = nonstrict_process!(val.as_str(), path);
 
         match string.parse::<json_pointer::JsonPointer<_, _>>() {
@@ -223,7 +287,13 @@ impl super::Validator for RelativeJsonPointer {
 pub struct Time;
 
 impl super::Validator for Time {
-    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        _scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let string = nonstrict_process!(val.as_str(), path);
 
         match chrono::NaiveTime::parse_from_str(string, "%H:%M:%S%.f") {
@@ -240,7 +310,13 @@ impl super::Validator for Time {
 pub struct Uuid;
 
 impl super::Validator for Uuid {
-    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        _scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let string = nonstrict_process!(val.as_str(), path);
 
         match string.parse::<uuid::Uuid>() {
@@ -257,7 +333,13 @@ impl super::Validator for Uuid {
 pub struct Uri;
 
 impl super::Validator for Uri {
-    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        _scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let string = nonstrict_process!(val.as_str(), path);
 
         match url::Url::parse(string) {
@@ -274,7 +356,13 @@ impl super::Validator for Uri {
 pub struct UriReference;
 
 impl super::Validator for UriReference {
-    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        _scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let string = nonstrict_process!(val.as_str(), path);
 
         let base_url = url::Url::parse("http://example.com/").unwrap();
@@ -293,14 +381,19 @@ impl super::Validator for UriReference {
 pub struct UriTemplate;
 
 impl super::Validator for UriTemplate {
-    fn validate(&self, val: &Value, _path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        _path: &str,
+        _scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let string = nonstrict_process!(val.as_str(), path);
 
         let _ = uritemplate::UriTemplate::new(string);
         super::ValidationState::new()
     }
 }
-
 
 #[cfg(test)]
 pub mod tests {
@@ -336,12 +429,12 @@ pub mod tests {
 
         let err = only_err.unwrap();
         assert!(err.get_detail().is_some());
-        assert_eq!(err.get_detail().unwrap(), "Malformed regex - regex parse error:\n    FOO\\\n       ^\nerror: incomplete escape sequence, reached end of pattern prematurely")
+        assert!(err.get_detail().unwrap().contains("Malformed regex"))
     }
 
     fn validate_regex(json_string: &str) -> ValidationState {
         let value = serde_json::value::Value::String(json_string.into());
         let scope = Scope::new();
-        Regex {}.validate(&value, "/", &scope)
+        Regex {}.validate(&value, "/", &scope, &Default::default())
     }
 }

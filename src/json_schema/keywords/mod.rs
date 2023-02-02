@@ -6,6 +6,7 @@ use std::sync::Arc;
 
 use super::schema;
 use super::validators;
+use super::SchemaVersion;
 
 pub type KeywordResult = Result<Option<validators::BoxedValidator>, schema::SchemaError>;
 pub type KeywordPair = (Vec<&'static str>, Box<dyn Keyword + 'static>);
@@ -14,10 +15,13 @@ pub type KeywordMap = collections::HashMap<&'static str, Arc<KeywordConsumer>>;
 
 pub trait Keyword: Send + Sync + any::Any {
     fn compile(&self, def: &Value, ctx: &schema::WalkContext) -> KeywordResult;
-    fn is_exclusive(&self) -> bool {
+    fn is_exclusive(&self, _version: SchemaVersion) -> bool {
         false
     }
     fn place_first(&self) -> bool {
+        false
+    }
+    fn place_last(&self) -> bool {
         false
     }
 }
@@ -71,6 +75,7 @@ pub mod property_names;
 pub mod ref_;
 pub mod required;
 pub mod type_;
+mod unevaluated;
 pub mod unique_items;
 
 pub fn default() -> KeywordMap {
@@ -80,9 +85,18 @@ pub fn default() -> KeywordMap {
     decouple_keyword((vec!["allOf"], Box::new(of::AllOf)), &mut map);
     decouple_keyword((vec!["anyOf"], Box::new(of::AnyOf)), &mut map);
     decouple_keyword((vec!["const"], Box::new(const_::Const)), &mut map);
-    decouple_keyword((vec!["contains"], Box::new(contains::Contains)), &mut map);
     decouple_keyword(
-        (vec!["dependencies"], Box::new(dependencies::Dependencies)),
+        (
+            vec!["contains", "minContains", "maxContains"],
+            Box::new(contains::Contains),
+        ),
+        &mut map,
+    );
+    decouple_keyword(
+        (
+            vec!["dependencies", "dependentRequired", "dependentSchemas"],
+            Box::new(dependencies::Dependencies),
+        ),
         &mut map,
     );
     decouple_keyword((vec!["enum"], Box::new(enum_::Enum)), &mut map);
@@ -153,6 +167,21 @@ pub fn default() -> KeywordMap {
     );
     decouple_keyword((vec!["required"], Box::new(required::Required)), &mut map);
     decouple_keyword((vec!["type"], Box::new(type_::Type)), &mut map);
+    decouple_keyword(
+        (
+            vec!["unevaluatedItems"],
+            Box::new(unevaluated::UnevaluatedItems),
+        ),
+        &mut map,
+    );
+    decouple_keyword(
+        (
+            vec!["unevaluatedProperties"],
+            Box::new(unevaluated::UnevaluatedProperties),
+        ),
+        &mut map,
+    );
+
     decouple_keyword(
         (vec!["uniqueItems"], Box::new(unique_items::UniqueItems)),
         &mut map,

@@ -16,6 +16,15 @@ pub use self::schema::{Schema, SchemaError};
 pub use self::scope::Scope;
 pub use self::validators::ValidationState;
 
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Ord, PartialOrd)]
+/// Represents the schema version to use.
+pub enum SchemaVersion {
+    /// Use draft 7.
+    Draft7,
+    /// Use draft 2019-09.
+    Draft2019_09,
+}
+
 #[derive(Copy, Debug, Clone)]
 pub enum PrimitiveType {
     Array,

@@ -4,6 +4,7 @@ use std::collections;
 use super::helpers;
 use super::keywords;
 use super::schema;
+use super::SchemaVersion;
 
 #[allow(dead_code)]
 #[derive(Debug)]
@@ -11,34 +12,41 @@ pub struct Scope {
     keywords: keywords::KeywordMap,
     schemes: collections::HashMap<String, schema::Schema>,
     pub(crate) supply_defaults: bool,
+    schema_version: SchemaVersion,
 }
 
 #[allow(dead_code)]
 impl Scope {
     pub fn new() -> Scope {
-        let mut scope = Scope::without_formats();
+        let mut scope = Scope::without_formats(SchemaVersion::Draft7);
         scope.add_keyword(vec!["format"], keywords::format::Format::new());
         scope
     }
 
-    pub fn without_formats() -> Scope {
+    pub fn without_formats(version: SchemaVersion) -> Scope {
         Scope {
             keywords: keywords::default(),
             schemes: collections::HashMap::new(),
             supply_defaults: false,
+            schema_version: version,
         }
     }
 
-    pub fn with_formats<F>(build_formats: F) -> Scope
+    pub fn with_formats<F>(build_formats: F, version: SchemaVersion) -> Scope
     where
         F: FnOnce(&mut keywords::format::FormatBuilders),
     {
-        let mut scope = Scope::without_formats();
+        let mut scope = Scope::without_formats(version);
         scope.add_keyword(
             vec!["format"],
             keywords::format::Format::with(build_formats),
         );
         scope
+    }
+
+    pub fn set_version(mut self, version: SchemaVersion) -> Self {
+        self.schema_version = version;
+        self
     }
 
     /// ### use `default` values to compute an enriched version of the input
@@ -103,11 +111,13 @@ impl Scope {
     /// between these is UNDEFINED as well). Therefore, if one validator depends on the
     /// fact that a default value has been injected by processing another validator, then
     /// the result is UNDEFINED (with the exception stated in the previous sentence).
+    #[must_use]
     pub fn supply_defaults(self) -> Self {
         Scope {
             keywords: self.keywords,
             schemes: self.schemes,
             supply_defaults: true,
+            schema_version: SchemaVersion::Draft7,
         }
     }
 
@@ -119,7 +129,7 @@ impl Scope {
         let mut schema = schema::compile(
             def,
             None,
-            schema::CompilationSettings::new(&self.keywords, ban_unknown),
+            schema::CompilationSettings::new(&self.keywords, ban_unknown, self.schema_version),
         )?;
         let id = schema.id.clone().unwrap();
         if self.supply_defaults {
@@ -138,7 +148,7 @@ impl Scope {
         let mut schema = schema::compile(
             def,
             Some(id.clone()),
-            schema::CompilationSettings::new(&self.keywords, ban_unknown),
+            schema::CompilationSettings::new(&self.keywords, ban_unknown, self.schema_version),
         )?;
         if self.supply_defaults {
             schema.add_defaults(id, self);
@@ -154,7 +164,7 @@ impl Scope {
         let mut schema = schema::compile(
             def,
             None,
-            schema::CompilationSettings::new(&self.keywords, ban_unknown),
+            schema::CompilationSettings::new(&self.keywords, ban_unknown, self.schema_version),
         )?;
         let id = schema.id.clone().unwrap();
         if self.supply_defaults {
@@ -172,7 +182,7 @@ impl Scope {
         let mut schema = schema::compile(
             def,
             Some(id.clone()),
-            schema::CompilationSettings::new(&self.keywords, ban_unknown),
+            schema::CompilationSettings::new(&self.keywords, ban_unknown, self.schema_version),
         )?;
         if self.supply_defaults {
             schema.add_defaults(id, self);

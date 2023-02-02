@@ -9,7 +9,13 @@ pub struct MaxProperties {
 }
 
 impl super::Validator for MaxProperties {
-    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        _scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let object = nonstrict_process!(val.as_object(), path);
 
         if (object.len() as u64) <= self.length {
@@ -28,7 +34,13 @@ pub struct MinProperties {
 }
 
 impl super::Validator for MinProperties {
-    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        _scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let object = nonstrict_process!(val.as_object(), path);
 
         if (object.len() as u64) >= self.length {

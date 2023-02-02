@@ -189,6 +189,18 @@ impl_serialize!(Contains);
 
 #[derive(Debug)]
 #[allow(missing_copy_implementations)]
+pub struct ContainsMinMax {
+    pub path: String,
+}
+impl_err!(
+    ContainsMinMax,
+    "min_contains/max_contains",
+    "Contains minimum/maximum is not met"
+);
+impl_serialize!(ContainsMinMax);
+
+#[derive(Debug)]
+#[allow(missing_copy_implementations)]
 pub struct Not {
     pub path: String,
 }
@@ -215,3 +227,12 @@ pub struct Format {
 }
 impl_err!(Format, "format", "Format is wrong", +detail);
 impl_serialize!(Format);
+
+#[derive(Debug)]
+#[allow(missing_copy_implementations)]
+pub struct Unevaluated {
+    pub path: String,
+    pub detail: String,
+}
+impl_err!(Unevaluated, "unevaluated", "Unevaluated condition is not met", +detail);
+impl_serialize!(Unevaluated);

@@ -10,13 +10,21 @@ pub struct Const {
 }
 
 impl super::Validator for Const {
-    fn validate(&self, val: &Value, path: &str, _scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        _scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let mut state = super::ValidationState::new();
 
         if !is_matching(&self.item, val) {
             state.errors.push(Box::new(errors::Const {
                 path: path.to_string(),
             }))
+        } else {
+            state.evaluated.insert(path.to_owned());
         }
 
         state

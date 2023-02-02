@@ -1,5 +1,6 @@
 use serde_json::Value;
 use std::borrow::Cow;
+use std::collections::HashSet;
 
 use super::super::errors;
 use super::super::scope;
@@ -10,7 +11,13 @@ pub struct AllOf {
 }
 
 impl super::Validator for AllOf {
-    fn validate(&self, val: &Value, path: &str, scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let mut state = super::ValidationState::new();
         let mut val = Cow::Borrowed(val);
 
@@ -72,11 +79,19 @@ pub struct AnyOf {
 }
 
 impl super::Validator for AnyOf {
-    fn validate(&self, val: &Value, path: &str, scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let mut state = super::ValidationState::new();
         let mut val = Cow::Borrowed(val);
 
-        let mut states = vec![];
+        let mut invalid_states = vec![];
+        // The "best" state is defined as "the one that validates the most items".
+        let mut evaluated: HashSet<String> = HashSet::new();
         let mut valid = false;
         for url in self.schemes.iter() {
             let schema = scope.resolve(url);
@@ -91,9 +106,10 @@ impl super::Validator for AnyOf {
                         *val.to_mut() = result;
                     }
                     valid = true;
-                    break;
+                    evaluated.extend(result.evaluated);
+                    // Cannot short-circuit here as "unevaluatedItems" requires that we find the "best" state.
                 } else {
-                    states.push(result)
+                    invalid_states.push(result)
                 }
             } else {
                 state.missing.push(url.clone())
@@ -103,8 +119,10 @@ impl super::Validator for AnyOf {
         if !valid {
             state.errors.push(Box::new(errors::AnyOf {
                 path: path.to_string(),
-                states,
+                states: invalid_states,
             }))
+        } else {
+            state.evaluated.extend(evaluated);
         }
 
         state.set_replacement(val);
@@ -118,12 +136,19 @@ pub struct OneOf {
 }
 
 impl super::Validator for OneOf {
-    fn validate(&self, val: &Value, path: &str, scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let mut state = super::ValidationState::new();
         let mut val = Cow::Borrowed(val);
 
         let mut states = vec![];
         let mut valid = 0;
+        let mut evaluated = HashSet::new();
         for url in self.schemes.iter() {
             let schema = scope.resolve(url);
 
@@ -137,6 +162,7 @@ impl super::Validator for OneOf {
                         *val.to_mut() = result;
                     }
                     valid += 1;
+                    evaluated = result.evaluated;
                 } else {
                     states.push(result)
                 }
@@ -150,6 +176,8 @@ impl super::Validator for OneOf {
                 path: path.to_string(),
                 states,
             }))
+        } else {
+            state.evaluated = evaluated;
         }
 
         state.set_replacement(val);

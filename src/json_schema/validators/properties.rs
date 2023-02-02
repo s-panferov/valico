@@ -7,6 +7,7 @@ use super::super::scope;
 
 #[derive(Debug)]
 pub enum AdditionalKind {
+    Unspecified,
     Boolean(bool),
     Schema(url::Url),
 }
@@ -15,11 +16,17 @@ pub enum AdditionalKind {
 pub struct Properties {
     pub properties: collections::HashMap<String, url::Url>,
     pub additional: AdditionalKind,
-    pub patterns: Vec<(regex::Regex, url::Url)>,
+    pub patterns: Vec<(fancy_regex::Regex, url::Url)>,
 }
 
 impl super::Validator for Properties {
-    fn validate(&self, val: &Value, path: &str, scope: &scope::Scope) -> super::ValidationState {
+    fn validate(
+        &self,
+        val: &Value,
+        path: &str,
+        scope: &scope::Scope,
+        _: &super::ValidationState,
+    ) -> super::ValidationState {
         let mut object = Cow::Borrowed(nonstrict_process!(val.as_object(), path));
         let mut state = super::ValidationState::new();
 
@@ -44,10 +51,13 @@ impl super::Validator for Properties {
                 if let Some(schema) = schema {
                     let value_path = [path, key.as_ref()].join("/");
                     let mut result = schema.validate_in(&object[key], value_path.as_ref());
-                    if result.is_valid() && result.replacement.is_some() {
-                        object
-                            .to_mut()
-                            .insert(key.to_string(), result.replacement.take().unwrap());
+                    if result.is_valid() {
+                        state.evaluated.insert(value_path);
+                        if result.replacement.is_some() {
+                            object
+                                .to_mut()
+                                .insert(key.to_string(), result.replacement.take().unwrap());
+                        }
                     }
                     state.append(result);
                 } else {
@@ -61,15 +71,18 @@ impl super::Validator for Properties {
 
             let mut is_pattern_passed = false;
             for &(ref regex, ref url) in self.patterns.iter() {
-                if regex.is_match(key.as_ref()) {
+                if regex.is_match(key.as_ref()).unwrap_or(false) {
                     let schema = scope.resolve(url);
                     if let Some(schema) = schema {
                         let value_path = [path, key.as_ref()].join("/");
                         let mut result = schema.validate_in(&object[key], value_path.as_ref());
-                        if result.is_valid() && result.replacement.is_some() {
-                            object
-                                .to_mut()
-                                .insert(key.to_string(), result.replacement.take().unwrap());
+                        if result.is_valid() {
+                            state.evaluated.insert(value_path);
+                            if result.replacement.is_some() {
+                                object
+                                    .to_mut()
+                                    .insert(key.to_string(), result.replacement.take().unwrap());
+                            }
                         }
                         state.append(result);
                         is_pattern_passed = true;
@@ -84,11 +97,15 @@ impl super::Validator for Properties {
             }
 
             match self.additional {
-                AdditionalKind::Boolean(allowed) if !allowed => {
-                    state.errors.push(Box::new(errors::Properties {
-                        path: path.to_string(),
-                        detail: format!("Additional property '{}' is not allowed", key),
-                    }))
+                AdditionalKind::Boolean(allowed) => {
+                    if !allowed {
+                        state.errors.push(Box::new(errors::Properties {
+                            path: path.to_string(),
+                            detail: format!("Additional property '{}' is not allowed", key),
+                        }))
+                    } else {
+                        state.evaluated.insert([path, key.as_ref()].join("/"));
+                    }
                 }
                 AdditionalKind::Schema(ref url) => {
                     let schema = scope.resolve(url);
@@ -96,10 +113,13 @@ impl super::Validator for Properties {
                     if let Some(schema) = schema {
                         let value_path = [path, key.as_ref()].join("/");
                         let mut result = schema.validate_in(&object[key], value_path.as_ref());
-                        if result.is_valid() && result.replacement.is_some() {
-                            object
-                                .to_mut()
-                                .insert(key.to_string(), result.replacement.take().unwrap());
+                        if result.is_valid() {
+                            state.evaluated.insert(value_path);
+                            if result.replacement.is_some() {
+                                object
+                                    .to_mut()
+                                    .insert(key.to_string(), result.replacement.take().unwrap());
+                            }
                         }
                         state.append(result);
                     } else {
