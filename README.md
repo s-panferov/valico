@@ -432,3 +432,14 @@ let params = Builder::build(|params| {
 ##### validate
 
 One can use custom validator. Docs in Progress.
+
+## Building for other targets
+
+### Web Assembly
+
+For WebAssembly, enable the `js` feature:
+
+```toml
+# Cargo.toml
+valico = { version = "2", features = ["js"] }
+```
