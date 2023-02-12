@@ -4,6 +4,9 @@ use std::any::{Any, TypeId};
 use std::error::Error;
 use std::fmt::Debug;
 
+use crate::json_dsl;
+use crate::json_schema;
+
 pub trait GetTypeId: Any {
     fn typeid(&self) -> TypeId {
         TypeId::of::<Self>()
@@ -45,14 +48,80 @@ impl Serialize for dyn ValicoError {
     where
         S: Serializer,
     {
-        let mut map = ::serde_json::Map::new();
-        map.insert("code".to_string(), to_value(self.get_code()).unwrap());
-        map.insert("title".to_string(), to_value(self.get_title()).unwrap());
-        map.insert("path".to_string(), to_value(self.get_path()).unwrap());
-        if let Some(ref detail) = self.get_detail() {
-            map.insert("detail".to_string(), to_value(detail).unwrap());
+        if let Some(err) = self.downcast::<json_dsl::errors::Required>() {
+            err.serialize(serializer)
+        } else if let Some(err) = self.downcast::<json_dsl::errors::WrongType>() {
+            err.serialize(serializer)
+        } else if let Some(err) = self.downcast::<json_dsl::errors::WrongValue>() {
+            err.serialize(serializer)
+        } else if let Some(err) = self.downcast::<json_dsl::errors::MutuallyExclusive>() {
+            err.serialize(serializer)
+        } else if let Some(err) = self.downcast::<json_dsl::errors::ExactlyOne>() {
+            err.serialize(serializer)
+        } else if let Some(err) = self.downcast::<json_dsl::errors::AtLeastOne>() {
+            err.serialize(serializer)
+        } else if let Some(err) = self.downcast::<json_dsl::errors::WrongType>() {
+            err.serialize(serializer)
+        } else if let Some(err) = self.downcast::<json_schema::errors::WrongType>() {
+            err.serialize(serializer)
+        } else if let Some(err) = self.downcast::<json_schema::errors::MultipleOf>() {
+            err.serialize(serializer)
+        } else if let Some(err) = self.downcast::<json_schema::errors::Maximum>() {
+            err.serialize(serializer)
+        } else if let Some(err) = self.downcast::<json_schema::errors::Minimum>() {
+            err.serialize(serializer)
+        } else if let Some(err) = self.downcast::<json_schema::errors::MaxLength>() {
+            err.serialize(serializer)
+        } else if let Some(err) = self.downcast::<json_schema::errors::MinLength>() {
+            err.serialize(serializer)
+        } else if let Some(err) = self.downcast::<json_schema::errors::Pattern>() {
+            err.serialize(serializer)
+        } else if let Some(err) = self.downcast::<json_schema::errors::MaxItems>() {
+            err.serialize(serializer)
+        } else if let Some(err) = self.downcast::<json_schema::errors::MinItems>() {
+            err.serialize(serializer)
+        } else if let Some(err) = self.downcast::<json_schema::errors::UniqueItems>() {
+            err.serialize(serializer)
+        } else if let Some(err) = self.downcast::<json_schema::errors::Items>() {
+            err.serialize(serializer)
+        } else if let Some(err) = self.downcast::<json_schema::errors::MaxProperties>() {
+            err.serialize(serializer)
+        } else if let Some(err) = self.downcast::<json_schema::errors::MinProperties>() {
+            err.serialize(serializer)
+        } else if let Some(err) = self.downcast::<json_schema::errors::Required>() {
+            err.serialize(serializer)
+        } else if let Some(err) = self.downcast::<json_schema::errors::Properties>() {
+            err.serialize(serializer)
+        } else if let Some(err) = self.downcast::<json_schema::errors::Enum>() {
+            err.serialize(serializer)
+        } else if let Some(err) = self.downcast::<json_schema::errors::AnyOf>() {
+            err.serialize(serializer)
+        } else if let Some(err) = self.downcast::<json_schema::errors::OneOf>() {
+            err.serialize(serializer)
+        } else if let Some(err) = self.downcast::<json_schema::errors::Const>() {
+            err.serialize(serializer)
+        } else if let Some(err) = self.downcast::<json_schema::errors::Contains>() {
+            err.serialize(serializer)
+        } else if let Some(err) = self.downcast::<json_schema::errors::ContainsMinMax>() {
+            err.serialize(serializer)
+        } else if let Some(err) = self.downcast::<json_schema::errors::Not>() {
+            err.serialize(serializer)
+        } else if let Some(err) = self.downcast::<json_schema::errors::DivergentDefaults>() {
+            err.serialize(serializer)
+        } else if let Some(err) = self.downcast::<json_schema::errors::Format>() {
+            err.serialize(serializer)
+        } else if let Some(err) = self.downcast::<json_schema::errors::Unevaluated>() {
+            err.serialize(serializer)
+        } else {
+            let mut map = ::serde_json::Map::new();
+            map.insert("code".to_string(), to_value(self.get_code()).unwrap());
+            map.insert("title".to_string(), to_value(self.get_title()).unwrap());
+            map.insert("path".to_string(), to_value(self.get_path()).unwrap());
+            if let Some(ref detail) = self.get_detail() {
+                map.insert("detail".to_string(), to_value(detail).unwrap());
+            }
+            Value::Object(map).serialize(serializer)
         }
-        Value::Object(map).serialize(serializer)
     }
 }
 
