@@ -67,7 +67,7 @@ pub fn assert_error_with_scope<T: error::ValicoError + 'static>(
 ) {
     let errors = get_errors(params, scope, body);
     let error = errors.iter().find(|error| {
-        let err = error.downcast::<T>();
+        let err = error.downcast_ref::<T>();
         err.is_some() && err.unwrap().get_path() == path
     });
 

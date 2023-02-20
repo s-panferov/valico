@@ -1,4 +1,5 @@
 use base64;
+use base64::Engine;
 use serde_json::Value;
 use std::str;
 
@@ -49,13 +50,15 @@ impl ContentEncoding {
 
     pub fn decode_val(&self, val: &str) -> Result<String, String> {
         match self {
-            ContentEncoding::Base64 => match base64::decode(val) {
-                Ok(v) => match str::from_utf8(&v[..]) {
-                    Ok(s) => Ok(s.to_string()),
+            ContentEncoding::Base64 => {
+                match base64::engine::general_purpose::STANDARD.decode(val) {
+                    Ok(v) => match str::from_utf8(&v[..]) {
+                        Ok(s) => Ok(s.to_string()),
+                        Err(e) => Err(e.to_string()),
+                    },
                     Err(e) => Err(e.to_string()),
-                },
-                Err(e) => Err(e.to_string()),
-            },
+                }
+            }
         }
     }
 }

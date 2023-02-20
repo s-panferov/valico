@@ -24,6 +24,8 @@ percent-encoding = "2.2.0"
 json-pointer = "0.3.4"
 uritemplate-next = "0.2.0"
 base64 = "0.21.0"
+erased-serde = "0.3"
+downcast-rs = "1"
 
 [build-dependencies]
 phf_codegen= "0.11.1"

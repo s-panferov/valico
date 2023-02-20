@@ -145,7 +145,7 @@ impl Serialize for ValidationState {
             Value::Array(
                 self.errors
                     .iter()
-                    .map(|err| to_value(err).unwrap())
+                    .map(|err| to_value(&*err).unwrap())
                     .collect::<Vec<Value>>(),
             ),
         );

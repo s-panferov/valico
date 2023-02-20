@@ -1,24 +1,9 @@
-use serde::{Serialize, Serializer};
-use serde_json::{to_value, Value};
-use std::any::{Any, TypeId};
 use std::error::Error;
 use std::fmt::Debug;
 
-use crate::json_dsl;
-use crate::json_schema;
+use downcast_rs::Downcast;
 
-pub trait GetTypeId: Any {
-    fn typeid(&self) -> TypeId {
-        TypeId::of::<Self>()
-    }
-}
-impl<T: Any> GetTypeId for T {}
-
-pub fn get_data_ptr<T: ?Sized>(d: *const T) -> *const () {
-    d as *const ()
-}
-
-pub trait ValicoError: Error + Send + Debug + GetTypeId {
+pub trait ValicoError: Downcast + Error + Send + Debug + erased_serde::Serialize {
     fn get_code(&self) -> &str;
     fn get_path(&self) -> &str;
     fn get_title(&self) -> &str;
@@ -27,103 +12,8 @@ pub trait ValicoError: Error + Send + Debug + GetTypeId {
     }
 }
 
-impl dyn ValicoError {
-    /// Is this `Error` object of type `E`?
-    pub fn is<E: ValicoError>(&self) -> bool {
-        self.typeid() == TypeId::of::<E>()
-    }
-
-    /// If this error is `E`, downcast this error to `E`, by reference.
-    pub fn downcast<E: ValicoError>(&self) -> Option<&E> {
-        if self.is::<E>() {
-            unsafe { Some(&*(get_data_ptr(self) as *const E)) }
-        } else {
-            None
-        }
-    }
-}
-
-impl Serialize for dyn ValicoError {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: Serializer,
-    {
-        if let Some(err) = self.downcast::<json_dsl::errors::Required>() {
-            err.serialize(serializer)
-        } else if let Some(err) = self.downcast::<json_dsl::errors::WrongType>() {
-            err.serialize(serializer)
-        } else if let Some(err) = self.downcast::<json_dsl::errors::WrongValue>() {
-            err.serialize(serializer)
-        } else if let Some(err) = self.downcast::<json_dsl::errors::MutuallyExclusive>() {
-            err.serialize(serializer)
-        } else if let Some(err) = self.downcast::<json_dsl::errors::ExactlyOne>() {
-            err.serialize(serializer)
-        } else if let Some(err) = self.downcast::<json_dsl::errors::AtLeastOne>() {
-            err.serialize(serializer)
-        } else if let Some(err) = self.downcast::<json_dsl::errors::WrongType>() {
-            err.serialize(serializer)
-        } else if let Some(err) = self.downcast::<json_schema::errors::WrongType>() {
-            err.serialize(serializer)
-        } else if let Some(err) = self.downcast::<json_schema::errors::MultipleOf>() {
-            err.serialize(serializer)
-        } else if let Some(err) = self.downcast::<json_schema::errors::Maximum>() {
-            err.serialize(serializer)
-        } else if let Some(err) = self.downcast::<json_schema::errors::Minimum>() {
-            err.serialize(serializer)
-        } else if let Some(err) = self.downcast::<json_schema::errors::MaxLength>() {
-            err.serialize(serializer)
-        } else if let Some(err) = self.downcast::<json_schema::errors::MinLength>() {
-            err.serialize(serializer)
-        } else if let Some(err) = self.downcast::<json_schema::errors::Pattern>() {
-            err.serialize(serializer)
-        } else if let Some(err) = self.downcast::<json_schema::errors::MaxItems>() {
-            err.serialize(serializer)
-        } else if let Some(err) = self.downcast::<json_schema::errors::MinItems>() {
-            err.serialize(serializer)
-        } else if let Some(err) = self.downcast::<json_schema::errors::UniqueItems>() {
-            err.serialize(serializer)
-        } else if let Some(err) = self.downcast::<json_schema::errors::Items>() {
-            err.serialize(serializer)
-        } else if let Some(err) = self.downcast::<json_schema::errors::MaxProperties>() {
-            err.serialize(serializer)
-        } else if let Some(err) = self.downcast::<json_schema::errors::MinProperties>() {
-            err.serialize(serializer)
-        } else if let Some(err) = self.downcast::<json_schema::errors::Required>() {
-            err.serialize(serializer)
-        } else if let Some(err) = self.downcast::<json_schema::errors::Properties>() {
-            err.serialize(serializer)
-        } else if let Some(err) = self.downcast::<json_schema::errors::Enum>() {
-            err.serialize(serializer)
-        } else if let Some(err) = self.downcast::<json_schema::errors::AnyOf>() {
-            err.serialize(serializer)
-        } else if let Some(err) = self.downcast::<json_schema::errors::OneOf>() {
-            err.serialize(serializer)
-        } else if let Some(err) = self.downcast::<json_schema::errors::Const>() {
-            err.serialize(serializer)
-        } else if let Some(err) = self.downcast::<json_schema::errors::Contains>() {
-            err.serialize(serializer)
-        } else if let Some(err) = self.downcast::<json_schema::errors::ContainsMinMax>() {
-            err.serialize(serializer)
-        } else if let Some(err) = self.downcast::<json_schema::errors::Not>() {
-            err.serialize(serializer)
-        } else if let Some(err) = self.downcast::<json_schema::errors::DivergentDefaults>() {
-            err.serialize(serializer)
-        } else if let Some(err) = self.downcast::<json_schema::errors::Format>() {
-            err.serialize(serializer)
-        } else if let Some(err) = self.downcast::<json_schema::errors::Unevaluated>() {
-            err.serialize(serializer)
-        } else {
-            let mut map = ::serde_json::Map::new();
-            map.insert("code".to_string(), to_value(self.get_code()).unwrap());
-            map.insert("title".to_string(), to_value(self.get_title()).unwrap());
-            map.insert("path".to_string(), to_value(self.get_path()).unwrap());
-            if let Some(ref detail) = self.get_detail() {
-                map.insert("detail".to_string(), to_value(detail).unwrap());
-            }
-            Value::Object(map).serialize(serializer)
-        }
-    }
-}
+erased_serde::serialize_trait_object!(ValicoError);
+downcast_rs::impl_downcast!(ValicoError);
 
 pub type ValicoErrors = Vec<Box<dyn ValicoError>>;
 
