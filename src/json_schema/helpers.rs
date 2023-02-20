@@ -7,7 +7,7 @@ use super::schema;
 
 pub fn generate_id() -> Url {
     let uuid = Uuid::new_v4();
-    Url::parse(&format!("json-schema://{}", uuid)).unwrap()
+    Url::parse(&format!("json-schema://{uuid}")).unwrap()
 }
 
 /// <http://tools.ietf.org/html/draft-ietf-appsawg-json-pointer-07>

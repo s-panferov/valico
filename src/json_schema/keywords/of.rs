@@ -156,7 +156,7 @@ fn conflicting_defaults() {
         .unwrap();
     let result = schema.validate(&json!({}));
     assert!(!result.is_valid());
-    assert_eq!(&*format!("{:?}", result),
+    assert_eq!(&*format!("{result:?}"),
       "ValidationState { errors: [WrongType { path: \"/a\", detail: \"The value must be number\" }], missing: [], replacement: None, evaluated: {\"/a\"} }");
 }
 
@@ -191,7 +191,7 @@ fn divergent_defaults() {
     let mut result = schema.validate(&json!({}));
     assert!(!result.is_valid());
     result.evaluated.clear();
-    assert_eq!(&*format!("{:?}", result),
+    assert_eq!(&*format!("{result:?}"),
       "ValidationState { errors: [DivergentDefaults { path: \"\" }], missing: [], replacement: None, evaluated: {} }");
 }
 
@@ -216,9 +216,9 @@ fn validate_all_of() {
         .ok()
         .unwrap();
 
-    assert_eq!(schema.validate(&to_value(&7).unwrap()).is_valid(), true);
-    assert_eq!(schema.validate(&to_value(&4).unwrap()).is_valid(), false);
-    assert_eq!(schema.validate(&to_value(&11).unwrap()).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(7).unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(4).unwrap()).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(11).unwrap()).is_valid(), false);
 }
 
 #[test]
@@ -242,9 +242,9 @@ fn validate_any_of() {
         .ok()
         .unwrap();
 
-    assert_eq!(schema.validate(&to_value(&5).unwrap()).is_valid(), true);
-    assert_eq!(schema.validate(&to_value(&10).unwrap()).is_valid(), true);
-    assert_eq!(schema.validate(&to_value(&11).unwrap()).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(5).unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(10).unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(11).unwrap()).is_valid(), false);
 }
 
 #[test]
@@ -268,7 +268,7 @@ fn validate_one_of() {
         .ok()
         .unwrap();
 
-    assert_eq!(schema.validate(&to_value(&5).unwrap()).is_valid(), false);
-    assert_eq!(schema.validate(&to_value(&6).unwrap()).is_valid(), true);
-    assert_eq!(schema.validate(&to_value(&11).unwrap()).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(5).unwrap()).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(6).unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(11).unwrap()).is_valid(), false);
 }

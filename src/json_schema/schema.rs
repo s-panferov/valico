@@ -50,12 +50,12 @@ impl Display for SchemaError {
             SchemaError::WrongId => write!(f, "wrong id"),
             SchemaError::IdConflicts => write!(f, "id conflicts"),
             SchemaError::NotAnObject => write!(f, "not an object"),
-            SchemaError::UrlParseError(ref e) => write!(f, "url parse error: {}", e),
-            SchemaError::UnknownKey(ref k) => write!(f, "unknown key: {}", k),
+            SchemaError::UrlParseError(ref e) => write!(f, "url parse error: {e}"),
+            SchemaError::UnknownKey(ref k) => write!(f, "unknown key: {k}"),
             SchemaError::Malformed {
                 ref path,
                 ref detail,
-            } => write!(f, "malformed path: `{}`, details: {}", path, detail),
+            } => write!(f, "malformed path: `{path}`, details: {detail}"),
         }
     }
 }

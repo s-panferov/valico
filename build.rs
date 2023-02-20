@@ -5,7 +5,7 @@ use std::path::Path;
 
 fn main() {
     let path = Path::new(&env::var("OUT_DIR").unwrap()).join("codegen.rs");
-    let mut file = BufWriter::new(File::create(&path).unwrap());
+    let mut file = BufWriter::new(File::create(path).unwrap());
 
     writeln!(&mut file, "#[allow(clippy::unreadable_literal)]").unwrap();
     write!(

@@ -70,7 +70,7 @@ impl super::Validator for Properties {
             };
 
             let mut is_pattern_passed = false;
-            for &(ref regex, ref url) in self.patterns.iter() {
+            for (regex, url) in self.patterns.iter() {
                 if regex.is_match(key.as_ref()).unwrap_or(false) {
                     let schema = scope.resolve(url);
                     if let Some(schema) = schema {
@@ -101,7 +101,7 @@ impl super::Validator for Properties {
                     if !allowed {
                         state.errors.push(Box::new(errors::Properties {
                             path: path.to_string(),
-                            detail: format!("Additional property '{}' is not allowed", key),
+                            detail: format!("Additional property '{key}' is not allowed"),
                         }))
                     } else {
                         state.evaluated.insert([path, key.as_ref()].join("/"));

@@ -15,7 +15,7 @@ impl super::Keyword for Pattern {
                 Ok(re) => Ok(Some(Box::new(validators::Pattern { regex: re }))),
                 Err(err) => Err(schema::SchemaError::Malformed {
                     path: ctx.fragment.join("/"),
-                    detail: format!("The value of pattern MUST be a valid RegExp, but {:?}", err),
+                    detail: format!("The value of pattern MUST be a valid RegExp, but {err:?}"),
                 }),
             }
         } else {

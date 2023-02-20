@@ -59,15 +59,15 @@ fn validate_max_length() {
         .unwrap();
 
     assert_eq!(
-        schema.validate(&to_value(&"1234").unwrap()).is_valid(),
+        schema.validate(&to_value("1234").unwrap()).is_valid(),
         true
     );
     assert_eq!(
-        schema.validate(&to_value(&"12345").unwrap()).is_valid(),
+        schema.validate(&to_value("12345").unwrap()).is_valid(),
         true
     );
     assert_eq!(
-        schema.validate(&to_value(&"123456").unwrap()).is_valid(),
+        schema.validate(&to_value("123456").unwrap()).is_valid(),
         false
     );
 }
@@ -79,7 +79,7 @@ fn malformed_max_length() {
     assert!(scope
         .compile_and_return(
             jsonway::object(|schema| {
-                schema.set("maxLength", to_value(&-1).unwrap());
+                schema.set("maxLength", to_value(-1).unwrap());
             })
             .unwrap(),
             true
@@ -89,7 +89,7 @@ fn malformed_max_length() {
     assert!(scope
         .compile_and_return(
             jsonway::object(|schema| {
-                schema.set("maxLength", to_value(&"").unwrap());
+                schema.set("maxLength", to_value("").unwrap());
             })
             .unwrap(),
             true
@@ -99,7 +99,7 @@ fn malformed_max_length() {
     assert!(scope
         .compile_and_return(
             jsonway::object(|schema| {
-                schema.set("maxLength", to_value(&1.1).unwrap());
+                schema.set("maxLength", to_value(1.1).unwrap());
             })
             .unwrap(),
             true
@@ -122,15 +122,15 @@ fn validate_min_length() {
         .unwrap();
 
     assert_eq!(
-        schema.validate(&to_value(&"1234").unwrap()).is_valid(),
+        schema.validate(&to_value("1234").unwrap()).is_valid(),
         false
     );
     assert_eq!(
-        schema.validate(&to_value(&"12345").unwrap()).is_valid(),
+        schema.validate(&to_value("12345").unwrap()).is_valid(),
         true
     );
     assert_eq!(
-        schema.validate(&to_value(&"123456").unwrap()).is_valid(),
+        schema.validate(&to_value("123456").unwrap()).is_valid(),
         true
     );
 }
@@ -142,7 +142,7 @@ fn malformed_min_length() {
     assert!(scope
         .compile_and_return(
             jsonway::object(|schema| {
-                schema.set("minLength", to_value(&-1).unwrap());
+                schema.set("minLength", to_value(-1).unwrap());
             })
             .unwrap(),
             true
@@ -152,7 +152,7 @@ fn malformed_min_length() {
     assert!(scope
         .compile_and_return(
             jsonway::object(|schema| {
-                schema.set("minLength", to_value(&"").unwrap());
+                schema.set("minLength", to_value("").unwrap());
             })
             .unwrap(),
             true
@@ -162,7 +162,7 @@ fn malformed_min_length() {
     assert!(scope
         .compile_and_return(
             jsonway::object(|schema| {
-                schema.set("minLength", to_value(&1.1).unwrap());
+                schema.set("minLength", to_value(1.1).unwrap());
             })
             .unwrap(),
             true

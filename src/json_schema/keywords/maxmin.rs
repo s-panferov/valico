@@ -54,9 +54,9 @@ fn validate_maximum() {
         .ok()
         .unwrap();
 
-    assert_eq!(schema.validate(&to_value(&9).unwrap()).is_valid(), true);
-    assert_eq!(schema.validate(&to_value(&10).unwrap()).is_valid(), true);
-    assert_eq!(schema.validate(&to_value(&11).unwrap()).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(9).unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(10).unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(11).unwrap()).is_valid(), false);
 }
 
 #[test]
@@ -73,9 +73,9 @@ fn validate_exclusive_maximum() {
         .ok()
         .unwrap();
 
-    assert_eq!(schema.validate(&to_value(&9).unwrap()).is_valid(), true);
-    assert_eq!(schema.validate(&to_value(&10).unwrap()).is_valid(), false);
-    assert_eq!(schema.validate(&to_value(&11).unwrap()).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(9).unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(10).unwrap()).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(11).unwrap()).is_valid(), false);
 }
 
 #[test]
@@ -122,9 +122,9 @@ fn validate_minumum() {
         .ok()
         .unwrap();
 
-    assert_eq!(schema.validate(&to_value(&9).unwrap()).is_valid(), false);
-    assert_eq!(schema.validate(&to_value(&10).unwrap()).is_valid(), true);
-    assert_eq!(schema.validate(&to_value(&11).unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(9).unwrap()).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(10).unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(11).unwrap()).is_valid(), true);
 }
 
 #[test]
@@ -141,9 +141,9 @@ fn validate_exclusive_minimum() {
         .ok()
         .unwrap();
 
-    assert_eq!(schema.validate(&to_value(&9).unwrap()).is_valid(), false);
-    assert_eq!(schema.validate(&to_value(&10).unwrap()).is_valid(), false);
-    assert_eq!(schema.validate(&to_value(&11).unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(9).unwrap()).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(10).unwrap()).is_valid(), false);
+    assert_eq!(schema.validate(&to_value(11).unwrap()).is_valid(), true);
 }
 
 #[test]

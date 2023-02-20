@@ -175,7 +175,7 @@ impl super::Validator for IRI {
             Ok(_) => super::ValidationState::new(),
             Err(err) => val_error!(errors::Format {
                 path: path.to_string(),
-                detail: format!("Malformed IRI: {}", err)
+                detail: format!("Malformed IRI: {err}")
             }),
         }
     }
@@ -200,7 +200,7 @@ impl super::Validator for IRIReference {
             Ok(_) => super::ValidationState::new(),
             Err(err) => val_error!(errors::Format {
                 path: path.to_string(),
-                detail: format!("Malformed IRI reference: {}", err)
+                detail: format!("Malformed IRI reference: {err}")
             }),
         }
     }
@@ -253,7 +253,7 @@ impl super::Validator for Regex {
             Err(er) => {
                 val_error!(errors::Format {
                     path: path.to_string(),
-                    detail: format!("Malformed regex - {}", er)
+                    detail: format!("Malformed regex - {er}")
                 })
             }
         }
@@ -323,7 +323,7 @@ impl super::Validator for Uuid {
             Ok(_) => super::ValidationState::new(),
             Err(err) => val_error!(errors::Format {
                 path: path.to_string(),
-                detail: format!("Malformed UUID: {:?}", err)
+                detail: format!("Malformed UUID: {err:?}")
             }),
         }
     }
@@ -346,7 +346,7 @@ impl super::Validator for Uri {
             Ok(_) => super::ValidationState::new(),
             Err(err) => val_error!(errors::Format {
                 path: path.to_string(),
-                detail: format!("Malformed URI: {}", err)
+                detail: format!("Malformed URI: {err}")
             }),
         }
     }
@@ -371,7 +371,7 @@ impl super::Validator for UriReference {
             Ok(_) => super::ValidationState::new(),
             Err(err) => val_error!(errors::Format {
                 path: path.to_string(),
-                detail: format!("Malformed URI reference: {}", err)
+                detail: format!("Malformed URI reference: {err}")
             }),
         }
     }

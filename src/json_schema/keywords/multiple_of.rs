@@ -51,9 +51,9 @@ fn validate() {
         .ok()
         .unwrap();
 
-    assert_eq!(schema.validate(&to_value(&"").unwrap()).is_valid(), true);
-    assert_eq!(schema.validate(&to_value(&7).unwrap()).is_valid(), true);
-    assert_eq!(schema.validate(&to_value(&6).unwrap()).is_valid(), false);
+    assert_eq!(schema.validate(&to_value("").unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(7).unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value(6).unwrap()).is_valid(), false);
 }
 
 #[test]
@@ -73,7 +73,7 @@ fn malformed() {
     assert!(scope
         .compile_and_return(
             jsonway::object(|schema| {
-                schema.set("multipleOf", to_value(&0).unwrap());
+                schema.set("multipleOf", to_value(0).unwrap());
             })
             .unwrap(),
             true
@@ -83,7 +83,7 @@ fn malformed() {
     assert!(scope
         .compile_and_return(
             jsonway::object(|schema| {
-                schema.set("multipleOf", to_value(&-1).unwrap());
+                schema.set("multipleOf", to_value(-1).unwrap());
             })
             .unwrap(),
             true

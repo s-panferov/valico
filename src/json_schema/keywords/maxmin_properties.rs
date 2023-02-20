@@ -74,7 +74,7 @@ fn malformed_max_properties() {
     assert!(scope
         .compile_and_return(
             jsonway::object(|schema| {
-                schema.set("maxProperties", to_value(&-1).unwrap());
+                schema.set("maxProperties", to_value(-1).unwrap());
             })
             .unwrap(),
             true
@@ -84,7 +84,7 @@ fn malformed_max_properties() {
     assert!(scope
         .compile_and_return(
             jsonway::object(|schema| {
-                schema.set("maxProperties", to_value(&"").unwrap());
+                schema.set("maxProperties", to_value("").unwrap());
             })
             .unwrap(),
             true
@@ -94,7 +94,7 @@ fn malformed_max_properties() {
     assert!(scope
         .compile_and_return(
             jsonway::object(|schema| {
-                schema.set("maxProperties", to_value(&1.1).unwrap());
+                schema.set("maxProperties", to_value(1.1).unwrap());
             })
             .unwrap(),
             true
@@ -163,7 +163,7 @@ fn malformed_min_properties() {
     assert!(scope
         .compile_and_return(
             jsonway::object(|schema| {
-                schema.set("minProperties", to_value(&-1).unwrap());
+                schema.set("minProperties", to_value(-1).unwrap());
             })
             .unwrap(),
             true
@@ -173,7 +173,7 @@ fn malformed_min_properties() {
     assert!(scope
         .compile_and_return(
             jsonway::object(|schema| {
-                schema.set("minProperties", to_value(&"").unwrap());
+                schema.set("minProperties", to_value("").unwrap());
             })
             .unwrap(),
             true
@@ -183,7 +183,7 @@ fn malformed_min_properties() {
     assert!(scope
         .compile_and_return(
             jsonway::object(|schema| {
-                schema.set("minProperties", to_value(&1.1).unwrap());
+                schema.set("minProperties", to_value(1.1).unwrap());
             })
             .unwrap(),
             true

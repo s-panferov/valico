@@ -29,19 +29,19 @@ fn validate_max_items() {
 
     assert_eq!(
         schema
-            .validate(&to_value(&[1, 2, 3, 4]).unwrap())
+            .validate(&to_value([1, 2, 3, 4]).unwrap())
             .is_valid(),
         true
     );
     assert_eq!(
         schema
-            .validate(&to_value(&[1, 2, 3, 4, 5]).unwrap())
+            .validate(&to_value([1, 2, 3, 4, 5]).unwrap())
             .is_valid(),
         true
     );
     assert_eq!(
         schema
-            .validate(&to_value(&[1, 2, 3, 4, 5, 6]).unwrap())
+            .validate(&to_value([1, 2, 3, 4, 5, 6]).unwrap())
             .is_valid(),
         false
     );
@@ -54,7 +54,7 @@ fn malformed_max_items() {
     assert!(scope
         .compile_and_return(
             jsonway::object(|schema| {
-                schema.set("maxItems", to_value(&-1).unwrap());
+                schema.set("maxItems", to_value(-1).unwrap());
             })
             .unwrap(),
             true
@@ -64,7 +64,7 @@ fn malformed_max_items() {
     assert!(scope
         .compile_and_return(
             jsonway::object(|schema| {
-                schema.set("maxItems", to_value(&"").unwrap());
+                schema.set("maxItems", to_value("").unwrap());
             })
             .unwrap(),
             true
@@ -74,7 +74,7 @@ fn malformed_max_items() {
     assert!(scope
         .compile_and_return(
             jsonway::object(|schema| {
-                schema.set("maxItems", to_value(&1.1).unwrap());
+                schema.set("maxItems", to_value(1.1).unwrap());
             })
             .unwrap(),
             true
@@ -98,19 +98,19 @@ fn validate_min_items() {
 
     assert_eq!(
         schema
-            .validate(&to_value(&[1, 2, 3, 4]).unwrap())
+            .validate(&to_value([1, 2, 3, 4]).unwrap())
             .is_valid(),
         false
     );
     assert_eq!(
         schema
-            .validate(&to_value(&[1, 2, 3, 4, 5]).unwrap())
+            .validate(&to_value([1, 2, 3, 4, 5]).unwrap())
             .is_valid(),
         true
     );
     assert_eq!(
         schema
-            .validate(&to_value(&[1, 2, 3, 4, 5, 6]).unwrap())
+            .validate(&to_value([1, 2, 3, 4, 5, 6]).unwrap())
             .is_valid(),
         true
     );
@@ -123,7 +123,7 @@ fn malformed_min_items() {
     assert!(scope
         .compile_and_return(
             jsonway::object(|schema| {
-                schema.set("minItems", to_value(&-1).unwrap());
+                schema.set("minItems", to_value(-1).unwrap());
             })
             .unwrap(),
             true
@@ -133,7 +133,7 @@ fn malformed_min_items() {
     assert!(scope
         .compile_and_return(
             jsonway::object(|schema| {
-                schema.set("minItems", to_value(&"").unwrap());
+                schema.set("minItems", to_value("").unwrap());
             })
             .unwrap(),
             true
@@ -143,7 +143,7 @@ fn malformed_min_items() {
     assert!(scope
         .compile_and_return(
             jsonway::object(|schema| {
-                schema.set("minItems", to_value(&1.1).unwrap());
+                schema.set("minItems", to_value(1.1).unwrap());
             })
             .unwrap(),
             true

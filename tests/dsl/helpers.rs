@@ -73,9 +73,7 @@ pub fn assert_error_with_scope<T: error::ValicoError + 'static>(
 
     assert!(
         error.is_some(),
-        "Can't find error in {}. Errors: {:?}",
-        path,
-        errors
+        "{}", "Can't find error in {path}. Errors: {errors:?}"
     )
 }
 

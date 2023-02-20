@@ -310,7 +310,7 @@ impl Builder {
     pub fn types(&mut self, types: &[super::PrimitiveType]) {
         self.obj_builder.set(
             "type",
-            to_value(&types.iter().map(|t| t.to_string()).collect::<Vec<String>>()).unwrap(),
+            to_value(types.iter().map(|t| t.to_string()).collect::<Vec<String>>()).unwrap(),
         )
     }
 

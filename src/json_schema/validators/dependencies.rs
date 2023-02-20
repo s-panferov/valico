@@ -46,7 +46,7 @@ impl super::Validator for Dependencies {
                     }
                     DepKind::Property(ref keys) => {
                         for key in keys.iter() {
-                            if object.get(&key).is_none() {
+                            if object.get(key).is_none() {
                                 state.errors.push(Box::new(errors::Required {
                                     path: [path, key.as_ref()].join("/"),
                                 }))

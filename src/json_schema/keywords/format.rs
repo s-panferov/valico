@@ -205,19 +205,19 @@ fn validate_date_time() {
 
     assert_eq!(
         schema
-            .validate(&to_value(&"2015-01-20T17:35:20-08:00").unwrap())
+            .validate(&to_value("2015-01-20T17:35:20-08:00").unwrap())
             .is_valid(),
         true
     );
     assert_eq!(
         schema
-            .validate(&to_value(&"1944-06-06T04:04:00Z").unwrap())
+            .validate(&to_value("1944-06-06T04:04:00Z").unwrap())
             .is_valid(),
         true
     );
     assert_eq!(
         schema
-            .validate(&to_value(&"Tue, 20 Jan 2015 17:35:20 -0800").unwrap())
+            .validate(&to_value("Tue, 20 Jan 2015 17:35:20 -0800").unwrap())
             .is_valid(),
         false
     );
@@ -239,19 +239,19 @@ fn validate_time() {
 
     assert_eq!(
         schema
-            .validate(&to_value(&"17:35:20-08:00").unwrap())
+            .validate(&to_value("17:35:20-08:00").unwrap())
             .is_valid(),
         false
     );
     assert_eq!(
         schema
-            .validate(&to_value(&"04:04:00.040404Z").unwrap())
+            .validate(&to_value("04:04:00.040404Z").unwrap())
             .is_valid(),
         false // https://github.com/chronotope/chrono/issues/288
     );
     assert_eq!(
         schema
-            .validate(&to_value(&"17:35:20 -0800").unwrap())
+            .validate(&to_value("17:35:20 -0800").unwrap())
             .is_valid(),
         false
     );
@@ -273,13 +273,13 @@ fn validate_date() {
 
     assert_eq!(
         schema
-            .validate(&to_value(&"2015-01-20").unwrap())
+            .validate(&to_value("2015-01-20").unwrap())
             .is_valid(),
         true
     );
     assert_eq!(
         schema
-            .validate(&to_value(&"Tue, 20 Jan 2015").unwrap())
+            .validate(&to_value("Tue, 20 Jan 2015").unwrap())
             .is_valid(),
         false
     );
@@ -300,17 +300,17 @@ fn validate_email() {
         .unwrap();
 
     assert_eq!(
-        schema.validate(&to_value(&"ad@ress").unwrap()).is_valid(),
+        schema.validate(&to_value("ad@ress").unwrap()).is_valid(),
         true
     );
     assert_eq!(
         schema
-            .validate(&to_value(&"add.ress+fd@domain.co.com").unwrap())
+            .validate(&to_value("add.ress+fd@domain.co.com").unwrap())
             .is_valid(),
         true
     );
     assert_eq!(
-        schema.validate(&to_value(&"add:re").unwrap()).is_valid(),
+        schema.validate(&to_value("add:re").unwrap()).is_valid(),
         false
     );
 }
@@ -330,17 +330,17 @@ fn validate_hostname() {
         .unwrap();
 
     assert_eq!(
-        schema.validate(&to_value(&"example").unwrap()).is_valid(),
+        schema.validate(&to_value("example").unwrap()).is_valid(),
         true
     );
     assert_eq!(
         schema
-            .validate(&to_value(&"example.com").unwrap())
+            .validate(&to_value("example.com").unwrap())
             .is_valid(),
         true
     );
     assert_eq!(
-        schema.validate(&to_value(&"ex:ample").unwrap()).is_valid(),
+        schema.validate(&to_value("ex:ample").unwrap()).is_valid(),
         false
     );
 }
@@ -360,16 +360,16 @@ fn validate_ipv4() {
         .unwrap();
 
     assert_eq!(
-        schema.validate(&to_value(&"127.0.0.1").unwrap()).is_valid(),
+        schema.validate(&to_value("127.0.0.1").unwrap()).is_valid(),
         true
     );
     assert_eq!(
-        schema.validate(&to_value(&"8.8.8.8").unwrap()).is_valid(),
+        schema.validate(&to_value("8.8.8.8").unwrap()).is_valid(),
         true
     );
     assert_eq!(
         schema
-            .validate(&to_value(&"::::0.0.0.0").unwrap())
+            .validate(&to_value("::::0.0.0.0").unwrap())
             .is_valid(),
         false
     );
@@ -391,12 +391,12 @@ fn validate_ipv6() {
 
     assert_eq!(
         schema
-            .validate(&to_value(&"FE80:0000:0000:0000:0202:B3FF:FE1E:8329").unwrap())
+            .validate(&to_value("FE80:0000:0000:0000:0202:B3FF:FE1E:8329").unwrap())
             .is_valid(),
         true
     );
     assert_eq!(
-        schema.validate(&to_value(&"127.0.0.1").unwrap()).is_valid(),
+        schema.validate(&to_value("127.0.0.1").unwrap()).is_valid(),
         false
     );
 }
@@ -416,11 +416,11 @@ fn validate_json_pointer() {
         .unwrap();
 
     assert_eq!(
-        schema.validate(&to_value(&"/foo/bar").unwrap()).is_valid(),
+        schema.validate(&to_value("/foo/bar").unwrap()).is_valid(),
         true
     );
     assert_eq!(
-        schema.validate(&to_value(&"pointer").unwrap()).is_valid(),
+        schema.validate(&to_value("pointer").unwrap()).is_valid(),
         false
     );
 }
@@ -441,13 +441,13 @@ fn validate_uri() {
 
     assert_eq!(
         schema
-            .validate(&to_value(&"http://example.com").unwrap())
+            .validate(&to_value("http://example.com").unwrap())
             .is_valid(),
         true
     );
     assert_eq!(
         schema
-            .validate(&to_value(&"some-wrong").unwrap())
+            .validate(&to_value("some-wrong").unwrap())
             .is_valid(),
         false
     );
@@ -469,19 +469,19 @@ fn validate_uuid() {
 
     assert_eq!(
         schema
-            .validate(&to_value(&"2f5a2593-7481-49e2-9911-8fe2ad069aac").unwrap())
+            .validate(&to_value("2f5a2593-7481-49e2-9911-8fe2ad069aac").unwrap())
             .is_valid(),
         true
     );
     assert_eq!(
         schema
-            .validate(&to_value(&"2f5a2593748149e299118fe2ad069aac").unwrap())
+            .validate(&to_value("2f5a2593748149e299118fe2ad069aac").unwrap())
             .is_valid(),
         true
     );
     assert_eq!(
         schema
-            .validate(&to_value(&"2f5a2593-7481-49e2-9911-8fe2ad06").unwrap())
+            .validate(&to_value("2f5a2593-7481-49e2-9911-8fe2ad06").unwrap())
             .is_valid(),
         false
     );

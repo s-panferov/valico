@@ -9,7 +9,7 @@ where
     F: Fn(&path::Path, Value) + Copy,
 {
     let mut contents = fs::read_dir(dir)
-        .expect(&*format!("cannot list directory {:?}", dir))
+        .expect(&format!("cannot list directory {dir:?}"))
         .collect::<Vec<_>>();
     contents.sort_by_key(|v| v.as_ref().unwrap().file_name());
     for entry in contents {
@@ -38,7 +38,7 @@ where
 fn test_suite_draft7() {
     let mut content = String::new();
 
-    fs::File::open(&path::Path::new("tests/schema/schema.json"))
+    fs::File::open(path::Path::new("tests/schema/schema.json"))
         .ok()
         .unwrap()
         .read_to_string(&mut content)
@@ -249,10 +249,10 @@ fn test_suite_draft7() {
                     spec_desc.to_string(),
                 ));
                 if spec_exception_found {
-                    println!("\t\t{} .. skipped", spec_desc);
+                    println!("\t\t{spec_desc} .. skipped");
                     continue;
                 } else {
-                    println!("\t\t{}", spec_desc);
+                    println!("\t\t{spec_desc}");
                 }
 
                 let schema =
@@ -279,7 +279,7 @@ fn test_suite_draft7() {
                         description.to_string(),
                     ));
                     if exception_found {
-                        println!("\t\t\t{} .. skipped", description);
+                        println!("\t\t\t{description} .. skipped");
                         continue;
                     }
 
@@ -295,7 +295,7 @@ fn test_suite_draft7() {
                             to_string_pretty(&to_value(&state).unwrap()).unwrap()
                         )
                     } else {
-                        println!("\t\t\t{} .. ok", description);
+                        println!("\t\t\t{description} .. ok");
                     }
                 }
             }
@@ -533,10 +533,10 @@ fn test_suite_draft201909() {
                     spec_desc.to_string(),
                 ));
                 if spec_exception_found {
-                    println!("\t\t{} .. skipped", spec_desc);
+                    println!("\t\t{spec_desc} .. skipped");
                     continue;
                 } else {
-                    println!("\t\t{}", spec_desc);
+                    println!("\t\t{spec_desc}");
                 }
 
                 let schema =
@@ -563,7 +563,7 @@ fn test_suite_draft201909() {
                         description.to_string(),
                     ));
                     if exception_found {
-                        println!("\t\t\t{} .. skipped", description);
+                        println!("\t\t\t{description} .. skipped");
                         continue;
                     }
 
@@ -579,7 +579,7 @@ fn test_suite_draft201909() {
                             to_string_pretty(&to_value(&state).unwrap()).unwrap()
                         )
                     } else {
-                        println!("\t\t\t{} .. ok", description);
+                        println!("\t\t\t{description} .. ok");
                     }
                 }
             }

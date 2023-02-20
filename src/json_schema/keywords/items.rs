@@ -162,19 +162,19 @@ fn validate_items_with_schema() {
 
     assert_eq!(
         schema
-            .validate(&to_value(&[5, 6, 7, 8, 9, 10]).unwrap())
+            .validate(&to_value([5, 6, 7, 8, 9, 10]).unwrap())
             .is_valid(),
         true
     );
     assert_eq!(
         schema
-            .validate(&to_value(&[4, 5, 6, 7, 8, 9, 10]).unwrap())
+            .validate(&to_value([4, 5, 6, 7, 8, 9, 10]).unwrap())
             .is_valid(),
         false
     );
     assert_eq!(
         schema
-            .validate(&to_value(&[5, 6, 7, 8, 9, 10, 11]).unwrap())
+            .validate(&to_value([5, 6, 7, 8, 9, 10, 11]).unwrap())
             .is_valid(),
         false
     );
@@ -203,25 +203,25 @@ fn validate_items_with_array_of_schemes() {
         .ok()
         .unwrap();
 
-    assert_eq!(schema.validate(&to_value(&[1]).unwrap()).is_valid(), true);
+    assert_eq!(schema.validate(&to_value([1]).unwrap()).is_valid(), true);
     assert_eq!(
-        schema.validate(&to_value(&[1, 3]).unwrap()).is_valid(),
+        schema.validate(&to_value([1, 3]).unwrap()).is_valid(),
         true
     );
     assert_eq!(
-        schema.validate(&to_value(&[1, 3, 100]).unwrap()).is_valid(),
+        schema.validate(&to_value([1, 3, 100]).unwrap()).is_valid(),
         true
     );
     assert_eq!(
-        schema.validate(&to_value(&[4, 3]).unwrap()).is_valid(),
+        schema.validate(&to_value([4, 3]).unwrap()).is_valid(),
         false
     );
     assert_eq!(
-        schema.validate(&to_value(&[1, 7]).unwrap()).is_valid(),
+        schema.validate(&to_value([1, 7]).unwrap()).is_valid(),
         false
     );
     assert_eq!(
-        schema.validate(&to_value(&[4, 7]).unwrap()).is_valid(),
+        schema.validate(&to_value([4, 7]).unwrap()).is_valid(),
         false
     );
 }
@@ -251,7 +251,7 @@ fn validate_items_with_array_of_schemes_with_additional_bool() {
         .unwrap();
 
     assert_eq!(
-        schema.validate(&to_value(&[1, 3, 100]).unwrap()).is_valid(),
+        schema.validate(&to_value([1, 3, 100]).unwrap()).is_valid(),
         false
     );
 }
@@ -281,11 +281,11 @@ fn validate_items_with_array_of_schemes_with_additional_schema() {
         .unwrap();
 
     assert_eq!(
-        schema.validate(&to_value(&[1, 3, 100]).unwrap()).is_valid(),
+        schema.validate(&to_value([1, 3, 100]).unwrap()).is_valid(),
         true
     );
     assert_eq!(
-        schema.validate(&to_value(&[1, 3, 101]).unwrap()).is_valid(),
+        schema.validate(&to_value([1, 3, 101]).unwrap()).is_valid(),
         false
     );
 }

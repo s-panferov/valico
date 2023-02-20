@@ -47,7 +47,7 @@ impl super::Validator for Type {
                 if !check_type(val, t) {
                     state.errors.push(Box::new(errors::WrongType {
                         path: path.to_string(),
-                        detail: format!("The value must be {}", t),
+                        detail: format!("The value must be {t}"),
                     }))
                 } else {
                     state.evaluated.insert(path.to_owned());

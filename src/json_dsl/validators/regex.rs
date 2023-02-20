@@ -14,7 +14,7 @@ impl super::Validator for fancy_regex::Regex {
             })]),
             Err(e) => Err(vec![Box::new(errors::WrongValue {
                 path: path.to_string(),
-                detail: Some(format!("Error evaluating regex '{}': {}", self, e)),
+                detail: Some(format!("Error evaluating regex '{self}': {e}")),
             })]),
         }
     }

@@ -167,7 +167,7 @@ impl Builder {
 
         if self.schema_builder.is_some() {
             let json_schema = json_schema::builder::schema_box(self.schema_builder.take().unwrap());
-            let id = scope.compile(to_value(&json_schema).unwrap(), true)?;
+            let id = scope.compile(to_value(json_schema).unwrap(), true)?;
             self.schema_id = Some(id);
         }
 
