@@ -22,17 +22,6 @@ valico = "2"
 
 [API docs](http://rustless.org/valico/doc/valico/)
 
-See also:
-
-* [Rustless] - REST-like API micro-framework for Rust that use Valico.
-* [queryst] - Rust query string parser with nesting support can be used together with Valico to provide simple and safe toolchain for parsing query strings.
-* [jsonway] — JSON building DSL and configurable serializers for Rust
-
-[Rustless]: https://github.com/rustless/rustless
-[queryst]: https://github.com/rustless/queryst
-[Grape]: https://github.com/ruby-grape/grape
-[jsonway]: https://github.com/rustless/jsonway
-
 ## JSON Schema
 
 It passes the entire [JSON-Schema-Test-Suite](https://github.com/json-schema/JSON-Schema-Test-Suite/tree/develop/tests/draft4) except for remoteRefs and maxLength/minLength when using unicode surrogate pairs. It also can validate your schema and give you an explanation about what is wrong in it.
