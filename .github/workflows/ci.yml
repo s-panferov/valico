@@ -15,7 +15,9 @@ jobs:
         run: cargo build --verbose
 
       - name: Build WebAssembly
-        run: cargo build --verbose --target wasm32-unknown-unknown --features js
+        run: |
+          rustup target add wasm32-unknown-unknown
+          cargo build --verbose --target wasm32-unknown-unknown --features js
 
       - name: Run tests
         run: cargo test --verbose
