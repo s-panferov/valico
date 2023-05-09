@@ -204,10 +204,7 @@ fn validate_items_with_array_of_schemes() {
         .unwrap();
 
     assert_eq!(schema.validate(&to_value([1]).unwrap()).is_valid(), true);
-    assert_eq!(
-        schema.validate(&to_value([1, 3]).unwrap()).is_valid(),
-        true
-    );
+    assert_eq!(schema.validate(&to_value([1, 3]).unwrap()).is_valid(), true);
     assert_eq!(
         schema.validate(&to_value([1, 3, 100]).unwrap()).is_valid(),
         true

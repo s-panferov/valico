@@ -272,9 +272,7 @@ fn validate_date() {
         .unwrap();
 
     assert_eq!(
-        schema
-            .validate(&to_value("2015-01-20").unwrap())
-            .is_valid(),
+        schema.validate(&to_value("2015-01-20").unwrap()).is_valid(),
         true
     );
     assert_eq!(
@@ -446,9 +444,7 @@ fn validate_uri() {
         true
     );
     assert_eq!(
-        schema
-            .validate(&to_value("some-wrong").unwrap())
-            .is_valid(),
+        schema.validate(&to_value("some-wrong").unwrap()).is_valid(),
         false
     );
 }

@@ -40,15 +40,11 @@ fn validate_unique_items() {
         .unwrap();
 
     assert_eq!(
-        schema
-            .validate(&to_value([1, 2, 3, 4]).unwrap())
-            .is_valid(),
+        schema.validate(&to_value([1, 2, 3, 4]).unwrap()).is_valid(),
         true
     );
     assert_eq!(
-        schema
-            .validate(&to_value([1, 1, 3, 4]).unwrap())
-            .is_valid(),
+        schema.validate(&to_value([1, 1, 3, 4]).unwrap()).is_valid(),
         false
     );
 }

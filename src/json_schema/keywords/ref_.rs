@@ -110,10 +110,7 @@ fn validate() {
     let array3: Vec<Vec<String>> = vec![vec![], vec![], vec![]];
 
     assert_eq!(schema.validate(&to_value(array).unwrap()).is_valid(), true);
-    assert_eq!(
-        schema.validate(&to_value(array2).unwrap()).is_valid(),
-        true
-    );
+    assert_eq!(schema.validate(&to_value(array2).unwrap()).is_valid(), true);
 
     assert_eq!(
         schema.validate(&to_value(array3).unwrap()).is_valid(),

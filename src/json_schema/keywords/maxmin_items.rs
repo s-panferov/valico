@@ -28,9 +28,7 @@ fn validate_max_items() {
         .unwrap();
 
     assert_eq!(
-        schema
-            .validate(&to_value([1, 2, 3, 4]).unwrap())
-            .is_valid(),
+        schema.validate(&to_value([1, 2, 3, 4]).unwrap()).is_valid(),
         true
     );
     assert_eq!(
@@ -97,9 +95,7 @@ fn validate_min_items() {
         .unwrap();
 
     assert_eq!(
-        schema
-            .validate(&to_value([1, 2, 3, 4]).unwrap())
-            .is_valid(),
+        schema.validate(&to_value([1, 2, 3, 4]).unwrap()).is_valid(),
         false
     );
     assert_eq!(
