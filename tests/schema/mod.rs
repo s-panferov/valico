@@ -9,7 +9,7 @@ where
     F: Fn(&path::Path, Value) + Copy,
 {
     let mut contents = fs::read_dir(dir)
-        .expect(&format!("cannot list directory {dir:?}"))
+        .unwrap_or_else(|_| panic!("cannot list directory {dir:?}"))
         .collect::<Vec<_>>();
     contents.sort_by_key(|v| v.as_ref().unwrap().file_name());
     for entry in contents {

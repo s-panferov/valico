@@ -6,11 +6,13 @@ use super::errors;
 use super::param;
 use super::validators;
 
+pub type DynBuilder = Box<dyn Fn(&mut json_schema::Builder) + Send + Sync>;
+
 pub struct Builder {
     requires: Vec<param::Param>,
     optional: Vec<param::Param>,
     validators: validators::Validators,
-    schema_builder: Option<Box<dyn Fn(&mut json_schema::Builder) + Send + Sync>>,
+    schema_builder: Option<DynBuilder>,
     schema_id: Option<url::Url>,
 }
 

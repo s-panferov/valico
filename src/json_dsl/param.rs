@@ -14,7 +14,7 @@ pub struct Param {
     pub allow_null: bool,
     pub validators: validators::Validators,
     pub default: Option<Value>,
-    pub schema_builder: Option<Box<dyn Fn(&mut json_schema::Builder) + Send + Sync>>,
+    pub schema_builder: Option<builder::DynBuilder>,
     pub schema_id: Option<url::Url>,
 }
 
