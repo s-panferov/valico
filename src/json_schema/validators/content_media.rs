@@ -36,8 +36,8 @@ impl super::Validator for ContentMedia {
             None
         };
 
-        let val_ = if decoded_val.is_some() {
-            decoded_val.as_ref().unwrap()
+        let val_ = if let Some(decoded_val) = &decoded_val {
+            decoded_val
         } else {
             val
         };

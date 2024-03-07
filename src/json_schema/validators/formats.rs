@@ -424,7 +424,7 @@ pub mod tests {
         let result = validate_regex("FOO\\");
         assert_eq!(result.errors.len(), 1);
 
-        let only_err = result.errors.get(0);
+        let only_err = result.errors.first();
         assert!(only_err.is_some());
 
         let err = only_err.unwrap();
